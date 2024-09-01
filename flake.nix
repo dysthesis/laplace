@@ -2,33 +2,70 @@
   description = "Description for the project";
 
   inputs = {
-    flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # Modularise your flake
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+
+    # Get Nix to manage your home as well.
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Hardware QOL stuff for the Framework laptop
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
+
+    systems.url = "github:nix-systems/default-linux";
+
+    # Secure boot
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    /*
+    * The name here is quite contradictory, as _impermanence_ refers to wiping your root on every
+    * boot (or putting it on tmpfs) and having Nix rebuild everything, hence discarding any state.
+    *
+    * The impermanence project provides utilities to provide persistence to the state that you _do_
+    * want to keep.
+    */
+    impermanence.url = "github:nix-community/impermanence";
+
+    # My own Neovim flake
+    poincare = {
+      url = "github:dysthesis/poincare";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        systems.follows = "systems";
+        treefmt.follows = "treefmt";
+      };
+    };
+
+    # A nice wrapper for Nix
+    nh = {
+      url = "github:viperML/nh";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Format your entire codebase
+    treefmt = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
+  outputs = inputs @ {flake-parts, ...}:
+    flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
-        # To import a flake module
-        # 1. Add foo to inputs
-        # 2. Add foo as a parameter to the outputs function
-        # 3. Add here: foo.flakeModule
-
+        ./flake
       ];
-      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
-      perSystem = { config, self', inputs', pkgs, system, ... }: {
-        # Per-system attributes can be defined here. The self' and inputs'
-        # module parameters provide easy access to attributes of the same
-        # system.
 
-        # Equivalent to  inputs'.nixpkgs.legacyPackages.hello;
-        packages.default = pkgs.hello;
-      };
-      flake = {
-        # The usual flake attributes can be defined here, including system-
-        # agnostic ones like nixosModule and system-enumerating ones, although
-        # those are more easily expressed in perSystem.
-
-      };
+      systems = import inputs.systems;
     };
 }
