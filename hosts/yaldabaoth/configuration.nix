@@ -5,9 +5,12 @@
         cpu = "amd";
         gpu = "amd";
       };
+
       bootloader = "systemd-boot";
+
       network = {
         wifi.enable = true;
+        dnscrypt-proxy.enable = true;
       };
     };
 
