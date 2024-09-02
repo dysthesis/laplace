@@ -1,18 +1,23 @@
 inputs: let
-  inherit (inputs.nixpkgs.lib) nixosSystem;
+  inherit (inputs.nixpkgs.lib) nixosSystem mkDefault;
 in
   {
     system,
     hostname,
     config,
+    specialArgs,
     ...
   }:
     nixosSystem {
       inherit system;
       modules =
         [
-          {networking.hostName = hostname;}
+          {
+            networking.hostName = hostname;
+            nixpkgs.hostPlatform = mkDefault system;
+          }
+          inputs.disko.nixosModules.disko
         ]
         ++ config;
-      specialArgs = {inherit inputs;};
+      specialArgs = {inherit inputs;} // specialArgs;
     }
