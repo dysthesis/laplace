@@ -1,14 +1,16 @@
 {lib, ...}: let
   inherit (lib.laplace) mkSystem;
+  inherit (builtins) mapAttrs;
 
   # Map each host to its architecture
   hosts = {
-    "yaldabaoth" = "x86_64";
+    "yaldabaoth" = "x86_64-linux";
   };
 in {
-  flake.nixosConfigurations = map (hostname: system:
+  flake.nixosConfigurations = mapAttrs (hostname: system:
     mkSystem {
       inherit system hostname;
+      specialArgs = {inherit lib;};
       config = [
         ./${hostname}
         ../modules

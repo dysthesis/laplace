@@ -19,6 +19,12 @@
     # Hardware QOL stuff for the Framework laptop
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    # Automate the partitioning of disks
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     systems.url = "github:nix-systems/default-linux";
 
     # Secure boot
@@ -69,6 +75,7 @@
     } {
       imports = [
         ./flake
+        ./hosts
       ];
 
       systems = import inputs.systems;

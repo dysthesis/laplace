@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf mkDefault;
-  cfg = config.my.hardware.gpu;
+  cfg = config.laplace.hardware.gpu;
 in {
   config = mkIf (cfg == "amd") {
     services.xserver.videoDrivers = mkDefault [
