@@ -1,5 +1,5 @@
 inputs:
-inputs.nixpkgs.lib.extend (final: prev: {
+inputs.nixpkgs.lib.extend (_final: _prev: {
   laplace = {
     mkSystem = import ./mkSystem.nix inputs;
   };
