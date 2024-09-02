@@ -4,7 +4,7 @@
     system,
     ...
   }: let
-    personal = _final: _prev: import ../packages pkgs;
+    personal = import ../packages pkgs;
   in {
     _module.args.pkgs = import inputs.nixpkgs {
       inherit system;
