@@ -1,5 +1,6 @@
 {
   imports = [
     ./wifi
+    ./dns
   ];
 }
