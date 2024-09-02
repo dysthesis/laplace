@@ -39,12 +39,12 @@
     # My own Neovim flake
     poincare = {
       url = "github:dysthesis/poincare";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-parts.follows = "flake-parts";
-        systems.follows = "systems";
-        treefmt.follows = "treefmt";
-      };
+      # inputs = {
+      #   nixpkgs.follows = "nixpkgs";
+      #   flake-parts.follows = "flake-parts";
+      #   systems.follows = "systems";
+      #   treefmt.follows = "treefmt";
+      # };
     };
 
     # A nice wrapper for Nix
