@@ -6,5 +6,6 @@
     ./nix
     ./security
     ./sound
+    ./users
   ];
 }
