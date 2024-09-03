@@ -2,5 +2,6 @@
   imports = [
     ./privesc
     ./apparmor
+    ./polkit
   ];
 }
