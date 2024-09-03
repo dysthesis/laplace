@@ -25,6 +25,8 @@
         server = "pipewire";
       };
 
+      users.demiurge.enable = true;
+
       features = {
         nh = {
           enable = true;
