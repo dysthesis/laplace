@@ -13,6 +13,7 @@
         alejandra
         statix
         deadnix
+        nvfetcher
         poincare
       ];
     };

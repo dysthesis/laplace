@@ -1,4 +1,8 @@
-{lib, ...}: let
+{
+  self,
+  lib,
+  ...
+}: let
   inherit (lib.laplace) mkSystem;
   inherit (builtins) mapAttrs;
 
@@ -9,11 +13,11 @@
 in {
   flake.nixosConfigurations = mapAttrs (hostname: system:
     mkSystem {
-      inherit system hostname;
+      inherit system hostname self;
       specialArgs = {inherit lib;};
       config = [
         ./${hostname}
-        ../modules
+        "${self}/modules"
       ];
     })
   hosts;
