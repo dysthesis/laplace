@@ -29,10 +29,35 @@ in {
 
       services.${name} = let
         utils = self.packages.${pkgs.system}.generate-domains-blocklist;
+        blocklist = ''
+          https://raw.githubusercontent.com/AdAway/adaway.github.io/master/hosts.txt
+          https://easylist-downloads.adblockplus.org/easylist_noelemhide.txt
+          https://easylist-downloads.adblockplus.org/easylistchina.txt
+          https://easylist-downloads.adblockplus.org/advblock.txt
+          https://pgl.yoyo.org/adservers/serverlist.php?hostformat=nohtml
+          https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt
+          https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt
+          https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+          https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
+          https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADomains.txt
+          https://paulgb.github.io/BarbBlock/blacklists/domain-list.txt
+          https://someonewhocares.org/hosts/hosts
+          https://raw.githubusercontent.com/notracking/hosts-blocklists/master/dnscrypt-proxy/dnscrypt-proxy.blacklist.txt
+          https://raw.githubusercontent.com/nextdns/cname-cloaking-blocklist/master/domains
+          https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+          https://hostfiles.frogeye.fr/firstparty-trackers.txt
+          https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+          https://www.github.developerdan.com/hosts/lists/ads-and-tracking-extended.txt
+          https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt
+          https://raw.githubusercontent.com/anudeepND/blacklist/master/CoinMiner.txt
+          https://dblw.oisd.nl/
+          https://dblw.oisd.nl/extra/
+          https://raw.githubusercontent.com/jdlingyu/ad-wars/master/sha_ad_hosts
+        '';
       in {
         script = ''
           set -eu
-          ${utils}/generate-domains-blocklist.py -a ${utils}/domains-allowlist.txt -c ${utils}/domains-blocklist.conf -o /etc/dnscrypt-proxy/blocked-names.txt
+          ${utils}/generate-domains-blocklist.py -a ${utils}/domains-allowlist.txt -c ${blocklist} -o /etc/dnscrypt-proxy/blocked-names.txt
         '';
         serviceConfig = {
           Type = "oneshot";
