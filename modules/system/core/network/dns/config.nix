@@ -1,6 +1,8 @@
 {
   config,
   lib,
+  self,
+  pkgs,
   ...
 }: let
   inherit (lib) mkIf;
@@ -13,6 +15,32 @@ in {
       dhcpcd.extraConfig = "nohook resolv.conf";
     };
 
+    systemd = let
+      name = "update-dnscrypt-blocklist";
+    in {
+      timers.${name} = {
+        wantedBy = ["timers.target"];
+        timerConfig = {
+          OnBootSec = "5m";
+          onUnitActiveSec = "5h";
+          Unit = "${name}.service";
+        };
+      };
+
+      services.${name} = let
+        utils = self.packages.${pkgs.system}.generate-domains-blocklist;
+      in {
+        script = ''
+          set -eu
+          ${utils}/generate-domains-blocklist.py -a ${utils}/domains-allowlist.txt -c ${utils}/domains-blocklist.conf -o /etc/dnscrypt-proxy/blocked-names.txt
+        '';
+        serviceConfig = {
+          Type = "oneshot";
+          User = "root";
+        };
+      };
+    };
+
     services.dnscrypt-proxy2 = {
       enable = true;
       settings = {
@@ -20,6 +48,11 @@ in {
         require_dnssec = true;
         server_names = ["odoh-cloudflare"];
         odoh_servers = true;
+
+        blocked_names = {
+          blocked_names_file = "/etc/dnscrypt-proxy/blocked-names.txt";
+          log_file = "/var/log/blocked-names.log";
+        };
 
         anonymized_dns = {
           routes = [
