@@ -1,4 +1,8 @@
-{inputs, ...}: {
+{
+  self,
+  inputs,
+  ...
+}: {
   imports = [inputs.flake-parts.flakeModules.easyOverlay];
   perSystem = {
     pkgs,
@@ -6,7 +10,7 @@
     config,
     ...
   }: let
-    personal = import ../packages pkgs;
+    personal = import "${self}/packages" pkgs;
   in {
     _module.args.pkgs = import inputs.nixpkgs {
       inherit system;
