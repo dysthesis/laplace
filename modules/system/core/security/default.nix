@@ -3,5 +3,6 @@
     ./privesc
     ./apparmor
     ./polkit
+    ./secureboot
   ];
 }
