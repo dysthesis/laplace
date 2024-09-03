@@ -15,6 +15,7 @@
 
       security = {
         privesc = "doas";
+        apparmor.enable = true;
       };
 
       features = {
