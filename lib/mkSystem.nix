@@ -2,6 +2,7 @@ inputs: let
   inherit (inputs.nixpkgs.lib) nixosSystem mkDefault;
 in
   {
+    self,
     system,
     hostname,
     config,
@@ -19,5 +20,5 @@ in
           inputs.disko.nixosModules.disko
         ]
         ++ config;
-      specialArgs = {inherit inputs;} // specialArgs;
+      specialArgs = {inherit self inputs;} // specialArgs;
     }

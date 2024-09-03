@@ -3,5 +3,6 @@
     ./hardware
     ./boot
     ./network
+    ./nix
   ];
 }

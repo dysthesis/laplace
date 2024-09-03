@@ -1,7 +1,7 @@
 {
   perSystem = {pkgs, ...}: {
     packages = {
-      sf-pro = pkgs.sf-pro;
+      inherit (pkgs) sf-pro generate-domains-blocklist;
     };
   };
 }
