@@ -20,6 +20,11 @@
         secure-boot.enable = true;
       };
 
+      sound = {
+        enable = true;
+        server = "pipewire";
+      };
+
       features = {
         nh = {
           enable = true;
