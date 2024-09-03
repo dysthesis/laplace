@@ -1,4 +1,8 @@
-{lib, ...}: let
+{
+  self,
+  lib,
+  ...
+}: let
   inherit (lib.laplace) mkSystem;
   inherit (builtins) mapAttrs;
 
@@ -13,7 +17,7 @@ in {
       specialArgs = {inherit lib;};
       config = [
         ./${hostname}
-        ../modules
+        "${self}/modules"
       ];
     })
   hosts;
