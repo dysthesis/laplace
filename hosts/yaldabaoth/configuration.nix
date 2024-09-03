@@ -13,6 +13,10 @@
         dnscrypt-proxy.enable = true;
       };
 
+      security = {
+        privesc = "doas";
+      };
+
       features = {
         nh = {
           enable = true;

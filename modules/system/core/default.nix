@@ -4,5 +4,6 @@
     ./boot
     ./network
     ./nix
+    ./security
   ];
 }
