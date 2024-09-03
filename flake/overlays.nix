@@ -1,7 +1,9 @@
 {inputs, ...}: {
+  imports = [inputs.flake-parts.flakeModules.easyOverlay];
   perSystem = {
     pkgs,
     system,
+    config,
     ...
   }: let
     personal = import ../packages pkgs;
@@ -11,6 +13,10 @@
       overlays = [
         personal
       ];
+    };
+
+    overlayAttrs = {
+      inherit (config.packages) generate-domains-blocklist sf-pro;
     };
   };
 }
