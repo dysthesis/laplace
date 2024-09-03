@@ -18,6 +18,8 @@
           enable = true;
           flakePath = "/home/demiurge/Documents/Projects/laplace";
         };
+
+        docs.enable = false;
       };
     };
 
