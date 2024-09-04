@@ -22,14 +22,18 @@ in {
 
   # Require the hashed passwords for enabled users.
   sops.secrets =
-    fold
-    (curr: acc:
-      acc
-      // {
-        "hashedPasswords/${curr}".neededForUsers = true;
-      })
-    {}
-    enabledUsers;
+    # User passwords
+    (fold
+      (curr: acc:
+        acc
+        // {
+          "hashedPasswords/${curr}".neededForUsers = true;
+        })
+      {}
+      enabledUsers)
+    // {
+      "luksPasswords/main" = {};
+    };
 
   # TODO: Adjust this to account for impermanence
   sops.age.keyFile = "/home/demiurge/.config/sops/age/keys.txt";

@@ -1,8 +1,15 @@
 {
-  disko.devices.disk = {
-    main = {
-      type = "disk";
+  lib,
+  config,
+  ...
+}: let
+  inherit (builtins) mapAttrs;
+  inherit (lib) fold;
+in {
+  disko.devices = {
+    disk.main = {
       device = "/dev/nvme0n1";
+      type = "disk";
       content = {
         type = "gpt";
         partitions = {
@@ -24,8 +31,7 @@
             content = {
               type = "luks";
               name = "cryptroot";
-              # TODO: Use a passwordFile encrypted with sops-nix or agenix
-              # passwordFile = "/tmp/secrets.key"
+              passwordFile = config.sops.secrets."luksPasswords/main".path;
               settings.allowDiscards = true;
 
               content = {
@@ -42,33 +48,46 @@
                     "discard=async"
                     "autodefrag"
                   ];
-                  # subvolumes = [
-                  #   { name = "@"; mountpoint = "/"; }
-                  # ];
-                in {
-                  # Root subvolume
-                  "@" = {
-                    mountpoint = "/";
-                    inherit mountOptions;
+                in
+                  mapAttrs (_name: value: value // {inherit mountOptions;}) {
+                    "@nix".mountpoint = "/nix";
+                    "@persist".mountpoint = "/nix/persist";
+                  }
+                  // {
+                    "@swap" = {
+                      mountpoint = "/swap";
+                      swap.swapfile.size = "4G";
+                    };
                   };
-                  "@home" = {
-                    mountpoint = "/home";
-                    inherit mountOptions;
-                  };
-                  "@nix" = {
-                    mountpoint = "/nix";
-                    inherit mountOptions;
-                  };
-                  "@swap" = {
-                    mountpoint = "/swap";
-                    swap.swapfile.size = "4G";
-                  };
-                };
               };
             };
           };
         };
       };
     };
+
+    # Make root and home impermanent
+    nodev =
+      fold (curr: acc:
+        acc
+        // {
+          "${curr}" = {
+            fsType = "tmpfs";
+            mountOptions = [
+              "size=4G"
+              "defaults"
+              "mode=755"
+
+              # WARN: This may break stuff
+              # Disable the execution of anything outside the Nix store
+              "noexec"
+            ];
+          };
+        })
+      {}
+      [
+        "/"
+        "/home"
+      ];
   };
 }
