@@ -33,6 +33,11 @@
           flakePath = "/home/demiurge/Documents/Projects/laplace";
         };
 
+        hardening = {
+          kernel.enable = true;
+          malloc.enable = true;
+        };
+
         docs.enable = false;
       };
     };
