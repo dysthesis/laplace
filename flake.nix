@@ -33,6 +33,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Secrets management
+    sops-nix.url = "github:Mic92/sops-nix";
+
     /*
     * The name here is quite contradictory, as _impermanence_ refers to wiping your root on every
     * boot (or putting it on tmpfs) and having Nix rebuild everything, hence discarding any state.
