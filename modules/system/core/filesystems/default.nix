@@ -3,19 +3,26 @@
   config,
   ...
 }: let
-  inherit (lib.laplace.options) mkEnumOption mkEnumListOption;
-  filesystems = ["btrfs"];
+  inherit
+    (lib.laplace.options)
+    mkEnumOption
+    mkEnumListOption
+    ;
+
+  inherit (lib.laplace.modules) importInDirectory fromDirectories;
+
+  elems = fromDirectories ./.;
 in {
   options.laplace.rootFilesystem = mkEnumOption {
-    elems = filesystems;
+    inherit elems;
     description = "The type of filesystem to use as root";
   };
 
   options.laplace.filesystems = mkEnumListOption {
-    elems = filesystems;
+    inherit elems;
     description = "Which filesystems to enable support for";
     default = [config.laplace.rootFilesystem];
   };
 
-  imports = map (filesystem: ./${filesystem}) filesystems;
+  imports = importInDirectory ./.;
 }

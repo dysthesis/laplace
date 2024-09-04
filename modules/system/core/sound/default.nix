@@ -1,7 +1,13 @@
 {lib, ...}: let
   inherit (lib) mkEnableOption;
   inherit (lib.laplace.options) mkEnumOption;
-  elems = ["pipewire"];
+  inherit
+    (lib.laplace.modules)
+    fromDirectories
+    importInDirectory
+    ;
+
+  elems = fromDirectories ./.;
 in {
   options.laplace.sound = {
     enable = mkEnableOption "Enable sound server.";
@@ -11,5 +17,5 @@ in {
     };
   };
 
-  imports = map (x: "${./.}/${x}/") elems;
+  imports = importInDirectory ./.;
 }
