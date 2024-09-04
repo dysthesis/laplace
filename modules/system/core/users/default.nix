@@ -1,8 +1,23 @@
 {
+  self,
+  inputs,
   lib,
   config,
   ...
 }: let
+  inherit
+    (builtins)
+    mapAttrs
+    attrNames
+    pathExists
+    ;
+  inherit
+    (lib)
+    fold
+    filterAttrs
+    mkEnableOption
+    assertMsg
+    ;
   inherit
     (lib.laplace.modules)
     enableOptsFromDir
@@ -15,9 +30,45 @@ in {
   config.users.mutableUsers = !config.laplace.features.impermanence.enable;
 
   # For each user (represented by a subdirectory in modules/system/core/users), create an option
-  # to enable the user in the given system.
-  options.laplace.users = enableOptsFromDir ./. "Whether or not to enable the user";
+  # to enable the user in the given system, as well as whether or not home-manager should be used
+  options.laplace.users =
+    mapAttrs
+    (name: value:
+      value
+      // {
+        useHomeManager =
+          mkEnableOption "Whether or not to enable home-manager for the user ${name}";
+      })
+    (enableOptsFromDir ./. "Whether or not to enable the user");
+
+  config.home-manager = {
+    useUserPackages = true;
+    useGlobalPkgs = true;
+    extraSpecialArgs = {inherit inputs;};
+    users = let
+      usersWithHM =
+        attrNames
+        (filterAttrs
+          (_name: value: value.useHomeManager)
+          config.laplace.users);
+    in
+      fold
+      (curr: acc: let
+        configPath = "${self}/modules/home/${curr}";
+      in
+        assert assertMsg
+        (pathExists configPath)
+        "The configurations for user ${curr} does not exist";
+          acc
+          // {
+            "${curr}" = import configPath;
+          })
+      {}
+      usersWithHM;
+  };
 
   # Import all the user configurations
-  imports = importInDirectory ./.;
+  imports =
+    (importInDirectory ./.)
+    ++ [inputs.home-manager.nixosModules.home-manager];
 }
