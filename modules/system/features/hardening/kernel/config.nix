@@ -10,7 +10,7 @@
     mkDefault
     ;
 
-  cfg = config.laplace.hardening.kernel.enable;
+  cfg = config.laplace.features.hardening.kernel.enable;
 in {
   config = mkIf cfg {
     # This section is stolen from https://github.com/NotAShelf/nyx/blob/319b1f6fe4d09ff84d83d1f8fa0d04e0220dfed7/modules/core/common/system/security/kernel.nix#L57
