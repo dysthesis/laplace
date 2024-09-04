@@ -9,6 +9,7 @@
       bootloader = "systemd-boot";
 
       network = {
+        bluetooth.enable = true;
         wifi.enable = true;
         dnscrypt-proxy.enable = true;
       };
