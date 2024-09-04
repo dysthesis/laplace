@@ -6,7 +6,7 @@
       gaps_in = 4;
       gaps_out = 8;
 
-      border_size = 2;
+      border_size = 1;
 
       layout = "master";
       "col.active_border" = "rgb(ffffff)";
