@@ -3,4 +3,6 @@ pkgs: _final: _prev: let
 in {
   sf-pro = callPackage ./sf-pro {};
   generate-domains-blocklist = callPackage ./generate-domains-blocklist {};
+  georgia-fonts = callPackage ./georgia-fonts {};
+  cartograph-nf = callPackage ./cartograph-nf {};
 }
