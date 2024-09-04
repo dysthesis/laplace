@@ -4,5 +4,6 @@
     ./apparmor
     ./polkit
     ./secureboot
+    ./firewall
   ];
 }
