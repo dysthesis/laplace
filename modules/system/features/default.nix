@@ -3,5 +3,6 @@
     ./nh
     ./docs
     ./impermanence
+    ./hardening
   ];
 }
