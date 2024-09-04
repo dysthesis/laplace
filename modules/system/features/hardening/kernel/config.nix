@@ -1,8 +1,15 @@
 {
+  pkgs,
   lib,
   config,
   ...
 }: let
+  inherit
+    (pkgs)
+    linuxPackagesFor
+    linuxKernel
+    ;
+
   inherit
     (lib)
     mkIf
@@ -36,6 +43,7 @@ in {
     };
 
     boot = {
+      kernelPackages = mkDefault (linuxPackagesFor linuxKernel.kernels.linux_hardened);
       kernelParams = [
         # Don't merge slabs
         "slab_nomerge"
