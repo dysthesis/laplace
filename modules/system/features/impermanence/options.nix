@@ -1,5 +1,13 @@
 {lib, ...}: let
-  inherit (lib) mkEnableOption;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (lib.types) str;
 in {
-  options.laplace.features.impermanence.enable = mkEnableOption "Whether or not to enable impermanence";
+  options.laplace.features.impermanence = {
+    enable = mkEnableOption "Whether or not to enable impermanence";
+    persistDir = mkOption {
+      default = "/nix/persist";
+      type = str;
+      description = "Where to store states to persist";
+    };
+  };
 }
