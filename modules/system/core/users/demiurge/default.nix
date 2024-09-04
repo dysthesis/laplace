@@ -29,7 +29,7 @@ in {
         isNormalUser = true;
         shell = pkgs.${shell};
 
-        # TODO: Add hashed password with sops-nix
+        hashedPasswordFile = config.sops.secrets."hashedPasswords/demiurge".path;
 
         extraGroups =
           [

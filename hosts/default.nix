@@ -17,7 +17,8 @@ in {
       specialArgs = {inherit lib;};
       config = [
         ./${hostname}
-        "${self}/modules"
+        "${self}/modules/system"
+        "${self}/modules/secrets"
       ];
     })
   hosts;

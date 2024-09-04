@@ -1,0 +1,7 @@
+keys:
+  - &adonaios age1mxkywu3klf5aa36z3h6e3k2f3lxg7nw6zz9dcyzjez2cqhlm0elqmswqd4
+creation_rules:
+  - path_regex: modules/secrets/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+    - age:
+      - *adonaios
