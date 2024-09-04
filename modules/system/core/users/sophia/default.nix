@@ -14,7 +14,7 @@
     hasAttr
     ;
 
-  cfg = config.laplace.users.demiurge.enable;
+  cfg = config.laplace.users.sophia.enable;
   ifTheyExist = groups:
     filter
     (group: hasAttr group config.users.groups)
