@@ -1,0 +1,77 @@
+local wezterm = require("wezterm")
+
+local config = {}
+
+if wezterm.config_builder then
+	config = wezterm.config_builder()
+end
+
+config.enable_wayland = true
+config.term = "wezterm"
+config.colors = {
+	background = "#000000",
+	foreground = "#ffffff",
+}
+config.font = wezterm.font("JetBrainsMono Nerd Font", {
+	weight = "Regular",
+	stretch = "Normal",
+	style = "Normal",
+})
+config.font_size = 10
+config.line_height = 1.2
+config.color_scheme = "Catppuccin Mocha"
+config.window_background_opacity = 0.75
+config.warn_about_missing_glyphs = false
+config.enable_scroll_bar = false
+config.enable_tab_bar = false
+config.window_padding = {
+	left = 25,
+	right = 25,
+	top = 25,
+	bottom = 25,
+}
+config.check_for_updates = false
+config.automatically_reload_config = true
+
+config.window_close_confirmation = "NeverPrompt"
+config.disable_default_key_bindings = true
+
+local act = wezterm.action
+
+config.keys = {
+	-- zk.nvim keybinds
+	{
+		key = "Enter",
+		mods = "CTRL",
+		action = act({ SendString = "\x1b[13;5u" }),
+	},
+	{
+		key = "Enter",
+		mods = "SHIFT",
+		action = act({ SendString = "\x1b[13;2u" }),
+	},
+}
+
+wezterm.on("user-var-changed", function(window, pane, name, value)
+	local overrides = window:get_config_overrides() or {}
+	if name == "ZEN_MODE" then
+		local incremental = value:find("+")
+		local number_value = tonumber(value)
+		if incremental ~= nil then
+			while number_value > 0 do
+				window:perform_action(wezterm.action.IncreaseFontSize, pane)
+				number_value = number_value - 1
+			end
+			overrides.enable_tab_bar = false
+		elseif number_value < 0 then
+			window:perform_action(wezterm.action.ResetFontSize, pane)
+			overrides.font_size = nil
+			overrides.enable_tab_bar = true
+		else
+			overrides.font_size = number_value
+			overrides.enable_tab_bar = false
+		end
+	end
+	window:set_config_overrides(overrides)
+end)
+return config
