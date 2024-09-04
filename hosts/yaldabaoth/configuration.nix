@@ -27,7 +27,10 @@
         server = "pipewire";
       };
 
-      users.demiurge.enable = true;
+      users.demiurge = {
+        enable = true;
+        useHomeManager = true;
+      };
 
       features = {
         nh = {
