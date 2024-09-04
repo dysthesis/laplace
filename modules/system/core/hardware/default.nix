@@ -1,9 +1,7 @@
 {lib, ...}: let
   inherit (lib) mkDefault;
+  inherit (lib.laplace.modules) importInDirectory;
 in {
-  imports = [
-    ./cpu
-    ./gpu
-  ];
+  imports = importInDirectory ./.;
   config.services.fwupd.enable = mkDefault true;
 }

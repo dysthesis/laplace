@@ -1,6 +1,11 @@
 {lib, ...}: let
   inherit (lib.laplace.options) mkEnumOption;
-  elems = ["amd"];
+  inherit
+    (lib.laplace.modules)
+    fromDirectories
+    importInDirectory
+    ;
+  elems = fromDirectories ./.;
 in {
   options.laplace.hardware.gpu = mkEnumOption {
     # I only have AMD  devices
@@ -8,5 +13,5 @@ in {
     description = "The manufaturer of the GPU";
   };
 
-  imports = map (x: "${./.}/${x}/") elems;
+  imports = importInDirectory ./.;
 }

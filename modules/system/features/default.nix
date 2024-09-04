@@ -1,8 +1,5 @@
-{
-  imports = [
-    ./nh
-    ./docs
-    ./impermanence
-    ./hardening
-  ];
+{lib, ...}: let
+  inherit (lib.laplace.modules) importInDirectory;
+in {
+  imports = importInDirectory ./.;
 }

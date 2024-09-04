@@ -1,9 +1,5 @@
-{
-  imports = [
-    ./privesc
-    ./apparmor
-    ./polkit
-    ./secureboot
-    ./firewall
-  ];
+{lib, ...}: let
+  inherit (lib.laplace.modules) importInDirectory;
+in {
+  imports = importInDirectory ./.;
 }

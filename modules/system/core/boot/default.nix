@@ -1,11 +1,16 @@
 {lib, ...}: let
   inherit (lib.laplace.options) mkEnumOption;
+  inherit
+    (lib.laplace.modules)
+    importInDirectory
+    fromDirectories
+    ;
+
+  elems = fromDirectories ./.;
 in {
   options.laplace.bootloader = mkEnumOption {
-    elems = ["systemd-boot"];
+    inherit elems;
     description = "Which bootloader to use";
   };
-  imports = [
-    ./systemd-boot
-  ];
+  imports = importInDirectory ./.;
 }
