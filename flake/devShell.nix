@@ -14,6 +14,7 @@
         statix
         deadnix
         nvfetcher
+        just
         poincare
       ];
     };
