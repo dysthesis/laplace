@@ -15,6 +15,10 @@
         deadnix
         nvfetcher
         just
+
+        # Sops-Nix and password generation
+        sops
+        mkpasswd
         poincare
       ];
     };
