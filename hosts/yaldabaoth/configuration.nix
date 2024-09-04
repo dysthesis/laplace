@@ -4,6 +4,18 @@
       hardware = {
         cpu = "amd";
         gpu = "amd";
+        monitors = [
+          {
+            name = "eDP";
+            width = 2256;
+            height = 1504;
+            refreshRate = 60;
+            pos = {
+              x = 0;
+              y = 0;
+            };
+          }
+        ];
       };
 
       bootloader = "systemd-boot";
