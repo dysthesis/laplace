@@ -26,7 +26,7 @@
     ${name}.enable = mkEnableOption "Whether or not to enable hardening for the ${name}.";
   };
 in {
-  options.laplace.hardening = fold (_curr: acc: acc // mkModuleOption) {} modules;
+  options.laplace.features.hardening = fold (curr: acc: acc // (mkModuleOption curr)) {} modules;
 
   imports = map (name: "${./.}/${name}") modules;
 }
