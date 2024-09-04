@@ -34,6 +34,9 @@
           flakePath = "/home/demiurge/Documents/Projects/laplace";
         };
 
+        impermanence.enable = true;
+        virtualisation.enable = true;
+
         hardening = {
           kernel.enable = true;
           malloc.enable = true;
