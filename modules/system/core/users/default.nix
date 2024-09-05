@@ -44,8 +44,10 @@ in {
   config.home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
+
+    # Declare arguments you want to make available in the home-manager configs
     extraSpecialArgs = {
-      inherit inputs;
+      inherit self inputs;
       systemConfig = config;
     };
     users = let

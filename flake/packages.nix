@@ -1,7 +1,7 @@
 {
   perSystem = {pkgs, ...}: {
     packages = {
-      inherit (pkgs) sf-pro generate-domains-blocklist;
+      inherit (pkgs) sf-pro generate-domains-blocklist georgia-fonts cartograph-nf;
     };
   };
 }
