@@ -1,103 +1,128 @@
-{
-  config,
-  lib,
-  ...
-}: let
-  inherit (builtins) map;
-  inherit (lib.strings) concatStrings;
-in {
+{config, ...}: {
   home = {
     sessionVariables = {
       STARSHIP_CACHE = "${config.xdg.cacheHome}/starship";
     };
   };
 
-  programs.starship = let
-    elemsConcatted = concatStrings (
-      map (s: "\$${s}") [
-        "hostname"
-        "username"
-        "directory"
-        "shell"
-        "nix_shell"
-        "git_branch"
-        "git_commit"
-        "git_state"
-        "git_status"
-        "jobs"
-        "cmd_duration"
-      ]
-    );
-  in {
+  programs.starship = {
     enable = true;
 
     settings = {
-      scan_timeout = 2;
-      command_timeout = 2000; # nixpkgs makes starship implode with lower values
       add_newline = true;
-      line_break.disabled = false;
 
-      format = "${elemsConcatted}\n$character";
-
-      hostname = {
-        ssh_only = true;
-        disabled = false;
-        format = "@[$hostname](bold blue) "; # the whitespace at the end is actually important
-      };
-
-      # configure specific elements
       character = {
-        error_symbol = "[](bold red)";
-        success_symbol = "[](bold green)";
-        vicmd_symbol = "[](bold yellow)";
-        format = "$symbol [|](bold bright-black) ";
+        error_symbol = "[┃](bright-red)";
+        success_symbol = "[┃](green)";
       };
 
-      username = {
-        format = "[$user]($style) in ";
+      cmd_duration = {
+        disabled = false;
+        format = "[ $duration]($style)";
+        min_time = 100;
+        style = "fg:yellow";
       };
 
       directory = {
-        truncation_length = 2;
+        disabled = false;
+        format = "[](fg:surface0)[ ](fg:blue bg:surface0 bold)[](fg:surface0 bg:mantle)[$read_only]($read_only_style)[$repo_root]($repo_root_style)[ $path]($style)[](fg:mantle)";
+        read_only = " ";
+        read_only_style = "fg:#ffffff bg:mantle";
+        repo_root_format = "[](fg:surface0)[ ](fg:blue bg:surface0 bold)[](bg:mantle fg:surface0)[$read_only]($read_only_style)[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[](fg:mantle)[ ]()";
+        repo_root_style = "fg:#ffffff bold bg:mantle";
+        style = "fg:#ffffff bold bg:mantle";
+        truncate_to_repo = true;
+        truncation_length = 3;
+        truncation_symbol = "…/";
+        use_os_path_sep = true;
+      };
 
-        # removes the read_only symbol from the format, it doesn't play nicely with my folder icon
-        format = "[ ](bold green) [$path]($style) ";
+      fill = {
+        style = "fg:#505050";
+        symbol = "─";
+      };
 
-        # the following removes tildes from the path, and substitutes some folders with shorter names
-        substitutions = {
-          "~/Dev" = "Dev";
-          "~/Documents" = "Docs";
+      format = ''
+        $character $shell $directory $username $hostname $git_branch $git_status $git_commit $fill
+        $character [❯](red)[❯](yellow)[❯](green)
+
+      '';
+
+      git_branch = {
+        format = "on branch [](fg:surface0)[$symbol](bg:surface0 fg:mauve)[](fg:surface0 bg:mantle)[ $branch]($style)[](fg:mantle) ";
+        style = "bold fg:#ffffff bg:mantle";
+        symbol = "";
+      };
+
+      git_status = {
+        ahead = "[﯁ ](fg:blue bg:mantle)[$count](fg:white bg:mantle bold) ";
+        behind = "[﮾ ](fg:peach bg:mantle white)[$count](fg:white bg:mantle bold) ";
+        conflicted = " [$count](fg:#ffffff bg:mantle bold) ";
+        deleted = "[ ](bg:mantle fg:red)[$count](fg:white bg:mantle bold) ";
+        diverged = "[ ](fg:purple bg:mantle)|[ ﯁ ](bright-blue)[$ahead_count](fg:white bg:mantle bold)[ ﮾ ](white)[$behind_count](bright-white) ";
+        format = "with [](fg:surface0)[󱖫](bg:surface0 fg:#ffffff bold)[](bg:mantle fg:surface0)[ $all_status$ahead_behind]($style)[](fg:mantle)";
+        modified = "[ ](bg:mantle fg:blue)[$count](fg:white bg:mantle bold) ";
+        renamed = "[ ](bg:mantle fg:bright-cyan)[$count](fg:white bg:mantle bold) ";
+        staged = "[ ](bg:mantle fg:bright-green)[$count](fg:white bg:mantle bold) ";
+        stashed = "[](bg:mantle fg:yellow) [$count](fg:white bg:mantle bold) ";
+        style = "bg:mantle";
+        untracked = "[ ](bg:mantle fg:bright-black)[$count](fg:white bg:mantle bold) ";
+      };
+
+      hostname = {
+        format = "at [](fg:surface0)[󰍹 ](fg:lavender bg:surface0 bold)[](bg:mantle fg:surface0)[$hostname]($style)[](fg:mantle)";
+        ssh_only = true;
+        style = "fg:#ffffff bold bg:mantle";
+      };
+
+      palette = "catppuccin_mocha";
+
+      palettes = {
+        catppuccin_mocha = {
+          base = "#1e1e2e";
+          blue = "#89b4fa";
+          crust = "#11111b";
+          flamingo = "#f2cdcd";
+          green = "#a6e3a1";
+          lavender = "#b4befe";
+          mantle = "#181825";
+          maroon = "#eba0ac";
+          mauve = "#cba6f7";
+          overlay0 = "#6c7086";
+          overlay1 = "#7f849c";
+          overlay2 = "#9399b2";
+          peach = "#fab387";
+          pink = "#f5c2e7";
+          red = "#f38ba8";
+          rosewater = "#f5e0dc";
+          sapphire = "#74c7ec";
+          sky = "#89dceb";
+          subtext0 = "#a6adc8";
+          subtext1 = "#bac2de";
+          surface0 = "#313244";
+          surface1 = "#45475a";
+          surface2 = "#585b70";
+          teal = "#94e2d5";
+          text = "#cdd6f4";
+          yellow = "#f9e2af";
         };
       };
 
-      # git
-      git_commit.commit_hash_length = 7;
-      git_branch.style = "bold purple";
-      git_status = {
-        style = "red";
-        ahead = "⇡ ";
-        behind = "⇣ ";
-        conflicted = "!";
-        renamed = "»";
-        deleted = "✘ ";
-        diverged = "󱡷 ";
-        modified = "!";
-        stashed = "$";
-        staged = "+";
-        untracked = "";
+      right_format = "\n$cmd_duration\n";
+
+      shell = {
+        disabled = false;
+        format = "[](fg:surface0)[ ](bg:surface0 fg:peach)[](fg:surface0 bg:mantle)[ $indicator]($style)[](fg:mantle)";
+        style = "fg:#ffffff bg:mantle bold";
       };
 
-      # language configurations
-      # the whitespaces at the end *are* necessary for proper formatting
-      lua.symbol = "[ ](blue) ";
-      python.symbol = "[ ](blue) ";
-      rust.symbol = "[ ](red) ";
-      nix_shell.symbol = "[󱄅 ](blue) ";
-      golang.symbol = "[󰟓 ](blue)";
-      c.symbol = "[ ](black)";
-      nodejs.symbol = "[󰎙 ](yellow)";
-
-      package.symbol = "📦 ";
+      username = {
+        disabled = false;
+        format = "on [](fg:surface0)[ ](bg:surface0 fg:green bold)[](bg:mantle fg:surface0)[ $user]($style)[](fg:mantle)";
+        show_always = true;
+        style_root = "fg:red bold bg:mantle";
+        style_user = "fg:#ffffff bold bg:mantle";
+      };
     };
   };
 }
