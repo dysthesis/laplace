@@ -32,9 +32,8 @@ in {
       {}
       enabledUsers)
     // {
-      "luksPasswords/main" = {};
+      "luksPasswords/${config.networking.hostName}" = {};
     };
 
-  # TODO: Adjust this to account for impermanence
-  sops.age.keyFile = "/etc/secrets/age/keys.txt";
+  sops.age.keyFile = "/nix/persist/etc/secrets/age/keys.txt";
 }

@@ -29,8 +29,7 @@ in {
         isNormalUser = true;
         shell = pkgs.${shell};
 
-        hashedPasswordFile = config.sops.secrets."hashedPasswords/demiurge".path;
-
+        hashedPassword = "$y$j9T$WtVEPLB064z6W2eWFUPK81$xT7V9MzUIS.gcoaJzfYjMRY/I5Zi5Hl57XDo9EMwll5";
         extraGroups =
           [
             "wheel"
@@ -47,6 +46,7 @@ in {
             "libvirt"
           ];
       };
+
       programs.${shell}.enable = true;
     };
 }

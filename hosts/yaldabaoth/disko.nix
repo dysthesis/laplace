@@ -3,8 +3,8 @@
   config,
   ...
 }: let
-  inherit (builtins) mapAttrs;
-  inherit (lib) fold;
+  inherit (builtins) mapAttrs attrNames;
+  inherit (lib) fold filterAttrs;
 in {
   disko.devices = {
     disk.main = {
@@ -31,7 +31,7 @@ in {
             content = {
               type = "luks";
               name = "cryptroot";
-              passwordFile = config.sops.secrets."luksPasswords/main".path;
+              passwordFile = "/tmp/luks.key";
               settings.allowDiscards = true;
 
               content = {
@@ -74,7 +74,7 @@ in {
           "${curr}" = {
             fsType = "tmpfs";
             mountOptions = [
-              "size=4G"
+              "size=2G"
               "defaults"
               "mode=755"
 
@@ -85,9 +85,9 @@ in {
           };
         })
       {}
-      [
-        "/"
-        "/home"
-      ];
+      ([
+          "/"
+        ]
+        ++ map (user: "/home/${user}") (attrNames (filterAttrs (_name: value: value.enable) config.laplace.users)));
   };
 }
