@@ -5,4 +5,5 @@ in {
   generate-domains-blocklist = callPackage ./generate-domains-blocklist {};
   georgia-fonts = callPackage ./georgia-fonts {};
   cartograph-nf = callPackage ./cartograph-nf {};
+  oledppuccin-tmux = callPackage ./oledppuccin-tmux {};
 }
