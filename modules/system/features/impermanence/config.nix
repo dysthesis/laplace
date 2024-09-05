@@ -8,7 +8,7 @@
     (lib)
     mkIf
     filterAttrs
-    zipListsWith
+    fold
     ;
 
   inherit (builtins) attrNames;
@@ -25,21 +25,7 @@ in {
     programs.fuse.userAllowOther = true;
     environment.persistence."${cfg.persistDir}" = {
       hideMounts = true;
-      directories = let
-        users =
-          attrNames
-          (filterAttrs
-            (_name: value: value.enable)
-            config.laplace.users);
-
-        persistedUserDirs = [
-          "Documents"
-          "Music"
-          "Pictures"
-          "Sync"
-          ".local/share/calendars"
-        ];
-      in
+      directories =
         [
           "/var/lib/nixos"
           "/etc/nixos"
@@ -49,10 +35,6 @@ in {
           "/etc/secrets"
           "/etc/NetworkManager/system-connections"
         ]
-        ++ zipListsWith
-        (user: dir: "/home/${user}/${dir}")
-        users
-        persistedUserDirs
         ++ addIf config.laplace.features.virtualisation.enable "/var/lib/libvirt"
         ++ addIf config.laplace.network.bluetooth.enable "/var/lib/bluetooth"
         ++ addIf config.laplace.security.secure-boot.enable "/etc/secureboot";
@@ -60,10 +42,40 @@ in {
       files =
         ["/etc/machine-id"]
         ++ addIf config.laplace.network.dnscrypt-proxy.enable "/etc/dnscrypt-proxy/blocked-names.txt";
-      # for some reason *this* is what makes networkmanager not get screwed completely instead of the impermanence module
-      # stolen from https://github.com/sioodmy/dotfiles/blob/2877b9bc15188994a3a4785a070c1fed3f643de9/system/core/impermanence.nix#L8
+
+      users = let
+        enabledUsers =
+          attrNames
+          (filterAttrs
+            (_name: value: value.enable)
+            config.laplace.users);
+
+        userDirs = [
+          "Documents"
+          "Downloads"
+          "Music"
+          "Pictures"
+          "Sync"
+          ".local/share/direnv"
+          {
+            directory = ".gnupg";
+            mode = "0700";
+          }
+          {
+            directory = ".ssh";
+            mode = "0700";
+          }
+          {
+            directory = ".local/share/keyrings";
+            mode = "0700";
+          }
+        ];
+      in
+        fold (curr: acc: acc // {${curr} = {directories = userDirs;};}) {} enabledUsers;
     };
 
+    # for some reason *this* is what makes networkmanager not get screwed completely instead of the impermanence module
+    # stolen from https://github.com/sioodmy/dotfiles/blob/2877b9bc15188994a3a4785a070c1fed3f643de9/system/core/impermanence.nix#L8
     systemd.tmpfiles.rules = [
       "L /var/lib/NetworkManager/secret_key - - - - /persist/var/lib/NetworkManager/secret_key"
       "L /var/lib/NetworkManager/seen-bssids - - - - /persist/var/lib/NetworkManager/seen-bssids"

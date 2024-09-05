@@ -13,6 +13,7 @@
       xray = true;
       contrast = 0.7;
       brightness = 0.8;
+      specila = true;
     };
 
     # shadow config
