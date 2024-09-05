@@ -45,6 +45,8 @@ in {
           "/etc/nixos"
           "/etc/NetworkManager"
           "/etc/ssh"
+          # Sops stuff
+          "/etc/secrets"
           "/etc/NetworkManager/system-connections"
         ]
         ++ zipListsWith
@@ -58,6 +60,13 @@ in {
       files =
         ["/etc/machine-id"]
         ++ addIf config.laplace.network.dnscrypt-proxy.enable "/etc/dnscrypt-proxy/blocked-names.txt";
+      # for some reason *this* is what makes networkmanager not get screwed completely instead of the impermanence module
+      # stolen from https://github.com/sioodmy/dotfiles/blob/2877b9bc15188994a3a4785a070c1fed3f643de9/system/core/impermanence.nix#L8
+      systemd.tmpfiles.rules = [
+        "L /var/lib/NetworkManager/secret_key - - - - /persist/var/lib/NetworkManager/secret_key"
+        "L /var/lib/NetworkManager/seen-bssids - - - - /persist/var/lib/NetworkManager/seen-bssids"
+        "L /var/lib/NetworkManager/timestamps - - - - /persist/var/lib/NetworkManager/timestamps"
+      ];
     };
 
     # Prioritise /nix/persist for boot to let impermanence set the environment up

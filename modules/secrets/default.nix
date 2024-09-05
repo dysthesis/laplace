@@ -36,5 +36,5 @@ in {
     };
 
   # TODO: Adjust this to account for impermanence
-  sops.age.keyFile = "/home/demiurge/.config/sops/age/keys.txt";
+  sops.age.keyFile = "/etc/secrets/age/keys.txt";
 }

@@ -1,8 +1,8 @@
 {
-  programs.firefox = {
-    enable = true;
-  };
-  imports = [
-    ./profiles
-  ];
+  # programs.firefox = {
+  #   enable = true;
+  # };
+  # imports = [
+  #   ./profiles
+  # ];
 }
