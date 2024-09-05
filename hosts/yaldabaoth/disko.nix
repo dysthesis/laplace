@@ -1,7 +1,4 @@
-{
-  lib,
-  ...
-}: let
+{lib, ...}: let
   inherit (builtins) mapAttrs;
   inherit (lib) fold;
 in {

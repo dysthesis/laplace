@@ -7,11 +7,7 @@
   inherit
     (lib)
     mkIf
-    filterAttrs
-    fold
     ;
-
-  inherit (builtins) attrNames;
 
   cfg = config.laplace.features.impermanence;
   addIf = cond: content:
@@ -43,35 +39,41 @@ in {
         ["/etc/machine-id"]
         ++ addIf config.laplace.network.dnscrypt-proxy.enable "/etc/dnscrypt-proxy/blocked-names.txt";
 
-      users = let
-        enabledUsers =
-          attrNames
-          (filterAttrs
-            (_name: value: value.enable)
-            config.laplace.users);
-
-        userDirs = [
-          "Documents"
-          "Downloads"
-          "Music"
-          "Pictures"
-          "Sync"
-          ".local/share/direnv"
-          {
-            directory = ".gnupg";
-            mode = "0700";
-          }
-          {
-            directory = ".ssh";
-            mode = "0700";
-          }
-          {
-            directory = ".local/share/keyrings";
-            mode = "0700";
-          }
-        ];
-      in
-        fold (curr: acc: acc // {${curr} = {directories = userDirs;};}) {} enabledUsers;
+      # users = let
+      #   enabledUsers =
+      #     attrNames
+      #     (filterAttrs
+      #       (_name: value: value.enable)
+      #       config.laplace.users);
+      #
+      #   userDirs = [
+      #     "Documents"
+      #     "Downloads"
+      #     "Music"
+      #     "Pictures"
+      #     "Sync"
+      #     ".local/share/direnv"
+      #     {
+      #       directory = ".gnupg";
+      #       mode = "0700";
+      #     }
+      #     {
+      #       directory = ".ssh";
+      #       mode = "0700";
+      #     }
+      #     {
+      #       directory = ".local/share/keyrings";
+      #       mode = "0700";
+      #     }
+      #   ];
+      # in
+      #   fold (curr: acc:
+      #     acc
+      #     // {
+      #       ${curr} = {directories = userDirs;};
+      #     })
+      #   {}
+      #   enabledUsers;
     };
 
     # for some reason *this* is what makes networkmanager not get screwed completely instead of the impermanence module
