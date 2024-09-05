@@ -1,4 +1,4 @@
-{
+{pkgs, ...}: {
   config = {
     laplace = {
       hardware = {
@@ -60,6 +60,14 @@
 
         docs.enable = false;
       };
+    };
+
+    time.timeZone = "Australia/Sydney";
+    i18n.defaultLocale = "en_AU.UTF-8";
+
+    console = {
+      earlySetup = true;
+      font = "${pkgs.terminus_font}/share/consolefonts/ter-120n.psf.gz";
     };
 
     system.stateVersion = "24.11";
