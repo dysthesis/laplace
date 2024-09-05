@@ -30,7 +30,7 @@
         privesc = "doas";
         apparmor.enable = true;
         polkit.enable = true;
-        secure-boot.enable = true;
+        # secure-boot.enable = true;
         firewall.enable = true;
       };
 

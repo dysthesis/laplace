@@ -8,7 +8,7 @@
       [
         "$mod, Return, exec, wezterm"
         "$mod, Q, killactive"
-        "$mod, R, exec, anyrun"
+        "$mod, R, exec, ${lib.getExe pkgs.bemenu}"
         ''$mod, P, exec, ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe pkgs.swappy} -f -''
         "$mod, H, movefocus, l"
         "$mod, L, movefocus, r"
