@@ -1,10 +1,9 @@
 {
   lib,
-  config,
   ...
 }: let
-  inherit (builtins) mapAttrs attrNames;
-  inherit (lib) fold filterAttrs;
+  inherit (builtins) mapAttrs;
+  inherit (lib) fold;
 in {
   disko.devices = {
     disk.main = {
@@ -74,7 +73,7 @@ in {
           "${curr}" = {
             fsType = "tmpfs";
             mountOptions = [
-              "size=2G"
+              "size=4G"
               "defaults"
               "mode=755"
 
@@ -85,9 +84,9 @@ in {
           };
         })
       {}
-      ([
-          "/"
-        ]
-        ++ map (user: "/home/${user}") (attrNames (filterAttrs (_name: value: value.enable) config.laplace.users)));
+      [
+        "/"
+        "/home"
+      ];
   };
 }
