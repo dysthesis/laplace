@@ -74,10 +74,10 @@ in {
         server_names = ["odoh-cloudflare"];
         odoh_servers = true;
 
-        blocked_names = {
-          blocked_names_file = "/etc/dnscrypt-proxy/blocked-names.txt";
-          log_file = "/var/log/blocked-names.log";
-        };
+        # blocked_names = {
+        #   blocked_names_file = "/etc/dnscrypt-proxy/blocked-names.txt";
+        #   log_file = "/var/log/blocked-names.log";
+        # };
 
         anonymized_dns = {
           routes = [

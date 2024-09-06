@@ -1,5 +1,5 @@
 {
-  wayland.windowManager.hyprland.settings.decorations = {
+  wayland.windowManager.hyprland.settings.decoration = {
     # fancy corners
     rounding = 8;
 
@@ -13,7 +13,7 @@
       xray = true;
       contrast = 0.7;
       brightness = 0.8;
-      specila = true;
+      special = true;
     };
 
     # shadow config

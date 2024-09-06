@@ -69,7 +69,7 @@
     */
     ''
       windows_in(){
-      hyprctl clients -j | jq ".[] | select(.workspace.name == \"special:''$1\" )"
+      hyprctl clients -j | ${getExe pkgs.jq} ".[] | select(.workspace.name == \"special:''$1\" )"
       }
 
       toggle_scratchpad(){
@@ -90,6 +90,6 @@
 in {
   wayland.windowManager.hyprland.settings.bind =
     map
-    (scratchpad: "$mod, ${scratchpad.prefix}, exec, ${script} ${scratchpad.name}")
+    (scratchpad: "$mod, ${scratchpad.prefix}, exec, ${getExe script} ${scratchpad.name}")
     scratchpads;
 }

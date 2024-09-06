@@ -4,6 +4,7 @@
     settings = {
       color_theme = "catppuccin_mocha";
       theme_background = false;
+      vim_keys = true;
       update_ms = 500;
     };
   };

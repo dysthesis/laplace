@@ -1,5 +1,5 @@
 {systemConfig, ...}: {
-  wayland.windowManager.hyprland.settings.monitors =
+  wayland.windowManager.hyprland.settings.monitor =
     map (
       monitor: let
         resolution = "${toString monitor.width}x${toString monitor.height}@${toString monitor.refreshRate}";

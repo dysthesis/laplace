@@ -19,12 +19,13 @@
       disable_splash_rendering = true;
       force_default_wallpaper = 0;
       disable_hyprland_logo = true;
+      font_family = "JetBrainsMono Nerd Font";
 
       vfr = true;
 
       # window swallowing
       enable_swallow = true; # hide windows that spawn other windows
-      swallow_regex = "^(alacritty)$";
+      swallow_regex = "^(org.wezfurlong.wezterm)$";
 
       # dpms
       mouse_move_enables_dpms = true; # enable dpms on mouse/touchpad action

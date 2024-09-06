@@ -55,7 +55,7 @@
 
         hardening = {
           kernel.enable = true;
-          malloc.enable = true;
+          malloc.enable = false; # Scudo breaks firefox?
         };
 
         docs.enable = false;
