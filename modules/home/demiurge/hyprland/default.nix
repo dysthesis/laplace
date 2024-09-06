@@ -1,7 +1,7 @@
 {lib, ...}: let
-  inherit (lib.laplace.modules) importNixInDirectory;
+  inherit (lib.laplace.modules) importNixInDirectory importInDirectory;
 in {
   wayland.windowManager.hyprland.enable = true;
 
-  imports = importNixInDirectory "default.nix" ./.;
+  imports = importNixInDirectory "default.nix" ./. ++ importInDirectory ./.;
 }

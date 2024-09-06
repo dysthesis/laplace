@@ -17,7 +17,7 @@ config.font = wezterm.font("JetBrainsMono Nerd Font", {
 	stretch = "Normal",
 	style = "Normal",
 })
-config.font_size = 10
+config.font_size = size
 config.line_height = 1.2
 config.color_scheme = "Catppuccin Mocha"
 config.window_background_opacity = 0.75

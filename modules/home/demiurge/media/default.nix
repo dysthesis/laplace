@@ -3,5 +3,8 @@
     ani-cli
   ];
 
-  imports = [./mpv.nix];
+  imports = [
+    ./mpv.nix
+    ./ytfzf.nix
+  ];
 }

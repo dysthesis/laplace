@@ -1,16 +1,29 @@
-{pkgs, ...}: {
+{
+  systemConfig,
+  pkgs,
+  ...
+}: let
+  fontSize =
+    if systemConfig.networking.hostName == "yaldabaoth"
+    then 8
+    else 10;
+  line-height =
+    if systemConfig.networking.hostName == "yaldabaoth"
+    then 28
+    else 34;
+in {
   home.packages = [(pkgs.nerdfonts.override {fonts = ["JetBrainsMono"];})];
 
   programs.bemenu = {
     enable = true;
     settings = {
+      inherit line-height;
       ignorecase = true;
       bottom = true;
-      line-height = 34;
       prompt = "";
+      fn = "JetBrainsMono Nerd Font ${toString fontSize}";
       # Horizontal padding
       hp = 8;
-      fn = "JetBrainsMono Nerd Font 10";
       fb = "#000000";
       ff = "#ffffff";
       nb = "#000000";

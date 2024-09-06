@@ -1,11 +1,29 @@
-{pkgs, ...}: {
+{
+  inputs,
+  systemConfig,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
     ueberzugpp
     (nerdfonts.override {fonts = ["JetBrainsMono"];})
   ];
 
-  programs.wezterm = {
+  programs.wezterm = let
+    fontSize =
+      if systemConfig.networking.hostName == "yaldabaoth"
+      then 8
+      else 10;
+  in {
     enable = true;
-    extraConfig = builtins.readFile ./config.lua;
+    package = inputs.wezterm.packages.${pkgs.system}.default;
+    extraConfig =
+      /*
+      lua
+      */
+      ''
+        local size = ${toString fontSize}
+        ${builtins.readFile ./config.lua}
+      '';
   };
 }

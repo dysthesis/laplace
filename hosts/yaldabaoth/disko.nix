@@ -1,6 +1,5 @@
-{lib, ...}: let
+let
   inherit (builtins) mapAttrs;
-  inherit (lib) fold;
 in {
   disko.devices = {
     disk.main = {
@@ -63,27 +62,38 @@ in {
     };
 
     # Make root and home impermanent
-    nodev =
-      fold (curr: acc:
-        acc
-        // {
-          "${curr}" = {
-            fsType = "tmpfs";
-            mountOptions = [
-              "size=4G"
-              "defaults"
-              "mode=755"
+    nodev = {
+      "/" = {
+        fsType = "tmpfs";
+        mountOptions = [
+          "size=4G"
+          "defaults"
+          "mode=755"
+          "noexec"
+        ];
+      };
+    };
 
-              # WARN: This may break stuff
-              # Disable the execution of anything outside the Nix store
-              "noexec"
-            ];
-          };
-        })
-      {}
-      [
-        "/"
-        "/home"
-      ];
+    # fold (curr: acc:
+    #   acc
+    #   // {
+    #     "${curr}" = {
+    #       fsType = "tmpfs";
+    #       mountOptions = [
+    #         "size=4G"
+    #         "defaults"
+    #         "mode=755"
+    #
+    #         # WARN: This may break stuff
+    #         # Disable the execution of anything outside the Nix store
+    #         "noexec"
+    #       ];
+    #     };
+    #   })
+    # {}
+    # [
+    #   "/"
+    #   # "/home"
+    # ];
   };
 }

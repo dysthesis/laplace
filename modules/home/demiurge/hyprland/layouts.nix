@@ -1,7 +1,7 @@
 {
   wayland.windowManager.hyprland.settings = {
     master = {
-      new_is_master = false;
+      new_status = "slave";
     };
 
     dwindle = {

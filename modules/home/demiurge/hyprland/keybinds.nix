@@ -2,14 +2,38 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  inherit (pkgs) writeShellScriptBin;
+  inherit (lib) getExe;
+  powermenu =
+    writeShellScriptBin "powermenu"
+    /*
+    sh
+    */
+    ''
+      case "$(printf "Shutdown\nRestart\nLock" | bemenu -p "" \
+          -l 3)" in
+      Shutdown)
+          exec systemctl poweroff
+          ;;
+      Restart)
+          exec systemctl reboot
+          ;;
+      Lock)
+          exec hyprlock
+          ;;
+      esac
+    '';
+in {
   wayland.windowManager.hyprland.settings = {
+    "$mod" = "SUPER";
     bind =
       [
-        "$mod, Return, exec, wezterm"
+        "$mod, Return, exec, wezterm start --always-new-process"
         "$mod, Q, killactive"
-        "$mod, R, exec, ${lib.getExe pkgs.bemenu}"
-        ''$mod, P, exec, ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe pkgs.swappy} -f -''
+        "$mod, R, exec, bemenu-run"
+        ''$mod, P, exec, ${getExe pkgs.grim} -g "$(${getExe pkgs.slurp})" - | ${getExe pkgs.swappy} -f -''
+        "$mod+Shift, Escape, exec, ${getExe powermenu}"
         "$mod, H, movefocus, l"
         "$mod, L, movefocus, r"
         "$mod, J, movefocus, d"
@@ -21,7 +45,7 @@
         "$mod+Shift, Tab,  focusmonitor, +1"
         "$mod,  Semicolon, splitratio, -0.1"
         "$mod, Apostrophe, splitratio, 0.1"
-        "$mod, F, fullscreen"
+        "$mod+Shift, F, fullscreen"
         "$mod, Tab, changegroupactive, f"
         "$mod+Shift, Tab, changegroupactive, b"
         "$mod, T, togglegroup"
@@ -30,18 +54,6 @@
         "$mod+Shift, S, moveintogroup, d"
         "$mod+Shift, D, moveintogroup, r"
         "$mod+Shift, E, moveoutofgroup"
-        "$mod+Shift, L, exec, swaylock"
-        "$mod, Backspace, exec, wlogout -p layer-shell"
-        "$mod+Shift, F, exec, firefox"
-        "$mod, N, exec, neovide"
-        "$mod, x, exec, firefox"
-        "$mod, E, exec, emacsclient -c -a 'emacs'"
-        "$mod, Z, exec, pypr toggle term"
-        "$mod, B, exec, pypr toggle btop"
-        "$mod, S, exec, pypr toggle signal"
-        "$mod, M, exec, pypr toggle music"
-        "$mod, I, exec, pypr toggle irc"
-        "$mod, C, exec, pypr toggle khal"
       ]
       ++ (
         # workspaces

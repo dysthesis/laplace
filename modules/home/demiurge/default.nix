@@ -18,6 +18,7 @@ in {
       BROWSER = "${getExe pkgs.firefox}";
       EDITOR = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
     };
+    packages = [inputs.poincare.packages.${pkgs.system}.default];
   };
 
   imports = importInDirectory ./.;

@@ -1,5 +1,5 @@
 {lib, ...}: let
-  inherit (lib.laplace.modules) importNixInDirectory;
+  inherit (lib.laplace.modules) importInDirectory;
 in {
-  imports = importNixInDirectory "default.nix" ./.;
+  imports = importInDirectory ./.;
 }
