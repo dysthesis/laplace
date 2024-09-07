@@ -8,6 +8,7 @@
 
   elems = fromDirectories ./.;
 in {
+  config.boot.initrd.verbose = false;
   options.laplace.bootloader = mkEnumOption {
     inherit elems;
     description = "Which bootloader to use";
