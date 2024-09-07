@@ -4,8 +4,8 @@
     "dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP"
     "${pkgs.dunst}"
     "${pkgs.waybar}"
-    "${pkgs.swww}/bin/swww-daemon"
-    "${pkgs.swww} img ${./wallpaper.png}"
+    # "${pkgs.swww}/bin/swww-daemon"
+    # "${pkgs.swww} img ${./wallpaper.png}"
 
     ''hyprctl setcursor "Bibata-Modern-Classic"''
 
