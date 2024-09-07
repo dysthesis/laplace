@@ -15,25 +15,25 @@
       prefix = "s";
       cmd = "${getExe pkgs.signal-desktop} --enable-features=UseOzonePlatform --ozone-platform=wayland";
     }
-    {
+    rec {
       name = "term";
       prefix = "t";
-      cmd = "wezterm";
+      cmd = "wezterm --class=${name}";
     }
-    {
+    rec {
       name = "notes";
       prefix = "n";
-      cmd = "wezterm start sh -c 'tmux new-session -A -s Notes -c ~/Documents/Notes/'";
+      cmd = "wezterm start --class=${name} -- sh -c 'tmux new-session -A -s Notes -c ~/Documents/Notes/'";
     }
-    {
+    rec {
       name = "fm";
       prefix = "f";
-      cmd = "wezterm start yazi";
+      cmd = "wezterm start -class=${name} -- yazi";
     }
-    {
+    rec {
       name = "btop";
       prefix = "b";
-      cmd = "wezterm start btop";
+      cmd = "wezterm start --class=name -- btop";
     }
   ];
 
