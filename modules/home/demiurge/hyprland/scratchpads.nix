@@ -33,7 +33,12 @@
     rec {
       name = "btop";
       prefix = "b";
-      cmd = "wezterm start --class=name -- btop";
+      cmd = "wezterm start --class=${name} -- btop";
+    }
+    rec {
+      name = "task";
+      prefix = "d";
+      cmd = "wezterm start --class=${name} -- ${getExe pkgs.taskwarrior-tui}";
     }
   ];
 
