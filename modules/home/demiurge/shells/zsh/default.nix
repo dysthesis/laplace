@@ -26,6 +26,9 @@
       cat = "bat";
       ccat = "cat";
       run = "nix run";
+      v = "nvim";
+      vim = "nvim";
+      update = "nix flake update $FLAKE && nh os switch";
     };
 
     history = {
