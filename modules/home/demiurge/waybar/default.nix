@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  systemConfig,
+  pkgs,
+  ...
+}: let
   weather = pkgs.stdenv.mkDerivation {
     name = "weather";
     buildInputs = [
@@ -26,7 +30,7 @@
     '';
   };
 in {
-  xdg.configFile."waybar/style.css".text = import ./style.nix;
+  xdg.configFile."waybar/style.css".text = import ./style.nix systemConfig;
   xdg.configFile."waybar/themes" = {
     source = ./themes;
     recursive = true;
@@ -42,7 +46,10 @@ in {
         layer = "top";
         position = "bottom";
         mod = "dock";
-        height = 36;
+        height =
+          if systemConfig.networking.hostName == "yaldabaoth"
+          then 28
+          else 3;
         exclusive = true;
         passthrough = false;
         gtk-layer-shell = true;

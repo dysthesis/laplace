@@ -1,11 +1,16 @@
-''
+systemConfig: let
+  size =
+    if systemConfig.networking.hostName == "yaldabaoth"
+    then 8
+    else 10;
+in ''
   * {
       border: none;
       border-radius: 0px;
       font-family: "JetBrainsMono Nerd Font";
       font-weight: bold;
-      font-size: 12px;
-      min-height: 12px;
+      font-size: ${toString size}px;
+      min-height: ${toString size}px;
   }
 
   @import "themes/Catppuccin-Mocha.css";
@@ -41,8 +46,8 @@
       background: @wb-act-bg;
       color: @wb-act-color;
       margin-left: 3px;
-      padding-left: 16px;
-      padding-right: 16px;
+      padding-left: 8px;
+      padding-right: 8px;
       margin-right: 3px;
       animation: gradient_f 20s ease-in infinite;
       transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
