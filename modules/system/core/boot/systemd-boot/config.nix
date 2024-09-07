@@ -7,17 +7,20 @@
   cfg = config.laplace.bootloader;
 in {
   config = mkIf (cfg == "systemd-boot") {
-    boot.loader = {
-      timeout = 5;
-      efi.canTouchEfiVariables = true;
+    boot = {
+      initrd.systemd.enable = true;
+      loader = {
+        timeout = 5;
+        efi.canTouchEfiVariables = true;
 
-      grub.enable = false;
+        grub.enable = false;
 
-      systemd-boot = {
-        # We might want to set this to false for Lanzaboote
-        enable = mkDefault true;
-        editor = false;
-        consoleMode = "max";
+        systemd-boot = {
+          # We might want to set this to false for Lanzaboote
+          enable = mkDefault true;
+          editor = false;
+          consoleMode = "max";
+        };
       };
     };
   };
