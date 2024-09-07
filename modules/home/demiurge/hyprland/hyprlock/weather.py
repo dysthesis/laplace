@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+from ftplib import FTP
 from ftplib import FTP
 import xml.etree.ElementTree as ET
 import json
