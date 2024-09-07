@@ -9,6 +9,8 @@
 
     ''hyprctl setcursor "Bibata-Modern-Classic"''
 
+    "waybar"
+
     # TODO: Create an option to adjust wlsunset per-device
     "${pkgs.wlsunset} -l -33.9 -L 151.2"
   ];

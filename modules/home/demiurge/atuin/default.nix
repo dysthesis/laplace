@@ -9,13 +9,11 @@
     fold
     ;
 in {
-  programs.zoxide =
+  programs.atuin =
     {
       enable = true;
-      options = [
-        "--cmd cd"
-      ];
-    } # Automatically enable integration with any enabled shells
+    }
+    # Automatically enable integration with any enabled shells
     // fold
     (curr: acc:
       acc

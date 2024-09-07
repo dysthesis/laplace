@@ -6,6 +6,10 @@ in {
   programs.mpv = {
     enable = true;
 
+    scripts = with pkgs.mpvScripts; [
+      sponsorblock
+    ];
+
     config = {
       ytdl-format = "bestvideo+bestaudio/best";
       audio-display = false;
@@ -23,6 +27,10 @@ in {
       osc = "no";
       osd-bar = "no";
       border = "no";
+
+      osd-font = "JetBrainsMono Nerd Font";
+      sub-font = "SF Pro Display";
+      screenshot-directory = "~/Pictures/Images/Screenshots/";
     };
 
     bindings =

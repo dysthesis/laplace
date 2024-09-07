@@ -2,6 +2,8 @@
   wayland.windowManager.hyprland.settings = {
     master = {
       new_status = "slave";
+      special_scale_factor = 0.8;
+      mfact = 0.5;
     };
 
     dwindle = {
