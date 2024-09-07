@@ -1,10 +1,6 @@
-{
-  config,
-  lib,
-  ...
-}: let
+{lib, ...}: let
   inherit (lib.laplace.options) mkEnumOption;
-  cfg = config.laplace.security.privesc;
+  inherit (lib.laplace.modules) importInDirectory;
 in {
   options.laplace.security.privesc = mkEnumOption {
     elems = [
@@ -14,8 +10,5 @@ in {
     description = "Which privilege escalation program to use.";
   };
 
-  config = {
-    security.doas.enable = cfg == "doas";
-    security.sudo.enable = !config.security.doas.enable;
-  };
+  imports = importInDirectory ./.;
 }

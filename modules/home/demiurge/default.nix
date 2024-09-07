@@ -18,7 +18,11 @@ in {
       BROWSER = "${getExe pkgs.firefox}";
       EDITOR = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
     };
-    packages = [inputs.poincare.packages.${pkgs.system}.default];
+    packages = with pkgs; [
+      inputs.poincare.packages.${pkgs.system}.default
+      firefox
+      signal-desktop
+    ];
   };
 
   imports = importInDirectory ./.;

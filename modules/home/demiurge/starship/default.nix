@@ -44,7 +44,7 @@
 
       format = ''
         $character $shell $directory $username $hostname $git_branch $git_status $git_commit $fill
-        $character [❯](red)[❯](yellow)[❯](green)
+        $character [❯](red)[❯](yellow)[❯ ](green)
 
       '';
 

@@ -5,9 +5,36 @@
   ...
 }: let
   inherit (lib) getExe;
-  sesh = getExe pkgs.sesh;
-  tmux = getExe pkgs.tmux;
-  fd = getExe pkgs.fd;
+  sessioniser =
+    pkgs.writeShellScriptBin "sessioniser"
+    /*
+    sh
+    */
+    ''
+      if [ "$#" -eq 1 ]; then
+      	selected=$1
+      else
+      	selected=$(fd --type directory --min-depth 0 --max-depth 1 --exclude Archives . ~/Documents/University/ ~/Documents/Projects/ | fzf --color=bg+:#1e1e2e,bg:-1,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#ffffff,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8)
+      fi
+
+      if [ -z "$selected" ]; then
+      	exit 0
+      fi
+
+      selected_name=$(basename "$selected" | tr . _)
+      tmux_running=$(pgrep tmux)
+
+      if [ -z "$TMUX" ] && [ -z "$tmux_running" ]; then
+      	tmux new-session -s "$selected_name" -c "$selected"
+      	exit 0
+      fi
+
+      if ! tmux has-session -t="$selected_name" 2>/dev/null; then
+      	tmux new-session -ds "$selected_name" -c "$selected"
+      fi
+
+      tmux switch-client -t "$selected_name"
+    '';
 in {
   programs.tmux = {
     enable = true;
@@ -37,27 +64,7 @@ in {
       tmux
       */
       ''
-        set-option -sa terminal-overrides ",screen*:Tc"
-        set-option -sa terminal-overrides ",screen-256color:RGB"
-        set -g status-justify centre
-
-        # Margin between statusbar
-        set -Fg 'status-format[1]' '#{status-format[0]}'
-        set -g 'status-format[0]' \'\'
-        set -g status 2
-
-        bind-key "T" run-shell "${sesh} connect \"$(
-           ${sesh} list | fzf-tmux -p 55%,60% \
-            --no-sort --ansi --border-label ' sesh ' --prompt '⚡  ' \
-            --header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
-            --bind 'tab:down,btab:up' \
-            --bind 'ctrl-a:change-prompt(⚡  )+reload(${sesh} list)' \
-            --bind 'ctrl-t:change-prompt(🪟  )+reload(${sesh} list -t)' \
-            --bind 'ctrl-g:change-prompt(⚙️  )+reload(${sesh} list -c)' \
-            --bind 'ctrl-x:change-prompt(📁  )+reload(${sesh} list -z)' \
-            --bind 'ctrl-f:change-prompt(🔎  )+reload(${fd} -H -d 2 -t d -E .Trash . ~)' \
-            --bind 'ctrl-d:execute(${tmux} kill-session -t {})+change-prompt(⚡  )+reload(${sesh} list)'
-        )\""
+        bind -n C-f run-shell "tmux neww ${getExe sessioniser}"
       '';
   };
   programs.fzf.tmux.enableShellIntegration = true;

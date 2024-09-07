@@ -1,5 +1,7 @@
 {pkgs, ...}: {
   config = {
+    # For electron stuff
+    security.chromiumSuidSandbox.enable = true;
     laplace = {
       hardware = {
         cpu = "amd";

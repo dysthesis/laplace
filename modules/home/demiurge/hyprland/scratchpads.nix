@@ -9,7 +9,6 @@
     fold
     ;
   inherit (pkgs) writeShellScriptBin;
-  wezterm = getExe pkgs.wezterm;
   scratchpads = [
     {
       name = "signal";
@@ -19,22 +18,22 @@
     {
       name = "term";
       prefix = "t";
-      cmd = "${wezterm}";
+      cmd = "wezterm";
     }
     {
       name = "notes";
       prefix = "n";
-      cmd = "${wezterm} start sh -c '${getExe pkgs.tmux} new-session -A -s Notes -c ~/Documents/Notes/'";
+      cmd = "wezterm start sh -c 'tmux new-session -A -s Notes -c ~/Documents/Notes/'";
     }
     {
       name = "fm";
       prefix = "f";
-      cmd = "${wezterm} start ${getExe pkgs.yazi}";
+      cmd = "wezterm start yazi";
     }
     {
       name = "btop";
       prefix = "b";
-      cmd = "${wezterm} start ${getExe pkgs.btop}";
+      cmd = "wezterm start btop";
     }
   ];
 

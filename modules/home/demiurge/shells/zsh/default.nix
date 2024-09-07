@@ -129,61 +129,45 @@
       zsh
       */
       ''
-           # set my zsh options, first things
+        # set my zsh options, first things
         source ${./opts.zsh}
-           set -k
-           export FZF_DEFAULT_OPTS="
-           --color gutter:-1
-           --color bg:-1
-           --color bg+:-1
-           --color fg:#585b70
-           --color fg+:#f5e0dc
-           --color hl:#89b4fa
-           --color hl+:#89b4fa
-           --color header:#89b4fa
-           --color info:#a6e3a1
-           --color marker:#94e2d5
-           --color pointer:#94e2d5
-           --color prompt:#a6e3a1
-           --color spinner:#94e2d5
-           --color preview-bg:#181825
-           --color preview-fg:#89b4fa
-           --prompt ' '
-           --pointer ''
-           --layout=reverse
-           -m --bind ctrl-space:toggle,pgup:preview-up,pgdn:preview-down
-           "
+        set -k
+        export FZF_DEFAULT_OPTS=" \
+        --color=bg+:#1e1e2e,bg:-1,spinner:#f5e0dc,hl:#f38ba8 \
+        --color=fg:#ffffff,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+        --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
+        --prompt ' '"
 
-           zmodload zsh/zle
-           zmodload zsh/zpty
-           zmodload zsh/complist
+        zmodload zsh/zle
+        zmodload zsh/zpty
+        zmodload zsh/complist
 
-           # Colors
-           autoload -Uz colors && colors
+        # Colors
+        autoload -Uz colors && colors
 
-           # Autosuggest
-           ZSH_AUTOSUGGEST_USE_ASYNC="true"
+        # Autosuggest
+        ZSH_AUTOSUGGEST_USE_ASYNC="true"
 
-           # Vi mode
-           bindkey -v
+        # Vi mode
+        bindkey -v
 
-           # Use vim keys in tab complete menu:
-           bindkey -M menuselect 'h' vi-backward-char
-           bindkey -M menuselect 'k' vi-up-line-or-history
-           bindkey -M menuselect 'l' vi-forward-char
-           bindkey -M menuselect 'j' vi-down-line-or-history
+        # Use vim keys in tab complete menu:
+        bindkey -M menuselect 'h' vi-backward-char
+        bindkey -M menuselect 'k' vi-up-line-or-history
+        bindkey -M menuselect 'l' vi-forward-char
+        bindkey -M menuselect 'j' vi-down-line-or-history
 
-           bindkey "^A" vi-beginning-of-line
-           bindkey "^E" vi-end-of-line
+        bindkey "^A" vi-beginning-of-line
+        bindkey "^E" vi-end-of-line
 
-           # If this is an xterm set the title to user@host:dir
-           case "$TERM" in
-           xterm*|rxvt*|Eterm|aterm|kterm|gnome*|alacritty|kitty*)
-             TERM_TITLE=$'\e]0;%n@%m: %1~\a'
-               ;;
-           *)
-               ;;
-           esac
+        # If this is an xterm set the title to user@host:dir
+        case "$TERM" in
+        xterm*|rxvt*|Eterm|aterm|kterm|gnome*|alacritty|kitty*)
+          TERM_TITLE=$'\e]0;%n@%m: %1~\a'
+            ;;
+        *)
+            ;;
+        esac
       '';
 
     plugins = with pkgs; [
