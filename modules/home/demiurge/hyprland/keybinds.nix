@@ -48,7 +48,7 @@ in {
         "$mod+Shift, F, fullscreen"
         "$mod, Tab, changegroupactive, f"
         "$mod+Shift, Tab, changegroupactive, b"
-        "$mod, T, togglegroup"
+        "$mod+Shift, T, togglegroup"
         "$mod+Shift, W, moveintogroup, u"
         "$mod+Shift, A, moveintogroup, l"
         "$mod+Shift, S, moveintogroup, d"
