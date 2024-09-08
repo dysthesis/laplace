@@ -14,7 +14,7 @@
       if [ "$#" -eq 1 ]; then
       	selected=$1
       else
-      	selected=$(fd --type directory --min-depth 0 --max-depth 1 --exclude Archives . ~/Documents/University/ ~/Documents/Projects/ | fzf --color=bg+:#1e1e2e,bg:-1,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#ffffff,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8)
+      	selected=$(${getExe pkgs.fd} --type directory --min-depth 0 --max-depth 1 --exclude Archives . ~/Documents/University/ ~/Documents/Projects/ | ${getExe pkgs.fzf} --color=bg+:#1e1e2e,bg:-1,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#ffffff,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8)
       fi
 
       if [ -z "$selected" ]; then
@@ -112,6 +112,10 @@ in {
         set -g status-justify centre
         set -g @tmux_window_name_max_len "15"
         set-option -g renumber-windows on
+        # Margin between statusbar
+        set -Fg 'status-format[1]' '#{status-format[0]}'
+        set -g 'status-format[0]' \'\'
+        set -g status 2
       '';
   };
   programs.fzf.tmux.enableShellIntegration = true;
