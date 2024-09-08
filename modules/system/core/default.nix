@@ -40,7 +40,20 @@ in {
     enable = true;
     wlr.enable = mkDefault false;
     extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+    ];
+    configPackages = [
       pkgs.xdg-desktop-portal-hyprland
     ];
   };
+
+  fonts.packages = with pkgs; [
+    (nerdfonts.override {fonts = ["JetBrainsMono"];})
+    symbola
+    noto-fonts
+    noto-fonts-emoji
+    noto-fonts-cjk
+  ];
+
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) ["symbola"];
 }
