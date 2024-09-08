@@ -114,7 +114,7 @@ in {
         set-option -g renumber-windows on
         # Margin between statusbar
         set -Fg 'status-format[1]' '#{status-format[0]}'
-        set -g 'status-format[0]' \'\'
+        set -g 'status-format[0]' ' '
         set -g status 2
       '';
   };

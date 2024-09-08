@@ -60,6 +60,7 @@ in {
           ".password-store"
           ".cache/swww"
           ".cache/BraveSoftware"
+          ".cache/nix-index"
           ".config/Signal"
           ".config/BraveSoftware"
           ".config/vesktop"

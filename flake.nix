@@ -42,6 +42,10 @@
 
     systems.url = "github:nix-systems/default-linux";
 
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Secure boot
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
