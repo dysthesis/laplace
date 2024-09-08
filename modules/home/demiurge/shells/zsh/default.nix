@@ -3,7 +3,9 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  inherit (lib) getExe;
+in {
   programs.zsh = {
     enable = true;
     dotDir = ".config/zsh";
@@ -29,7 +31,7 @@
       v = "nvim";
       vim = "nvim";
       temp = "cd $(mktemp -d)";
-      fcd = "cd (${getExe fd} -tdirectory | ${getExe fzf})";
+      fcd = "cd $(${getExe fd} -tdirectory | ${getExe fzf})";
       update = "nix flake update $FLAKE && nh os switch";
     };
 
