@@ -38,14 +38,18 @@
 in {
   programs.tmux = {
     enable = true;
+
+    aggressiveResize = true;
+    secureSocket = true;
+    keyMode = "vi";
+    disableConfirmationPrompt = true;
     clock24 = true;
     baseIndex = 1;
     prefix = "C-z";
     sensibleOnTop = true;
     terminal = "screen-256color";
-    plugins = with pkgs.tmuxPlugins;
-    with self.packages.${pkgs.system}; [
-      oledppuccin-tmux
+    plugins = with pkgs.tmuxPlugins; [
+      self.packages.${pkgs.system}.oledppuccin-tmux
       yank
       {
         plugin = resurrect;
@@ -64,7 +68,29 @@ in {
       tmux
       */
       ''
+        set -as terminal-features ",xterm-256color:RGB"
         bind -n C-f run-shell "tmux neww ${getExe sessioniser}"
+        set -g mouse on
+        set -g @tokyo-night-tmux_show_datetime 0
+        set -g @tokyo-night-tmux_show_path 1
+        set -g @tokyo-night-tmux_path_format relative
+        set -g @tokyo-night-tmux_window_id_style dsquare
+        set -g @tokyo-night-tmux_window_id_style dsquare
+        set -g @tokyo-night-tmux_show_git 0
+        set -g @tokyo-night-tmux_path_format relative
+        set -g @tokyo-night-tmux_show_git 1
+
+        bind h select-pane -L
+        bind j select-pane -D
+        bind k select-pane -U
+        bind l select-pane -R
+
+        bind -n M-h select-pane -L
+        bind -n M-j select-pane -D
+        bind -n M-k select-pane -U
+        bind -n M-l select-pane -R
+
+        set -g allow-passthrough on
       '';
   };
   programs.fzf.tmux.enableShellIntegration = true;
