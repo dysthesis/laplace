@@ -59,6 +59,7 @@ in {
           "cpu"
           "memory"
           "disk"
+          "network"
           "custom/r_end"
           "custom/l_end"
           "hyprland/workspaces"
@@ -82,7 +83,8 @@ in {
           "tray"
           "custom/r_end"
           "custom/l_end"
-          "network"
+          "battery"
+          "backlight"
           "wireplumber"
           "custom/r_end"
           "custom/padd"
@@ -114,6 +116,25 @@ in {
           interval = 5;
           path = "/";
         };
+
+        battery = {
+          bat = "BAT1";
+          interval = 60;
+          states = {
+            warning = 30;
+            critical = 15;
+          };
+          format-icons = ["" "" "" "" ""];
+          format = "{icon} {capacity}%";
+          max-length = 25;
+        };
+
+        backlight = {
+          device = "amdgpu_bl0";
+          format = "{percent}% {icon}";
+          format-icons = ["" ""];
+        };
+
         wireplumber = {
           format = "{icon} {volume}%";
           format-muted = "";
