@@ -111,6 +111,10 @@ in {
         set -g status-justify centre
         set -g @tmux_window_name_max_len "15"
         set-option -g renumber-windows on
+        # Margin between statusbar
+        set -Fg 'status-format[1]' '#{status-format[0]}'
+        set -g 'status-format[0]' \'\'
+        set -g status 2
       '';
   };
   programs.fzf.tmux.enableShellIntegration = true;
