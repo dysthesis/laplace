@@ -40,6 +40,9 @@ in {
     enable = true;
     wlr.enable = mkDefault false;
     extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+    ];
+    configPackages = [
       pkgs.xdg-desktop-portal-hyprland
     ];
   };

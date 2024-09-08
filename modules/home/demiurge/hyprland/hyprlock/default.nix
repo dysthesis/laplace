@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  systemConfig,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
     jq
   ];
@@ -72,11 +76,15 @@
         # DATE
         label {
             monitor =
-            text = cmd[update:1000] date +"%d %b %A"
+            text = cmd[update:1000] date +"%A, %b %d"
             color = rgba(255, 255, 255, 1)
             font_size = 14
             font_family = SF Pro Display Regular
-            position = 0, 0
+            position = 0, ${toString (
+          if systemConfig.networking.hostName == "yaldabaoth"
+          then 230
+          else 0
+        )}
             halign = center
             valign = center
         }
@@ -84,33 +92,20 @@
         # LOCATION & WEATHER
         label {
             monitor =
-            text = cmd[update:600] python3 ${weather}/bin/weather hyprlock IDN10064 | jq -r '.text'
+            text = cmd[update:600] ${weather}/bin/weather hyprlock IDN10064 | jq -r '.text'
             color = rgba(255, 255, 255, 1)
             font_size = 14
             font_family = SF Pro Display Black
-            position = 0, 465
+            position = 0, ${toString (
+          if systemConfig.networking.hostName == "yaldabaoth"
+          then 625
+          else 465
+        )}
             halign = center
             valign = center
         }
 
 
-        # Music
-        image {
-            monitor =
-            path =
-            size = 60 # lesser side if not 1:1 ratio
-            rounding = 5 # negative values mean circle
-            border_size = 0
-            rotate = 0 # degrees, counter-clockwise
-            reload_time = 2
-            reload_cmd = ~/.scripts/playerctlock.sh --arturl
-            position = -130, -309
-            halign = center
-            valign = center
-            #opacity=0.5
-        }
-
-        # INPUT FIELD
         input-field {
             monitor =
             size = 250, 60
