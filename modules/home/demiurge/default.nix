@@ -22,6 +22,8 @@ in {
       inputs.poincare.packages.${pkgs.system}.default
       firefox
       signal-desktop
+      vesktop
+      comma
     ];
   };
 
