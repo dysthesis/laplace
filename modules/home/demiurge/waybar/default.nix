@@ -174,7 +174,7 @@ in {
           spacing = 5;
         };
         network = {
-          format-wifi = "  {bandwidthUpBytes}  {bandwidthDownBytes} ";
+          format-wifi = " {bandwidthUpBytes}  {bandwidthDownBytes} ";
           format-ethernet = "󱘖 Wired";
           tooltip-format = "󱘖 {ipaddr} ({signalStrength}%)";
           format-linked = "󱘖 {ifname} (No IP)";
