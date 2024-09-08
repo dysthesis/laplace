@@ -19,7 +19,7 @@
       sha256 = "sha256-M8tiEUPfP5EWfPp7i6r0lpHC5ZUsEYeEKVz5gUpe4+A=";
     };
 
-    cargoHash = "sha256-Cd319GCvdh6S8OO2ylKs1H2+zO4Uq1tgNakghVD12BA=";
+    cargoHash = "sha256-B5peoyT/+miHXyoRGFLUv9qFzZZFsExrI46Zy0K7NL4=";
 
     nativeBuildInputs = [pkgs.installShellFiles];
 
@@ -70,7 +70,7 @@
     rec {
       name = "task";
       prefix = "d";
-      cmd = "wezterm start --class=${name} -- ${taskwarrior-0_25_4}";
+      cmd = "wezterm start --class=${name} -- ${getExe taskwarrior-0_25_4}";
     }
   ];
 
