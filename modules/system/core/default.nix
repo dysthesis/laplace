@@ -36,6 +36,14 @@ in {
     ./sound
     ./users
   ];
+
+  # TODO: Refactor these and find better places to put them
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-gnome3;
+  };
+  services.gnome.gnome-keyring.enable = true;
+
   xdg.portal = mkIf (any hasHyprland enabledUsers) {
     enable = true;
     wlr.enable = mkDefault false;
