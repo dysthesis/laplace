@@ -51,7 +51,7 @@ in {
     terminal = "screen-256color";
     plugins = with pkgs.tmuxPlugins; [
       {
-        plugin = self.packages.${pkgs.system}.oledppuccin-tmux;
+        plugin = tokyo-night;
         extraConfig =
           /*
           tmux
@@ -68,6 +68,8 @@ in {
           '';
       }
       yank
+      sensible
+      vim-tmux-navigator
       {
         plugin = resurrect;
         extraConfig =
@@ -107,6 +109,9 @@ in {
         bind -n M-l select-pane -R
 
         set -g allow-passthrough on
+        set -g status-justify centre
+        set -g @tmux_window_name_max_len "15"
+        set-option -g renumber-windows on
       '';
   };
   programs.fzf.tmux.enableShellIntegration = true;
