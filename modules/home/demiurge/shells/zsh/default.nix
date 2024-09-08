@@ -19,15 +19,17 @@
     };
 
     shellAliases = with pkgs; {
-      ls = "${lib.getExe eza} --icons";
-      ll = "${lib.getExe eza} --icons -l";
-      la = "${lib.getExe eza} --icons -la";
-      grep = "rg";
-      cat = "bat";
+      ls = "${getExe eza} --icons";
+      ll = "${getExe eza} --icons -l";
+      la = "${getExe eza} --icons -la";
+      grep = "${getExe ripgrep}";
+      cat = "${getExe bat}";
       ccat = "cat";
       run = "nix run";
       v = "nvim";
       vim = "nvim";
+      temp = "cd $(mktemp -d)";
+      fcd = "cd (${getExe fd} -tdirectory | ${getExe fzf})";
       update = "nix flake update $FLAKE && nh os switch";
     };
 
@@ -48,15 +50,15 @@
       ignorePatterns = ["rm *" "pkill *" "kill *"];
     };
 
-    # loginExtra =
-    #   /*
-    #   zsh
-    #   */
-    #   ''
-    #     if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-    #       Hyprland
-    #     fi
-    #   '';
+    loginExtra =
+      /*
+      zsh
+      */
+      ''
+        if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
+          Hyprland
+        fi
+      '';
 
     completionInit =
       /*
@@ -175,65 +177,37 @@
 
     plugins = with pkgs; [
       {
-        name = "zsh-nix-shell";
-        src = zsh-nix-shell;
-        file = "share/zsh-nix-shell/nix-shell.plugin.zsh";
+        # Must be before plugins that wrap widgets
+        # such as zsh-autosuggestions or fast-syntax-highlighting
+        name = "fzf-tab";
+        file = "fzf-tab.plugin.zsh";
+        src = "${zsh-fzf-tab}/share/fzf-tab";
       }
-
+      {
+        name = "nix-shell";
+        file = "nix-shell.plugin.zsh";
+        src = "${zsh-nix-shell}/share/zsh-nix-shell";
+      }
       {
         name = "zsh-vi-mode";
-        src = zsh-vi-mode;
-        file = "share/zsh-vi-mode/zsh-vi-mode.plugin.zsh";
+        file = "zsh-vi-mode.plugin.zsh";
+        src = "${zsh-vi-mode}/share/zsh-vi-mode";
       }
-
-      {
-        name = "forgit"; # i forgit :skull:
-        file = "share/forgit/forgit.plugin.zsh";
-        src = fetchFromGitHub {
-          owner = "wfxr";
-          repo = "forgit";
-          rev = "aa85792ec465ceee254be0e8e70d8703c7029f66";
-          sha256 = "sha256-PGFYw7JbuYHOVycPlYcRItElcyuKEg2cGv4wn6In5Mo=";
-        };
-      }
-
       {
         name = "fast-syntax-highlighting";
         file = "fast-syntax-highlighting.plugin.zsh";
-        src = fetchFromGitHub {
-          owner = "zdharma-continuum";
-          repo = "fast-syntax-highlighting";
-          rev = "7c390ee3bfa8069b8519582399e0a67444e6ea61";
-          sha256 = "sha256-wLpgkX53wzomHMEpymvWE86EJfxlIb3S8TPy74WOBD4=";
-        };
+        src = "${zsh-fast-syntax-highlighting}/share/zsh/site-functions";
       }
-
+      {
+        name = "zsh-autosuggestions";
+        file = "zsh-autosuggestions.zsh";
+        src = "${zsh-autosuggestions}/share/zsh-autosuggestions";
+      }
       {
         name = "zsh-autopair";
-        file = "zsh-autopair.plugin.zsh";
-        src = fetchFromGitHub {
-          owner = "hlissner";
-          repo = "zsh-autopair";
-          rev = "396c38a7468458ba29011f2ad4112e4fd35f78e6";
-          sha256 = "1h0vm2dgrmb8i2pvsgis3lshc5b0ad846836m62y8h3rdb3zmpy1";
-        };
-      }
-
-      {
-        name = "fzf-tab";
-        file = "fzf-tab.plugin.zsh";
-        src = fetchFromGitHub {
-          owner = "Aloxaf";
-          repo = "fzf-tab";
-          rev = "b06e7574577cd729c629419a62029d31d0565a7a";
-          sha256 = "sha256-ilUavAIWmLiMh2PumtErMCpOcR71ZMlQkKhVOTDdHZw=";
-        };
+        file = "autopair.zsh";
+        src = "${zsh-autopair}/share/zsh/zsh-autopair";
       }
     ];
   };
-  home.packages = with pkgs; [
-    fzf
-    ripgrep
-    fd
-  ];
 }
