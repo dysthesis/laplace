@@ -21,6 +21,7 @@ in {
     packages = with pkgs; [
       inputs.poincare.packages.${pkgs.system}.default
       firefox
+      brave
       signal-desktop
       vesktop
       comma
