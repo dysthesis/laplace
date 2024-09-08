@@ -1,7 +1,12 @@
 {pkgs, ...}: {
   config = {
-    # For electron stuff
-    security.chromiumSuidSandbox.enable = true;
+    security = {
+      # For electron stuff
+      chromiumSuidSandbox.enable = true;
+
+      # `login` means TTY login
+      pam.services.login.enableGnomeKeyring = true;
+    };
 
     # The 6.6.31 hardened kernel prevents NixOS from shutting down or rebooting in the kernel
     # and I have no idea how to pin hardened kernels, so...
