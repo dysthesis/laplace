@@ -8,6 +8,38 @@
     getExe
     fold
     ;
+  taskwarrior-0_25_4 = pkgs.rust.packages.stable.rustPlatform.buildRustPackage rec {
+    pname = "taskwarrior-tui";
+    version = "0.25.4";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "kdheepak";
+      repo = "taskwarrior-tui";
+      rev = "v${version}";
+      sha256 = "sha256-8PFGlsm9B6qHRrY7YIPwknmGS+Peg5MWd0kMT173wIQ=";
+    };
+
+    cargoHash = "sha256-Cd319GCvdh6S8OO2ylKs1H2+zO4Uq1tgNakghVD12BA=";
+
+    nativeBuildInputs = [pkgs.installShellFiles];
+
+    # Because there's a test that requires terminal access
+    doCheck = false;
+
+    postInstall = ''
+      installManPage docs/taskwarrior-tui.1
+      installShellCompletion completions/taskwarrior-tui.{bash,fish} --zsh completions/_taskwarrior-tui
+    '';
+
+    meta = with lib; {
+      description = "A terminal user interface for taskwarrior ";
+      homepage = "https://github.com/kdheepak/taskwarrior-tui";
+      license = with licenses; [mit];
+      maintainers = with maintainers; [matthiasbeyer];
+      mainProgram = "taskwarrior-tui";
+    };
+  };
+
   inherit (pkgs) writeShellScriptBin;
   scratchpads = [
     {
@@ -38,7 +70,7 @@
     rec {
       name = "task";
       prefix = "d";
-      cmd = "wezterm start --class=${name} -- ${getExe pkgs.taskwarrior-tui}";
+      cmd = "wezterm start --class=${name} -- ${taskwarrior-0_25_4}";
     }
   ];
 
