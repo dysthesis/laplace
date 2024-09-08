@@ -3,11 +3,16 @@
 
   low1k = import ./low1k.nix {inherit anime4k;};
 in {
+  home.packages = with pkgs; [
+    python3
+  ];
   programs.mpv = {
     enable = true;
 
     scripts = with pkgs.mpvScripts; [
       sponsorblock
+      uosc
+      mpris
     ];
 
     config = {
@@ -31,7 +36,9 @@ in {
     };
 
     scriptOpts = {
-      sponsorblock = {skip_categories = "sponsor,interaction";};
+      sponsorblock = {
+        skip_categories = "sponsor,interaction,selfpromo";
+      };
     };
     bindings =
       {
