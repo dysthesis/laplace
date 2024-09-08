@@ -18,7 +18,7 @@
     rec {
       name = "term";
       prefix = "t";
-      cmd = "wezterm --class=${name}";
+      cmd = "wezterm start --class=${name}";
     }
     rec {
       name = "notes";
@@ -28,7 +28,7 @@
     rec {
       name = "fm";
       prefix = "f";
-      cmd = "wezterm start -class=${name} -- yazi";
+      cmd = "wezterm start --class=${name} -- yazi";
     }
     rec {
       name = "btop";

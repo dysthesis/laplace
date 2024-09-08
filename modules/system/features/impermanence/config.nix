@@ -58,7 +58,6 @@ in {
           "Sync"
           ".mozilla"
           ".password-store"
-          ".cache/swww"
           ".cache/BraveSoftware"
           ".cache/nix-index"
           ".config/Signal"
@@ -68,6 +67,7 @@ in {
           ".local/share/direnv"
           ".local/share/task"
           ".local/share/atuin"
+          ".local/share/calcurse"
           ".local/share/zoxide"
           ".local/share/BraveSoftware"
           {
