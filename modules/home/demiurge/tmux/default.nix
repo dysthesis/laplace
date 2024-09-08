@@ -44,23 +44,48 @@ in {
     keyMode = "vi";
     disableConfirmationPrompt = true;
     clock24 = true;
+    mouse = true;
     baseIndex = 1;
     prefix = "C-z";
     sensibleOnTop = true;
     terminal = "screen-256color";
     plugins = with pkgs.tmuxPlugins; [
-      self.packages.${pkgs.system}.oledppuccin-tmux
+      {
+        plugin = self.packages.${pkgs.system}.oledppuccin-tmux;
+        extraConfig =
+          /*
+          tmux
+          */
+          ''
+            set -g @tokyo-night-tmux_show_datetime 0
+            set -g @tokyo-night-tmux_show_path 1
+            set -g @tokyo-night-tmux_path_format relative
+            set -g @tokyo-night-tmux_window_id_style dsquare
+            set -g @tokyo-night-tmux_window_id_style dsquare
+            set -g @tokyo-night-tmux_show_git 0
+            set -g @tokyo-night-tmux_path_format relative
+            set -g @tokyo-night-tmux_show_git 1
+          '';
+      }
       yank
       {
         plugin = resurrect;
-        extraConfig = "set -g @resurrect-strategy-nvim 'session'";
+        extraConfig =
+          /*
+          tmux
+          */
+          "set -g @resurrect-strategy-nvim 'session'";
       }
       {
         plugin = continuum;
-        extraConfig = ''
-          set -g @continuum-restore 'on'
-          set -g @continuum-save-interval '60' # minutes
-        '';
+        extraConfig =
+          /*
+          tmux
+          */
+          ''
+            set -g @continuum-restore 'on'
+            set -g @continuum-save-interval '60' # minutes
+          '';
       }
     ];
     extraConfig =
@@ -70,15 +95,6 @@ in {
       ''
         set -as terminal-features ",xterm-256color:RGB"
         bind -n C-f run-shell "tmux neww ${getExe sessioniser}"
-        set -g mouse on
-        set -g @tokyo-night-tmux_show_datetime 0
-        set -g @tokyo-night-tmux_show_path 1
-        set -g @tokyo-night-tmux_path_format relative
-        set -g @tokyo-night-tmux_window_id_style dsquare
-        set -g @tokyo-night-tmux_window_id_style dsquare
-        set -g @tokyo-night-tmux_show_git 0
-        set -g @tokyo-night-tmux_path_format relative
-        set -g @tokyo-night-tmux_show_git 1
 
         bind h select-pane -L
         bind j select-pane -D
