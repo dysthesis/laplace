@@ -4,7 +4,7 @@
 }:
 tmuxPlugins.mkTmuxPlugin rec {
   pluginName = "oledppuccin-tmux";
-  version = "ddfe52acc3c4d1361b260cd6f31fa8c1b7e23b7f";
+  version = "48582ad345c24dda3202f78103969f10ae3da080";
   rtpFilePath = "oledppuccin.tmux";
   src = fetchFromGitHub {
     owner = "dysthesis";
