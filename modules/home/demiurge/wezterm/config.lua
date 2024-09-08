@@ -39,6 +39,26 @@ config.disable_default_key_bindings = true
 local act = wezterm.action
 
 config.keys = {
+	{
+		key = "c",
+		mods = "CTRL|SHIFT",
+		action = act({ CopyTo = "ClipboardAndPrimarySelection" }),
+	},
+	{
+		key = "v",
+		mods = "CTRL|SHIFT",
+		action = act({ PasteFrom = "Clipboard" }),
+	},
+	{
+		key = "_",
+		mods = "CTRL|SHIFT",
+		action = act.DecreaseFontSize,
+	},
+	{
+		key = "+",
+		mods = "CTRL|SHIFT",
+		action = act.IncreaseFontSize,
+	},
 	-- zk.nvim keybinds
 	{
 		key = "Enter",

@@ -18,6 +18,9 @@ in
             nixpkgs.hostPlatform = mkDefault system;
           }
           inputs.disko.nixosModules.disko
+
+          # TODO: Find a better place to put this
+          inputs.nix-index-database.nixosModules.nix-index
         ]
         ++ config;
       specialArgs = {inherit self inputs;} // specialArgs;
