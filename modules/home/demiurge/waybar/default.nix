@@ -59,7 +59,6 @@ in {
           "cpu"
           "memory"
           "disk"
-          "network"
           "custom/r_end"
           "custom/l_end"
           "hyprland/workspaces"
@@ -86,6 +85,7 @@ in {
           "battery"
           "backlight"
           "wireplumber"
+          "network"
           "custom/r_end"
           "custom/padd"
         ];
@@ -131,7 +131,7 @@ in {
 
         backlight = {
           device = "amdgpu_bl0";
-          format = "{percent}% {icon}";
+          format = "{icon} {percent}%";
           format-icons = ["" ""];
         };
 
@@ -174,7 +174,7 @@ in {
           spacing = 5;
         };
         network = {
-          format-wifi = "󰤨 {essid}  {bandwidthUpBytes}  {bandwidthDownBytes} ";
+          format-wifi = "  {bandwidthUpBytes}  {bandwidthDownBytes} ";
           format-ethernet = "󱘖 Wired";
           tooltip-format = "󱘖 {ipaddr} ({signalStrength}%)";
           format-linked = "󱘖 {ifname} (No IP)";
