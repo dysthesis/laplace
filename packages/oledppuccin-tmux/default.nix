@@ -10,6 +10,6 @@ tmuxPlugins.mkTmuxPlugin rec {
     owner = "dysthesis";
     repo = "oledppuccin-tmux";
     rev = version;
-    sha256 = "l1g4Y8GPlkBMM6S6O198Su31L6hFi53npv15tDheCgE=";
+    sha256 = "vcVi+sm6DTTrcnutfphc16pPYinuXnRb1+QFMZEFG5M=";
   };
 }

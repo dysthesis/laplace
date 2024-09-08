@@ -50,7 +50,7 @@ in {
     terminal = "screen-256color";
     plugins = with pkgs.tmuxPlugins; [
       {
-        plugin = tokyo-night;
+        plugin = self.packages.${pkgs.system}.oledppuccin-tmux;
         extraConfig =
           /*
           tmux
