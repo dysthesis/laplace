@@ -109,6 +109,7 @@ in ''
   #bluetooth,
   #pulseaudio,
   #mpris,
+  #backlight,
   #custom-updates,
   #custom-wallchange,
   #custom-mode,
