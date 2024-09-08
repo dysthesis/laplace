@@ -59,13 +59,16 @@ in {
           ".mozilla"
           ".password-store"
           ".cache/swww"
-          ".config/signal"
+          ".cache/BraveSoftware"
+          ".config/Signal"
+          ".config/BraveSoftware"
           ".config/vesktop"
           ".local/state/syncthing"
           ".local/share/direnv"
           ".local/share/task"
           ".local/share/atuin"
           ".local/share/zoxide"
+          ".local/share/BraveSoftware"
           {
             directory = ".gnupg";
             mode = "0700";

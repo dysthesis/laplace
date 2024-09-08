@@ -1,9 +1,9 @@
 {
   wayland.windowManager.hyprland.settings.windowrulev2 = [
     "workspace 1, class:^(firefox)$"
-    "workspace 2, class:^(vesktop)$"
-    "workspace 2, class:^(Element)$"
-    "workspace 3, class:^(mpv)$"
+    "workspace 3, class:^(vesktop)$"
+    "workspace 3, class:^(Element)$"
+    "workspace 4, class:^(mpv)$"
     "workspace 6, class:^(virt-manager)$"
     "workspace 5, class:^(thunderbird)$"
     "float,title:^(Page Info —.*)$"
