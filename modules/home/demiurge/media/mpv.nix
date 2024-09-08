@@ -29,22 +29,9 @@ in {
       sub-font = "SF Pro Display";
       screenshot-directory = "~/Pictures/Images/Screenshots/";
     };
+
     scriptOpts = {
-      uosc = {
-        timeline_size = 25;
-        timeline_persistency = "paused,audio";
-        progress = "always";
-        progress_size = 4;
-        progress_line_width = 4;
-        controls = "subtitles,<has_many_audio>audio,<has_many_video>video,<has_many_edition>editions,<stream>stream-quality";
-        top_bar = "never";
-        refine = "text_width";
-      };
-      thumbfast = {
-        spawn_first = true;
-        network = true;
-        hwdec = true;
-      };
+      sponsorblock = {skip_categories = "sponsor,interaction";};
     };
     bindings =
       {
