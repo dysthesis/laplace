@@ -80,6 +80,8 @@ in {
     bindle = [
       ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
       ", XF86AudioLowerVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%-"
+      ", XF86MonBrightnessUp, exec, ${getExe pkgs.brightnessctl} set 5%+"
+      ", XF86MonBrightnessDown, exec, ${getExe pkgs.brightnessctl} set 5%-"
     ];
   };
 }
