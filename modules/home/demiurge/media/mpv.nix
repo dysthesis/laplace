@@ -24,15 +24,28 @@ in {
       slang = "chi";
       sub-auto = "fuzzy";
       sub-codepage = "gbk";
-      osc = "no";
-      osd-bar = "no";
-      border = "no";
 
       osd-font = "JetBrainsMono Nerd Font";
       sub-font = "SF Pro Display";
       screenshot-directory = "~/Pictures/Images/Screenshots/";
     };
-
+    scriptOpts = {
+      uosc = {
+        timeline_size = 25;
+        timeline_persistency = "paused,audio";
+        progress = "always";
+        progress_size = 4;
+        progress_line_width = 4;
+        controls = "subtitles,<has_many_audio>audio,<has_many_video>video,<has_many_edition>editions,<stream>stream-quality";
+        top_bar = "never";
+        refine = "text_width";
+      };
+      thumbfast = {
+        spawn_first = true;
+        network = true;
+        hwdec = true;
+      };
+    };
     bindings =
       {
         "Y" = "add sub-scale +0.1"; # increase subtitle font size
