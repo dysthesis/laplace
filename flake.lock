@@ -755,11 +755,11 @@
         "treefmt": "treefmt"
       },
       "locked": {
-        "lastModified": 1725839478,
-        "narHash": "sha256-kK4sxjfOroJi4nQkJ9p76Uex4gw46OVjI2YBAfoHno0=",
+        "lastModified": 1725846780,
+        "narHash": "sha256-yrFcOPhUB7O9GlCmAZgyFRsZKRrSzVILG+mSxC9OMmQ=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "2dd4d8a2ab16fbc296eea5fb9cdb686309e12165",
+        "rev": "f6b0aa467bcafe21001e5528ad0948a7aa3a11e3",
         "type": "github"
       },
       "original": {
