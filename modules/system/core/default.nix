@@ -55,11 +55,15 @@ in {
     ];
   };
 
-  environment.loginShellInit = /*sh*/''
-    dbus-update-activation-environment --systemd DISPLAY
-    eval $(gnome-keyring-daemon --start)
-    eval $(ssh-agent)
-  '';
+  environment.loginShellInit =
+    /*
+    sh
+    */
+    ''
+      dbus-update-activation-environment --systemd DISPLAY
+      eval $(gnome-keyring-daemon --start)
+      eval $(ssh-agent)
+    '';
 
   fonts.packages = with pkgs; [
     (nerdfonts.override {fonts = ["JetBrainsMono"];})
