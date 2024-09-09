@@ -5,7 +5,7 @@
     fromDirectories
     importInDirectory
     ;
-  elems = fromDirectories ./.;
+  elems = (fromDirectories ./.) ++ ["none"];
 in {
   options.laplace.hardware.gpu = mkEnumOption {
     # I only have AMD  devices

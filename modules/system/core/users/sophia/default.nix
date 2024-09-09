@@ -29,7 +29,13 @@ in {
         isNormalUser = true;
         shell = pkgs.${shell};
 
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJaEjA5EWVunY9YZkHY0HIGYlEyze/hqJkrarxFvDpiI demiurge@noesis"
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOeZRCxL7/q0UY7ZAAkM5HW6t8RULHu1b7BH3F/n2d2 demiurge@yaldabaoth"
+        ];
+
         # TODO: Add hashed password with sops-nix
+        hashedPassword = "$y$j9T$DwXQ1sFrJsV/zUYywaypt/$caKzg2x8CDiWTG.DQTkIZw7Y7AY8REXnwzNwDqFHEt5";
 
         extraGroups =
           [

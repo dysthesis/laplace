@@ -11,5 +11,9 @@ in {
       enable = true;
       wifi.macAddress = "random";
     };
+    programs.nm-applet = {
+      enable = true;
+      indicator = true;
+    };
   };
 }

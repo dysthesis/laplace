@@ -65,10 +65,11 @@ in {
       eval $(ssh-agent)
     '';
 
-  fonts.packages = with pkgs; [
-    (nerdfonts.override {fonts = ["JetBrainsMono"];})
-    noto-fonts
-    noto-fonts-emoji
-    noto-fonts-cjk
-  ];
+  fonts.packages = with pkgs;
+    mkIf (config.networking.hostName != "astaphaios") [
+      (nerdfonts.override {fonts = ["JetBrainsMono"];})
+      noto-fonts
+      noto-fonts-emoji
+      noto-fonts-cjk
+    ];
 }
