@@ -1,8 +1,13 @@
-{
+{systemConfig, ...}: {
   programs.zathura = {
     enable = true;
     options = {
-      font = "JetBrainsMono Nerd FOnt 8";
+      font = let
+        size =
+          if systemConfig.networking.hostName == "yaldabaoth"
+          then 6
+          else 8;
+      in "JetBrainsMono Nerd Font ${toString size}";
       sandbox = "strict";
       smooth-scroll = true;
       guioptions = "sv";
@@ -44,10 +49,13 @@
 
       render-loading-bg = "#1E1E2E";
       render-loading-fg = "#FFFFFF";
+      highlight-color = "rgba(87,82,104,0.5)";
+      highlight-fg = "rgba(245,194,231,0.5)";
+      highlight-active-color = "rgba(245,194,231,0.5)";
 
-      highlight-color = "#575268";
-      highlight-fg = "#F5C2E7";
-      highlight-active-color = "#F5C2E7";
+      # highlight-color = "#575268";
+      # highlight-fg = "#F5C2E7";
+      # highlight-active-color = "#F5C2E7";
     };
   };
 }
