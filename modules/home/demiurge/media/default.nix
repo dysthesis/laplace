@@ -6,7 +6,7 @@
   home.packages = with pkgs; [
     (ani-cli.override {
       mpv = mpv.override {
-        scripts = config.programs.mpv.scripts;
+        inherit (config.programs.mpv) scripts;
       };
     })
   ];
