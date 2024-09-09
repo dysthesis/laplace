@@ -6,7 +6,7 @@
     importInDirectory
     ;
 
-  elems = fromDirectories ./.;
+  elems = (fromDirectories ./.) ++ ["none"];
 in {
   options.laplace.hardware.cpu = mkEnumOption {
     inherit elems;

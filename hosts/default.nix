@@ -9,6 +9,7 @@
   # Map each host to its architecture
   hosts = {
     "yaldabaoth" = "x86_64-linux";
+    "astaphaios" = "x86_64-linux";
   };
 in {
   flake.nixosConfigurations = mapAttrs (hostname: system:
