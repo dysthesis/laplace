@@ -50,44 +50,46 @@ in {
             (_name: value: value.enable)
             config.laplace.users);
 
-        userDirs = [
-          "Documents"
-          "Downloads"
-          "Music"
-          "Pictures"
-          "Sync"
-          ".mozilla"
-          ".password-store"
-          ".cache/BraveSoftware"
-          ".cache/nix-index"
-          ".config/Signal"
-          ".config/BraveSoftware"
-          ".config/vesktop"
-          ".local/state/syncthing"
-          ".local/share/direnv"
-          ".local/share/task"
-          ".local/share/atuin"
-          ".local/share/calcurse"
-          ".local/share/zoxide"
-          ".local/share/BraveSoftware"
-          {
-            directory = ".gnupg";
-            mode = "0700";
-          }
-          {
-            directory = ".ssh";
-            mode = "0700";
-          }
-          {
-            directory = ".local/share/keyrings";
-            mode = "0700";
-          }
-        ];
+        userDirs = user:
+          [
+            "Documents"
+            "Downloads"
+            "Music"
+            "Pictures"
+            "Sync"
+            ".mozilla"
+            ".cache/BraveSoftware"
+            ".cache/nix-index"
+            ".config/Signal"
+            ".config/BraveSoftware"
+            ".config/vesktop"
+            ".local/state/syncthing"
+            ".local/share/calcurse"
+            ".local/share/zoxide"
+            ".local/share/BraveSoftware"
+            {
+              directory = ".gnupg";
+              mode = "0700";
+            }
+            {
+              directory = ".ssh";
+              mode = "0700";
+            }
+            {
+              directory = ".local/share/keyrings";
+              mode = "0700";
+            }
+          ]
+          ++ addIf (config.home-manager.users.${user}.programs.password-store.enable or false) "/home/${user}/.local/share/password-store"
+          ++ addIf (config.home-manager.users.${user}.programs.atuin.enable or false) "/home/${user}/.local/share/atuin"
+          ++ addIf (config.home-manager.users.${user}.programs.direnv.enable or false) "/home/${user}/.local/share/direnv"
+          ++ addIf (config.home-manager.users.${user}.programs.taskwarrior.enable or false) "/home/${user}/.local/share/task"
+          ++ addIf (config.home-manager.users.${user}.programs.zoxide.enable or false) "/home/${user}/.local/share/zoxide";
       in
         fold (curr: acc:
           acc
           // {
-            ${curr} = {directories = userDirs;};
+            ${curr} = {directories = userDirs curr;};
           })
         {}
         enabledUsers;
