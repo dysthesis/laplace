@@ -7,7 +7,7 @@
     # ytfzf
     (ytfzf.override {
       mpv = mpv.override {
-        scripts = config.programs.mpv.scripts;
+        inherit (config.programs.mpv) scripts;
       };
     })
     ueberzugpp
