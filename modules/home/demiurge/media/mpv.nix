@@ -3,20 +3,23 @@
 
   low1k = import ./low1k.nix {inherit anime4k;};
 in {
-  home.packages = with pkgs; [
-    python3
-  ];
   programs.mpv = {
     enable = true;
 
-    scripts = with pkgs.mpvScripts; [
-      sponsorblock
-      uosc
-      mpris
-    ];
+    scripts = builtins.attrValues {
+      inherit
+        (pkgs.mpvScripts)
+        sponsorblock
+        thumbfast
+        mpv-webm
+        uosc
+        ;
+    };
 
     config = {
       ytdl-format = "bestvideo+bestaudio/best";
+      osc = false;
+      osd-bar = false;
       audio-display = false;
       force-window = true;
       hidpi-window-scale = false;
@@ -30,16 +33,11 @@ in {
       sub-auto = "fuzzy";
       sub-codepage = "gbk";
 
-      osd-font = "JetBrainsMono Nerd Font";
+      osd-font = "SF Pro Display";
       sub-font = "SF Pro Display";
       screenshot-directory = "~/Pictures/Images/Screenshots/";
     };
 
-    scriptOpts = {
-      sponsorblock = {
-        skip_categories = "sponsor,interaction,selfpromo";
-      };
-    };
     bindings =
       {
         "Y" = "add sub-scale +0.1"; # increase subtitle font size
