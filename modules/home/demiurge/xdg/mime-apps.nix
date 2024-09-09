@@ -1,19 +1,41 @@
-let
+{lib, ...}: let
+  inherit (lib) fold;
   browser = ["firefox.desktop"];
-  associations = {
-    "text/html" = browser;
-    "x-scheme-handler/http" = browser;
-    "x-scheme-handler/https" = browser;
-    "x-scheme-handler/ftp" = browser;
-    "x-scheme-handler/about" = browser;
-    "x-scheme-handler/unknown" = browser;
-    "application/x-extension-htm" = browser;
-    "application/x-extension-html" = browser;
-    "application/x-extension-shtml" = browser;
-    "application/xhtml+xml" = browser;
-    "application/x-extension-xhtml" = browser;
-    "application/x-extension-xht" = browser;
-  };
+  useBrowser =
+    fold (
+      curr: acc:
+        acc
+        // {${curr} = browser;}
+    )
+    {}
+    [
+      "text/html"
+      "x-scheme-handler/http"
+      "x-scheme-handler/https"
+      "x-scheme-handler/ftp"
+      "x-scheme-handler/about"
+      "x-scheme-handler/unknown"
+      "application/x-extension-htm"
+      "application/x-extension-html"
+      "application/x-extension-shtml"
+      "application/xhtml+xml"
+      "application/x-extension-xhtml"
+      "application/x-extension-xht"
+    ];
+
+  useZathura =
+    fold (curr: acc:
+      acc
+      // {
+        ${curr} = ["org.pwmt.zathura.desktop"];
+      })
+    {}
+    [
+      "application/pdf"
+      "application/epub+zip"
+    ];
+
+  associations = useBrowser // useZathura;
 in {
   xdg.mimeApps = {
     enable = true;
