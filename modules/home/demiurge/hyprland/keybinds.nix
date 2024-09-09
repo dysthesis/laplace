@@ -37,7 +37,7 @@
        typeit=1
        shift
       fi
-      prefix=''${PASSWORD_STORE_DIR-~/.local/share/password-store}
+      prefix=''${PASSWORD_STORE_DIR-$XDG_DATA_HOME/password-store}
       password_files=( "$prefix"/**/*.gpg )
       password_files=( "''${password_files[@]#"$prefix"/}" )
       password_files=( "''${password_files[@]%.gpg}" )
