@@ -1,11 +1,5 @@
 {
-  perSystem = {
-    inputs',
-    pkgs,
-    ...
-  }: let
-    poincare = inputs'.poincare.packages.default;
-  in {
+  perSystem = {pkgs, ...}: {
     devShells.default = pkgs.mkShell {
       name = "Laplace development shell";
       packages = with pkgs; [
@@ -19,7 +13,6 @@
         # Sops-Nix and password generation
         sops
         mkpasswd
-        poincare
       ];
     };
   };
