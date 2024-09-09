@@ -24,6 +24,34 @@
           ;;
       esac
     '';
+  passmenu =
+    writeShellScriptBin "passmenu"
+    /*
+    sh
+    */
+    ''
+      shopt -s nullglob globstar
+
+      typeit=0
+      if [[ $1 == "--type" ]]; then
+       typeit=1
+       shift
+      fi
+      prefix=''${PASSWORD_STORE_DIR-~/.local/share/password-store}
+      password_files=( "$prefix"/**/*.gpg )
+      password_files=( "''${password_files[@]#"$prefix"/}" )
+      password_files=( "''${password_files[@]%.gpg}" )
+
+      password=$(printf '%s\n' "''${password_files[@]}" | bemenu -b --fn "JetBrainsMono Nerd Font 10" --fb "#000000" --ff "#ffffff" --nb "#000000" --nf "#ffffff" --tb "#89b4fa" --hb "#000000" --tf "#000000" --hf "#89b4fa" --ab "#000000" -p "󰟵" -H 34 --hp 8 "$@")
+
+      [[ -n $password ]] || exit
+
+      if [[ $typeit -eq 0 ]]; then
+       PASSWORD_STORE_DIR="$XDG_DATA_HOME/password-store" pass show -c "$password" 2>/dev/null
+      else
+       PASSWORD_STORE_DIR="$XDG_DATA_HOME/password-store" pass show "$password" | { IFS= read -r pass; printf %s "$pass"; } | $xdotool
+      fi
+    '';
 in {
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
@@ -33,6 +61,7 @@ in {
         "$mod, Q, killactive"
         "$mod, R, exec, bemenu-run"
         ''$mod, P, exec, ${getExe pkgs.grim} -g "$(${getExe pkgs.slurp})" - | ${getExe pkgs.swappy} -f -''
+        "$mod+Shift, P, exec, ${getExe passmenu}"
         "$mod+Shift, Escape, exec, ${getExe powermenu}"
         "$mod, H, movefocus, l"
         "$mod, L, movefocus, r"

@@ -69,31 +69,8 @@ in {
           "size=4G"
           "defaults"
           "mode=755"
-          "noexec"
         ];
       };
     };
-
-    # fold (curr: acc:
-    #   acc
-    #   // {
-    #     "${curr}" = {
-    #       fsType = "tmpfs";
-    #       mountOptions = [
-    #         "size=4G"
-    #         "defaults"
-    #         "mode=755"
-    #
-    #         # WARN: This may break stuff
-    #         # Disable the execution of anything outside the Nix store
-    #         "noexec"
-    #       ];
-    #     };
-    #   })
-    # {}
-    # [
-    #   "/"
-    #   # "/home"
-    # ];
   };
 }
