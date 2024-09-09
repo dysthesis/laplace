@@ -1,4 +1,5 @@
 {
+  systemConfig,
   lib,
   pkgs,
   ...
@@ -42,10 +43,20 @@ in {
         monitor = 0;
         frame_color = "#ffffff";
         separator_color = "#ffffff";
-        width = 500;
-        height = 380;
+        width =
+          if systemConfig.networking.hostName == "yaldabaoth"
+          then 300
+          else 500;
+        height =
+          if systemConfig.networking.hostName == "yaldabaoth"
+          then 228
+          else 380;
         offset = "0x15";
-        font = "JetBrainsMono Nerd Font 10";
+        font = "JetBrainsMono Nerd Font ${toString (
+          if systemConfig.networking.hostName == "yaldabaoth"
+          then 8
+          else 10
+        )}";
         corner_radius = 8;
         origin = "top-center";
         notification_limit = 3;
