@@ -63,9 +63,7 @@ in {
             ".config/Signal"
             ".config/BraveSoftware"
             ".config/vesktop"
-            ".local/state/syncthing"
             ".local/share/calcurse"
-            ".local/share/zoxide"
             ".local/share/BraveSoftware"
             {
               directory = ".gnupg";
@@ -80,11 +78,12 @@ in {
               mode = "0700";
             }
           ]
-          ++ addIf (config.home-manager.users.${user}.programs.password-store.enable or false) "/home/${user}/.local/share/password-store"
-          ++ addIf (config.home-manager.users.${user}.programs.atuin.enable or false) "/home/${user}/.local/share/atuin"
-          ++ addIf (config.home-manager.users.${user}.programs.direnv.enable or false) "/home/${user}/.local/share/direnv"
-          ++ addIf (config.home-manager.users.${user}.programs.taskwarrior.enable or false) "/home/${user}/.local/share/task"
-          ++ addIf (config.home-manager.users.${user}.programs.zoxide.enable or false) "/home/${user}/.local/share/zoxide";
+          ++ addIf (config.home-manager.users.${user}.programs.password-store.enable or false) ".local/share/password-store"
+          ++ addIf (config.home-manager.users.${user}.programs.atuin.enable or false) ".local/share/atuin"
+          ++ addIf (config.home-manager.users.${user}.programs.direnv.enable or false) ".local/share/direnv"
+          ++ addIf (config.home-manager.users.${user}.programs.taskwarrior.enable or false) ".local/share/task"
+          ++ addIf (config.home-manager.users.${user}.programs.zoxide.enable or false) ".local/share/zoxide"
+          ++ addIf (config.home-manager.users.${user}.services.syncthing.enable or false) ".local/state/syncthing";
       in
         fold (curr: acc:
           acc
