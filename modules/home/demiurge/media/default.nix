@@ -1,6 +1,14 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
-    ani-cli
+    (ani-cli.override {
+      mpv = mpv.override {
+        scripts = config.programs.mpv.scripts;
+      };
+    })
   ];
 
   imports = [
