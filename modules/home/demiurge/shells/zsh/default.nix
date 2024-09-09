@@ -33,6 +33,7 @@ in {
       temp = "cd $(mktemp -d)";
       fcd = "cd $(${getExe fd} -tdirectory | ${getExe fzf})";
       update = "nix flake update $FLAKE && nh os switch";
+      ":q" = "exit";
     };
 
     history = {

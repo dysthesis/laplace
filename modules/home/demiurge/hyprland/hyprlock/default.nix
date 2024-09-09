@@ -76,7 +76,7 @@
         # DATE
         label {
             monitor =
-            text = cmd[update:1000] date +"%A, %b %d"
+            text = cmd[update:1000] date +"%A, %B %d"
             color = rgba(255, 255, 255, 1)
             font_size = 14
             font_family = SF Pro Display Regular

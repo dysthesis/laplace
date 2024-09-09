@@ -12,7 +12,7 @@
       new_optimizations = 1;
       xray = true;
       contrast = 0.7;
-      brightness = 0.8;
+      # brightness = 0.8;
       special = true;
     };
 
