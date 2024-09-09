@@ -34,6 +34,7 @@ in {
       fcd = "cd $(${getExe fd} -tdirectory | ${getExe fzf})";
       update = "nix flake update $FLAKE && nh os switch";
       ":q" = "exit";
+      subs = "ytfzf -t -T iterm2 -c SI --sort";
     };
 
     history = {

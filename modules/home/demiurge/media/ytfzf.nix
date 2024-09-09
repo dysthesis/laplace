@@ -1,6 +1,15 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
-    ytfzf
+    # ytfzf
+    (ytfzf.override {
+      mpv = mpv.override {
+        scripts = config.programs.mpv.scripts;
+      };
+    })
     ueberzugpp
   ];
   home.file = {
