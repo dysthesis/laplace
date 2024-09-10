@@ -9,6 +9,13 @@
       pam.services.login.enableGnomeKeyring = true;
     };
 
+    environment.loginShellInit =
+      /*
+      sh
+      */
+      ''
+        eval $(gnome-keyring-daemon --daemonize)
+      '';
     # The 6.6.31 hardened kernel prevents NixOS from shutting down or rebooting in the kernel
     # and I have no idea how to pin hardened kernels, so...
     boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
