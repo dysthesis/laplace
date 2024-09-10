@@ -1,5 +1,6 @@
 {pkgs, ...}: {
   config = {
+    services.fstrim.enable = true;
     security = {
       # For electron stuff
       chromiumSuidSandbox.enable = true;

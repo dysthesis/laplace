@@ -38,11 +38,22 @@ in {
   ];
 
   # TODO: Refactor these and find better places to put them
-  programs.gnupg.agent = {
-    enable = true;
-    pinentryPackage = pkgs.pinentry-gnome3;
+  programs = mkIf (config.networking.hostName != "astaphaios") ({
+      gnupg.agent = {
+        enable = true;
+        pinentryPackage = pkgs.pinentry-gnome3;
+      };
+    }
+    // mkIf (any hasHyprland enabledUsers) {hyprlock.enable = true;});
+
+  services = {
+    gnome.gnome-keyring.enable = true;
+    dbus = {
+      packages = with pkgs; [dconf gcr udisks2 seahorse];
+      implementation = "broker";
+      enable = true;
+    };
   };
-  services.gnome.gnome-keyring.enable = true;
 
   xdg.portal = mkIf (any hasHyprland enabledUsers) {
     enable = true;
@@ -54,16 +65,8 @@ in {
       pkgs.xdg-desktop-portal-hyprland
     ];
   };
-
-  environment.loginShellInit =
-    /*
-    sh
-    */
-    ''
-      dbus-update-activation-environment --systemd DISPLAY
-      eval $(gnome-keyring-daemon --start)
-      eval $(ssh-agent)
-    '';
+  # Enable hyprlock PAM (and gnome-keyring integration)
+  security = mkIf (any hasHyprland enabledUsers) {pam.services.hyprlock.enableGnomeKeyring = lib.mkDefault config.services.gnome.gnome-keyring.enable;};
 
   fonts.packages = with pkgs;
     mkIf (config.networking.hostName != "astaphaios") [
@@ -71,5 +74,6 @@ in {
       noto-fonts
       noto-fonts-emoji
       noto-fonts-cjk
+      font-awesome
     ];
 }
