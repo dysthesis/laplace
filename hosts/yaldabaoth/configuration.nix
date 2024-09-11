@@ -78,6 +78,8 @@
           malloc.enable = false; # Scudo breaks firefox?
         };
 
+        displayServer = "wayland";
+
         docs.enable = false;
       };
     };

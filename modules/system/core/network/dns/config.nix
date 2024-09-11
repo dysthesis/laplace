@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf;
+  inherit (lib) mkIf getExe;
   cfg = config.laplace.network.dnscrypt-proxy.enable;
 in {
   config = mkIf cfg {
@@ -57,7 +57,7 @@ in {
       in {
         script = ''
           set -eu
-          ${utils}/generate-domains-blocklist.py -a ${utils}/domains-allowlist.txt -c ${blocklist} -o /etc/dnscrypt-proxy/blocked-names.txt
+          ${getExe pkgs.python3} ${utils}/generate-domains-blocklist.py -a ${utils}/domains-allowlist.txt -c ${blocklist} -o /etc/dnscrypt-proxy/blocked-names.txt
         '';
         serviceConfig = {
           Type = "oneshot";
