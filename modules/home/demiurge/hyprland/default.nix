@@ -1,9 +1,4 @@
-{
-  inputs,
-  lib,
-  pkgs,
-  ...
-}: let
+{lib, ...}: let
   inherit (lib.laplace.modules) importNixInDirectory importInDirectory;
 in {
   wayland.windowManager.hyprland = {

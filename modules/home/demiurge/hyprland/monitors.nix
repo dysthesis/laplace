@@ -10,5 +10,6 @@
         else "disable"
       }"
     )
-    systemConfig.laplace.hardware.monitors ++ [ "monitor = , preferred, auto, 1, mirror, eDP" ];
+    systemConfig.laplace.hardware.monitors
+    ++ ["monitor = , preferred, auto, 1, mirror, eDP"];
 }
