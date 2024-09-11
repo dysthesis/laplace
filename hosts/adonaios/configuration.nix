@@ -40,7 +40,7 @@
       bootloader = "systemd-boot";
 
       network = {
-        bluetooth.enable = true;
+        bluetooth.enable = false;
         wifi.enable = true;
         dnscrypt-proxy.enable = true;
       };
@@ -76,6 +76,8 @@
           kernel.enable = true;
           malloc.enable = false; # Scudo breaks firefox?
         };
+
+        displayServer = "wayland";
 
         docs.enable = false;
       };

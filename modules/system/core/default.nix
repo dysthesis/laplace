@@ -49,7 +49,7 @@ in {
   services = {
     gnome.gnome-keyring.enable = true;
     dbus = {
-      packages = with pkgs; [dconf gcr udisks2 seahorse];
+      packages = with pkgs; [dconf gcr udisks2];
       implementation = "broker";
       enable = true;
     };
