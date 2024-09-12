@@ -71,6 +71,11 @@
       prefix = "d";
       cmd = "wezterm start --class=${name} -- ${getExe taskwarrior-0_25_4}";
     }
+    rec {
+      name = "calendar";
+      prefix = "c";
+      cmd = "wezterm start --class=${name} -- ${getExe pkgs.calcurse}";
+    }
   ];
 
   mkCondition = curr: acc: let
