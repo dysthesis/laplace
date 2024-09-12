@@ -2,7 +2,7 @@ systemConfig: let
   size =
     if systemConfig.networking.hostName == "yaldabaoth"
     then 8
-    else 10;
+    else 12;
 in ''
   * {
       border: none;
