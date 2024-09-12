@@ -39,7 +39,7 @@ in {
 
       # Disable unprivileged user namespaces, unless containers are enabled
       # required by podman to run containers in rootless mode.
-      unprivilegedUsernsClone = mkDefault false;
+      unprivilegedUsernsClone = mkDefault true;
     };
 
     boot = {
