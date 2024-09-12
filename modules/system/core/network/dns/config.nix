@@ -29,7 +29,7 @@ in {
 
       services.${name} = let
         utils = self.packages.${pkgs.system}.generate-domains-blocklist;
-        blocklist = ''
+        blocklist = pkgs.writeText "blocklist.txt" ''
           https://raw.githubusercontent.com/AdAway/adaway.github.io/master/hosts.txt
           https://easylist-downloads.adblockplus.org/easylist_noelemhide.txt
           https://easylist-downloads.adblockplus.org/easylistchina.txt

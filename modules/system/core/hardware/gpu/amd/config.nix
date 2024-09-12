@@ -18,7 +18,8 @@ in {
       kernelModules = ["amdgpu"];
     };
 
-    hardware.graphics = {
+    hardware.opengl = {
+      enable = true;
       extraPackages = with pkgs; [
         amdvlk
         mesa

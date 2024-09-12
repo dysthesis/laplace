@@ -8,7 +8,7 @@
 in {
   config = mkIf cfg {
     services.openssh = {
-      enable = lib.mkDefault false;
+      enable = lib.mkDefault true;
       settings = {
         PermitRootLogin = lib.mkForce "no";
         UseDns = false;

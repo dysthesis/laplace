@@ -79,6 +79,7 @@
         };
 
         displayServer = "wayland";
+        ssh.enable = true;
 
         docs.enable = false;
       };
