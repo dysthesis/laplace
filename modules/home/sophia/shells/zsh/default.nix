@@ -144,7 +144,8 @@ in {
         --color=bg+:#1e1e2e,bg:-1,spinner:#f5e0dc,hl:#f38ba8 \
         --color=fg:#ffffff,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
         --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
-        --prompt ' '"
+        --prompt ' ' \
+        --pointer '┃ '"
 
         zmodload zsh/zle
         zmodload zsh/zpty
