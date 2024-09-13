@@ -49,7 +49,7 @@ in {
         height =
           if systemConfig.networking.hostName == "yaldabaoth"
           then 28
-          else 3;
+          else 34;
         exclusive = true;
         passthrough = false;
         gtk-layer-shell = true;
