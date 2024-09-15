@@ -17,7 +17,12 @@ in {
         KbdInteractiveAuthentication = false;
       };
       openFirewall = true;
-      ports = [22];
+      ports = [
+        22
+
+        # For AOS
+        67
+      ];
       hostKeys = [
         {
           bits = 4096;
