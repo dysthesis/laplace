@@ -14,7 +14,7 @@
       if [ "$#" -eq 1 ]; then
       	selected=$1
       else
-      	selected=$(${getExe pkgs.fd} --type directory --min-depth 0 --max-depth 1 --exclude Archives . ~/Documents/University/ ~/Documents/Projects/ | ${getExe pkgs.fzf} --color=bg+:#1e1e2e,bg:-1,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#ffffff,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8)
+      	selected=$(${getExe pkgs.fd} --type directory --min-depth 0 --max-depth 2 --exclude Archives . ~/Documents/University/ ~/Documents/Projects/ | ${getExe pkgs.fzf} --color=bg+:#1e1e2e,bg:-1,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#ffffff,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8)
       fi
 
       if [ -z "$selected" ]; then
@@ -116,6 +116,15 @@ in {
         set -Fg 'status-format[1]' '#{status-format[0]}'
         set -g 'status-format[0]' ' '
         set -g status 2
+
+        set-option -s set-clipboard off
+        bind P paste-buffer
+        bind-key -T copy-mode-vi v send-keys -X begin-selection
+        bind-key -T copy-mode-vi y send-keys -X rectangle-toggle
+        unbind -T copy-mode-vi Enter
+        bind-key -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel 'wl-copy'
+        bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel 'wl-copy'
+
       '';
   };
   programs.fzf.tmux.enableShellIntegration = true;
