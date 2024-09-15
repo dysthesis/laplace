@@ -39,7 +39,7 @@ in {
   programs.tmux = {
     enable = true;
 
-    aggressiveResize = true;
+    aggressiveResize = false;
     secureSocket = true;
     keyMode = "vi";
     disableConfirmationPrompt = true;
@@ -68,7 +68,6 @@ in {
           '';
       }
       yank
-      sensible
       vim-tmux-navigator
       {
         plugin = resurrect;
