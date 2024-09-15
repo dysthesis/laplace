@@ -54,10 +54,12 @@ in {
           https://dblw.oisd.nl/extra/
           https://raw.githubusercontent.com/jdlingyu/ad-wars/master/sha_ad_hosts
         '';
+        timeRestricted = pkgs.writeText "time-restricted" '''';
       in {
         script = ''
           set -eu
-          ${getExe pkgs.python3} ${utils}/generate-domains-blocklist.py -a ${utils}/domains-allowlist.txt -c ${blocklist} -o /etc/dnscrypt-proxy/blocked-names.txt
+          ${getExe pkgs.python3} ${utils}/generate-domains-blocklist.py -a ${utils}/domains-allowlist.txt -c ${blocklist} -r ${timeRestricted} -o /etc/dnscrypt-proxy/blocked-names.txt
+
         '';
         serviceConfig = {
           Type = "oneshot";
@@ -74,10 +76,7 @@ in {
         server_names = ["odoh-cloudflare"];
         odoh_servers = true;
 
-        # blocked_names = {
-        #   blocked_names_file = "/etc/dnscrypt-proxy/blocked-names.txt";
-        #   log_file = "/var/log/blocked-names.log";
-        # };
+        blocked_names.blocked_names_file = "/etc/dnscrypt-proxy/blocked-names.txt";
 
         anonymized_dns = {
           routes = [
