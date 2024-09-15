@@ -1,16 +1,29 @@
-{inputs, ...}: {
+{
+  lib,
+  inputs,
+  ...
+}: let
+  inherit (lib) fold;
+in {
   imports = [
     inputs.treefmt.flakeModule
   ];
   perSystem = _: {
     treefmt = {
       projectRootFile = "flake.nix";
-      programs = {
-        alejandra.enable = true;
-        deadnix.enable = true;
-        statix.enable = true;
-        prettier.enable = true;
-      };
+      programs =
+        fold (curr: acc:
+          acc
+          // {
+            ${curr}.enable = true;
+          })
+        {}
+        [
+          "alejandra"
+          "statix"
+          "deadnix"
+          "prettier"
+        ];
     };
   };
 }

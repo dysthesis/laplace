@@ -46,8 +46,8 @@ in ''
       background: @wb-act-bg;
       color: @wb-act-color;
       margin-left: 3px;
-      padding-left: 8px;
-      padding-right: 8px;
+      padding-left: ${toString size}px;
+      padding-right: ${toString size}px;
       margin-right: 3px;
       animation: gradient_f 20s ease-in infinite;
       transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
