@@ -69,6 +69,7 @@
         https://youtube.com/channel/UCSp-OaMpsO8K0KkOqyBl7_w # Let's Get Rusty
         https://youtube.com/channel/UCs4fQRyl1TJvoeOdekW6lYA # Faster than Lime
         https://youtube.com/channel/UCR4W7Mq0HD8JoW9KBRm0mZg # Immolo
+        https://youtube.com/channel/UClcE-kVhqyiHCcjYwcpfj9w # LiveOverflow
         https://youtube.com/channel/UCl2mFZoRqjw_ELax4Yisf6w # Louis Rossman
         https://youtube.com/channel/UC6biysICWOJ-C3P4Tyeggzg # Low Level Learning
         https://youtube.com/channel/UCE4Gn00XZbpWvGUfIslT-tA # MagnatesMedia
