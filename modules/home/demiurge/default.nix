@@ -1,4 +1,5 @@
 {
+  self,
   inputs,
   lib,
   pkgs,
@@ -24,7 +25,7 @@ in {
       brave
       signal-desktop
       vesktop
-      comma
+      ghidra
     ];
   };
 
