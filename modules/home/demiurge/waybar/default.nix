@@ -94,10 +94,13 @@ in {
           rewrite = {
             "(.*) - Mozilla Thunderbird" = " $1";
             "(.*) — Mozilla Firefox" = " $1";
+            "(.*) — Brave" = "󰖟 $1";
             "(.*) — Tor Browser" = " $1";
             "Tor Browser" = " Tor Browser";
-            "(.*) - FreeTube" = "󰗃 $1";
+            "(.*) - mpv" = "󰗃 $1";
             "(.*) – Doom Emacs" = " $1";
+            "(.*) Discord \\| (.*)" = "  $2";
+            "class<org.wezfurlong.wezterm>" = "";
           };
         };
         memory = {
