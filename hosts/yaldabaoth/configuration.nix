@@ -1,6 +1,12 @@
 {pkgs, ...}: {
   config = {
+    # CCache stuff
+    programs.ccache = {
+      enable = true;
+    };
+    programs.nix-ld.enable = true;
     services.fstrim.enable = true;
+    programs.java.enable = true;
     security = {
       # For electron stuff
       chromiumSuidSandbox.enable = true;
