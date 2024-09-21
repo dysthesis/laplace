@@ -14,7 +14,7 @@
     hasAttr
     ;
 
-  cfg = config.laplace.users.sophia.enable;
+  cfg = config.laplace.users.abraxas.enable;
   ifTheyExist = groups:
     filter
     (group: hasAttr group config.users.groups)
@@ -24,8 +24,8 @@ in {
     shell = "zsh";
   in
     mkIf cfg {
-      users.users.sophia = {
-        description = "Sophia";
+      users.users.abraxas = {
+        description = "Abraxas";
         isNormalUser = true;
         shell = pkgs.${shell};
 
