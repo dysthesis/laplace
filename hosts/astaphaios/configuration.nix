@@ -22,7 +22,7 @@
         firewall.enable = true;
       };
 
-      users.sophia = {
+      users.abraxas = {
         enable = true;
         useHomeManager = true;
       };
