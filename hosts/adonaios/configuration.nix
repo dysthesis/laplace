@@ -4,6 +4,7 @@
     programs = {
       ccache.enable = true;
       java.enable = true;
+      nix-ld.enable = true;
     };
 
     services.fstrim.enable = true;
