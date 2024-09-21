@@ -1,8 +1,23 @@
 {pkgs, ...}: {
   config = {
+    # https://wiki.nixos.org/wiki/Install_NixOS_on_Hetzner_Online
+    systemd.network = {
+      enable = true;
+      networks.default = {
+        name = "en*"; # The name of the interface
+        DHCP = "ipv4";
+        address = [
+          # TODO: Replace the address with the one assigned to your machine
+          "2a01:4f8:AAAA:BBBB::1/64"
+        ];
+        gateway = ["fe80::1"];
+        linkConfig.RequiredForOnline = "routable";
+      };
+    };
+
     laplace = {
       hardware = {
-        cpu = "amd";
+        cpu = "none";
         gpu = "none";
       };
 
