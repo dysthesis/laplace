@@ -44,6 +44,7 @@
         clickfinger_behavior = true;
         tap-to-click = false;
         scroll_factor = 0.5;
+        natural_scroll = true;
       };
     };
   };
