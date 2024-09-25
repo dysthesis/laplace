@@ -11,7 +11,7 @@ in {
   programs.home-manager.enable = true;
 
   home = rec {
-    username = "sophia";
+    username = "abraxas";
     homeDirectory = "/home/${username}";
     stateVersion = "24.05";
     sessionVariables = {
