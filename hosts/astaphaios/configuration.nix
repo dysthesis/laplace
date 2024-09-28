@@ -1,5 +1,10 @@
-{pkgs, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   config = {
+    networking.useNetworkd = lib.mkDefault true;
     # https://wiki.nixos.org/wiki/Install_NixOS_on_Hetzner_Online
     systemd.network = {
       enable = true;
@@ -7,8 +12,8 @@
         name = "en*"; # The name of the interface
         DHCP = "ipv4";
         address = [
-          # TODO: Replace the address with the one assigned to your machine
-          "2a01:4f8:AAAA:BBBB::1/64"
+          "65.21.245.118"
+          "2a01:4f9:c012:d6d::/64"
         ];
         gateway = ["fe80::1"];
         linkConfig.RequiredForOnline = "routable";
@@ -39,14 +44,14 @@
 
       users.abraxas = {
         enable = true;
-        useHomeManager = true;
+        useHomeManager = false;
       };
 
       features = {
         ssh.enable = true;
         nh = {
           enable = true;
-          flakePath = "/home/sophia/laplace";
+          flakePath = "/home/abraxas/laplace";
         };
 
         impermanence.enable = true;
