@@ -21,16 +21,16 @@ in {
   sops.defaultSopsFile = ./secrets.yaml;
 
   # Require the hashed passwords for enabled users.
-  sops.secrets =
-    # User passwords
-    fold
-    (curr: acc:
-      acc
-      // {
-        "hashedPasswords/${curr}".neededForUsers = true;
-      })
-    {}
-    enabledUsers;
+  # sops.secrets =
+  #   # User passwords
+  #   fold
+  #   (curr: acc:
+  #     acc
+  #     // {
+  #       "hashedPasswords/${curr}".neededForUsers = true;
+  #     })
+  #   {}
+  #   enabledUsers;
   # // {
   #   "luksPasswords/${config.networking.hostName}" = {};
   # };
