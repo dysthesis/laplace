@@ -25,6 +25,7 @@ in {
       signal-desktop
       vesktop
       ghidra
+      protonvpn-gui
     ];
   };
 

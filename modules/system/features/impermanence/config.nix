@@ -60,6 +60,8 @@ in {
             ".mozilla"
             ".cache/BraveSoftware"
             ".cache/nix-index"
+            ".cache/Proton"
+            ".config/Proton"
             ".config/Signal"
             ".config/BraveSoftware"
             ".config/vesktop"
