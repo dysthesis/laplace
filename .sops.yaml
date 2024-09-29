@@ -1,5 +1,5 @@
 keys:
-  - &adonaios age1mxkywu3klf5aa36z3h6e3k2f3lxg7nw6zz9dcyzjez2cqhlm0elqmswqd4
+  - &adonaios age18n5mllpgdxlch46r4mszr348e2au295p07pgamfwnm8ktdqqju0sep3suk
 creation_rules:
   - path_regex: modules/secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
