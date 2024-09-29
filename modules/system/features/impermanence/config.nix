@@ -16,7 +16,7 @@
   cfg = config.laplace.features.impermanence;
   addIf = cond: content:
     if cond
-    then [content]
+    then content
     else [];
 in {
   imports = [inputs.impermanence.nixosModule];
@@ -35,13 +35,27 @@ in {
           "/etc/secrets"
           "/etc/NetworkManager/system-connections"
         ]
-        ++ addIf config.laplace.features.virtualisation.enable "/var/lib/libvirt"
-        ++ addIf config.laplace.network.bluetooth.enable "/var/lib/bluetooth"
-        ++ addIf config.laplace.security.secure-boot.enable "/etc/secureboot";
+        ++ addIf config.laplace.features.virtualisation.enable ["/var/lib/libvirt"]
+        ++ addIf config.laplace.features.miniflux.enable
+        [
+          {
+            directory = "/var/lib/private/miniflux";
+            mode = "0750";
+            user = "miniflux";
+            group = "miniflux";
+          }
+          {
+            directory = "/var/lib/postgresql";
+            user = "postgres";
+            group = "postgres";
+          }
+        ]
+        ++ addIf config.laplace.network.bluetooth.enable ["/var/lib/bluetooth"]
+        ++ addIf config.laplace.security.secure-boot.enable ["/etc/secureboot"];
 
       files =
         ["/etc/machine-id"]
-        ++ addIf config.laplace.network.dnscrypt-proxy.enable "/etc/dnscrypt-proxy/blocked-names.txt";
+        ++ addIf config.laplace.network.dnscrypt-proxy.enable ["/etc/dnscrypt-proxy/blocked-names.txt"];
 
       users = let
         enabledUsers =
@@ -65,6 +79,7 @@ in {
             ".config/Signal"
             ".config/BraveSoftware"
             ".config/vesktop"
+            ".config/sops"
             ".local/share/calcurse"
             ".local/share/BraveSoftware"
             {
@@ -80,12 +95,12 @@ in {
               mode = "0700";
             }
           ]
-          ++ addIf (config.home-manager.users.${user}.programs.password-store.enable or false) ".local/share/password-store"
-          ++ addIf (config.home-manager.users.${user}.programs.atuin.enable or false) ".local/share/atuin"
-          ++ addIf (config.home-manager.users.${user}.programs.direnv.enable or false) ".local/share/direnv"
-          ++ addIf (config.home-manager.users.${user}.programs.taskwarrior.enable or false) ".local/share/task"
-          ++ addIf (config.home-manager.users.${user}.programs.zoxide.enable or false) ".local/share/zoxide"
-          ++ addIf (config.home-manager.users.${user}.services.syncthing.enable or false) ".local/state/syncthing";
+          ++ addIf (config.home-manager.users.${user}.programs.password-store.enable or false) [".local/share/password-store"]
+          ++ addIf (config.home-manager.users.${user}.programs.atuin.enable or false) [".local/share/atuin"]
+          ++ addIf (config.home-manager.users.${user}.programs.direnv.enable or false) [".local/share/direnv"]
+          ++ addIf (config.home-manager.users.${user}.programs.taskwarrior.enable or false) [".local/share/task"]
+          ++ addIf (config.home-manager.users.${user}.programs.zoxide.enable or false) [".local/share/zoxide"]
+          ++ addIf (config.home-manager.users.${user}.services.syncthing.enable or false) [".local/state/syncthing"];
       in
         fold (curr: acc:
           acc
