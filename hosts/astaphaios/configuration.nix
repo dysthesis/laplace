@@ -26,7 +26,7 @@
         gpu = "none";
       };
 
-      bootloader = "systemd-boot";
+      bootloader = "grub";
 
       network = {
         bluetooth.enable = false;
@@ -49,6 +49,7 @@
 
       features = {
         ssh.enable = true;
+        miniflux.enable = true;
         nh = {
           enable = true;
           flakePath = "/home/abraxas/laplace";
