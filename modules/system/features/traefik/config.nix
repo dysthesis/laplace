@@ -13,7 +13,7 @@ in {
 
     security.acme = {
       acceptTerms = true;
-      defaults.email = "acme.dictate699@simplelogin.com";
+      defaults.email = "cloudflare.crunchy685@simplelogin.com";
       certs."dysthesis.com" = {
         group = "traefik";
         domain = "dysthesis.com";
@@ -37,7 +37,7 @@ in {
         api.dashboard = true;
         certificatesResolvers = {
           default.acme = {
-            email = "acme.dictate699@simplelogin.com";
+            email = "cloudflare.crunchy685@simplelogin.com";
             storage = "/var/lib/traefik/acme.json";
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
             dnsChallenge = {
