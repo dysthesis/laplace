@@ -28,18 +28,24 @@ in {
         };
 
         entryPoints = {
-          http = {
+          web = {
             address = ":80";
-            forwardedHeaders.insecure = true;
-            http.redirections.entryPoint = {
-              to = "https";
-              scheme = "https";
+            http = {
+              redirections = {
+                entryPoint = {
+                  to = "websecure";
+                  scheme = "https";
+                };
+              };
             };
           };
-
-          https = {
+          websecure = {
             address = ":443";
-            forwardedHeaders.insecure = true;
+            http = {
+              tls = {
+                options = "default";
+              };
+            };
           };
         };
       };
@@ -51,6 +57,15 @@ in {
                 entrypoints = ["traefik"];
                 rule = "PathPrefix(`/api/`)";
                 service = "api@internal";
+              };
+              dashboard = {
+                rule = "Host(`monitor.lan.firecat53.net`)";
+                service = "api@internal";
+                middlewares = ["auth" "headers"];
+                entrypoints = ["websecure"];
+                tls = {
+                  certResolver = "le";
+                };
               };
             }
             // mkIf config.laplace.features.miniflux.enable {
