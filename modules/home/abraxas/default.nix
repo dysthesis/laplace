@@ -20,6 +20,7 @@ in {
     packages = with pkgs; [
       inputs.poincare.packages.${pkgs.system}.default
       comma
+      wezterm
     ];
   };
 
