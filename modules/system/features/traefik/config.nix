@@ -76,7 +76,7 @@ in {
             service = "api@internal";
           };
           miniflux = {
-            rule = "Host(`rss.dysthesis.com`) && PathPrefix(`/v1`)";
+            rule = "Host(`rss.dysthesis.com`) && PathPrefix(`/`)";
             entrypoints = ["websecure"];
             service = "miniflux";
             tls = {
