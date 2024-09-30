@@ -23,11 +23,7 @@ in {
             email = "acme.dictate699@simplelogin.com";
             storage = "/var/lib/traefik/acme.json";
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
-            dnsChallenge = {
-              provider = "cloudflare";
-              resolvers = ["1.1.1.1:53" "1.0.0.1:53"];
-              delayBeforeCheck = "0";
-            };
+            httpChallenge.entryPoint = "web";
           };
         };
 
@@ -55,34 +51,30 @@ in {
       };
       dynamicConfigOptions =
         {
-          http.routers =
-            {
-              api = {
-                entrypoints = ["traefik"];
-                rule = "PathPrefix(`/api/`)";
-                service = "api@internal";
-              };
-              dashboard = {
-                rule = "Host(`monitor.dysthesis.com`)";
-                service = "api@internal";
-                entrypoints = ["websecure"];
-                tls = {
-                  certResolver = "default";
+          http = {
+            routers =
+              {
+                api = {
+                  entrypoints = ["traefik"];
+                  rule = "PathPrefix(`/api/`)";
+                  service = "api@internal";
+                };
+              }
+              // mkIf config.laplace.features.miniflux.enable {
+                miniflux = {
+                  rule = "Host(`rss.dysthesis.com`)";
+                  entrypoints = ["websecure"];
+                  service = "miniflux";
+                  tls = {
+                    domains = [{main = "*.dysthesis.com";}];
+                    certresolver = "default";
+                  };
                 };
               };
-            }
-            // mkIf config.laplace.features.miniflux.enable {
-              miniflux = {
-                rule = "Host(`rss.dysthesis.com`)";
-                entrypoints = ["websecure"];
-                service = "miniflux";
-                tls.domains = [{main = "*.dysthesis.com";}];
-                tls.certresolver = "default";
-              };
-            };
+          };
         }
         // mkIf config.laplace.features.miniflux.enable {
-          http.services.miniflux.loadBalancer.servers = [{url = config.services.miniflux.config.LISTEN_ADDR;}];
+          services.miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
         };
     };
   };
