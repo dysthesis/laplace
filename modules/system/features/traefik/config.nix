@@ -61,21 +61,21 @@ in {
             http = {
               tls = {
                 options = "default";
-              };
-              stores.default = {
-                defaultCertificate = {
-                  certFile = "/var/lib/acme/dysthesis.com/cert.pem";
-                  keyFile = "/var/lib/acme/dysthesis.com/key.pem";
+                stores.default = {
+                  defaultCertificate = {
+                    certFile = "/var/lib/acme/dysthesis.com/cert.pem";
+                    keyFile = "/var/lib/acme/dysthesis.com/key.pem";
+                  };
                 };
-              };
 
-              certificates = [
-                {
-                  certFile = "/var/lib/acme/dysthesis.com/cert.pem";
-                  keyFile = "/var/lib/acme/dysthesis.com/key.pem";
-                  stores = "default";
-                }
-              ];
+                certificates = [
+                  {
+                    certFile = "/var/lib/acme/dysthesis.com/cert.pem";
+                    keyFile = "/var/lib/acme/dysthesis.com/key.pem";
+                    stores = "default";
+                  }
+                ];
+              };
             };
           };
         };
