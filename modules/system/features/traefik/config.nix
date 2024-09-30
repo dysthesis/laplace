@@ -15,7 +15,7 @@ in {
       certs."dysthesis.com" = {
         group = "traefik";
         domain = "dysthesis.com";
-        extraDomainNames = ["*.domain.com"];
+        extraDomainNames = ["*.dysthesis.com"];
         dnsProvider = "cloudflare";
         dnsPropagationCheck = true;
         credentialsFile = config.sops.secrets.traefik.path;
