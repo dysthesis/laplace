@@ -13,7 +13,7 @@ in {
     services.miniflux = {
       enable = true;
       config = {
-        LISTEN_ADDR = "localhost:8080";
+        LISTEN_ADDR = "localhost:8085";
         CLEANUP_FREQUENCY = "168";
       };
       adminCredentialsFile = config.sops.secrets.miniflux_adminCredentials.path;

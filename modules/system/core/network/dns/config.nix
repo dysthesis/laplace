@@ -76,7 +76,7 @@ in {
         server_names = ["odoh-cloudflare"];
         odoh_servers = true;
 
-        blocked_names.blocked_names_file = "/etc/dnscrypt-proxy/blocked-names.txt";
+        # blocked_names.blocked_names_file = "/etc/dnscrypt-proxy/blocked-names.txt";
 
         anonymized_dns = {
           routes = [

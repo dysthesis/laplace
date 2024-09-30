@@ -30,7 +30,7 @@ in {
           "/var/lib/nixos"
           "/etc/nixos"
           "/etc/NetworkManager"
-          "/etc/ssh"
+          # "/etc/ssh"
           # Sops stuff
           "/etc/secrets"
           "/etc/NetworkManager/system-connections"
@@ -51,7 +51,8 @@ in {
           }
         ]
         ++ addIf config.laplace.network.bluetooth.enable ["/var/lib/bluetooth"]
-        ++ addIf config.laplace.security.secure-boot.enable ["/etc/secureboot"];
+        ++ addIf config.laplace.security.secure-boot.enable ["/etc/secureboot"]
+        ++ addIf config.laplace.features.traefik.enable [config.services.traefik.dataDir];
 
       files =
         ["/etc/machine-id"]

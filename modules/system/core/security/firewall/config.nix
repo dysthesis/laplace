@@ -16,7 +16,7 @@ in {
 
     networking.firewall = {
       enable = true;
-      allowedTCPPorts = [443 8080];
+      allowedTCPPorts = [22 443 8080 80];
       allowedUDPPorts = [];
       allowPing = false;
       logReversePathDrops = true;
