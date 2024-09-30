@@ -8,6 +8,7 @@
 in {
   config = mkIf cfg {
     sops.secrets.traefik = {};
+    sops.secrets.acme = {};
     systemd.services.traefik.serviceConfig.EnvironmentFile = [config.sops.secrets.traefik.path];
 
     security.acme = {
@@ -19,7 +20,7 @@ in {
         extraDomainNames = ["*.dysthesis.com"];
         dnsProvider = "cloudflare";
         dnsPropagationCheck = true;
-        credentialsFile = config.sops.secrets.traefik.path;
+        credentialsFile = config.sops.secrets.acme.path;
       };
     };
 
