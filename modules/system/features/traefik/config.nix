@@ -11,6 +11,10 @@ in {
       enable = true;
 
       staticConfigOptions = {
+        global = {
+          checkNewVersion = false;
+          sendAnonymousUsage = false;
+        };
         log.level = "DEBUG";
 
         api.dashboard = true;
@@ -78,7 +82,7 @@ in {
             };
         }
         // mkIf config.laplace.features.miniflux.enable {
-          http.services.miniflux.servers = [{url = config.services.miniflux.config.LISTEN_ADDR;}];
+          http.services.miniflux.loadBalancer.servers = [{url = config.services.miniflux.config.LISTEN_ADDR;}];
         };
     };
   };
