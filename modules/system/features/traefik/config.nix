@@ -39,12 +39,6 @@ in {
 
           https = {
             address = ":443";
-            # enableHTTP3 = true;
-            forwardedHeaders.insecure = true;
-          };
-
-          experimental = {
-            address = ":1111";
             forwardedHeaders.insecure = true;
           };
         };
@@ -62,7 +56,7 @@ in {
             // mkIf config.laplace.features.miniflux.enable {
               miniflux = {
                 rule = "Host(`rss.dysthesis.com`)";
-                entrypoints = ["websecure"];
+                entrypoints = ["https"];
                 service = "miniflux";
                 tls.domains = [{main = "*.dysthesis.com";}];
                 tls.certresolver = "default";
@@ -70,7 +64,7 @@ in {
             };
         }
         // mkIf config.laplace.features.miniflux.enable {
-          http.services.miniflux.servers = [{url = "http://localhost:8085";}];
+          http.services.miniflux.servers = [{url = config.services.miniflux.config.LISTEN_ADDR;}];
         };
     };
   };
