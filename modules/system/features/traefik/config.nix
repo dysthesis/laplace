@@ -7,6 +7,8 @@
   cfg = config.laplace.features.traefik.enable;
 in {
   config = mkIf cfg {
+    sops.secrets.traefik = {};
+    systemd.services.traefik.serviceConfig.EnvironmentFile = [config.sops.secrets.traefik.path];
     services.traefik = {
       enable = true;
 
@@ -23,7 +25,10 @@ in {
             email = "acme.dictate699@simplelogin.com";
             storage = "/var/lib/traefik/acme.json";
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
-            httpChallenge.entryPoint = "web";
+            dnsChallenge = {
+              provider = "cloudflare";
+              resolvers = ["1.1.1.1:53" "8.8.8.8:53"];
+            };
           };
         };
 
