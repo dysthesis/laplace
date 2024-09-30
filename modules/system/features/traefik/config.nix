@@ -24,7 +24,7 @@ in {
           default.acme = {
             email = "acme.dictate699@simplelogin.com";
             storage = "/var/lib/traefik/acme.json";
-            caServer = "https://acme-v02.api.letsencrypt.org/directory";
+            # caServer = "https://acme-v02.api.letsencrypt.org/directory";
             dnsChallenge = {
               provider = "cloudflare";
               resolvers = ["1.1.1.1:53" "8.8.8.8:53"];
