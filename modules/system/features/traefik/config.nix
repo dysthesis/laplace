@@ -9,18 +9,20 @@ in {
   config = mkIf cfg {
     sops.secrets.traefik = {};
     systemd.services.traefik.serviceConfig.EnvironmentFile = [config.sops.secrets.traefik.path];
-    security.acme = {
-      acceptTerms = true;
-      defaults.email = "acme.dictate699@simplelogin.com";
-      certs."dysthesis.com" = {
-        group = "traefik";
-        domain = "dysthesis.com";
-        extraDomainNames = ["*.dysthesis.com"];
-        dnsProvider = "cloudflare";
-        dnsPropagationCheck = true;
-        credentialsFile = config.sops.secrets.traefik.path;
-      };
-    };
+
+    # security.acme = {
+    #   acceptTerms = true;
+    #   defaults.email = "acme.dictate699@simplelogin.com";
+    #   certs."dysthesis.com" = {
+    #     group = "traefik";
+    #     domain = "dysthesis.com";
+    #     extraDomainNames = ["*.dysthesis.com"];
+    #     dnsProvider = "cloudflare";
+    #     dnsPropagationCheck = true;
+    #     credentialsFile = config.sops.secrets.traefik.path;
+    #   };
+    # };
+
     services.traefik = {
       enable = true;
 
@@ -38,6 +40,7 @@ in {
             storage = "/var/lib/traefik/acme.json";
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
             dnsChallenge = {
+              delayBeforeCheck = 0;
               provider = "cloudflare";
               resolvers = ["1.1.1.1:53" "8.8.8.8:53"];
             };
@@ -59,23 +62,7 @@ in {
           websecure = {
             address = ":443";
             http = {
-              tls = {
-                options = "default";
-                stores.default = {
-                  defaultCertificate = {
-                    certFile = "/var/lib/acme/dysthesis.com/cert.pem";
-                    keyFile = "/var/lib/acme/dysthesis.com/key.pem";
-                  };
-                };
-
-                certificates = [
-                  {
-                    certFile = "/var/lib/acme/dysthesis.com/cert.pem";
-                    keyFile = "/var/lib/acme/dysthesis.com/key.pem";
-                    stores = "default";
-                  }
-                ];
-              };
+              tls.options = "default";
             };
           };
         };
