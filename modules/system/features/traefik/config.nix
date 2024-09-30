@@ -59,19 +59,18 @@ in {
                 service = "api@internal";
               };
               dashboard = {
-                rule = "Host(`monitor.lan.firecat53.net`)";
+                rule = "Host(`monitor.dysthesis.com`)";
                 service = "api@internal";
-                middlewares = ["auth" "headers"];
                 entrypoints = ["websecure"];
                 tls = {
-                  certResolver = "le";
+                  certResolver = "default";
                 };
               };
             }
             // mkIf config.laplace.features.miniflux.enable {
               miniflux = {
                 rule = "Host(`rss.dysthesis.com`)";
-                entrypoints = ["https"];
+                entrypoints = ["websecure"];
                 service = "miniflux";
                 tls.domains = [{main = "*.dysthesis.com";}];
                 tls.certresolver = "default";
