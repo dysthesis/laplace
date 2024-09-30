@@ -68,31 +68,25 @@ in {
           };
         };
       };
-      dynamicConfigOptions.http =
-        {
-          routers =
-            {
-              api = {
-                entrypoints = ["traefik"];
-                rule = "PathPrefix(`/api/`)";
-                service = "api@internal";
-              };
-            }
-            // mkIf config.laplace.features.miniflux.enable {
-              miniflux = {
-                rule = "Host(`rss.dysthesis.com`)";
-                entrypoints = ["websecure"];
-                service = "miniflux";
-                tls = {
-                  domains = [{main = "*.dysthesis.com";}];
-                  certresolver = "default";
-                };
-              };
+      dynamicConfigOptions.http = {
+        routers = {
+          api = {
+            entrypoints = ["traefik"];
+            rule = "PathPrefix(`/api/`)";
+            service = "api@internal";
+          };
+          miniflux = {
+            rule = "Host(`rss.dysthesis.com`)";
+            entrypoints = ["websecure"];
+            service = "miniflux";
+            tls = {
+              domains = [{main = "*.dysthesis.com";}];
+              certresolver = "default";
             };
-        }
-        // mkIf config.laplace.features.miniflux.enable {
-          services.miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
+          };
         };
+        services.miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
+      };
     };
   };
 }
