@@ -10,18 +10,18 @@ in {
     sops.secrets.traefik = {};
     systemd.services.traefik.serviceConfig.EnvironmentFile = [config.sops.secrets.traefik.path];
 
-    # security.acme = {
-    #   acceptTerms = true;
-    #   defaults.email = "acme.dictate699@simplelogin.com";
-    #   certs."dysthesis.com" = {
-    #     group = "traefik";
-    #     domain = "dysthesis.com";
-    #     extraDomainNames = ["*.dysthesis.com"];
-    #     dnsProvider = "cloudflare";
-    #     dnsPropagationCheck = true;
-    #     credentialsFile = config.sops.secrets.traefik.path;
-    #   };
-    # };
+    security.acme = {
+      acceptTerms = true;
+      defaults.email = "acme.dictate699@simplelogin.com";
+      certs."dysthesis.com" = {
+        group = "traefik";
+        domain = "dysthesis.com";
+        extraDomainNames = ["*.dysthesis.com"];
+        dnsProvider = "cloudflare";
+        dnsPropagationCheck = true;
+        credentialsFile = config.sops.secrets.traefik.path;
+      };
+    };
 
     services.traefik = {
       enable = true;
