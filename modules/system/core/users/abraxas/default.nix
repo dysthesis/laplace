@@ -35,7 +35,7 @@ in {
         ];
 
         # TODO: Add hashed password with sops-nix
-        hashedPassword = "$y$j9T$DwXQ1sFrJsV/zUYywaypt/$caKzg2x8CDiWTG.DQTkIZw7Y7AY8REXnwzNwDqFHEt5";
+        hashedPasswordFile = config.sops.secrets."hashedPasswords/abraxas".path;
 
         extraGroups =
           [

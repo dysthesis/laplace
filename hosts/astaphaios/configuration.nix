@@ -2,9 +2,47 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (lib) mkDefault;
+  initrdSSHKeyPath = "/etc/secrets/initrd/ssh_host_ed25519_key";
+in {
   config = {
-    networking.useNetworkd = lib.mkDefault true;
+    system.activationScripts.generateInitrdSSHKeys =
+      /*
+      sh
+      */
+      ''
+        mkdir -pv /etc/secrets/initrd
+        ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -N "" -f ${initrdSSHKeyPath}
+      '';
+
+    services.qemuGuest.enable = true;
+    networking = {
+      useDHCP = mkDefault true;
+      useNetworkd = mkDefault true;
+    };
+    boot.initrd = {
+      luks.forceLuksSupportInInitrd = true;
+      network = {
+        enable = true;
+        udhcpc.enable = true;
+        flushBeforeStage2 = true;
+        ssh = {
+          enable = true;
+          port = 2222;
+          hostKeys = [initrdSSHKeyPath];
+          authorizedKeys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOeZRCxL7/q0UY7ZAAkM5HW6t8RULHu1b7BH3F/n2d2 demiurge@yaldabaoth"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFN0bzRvuz3JfjOXTtgB5CTC9me7bnCTbudpkBVqkYMN demiurge@adonaios"
+          ];
+        };
+        postCommands = ''
+          # Automatically ask for the password on SSH login
+          echo 'cryptsetup-askpass || echo "Unlock was successful; exiting SSH session" && exit 1' >> /root/.profile
+        '';
+      };
+    };
+
     # https://wiki.nixos.org/wiki/Install_NixOS_on_Hetzner_Online
     systemd.network = {
       enable = true;
@@ -44,12 +82,13 @@
 
       users.abraxas = {
         enable = true;
-        useHomeManager = false;
+        useHomeManager = true;
       };
 
       features = {
         ssh.enable = true;
         miniflux.enable = true;
+        traefik.enable = true;
         nh = {
           enable = true;
           flakePath = "/home/abraxas/laplace";
