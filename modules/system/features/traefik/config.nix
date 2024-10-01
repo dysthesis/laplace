@@ -11,19 +11,6 @@ in {
     sops.secrets.acme = {};
     systemd.services.traefik.serviceConfig.EnvironmentFile = [config.sops.secrets.traefik.path];
 
-    security.acme = {
-      acceptTerms = true;
-      defaults.email = "cloudflare.crunchy685@simplelogin.com";
-      certs."dysthesis.com" = {
-        group = "traefik";
-        domain = "dysthesis.com";
-        extraDomainNames = ["*.dysthesis.com"];
-        dnsProvider = "cloudflare";
-        dnsPropagationCheck = true;
-        credentialsFile = config.sops.secrets.acme.path;
-      };
-    };
-
     services.traefik = {
       enable = true;
 
