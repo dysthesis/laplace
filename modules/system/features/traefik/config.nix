@@ -41,7 +41,7 @@ in {
             storage = "/var/lib/traefik/acme.json";
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
             dnsChallenge = {
-              delayBeforeCheck = 0;
+              # delayBeforeCheck = 0;
               provider = "cloudflare";
               resolvers = ["1.1.1.1:53" "8.8.8.8:53"];
             };
@@ -70,11 +70,6 @@ in {
       };
       dynamicConfigOptions.http = {
         routers = {
-          api = {
-            entrypoints = ["traefik"];
-            rule = "PathPrefix(`/api/`)";
-            service = "api@internal";
-          };
           miniflux = {
             rule = "Host(`rss.dysthesis.com`) && PathPrefix(`/`)";
             entrypoints = ["websecure"];
