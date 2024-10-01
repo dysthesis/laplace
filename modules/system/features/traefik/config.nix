@@ -76,7 +76,7 @@ in {
         };
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
-          forgejo.loadBalancer.servers = [{url = "http://localhost:${config.services.forgejo.settings.server.HTTP_PORT}";}];
+          forgejo.loadBalancer.servers = [{url = "http://localhost:${toString config.services.forgejo.settings.server.HTTP_PORT}";}];
         };
       };
     };
