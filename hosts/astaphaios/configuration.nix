@@ -89,6 +89,7 @@ in {
         ssh.enable = true;
         miniflux.enable = true;
         traefik.enable = true;
+        forgejo.enable = true;
         nh = {
           enable = true;
           flakePath = "/home/abraxas/laplace";

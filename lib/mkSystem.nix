@@ -15,7 +15,14 @@ in
         [
           {
             networking.hostName = hostname;
-            nixpkgs.hostPlatform = mkDefault system;
+            nixpkgs = {
+              hostPlatform = mkDefault system;
+              overlays = [
+                (final: _prev: {
+                  unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
+                })
+              ];
+            };
           }
           inputs.disko.nixosModules.disko
 

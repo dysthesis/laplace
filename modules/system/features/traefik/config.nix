@@ -66,9 +66,17 @@ in {
               certresolver = "default";
             };
           };
+          forgejo = {
+            rule = "Host(`git.dysthesis.com`)";
+            entrypoints = ["websecure"];
+            service = "forgejo";
+            tls.domains = [{main = "*.dysthesis.com";}];
+            tls.certresolver = "production";
+          };
         };
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
+          forgejo.loadBalancer.servers = [{url = "http://localhost:${config.services.forgejo.settings.server.HTTP_PORT}";}];
         };
       };
     };

@@ -52,7 +52,8 @@ in {
         ]
         ++ addIf config.laplace.network.bluetooth.enable ["/var/lib/bluetooth"]
         ++ addIf config.laplace.security.secure-boot.enable ["/etc/secureboot"]
-        ++ addIf config.laplace.features.traefik.enable [config.services.traefik.dataDir];
+        ++ addIf config.laplace.features.traefik.enable [config.services.traefik.dataDir]
+        ++ addIf config.laplace.features.forgejo.enable [config.services.forgejo.stateDir];
 
       files =
         ["/etc/machine-id"]
