@@ -84,19 +84,9 @@ in {
               certresolver = "default";
             };
           };
-          miniflux_api = {
-            rule = "Host(`api.dysthesis.com`)";
-            entrypoints = ["websecure"];
-            service = "miniflux_api";
-            tls = {
-              domains = [{main = "*.dysthesis.com";}];
-              certresolver = "default";
-            };
-          };
         };
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
-          miniflux_api.loadBalancer.servers = [{url = "http://localhost/v1";}];
         };
       };
     };
