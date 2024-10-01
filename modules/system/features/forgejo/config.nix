@@ -91,11 +91,11 @@ in {
           PASSWD = "forgejo";
         };
 
-        cache = {
-          ENABLED = true;
-          ADAPTER = "redis";
-          HOST = "redis://:forgejo@localhost:6371";
-        };
+        # cache = {
+        #   ENABLED = true;
+        #   ADAPTER = "redis";
+        #   HOST = "redis://:forgejo@localhost:6371";
+        # };
 
         oauth2_client = {
           ACCOUNT_LINKING = "login";
