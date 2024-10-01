@@ -80,7 +80,10 @@ in {
             ".config/Signal"
             ".config/BraveSoftware"
             ".config/vesktop"
-            ".config/sops"
+            {
+              directory = ".config/sops";
+              mode = "0600";
+            }
             ".local/share/calcurse"
             ".local/share/BraveSoftware"
             {

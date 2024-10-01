@@ -1,7 +1,9 @@
 keys:
   - &adonaios age18n5mllpgdxlch46r4mszr348e2au295p07pgamfwnm8ktdqqju0sep3suk
+  - &yaldabaoth age1ctgwr72t9pjskaxk7tzu8h5vpxsadwwwgme7e5efaqy2hvu03qwses40nx
 creation_rules:
   - path_regex: modules/secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:
           - *adonaios
+          - *yaldabaoth
