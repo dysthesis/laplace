@@ -60,14 +60,10 @@ in {
           # You need to specify this to remove the port from URLs in the web UI.
           ROOT_URL = "https://${srv.DOMAIN}/";
           HTTP_PORT = 3000;
-
-          START_SSH_SERVER = false;
-          SSH_CREATE_AUTHORIZED_KEYS_FILE = true;
-          SSH_PORT = 2222;
-          SSH_LISTEN_PORT = 2222;
         };
+
         ui = {
-          DEFAULT_THEME = "catppuccin-mocha-pink";
+          DEFAULT_THEME = "catppuccin-mocha-blue";
           THEMES = builtins.concatStringsSep "," (
             ["auto,forgejo-auto,forgejo-dark,forgejo-light,arc-gree,gitea"]
             ++ (map (name: removePrefix "theme-" (removeSuffix ".css" name)) (
