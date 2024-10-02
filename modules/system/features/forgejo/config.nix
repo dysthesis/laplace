@@ -45,92 +45,26 @@ in {
           '';
       };
     };
-    services.forgejo = {
+    services.forgejo = let
+      srv = config.services.forgejo.settings.server;
+    in {
       enable = true;
-      package = pkgs.unstable.forgejo;
-
-      stateDir = "/var/lib/forgejo";
-
+      database.type = "postgres";
+      # Enable support for Git Large File Storage
       lfs.enable = true;
-
       settings = {
-        federation.ENABLED = true;
-
         server = {
-          PROTOCOL = "http+unix";
-          ROOT_URL = "https://git.dysthesis.com";
-          HTTP_PORT = 8086;
           DOMAIN = "git.dysthesis.com";
-
-          BUILTIN_SSH_SERVER_USER = "git";
-          DISABLE_ROUTER_LOG = true;
-          LANDING_PAGE = "/explore/repos";
-
-          START_SSH_SERVER = true;
-          SSH_CREATE_AUTHORIZED_KEYS_FILE = true;
-          SSH_PORT = 2222;
-          SSH_LISTEN_PORT = 2222;
+          # You need to specify this to remove the port from URLs in the web UI.
+          ROOT_URL = "https://${srv.DOMAIN}/";
+          HTTP_PORT = 3000;
         };
-
-        DEFAULT.APP_NAME = "hephaestus";
-
-        ui = {
-          DEFAULT_THEME = "catppuccin-mocha-blue";
-          THEMES = builtins.concatStringsSep "," (
-            ["auto,forgejo-auto,forgejo-dark,forgejo-light,arc-gree,gitea"]
-            ++ (map (name: removePrefix "theme-" (removeSuffix ".css" name)) (
-              builtins.attrNames (builtins.readDir oledppuccin-theme)
-            ))
-          );
-        };
-        atabase = {
-          DB_TYPE = mkForce "postgres";
-          HOST = "/run/postgresql";
-          NAME = "forgejo";
-          USER = "forgejo";
-          PASSWD = "forgejo";
-        };
-
-        # cache = {
-        #   ENABLED = true;
-        #   ADAPTER = "redis";
-        #   HOST = "redis://:forgejo@localhost:6371";
-        # };
-
-        oauth2_client = {
-          ACCOUNT_LINKING = "login";
-          USERNAME = "nickname";
-          ENABLE_AUTO_REGISTRATION = false;
-          REGISTER_EMAIL_CONFIRM = false;
-          UPDATE_AVATAR = true;
-        };
-
-        service = {
-          DISABLE_REGISTRATION = false;
-          ALLOW_ONLY_INTERNAL_REGISTRATION = true;
-          EMAIL_DOMAIN_ALLOWLIST = "dysthesis.com";
-          ALLOW_ONLY_EXTERNAL_REGISTRATION = false;
-        };
-
-        session = {
-          COOKIE_SECURE = true;
-          # Sessions last for 1 week
-          SESSION_LIFE_TIME = 86400 * 7;
-        };
-
-        other = {
-          SHOW_FOOTER_VERSION = false;
-          SHOW_FOOTER_TEMPLATE_LOAD_TIME = false;
-          ENABLE_FEED = false;
-        };
-
-        migrations.ALLOWED_DOMAINS = "github.com, *.github.com, gitlab.com, *.gitlab.com";
-        packages.ENABLED = false;
-        repository.PREFERRED_LICENSES = "MIT,GPL-3.0,GPL-2.0,LGPL-3.0,LGPL-2.1";
-
-        "repository.upload" = {
-          FILE_MAX_SIZE = 100;
-          MAX_FILES = 10;
+        # You can temporarily allow registration to create an admin user.
+        service.DISABLE_REGISTRATION = true;
+        # Add support for actions, based on act: https://github.com/nektos/act
+        actions = {
+          ENABLED = true;
+          DEFAULT_ACTIONS_URL = "github";
         };
       };
     };
