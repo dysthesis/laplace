@@ -19,13 +19,13 @@
     };
 
     patchPhase = ''
-      cd $src
-      ls
-      find . -name '*.css' -exec sed -i 's/#1e1e2e/#000000/g' {} +
-      find . -name '*.css' -exec sed -i 's/#cdd6f4/#ffffff/g' {} +
-      find . -name '*.css' -exec sed -i 's/#313244/#1e1e2e/g' {} +
-      find . -name '*.css' -exec sed -i 's/#45475a/#313244/g' {} +
-      find . -name '*.css' -exec sed -i 's/#585b70/#45475a/g' {} +
+      chmod -R +w $src
+      find $src -name '*.css' -exec sed -i 's/#1e1e2e/#000000/g' {} +
+      find $src -name '*.css' -exec sed -i 's/#cdd6f4/#ffffff/g' {} +
+      find $src -name '*.css' -exec sed -i 's/#313244/#1e1e2e/g' {} +
+      find $src -name '*.css' -exec sed -i 's/#45475a/#313244/g' {} +
+      find $src -name '*.css' -exec sed -i 's/#585b70/#45475a/g' {} +
+      chmod -R -w $src
     '';
 
     installPhase = ''
