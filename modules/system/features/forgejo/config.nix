@@ -5,6 +5,7 @@
   ...
 }: let
   inherit (lib.modules) mkAfter mkIf;
+  inherit (lib.strings) removePrefix removeSuffix;
 
   cfg = config.laplace.features.forgejo.enable;
 
@@ -52,14 +53,41 @@ in {
       # Enable support for Git Large File Storage
       lfs.enable = true;
       settings = {
+        federation.ENABLED = true;
+
         server = {
           DOMAIN = "git.dysthesis.com";
           # You need to specify this to remove the port from URLs in the web UI.
           ROOT_URL = "https://${srv.DOMAIN}/";
           HTTP_PORT = 3000;
+
+          START_SSH_SERVER = true;
+          SSH_CREATE_AUTHORIZED_KEYS_FILE = true;
+          SSH_PORT = 2222;
+          SSH_LISTEN_PORT = 2222;
         };
-        # You can temporarily allow registration to create an admin user.
-        service.DISABLE_REGISTRATION = false;
+        ui = {
+          DEFAULT_THEME = "catppuccin-mocha-pink";
+          THEMES = builtins.concatStringsSep "," (
+            ["auto,forgejo-auto,forgejo-dark,forgejo-light,arc-gree,gitea"]
+            ++ (map (name: removePrefix "theme-" (removeSuffix ".css" name)) (
+              builtins.attrNames (builtins.readDir oledppuccin-theme)
+            ))
+          );
+        };
+
+        service = {
+          DISABLE_REGISTRATION = false;
+          ALLOW_ONLY_INTERNAL_REGISTRATION = true;
+          EMAIL_DOMAIN_ALLOWLIST = "dysthesis.com";
+          ALLOW_ONLY_EXTERNAL_REGISTRATION = false;
+        };
+
+        session = {
+          COOKIE_SECURE = true;
+          # Sessions last for 1 week
+          SESSION_LIFE_TIME = 86400 * 7;
+        };
         # Add support for actions, based on act: https://github.com/nektos/act
         actions = {
           ENABLED = true;
