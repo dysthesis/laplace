@@ -61,7 +61,7 @@ in {
           ROOT_URL = "https://${srv.DOMAIN}/";
           HTTP_PORT = 3000;
 
-          START_SSH_SERVER = true;
+          START_SSH_SERVER = false;
           SSH_CREATE_AUTHORIZED_KEYS_FILE = true;
           SSH_PORT = 2222;
           SSH_LISTEN_PORT = 2222;
