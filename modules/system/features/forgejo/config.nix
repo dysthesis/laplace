@@ -19,6 +19,8 @@
     };
 
     patchPhase = ''
+      cd $src
+      ls
       find . -name '*.css' -exec sed -i 's/#1e1e2e/#000000/g' {} +
       find . -name '*.css' -exec sed -i 's/#cdd6f4/#ffffff/g' {} +
       find . -name '*.css' -exec sed -i 's/#313244/#1e1e2e/g' {} +
