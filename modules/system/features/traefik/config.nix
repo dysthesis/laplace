@@ -73,16 +73,10 @@ in {
             tls.domains = [{main = "*.dysthesis.com";}];
             tls.certresolver = "default";
           };
-          gitssh = {
-            rule = "HostSNI(`*`)";
-            entrypoints = ["ssh"];
-            service = "gitssh";
-          };
         };
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
           forgejo.loadBalancer.servers = [{url = "http://0.0.0.0:${toString config.services.forgejo.settings.server.HTTP_PORT}";}];
-          gitssh.loadBalancer.servers = [{address = "localhost:2222";}];
         };
       };
     };
