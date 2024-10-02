@@ -4,8 +4,7 @@
   lib,
   ...
 }: let
-  inherit (lib.modules) mkAfter mkForce mkIf;
-  inherit (lib.strings) removePrefix removeSuffix;
+  inherit (lib.modules) mkAfter mkIf;
 
   cfg = config.laplace.features.forgejo.enable;
 
