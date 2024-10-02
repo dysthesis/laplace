@@ -67,11 +67,11 @@ in {
             };
           };
           forgejo = {
-            rule = "Host(`git.dysthesis.com`)";
+            rule = "Host(`git.dysthesis.com`) && PathPrefix(`/`)";
             entrypoints = ["websecure"];
             service = "forgejo";
             tls.domains = [{main = "*.dysthesis.com";}];
-            tls.certresolver = "production";
+            tls.certresolver = "default";
           };
           gitssh = {
             rule = "HostSNI(`*`)";
