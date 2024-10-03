@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  cfg = config.laplace.features.miniflux.enable;
+  cfg = config.laplace.features.services.miniflux.enable;
   inherit (lib) mkIf;
 in {
   config = mkIf cfg {

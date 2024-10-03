@@ -7,7 +7,7 @@
   inherit (lib.modules) mkAfter mkForce mkIf;
   inherit (lib.strings) removePrefix removeSuffix;
 
-  cfg = config.laplace.features.forgejo.enable;
+  cfg = config.laplace.features.services.forgejo.enable;
 
   oledppuccin-theme = pkgs.stdenv.mkDerivation rec {
     pname = "oledppuccin-gitea";
@@ -59,7 +59,7 @@ in {
         server = {
           PROTOCOL = "http+unix";
           ROOT_URL = "https://git.dysthesis.com";
-          HTTP_PORT = 8086;
+          HTTP_PORT = 7000;
           DOMAIN = "git.dysthesis.com";
 
           BUILTIN_SSH_SERVER_USER = "git";

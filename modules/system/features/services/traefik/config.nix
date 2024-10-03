@@ -4,7 +4,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.laplace.features.traefik.enable;
+  cfg = config.laplace.features.services.traefik.enable;
 in {
   config = mkIf cfg {
     sops.secrets.traefik = {};
