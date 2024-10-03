@@ -45,7 +45,7 @@ in {
           inherit port;
           bind_address = "0.0.0.0";
           secret_key = "@SEARXNG_SECRET@";
-          public_instance = false;
+          public_instance = true;
           infinite_scroll = true;
         };
       };
