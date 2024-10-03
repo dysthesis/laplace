@@ -92,6 +92,7 @@ in {
           miniflux.enable = true;
           traefik.enable = true;
           forgejo.enable = true;
+          searxng.enable = true;
         };
 
         nh = {
