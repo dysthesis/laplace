@@ -93,7 +93,7 @@ in {
           forgejo.loadBalancer.servers = [{url = "http://0.0.0.0:${toString config.services.forgejo.settings.server.HTTP_PORT}";}];
           searx.loadBalancer.servers = [{url = "http://${toString config.services.searx.settings.server.bind_address}:${toString config.services.searx.settings.server.port}";}];
           # TODO: Figure out how to not hardcode this
-          openbooks.loadBalancer.servers = [{url = "http://127.0.0.1:8085";}];
+          openbooks.loadBalancer.servers = [{url = "http://127.0.0.1:8105";}];
         };
       };
     };
