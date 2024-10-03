@@ -6,7 +6,6 @@
   cfg = config.laplace.features.services.openbooks.enable;
   inherit (lib) mkIf;
   port = 8105;
-  dataDir = "/var/lib/openbooks";
 in {
   config = mkIf cfg {
     virtualisation.oci-containers.containers.openbooks = {
@@ -21,9 +20,6 @@ in {
         "--tls"
       ];
       ports = ["127.0.0.1:${toString port}:80/tcp"];
-      volumes = [
-        "${dataDir}:/books"
-      ];
     };
   };
 }
