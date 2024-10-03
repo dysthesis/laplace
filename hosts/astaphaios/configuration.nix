@@ -91,7 +91,7 @@ in {
         services = {
           miniflux.enable = true;
           traefik.enable = true;
-          forgejo.enable = false;
+          forgejo.enable = true;
         };
 
         nh = {
