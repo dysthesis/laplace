@@ -28,7 +28,7 @@ in {
       settings = {
         general = {
           debug = false;
-          instance_name = "SearXNG";
+          instance_name = "Atlas";
         };
         ui = {
           default_theme = "simple";
@@ -37,9 +37,9 @@ in {
           };
         };
         search = {
-          autocomplete = "google";
+          autocomplete = "brave";
           safe_search = 0;
-          default_lang = "en-US";
+          default_lang = "en-AU";
         };
         server = {
           inherit port;
