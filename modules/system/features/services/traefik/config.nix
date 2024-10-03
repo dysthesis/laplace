@@ -84,7 +84,7 @@ in {
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
           forgejo.loadBalancer.servers = [{url = "http://0.0.0.0:${toString config.services.forgejo.settings.server.HTTP_PORT}";}];
-          searx.loadBalancer.servers = [{url = "http://0.0.0.0:${toString config.services.searx.settings.server.port}";}];
+          searx.loadBalancer.servers = [{url = "http://${toString config.services.searx.settings.server.bind_address}:${toString config.services.searx.settings.server.port}";}];
         };
       };
     };
