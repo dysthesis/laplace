@@ -12,9 +12,8 @@ in {
     networking.firewall.allowedTCPPorts = [port];
     services.searx = {
       package = pkgs.searxng;
-      enable = false;
+      enable = true;
       runInUwsgi = false;
-      environmentFile = config.sops.secrets.searxng-secret.path;
       limiterSettings = {
         botdetection = {
           ip_lists = {
