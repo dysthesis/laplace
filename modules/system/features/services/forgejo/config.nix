@@ -73,6 +73,8 @@ in {
           );
         };
 
+        DEFAULT.APP_NAME = "Hephaestus";
+
         service = {
           DISABLE_REGISTRATION = false;
           ALLOW_ONLY_INTERNAL_REGISTRATION = true;
