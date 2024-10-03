@@ -28,7 +28,7 @@ in {
       settings = {
         general = {
           debug = false;
-          instance_name = "SearXNG";
+          instance_name = "Galileo";
         };
         ui = {
           default_theme = "simple";
@@ -39,13 +39,12 @@ in {
         search = {
           autocomplete = "google";
           safe_search = 0;
-          default_lang = "en-US";
+          default_lang = "en-AU";
         };
         server = {
           inherit port;
           bind_address = "0.0.0.0";
-          secret_key = "@SEARXNG_SECRET@";
-          public_instance = true;
+          public_instance = false;
           infinite_scroll = true;
         };
       };
