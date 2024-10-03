@@ -14,6 +14,7 @@ in {
       package = pkgs.searxng;
       enable = true;
       runInUwsgi = false;
+      redisCreateLocally = true;
       limiterSettings = {
         botdetection = {
           ip_lists = {
