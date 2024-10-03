@@ -93,6 +93,7 @@ in {
           traefik.enable = true;
           forgejo.enable = true;
           searxng.enable = true;
+          openbooks.enable = true;
         };
 
         nh = {
