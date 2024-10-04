@@ -14,6 +14,8 @@ in {
       config = ''
         :8080 {
           root * ${inputs.episteme.packages.${pkgs.system}.default}/share
+          encode gzip
+          file_server
         }
       '';
     };
