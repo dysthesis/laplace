@@ -14,7 +14,6 @@ in {
       config = ''
         :8080 {
           root * ${inputs.episteme.packages.${pkgs.system}.default}/share
-          file_server
         }
       '';
     };
