@@ -94,6 +94,7 @@ in {
           forgejo.enable = true;
           searxng.enable = true;
           openbooks.enable = true;
+          caddy.enable = true;
         };
 
         nh = {

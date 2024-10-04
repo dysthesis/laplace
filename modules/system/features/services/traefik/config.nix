@@ -4,6 +4,7 @@
   ...
 }: let
   inherit (lib) mkIf;
+  inherit (lib.laplace) mkSubdomain;
   cfg = config.laplace.features.services.traefik.enable;
 in {
   config = mkIf cfg {
@@ -57,39 +58,11 @@ in {
       };
       dynamicConfigOptions.http = {
         routers = {
-          miniflux = {
-            rule = "Host(`rss.dysthesis.com`) && PathPrefix(`/`)";
-            entrypoints = ["websecure"];
-            service = "miniflux";
-            tls = {
-              domains = [{main = "*.dysthesis.com";}];
-              certresolver = "default";
-            };
-          };
-
-          forgejo = {
-            rule = "Host(`git.dysthesis.com`) && PathPrefix(`/`)";
-            entrypoints = ["websecure"];
-            service = "forgejo";
-            tls.domains = [{main = "*.dysthesis.com";}];
-            tls.certresolver = "default";
-          };
-
-          searx = {
-            rule = "Host(`search.dysthesis.com`) && PathPrefix(`/`)";
-            entrypoints = ["websecure"];
-            service = "searx";
-            tls.domains = [{main = "*.dysthesis.com";}];
-            tls.certresolver = "default";
-          };
-
-          openbooks = {
-            rule = "Host(`openbooks.dysthesis.com`) && PathPrefix(`/`)";
-            entrypoints = ["websecure"];
-            service = "openbooks";
-            tls.domains = [{main = "*.dysthesis.com";}];
-            tls.certresolver = "default";
-          };
+          miniflux = mkSubdomain "miniflux" "rss";
+          forgejo = mkSubdomain "forgejo" "git";
+          searx = mkSubdomain "searx" "search";
+          openbooks = mkSubdomain "openbooks" "openbooks";
+          episteme = mkSubdomain "episteme" "notes";
         };
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
@@ -97,6 +70,7 @@ in {
           searx.loadBalancer.servers = [{url = "http://${toString config.services.searx.settings.server.bind_address}:${toString config.services.searx.settings.server.port}";}];
           # TODO: Figure out how to not hardcode this
           openbooks.loadBalancer.servers = [{url = "http://127.0.0.1:8105";}];
+          episteme.loadBalancer.servers = [{url = "http://localhost:8080";}];
         };
       };
     };
