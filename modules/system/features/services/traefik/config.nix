@@ -63,7 +63,7 @@ in {
           searx = mkSubdomain "searx" "search";
           openbooks = mkSubdomain "openbooks" "openbooks";
           episteme = mkSubdomain "episteme" "notes";
-          owntracks = mkSubdomain "owntracks" "tracks";
+          owntracks = mkSubdomain "mosquitto" "tracks";
         };
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
