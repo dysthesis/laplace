@@ -95,6 +95,7 @@ in {
           searxng.enable = true;
           openbooks.enable = true;
           caddy.enable = true;
+          owntracks.enable = true;
         };
 
         nh = {
