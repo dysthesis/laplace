@@ -33,7 +33,7 @@ in {
           hostKeys = [initrdSSHKeyPath];
           authorizedKeys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOeZRCxL7/q0UY7ZAAkM5HW6t8RULHu1b7BH3F/n2d2 demiurge@yaldabaoth"
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFN0bzRvuz3JfjOXTtgB5CTC9me7bnCTbudpkBVqkYMN demiurge@adonaios"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPxBpd1Xyr16hfHFvd/AvOz8mLehUCI28QW3WNht4Xkn demiurge@adonaios"
           ];
         };
         postCommands = ''
