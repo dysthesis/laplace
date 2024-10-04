@@ -66,6 +66,7 @@ in {
               certresolver = "default";
             };
           };
+
           forgejo = {
             rule = "Host(`git.dysthesis.com`) && PathPrefix(`/`)";
             entrypoints = ["websecure"];
