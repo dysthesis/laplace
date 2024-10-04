@@ -63,6 +63,7 @@ in {
           searx = mkSubdomain "searx" "search";
           openbooks = mkSubdomain "openbooks" "openbooks";
           episteme = mkSubdomain "episteme" "notes";
+          owntracks = mkSubdomain "owntracks" "tracks";
         };
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
@@ -71,6 +72,7 @@ in {
           # TODO: Figure out how to not hardcode this
           openbooks.loadBalancer.servers = [{url = "http://127.0.0.1:8105";}];
           episteme.loadBalancer.servers = [{url = "http://localhost:8080";}];
+          owntracks.loadBalancer.servers = [{url = "http:127.0.0.1:${toString config.laplace.features.services.owntracks.port}";}];
         };
       };
     };
