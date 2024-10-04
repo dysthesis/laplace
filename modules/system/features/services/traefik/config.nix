@@ -74,6 +74,7 @@ in {
             tls.domains = [{main = "*.dysthesis.com";}];
             tls.certresolver = "default";
           };
+
           searx = {
             rule = "Host(`search.dysthesis.com`) && PathPrefix(`/`)";
             entrypoints = ["websecure"];
@@ -81,6 +82,7 @@ in {
             tls.domains = [{main = "*.dysthesis.com";}];
             tls.certresolver = "default";
           };
+
           openbooks = {
             rule = "Host(`openbooks.dysthesis.com`) && PathPrefix(`/`)";
             entrypoints = ["websecure"];
