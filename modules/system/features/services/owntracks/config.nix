@@ -8,19 +8,32 @@
 in {
   config = mkIf cfg.enable {
     sops.secrets."hashedPasswords/mosquitto" = {};
+
+    networking.firewall.allowedTCPPorts = [1883 8883];
     services.mosquitto = {
       enable = true;
+      settings.max_keepalive = 300;
       listeners = [
         {
-          users.root = {
-            acl = ["readwrite #"];
-            hashedPasswordFile = config.sops.secrets."hashedPasswords/mosquitto".path;
+          port = 1883;
+          omitPasswordAuth = true;
+          users = {};
+          settings = {
+            allow_anonymous = true;
           };
+          acl = ["topic readwrite #"];
+        }
+        {
+          port = 8883;
+          omitPasswordAuth = true;
+          users = {};
+          settings = {
+            protocol = "websockets";
+            allow_anonymous = true;
+          };
+          acl = ["topic readwrite #" "pattern readwrite #"];
         }
       ];
     };
-
-    # default mosquitto port. change as required
-    networking.firewall = {allowedTCPPorts = [1883];};
   };
 }
