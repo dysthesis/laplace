@@ -112,6 +112,14 @@
           flakePath = "/home/demiurge/Documents/Projects/laplace";
         };
 
+        restic = {
+          enable = true;
+          paths = ["/nix/persist"];
+          targets = [
+            "b2:adonaios"
+          ];
+        };
+
         impermanence.enable = true;
         virtualisation.enable = true;
 
