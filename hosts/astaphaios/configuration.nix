@@ -88,6 +88,12 @@ in {
       features = {
         ssh.enable = true;
 
+        restic = {
+          enable = true;
+          paths = ["/nix/persist"];
+          targets = ["b2:astaphaios"];
+        };
+
         services = {
           miniflux.enable = true;
           traefik.enable = true;
