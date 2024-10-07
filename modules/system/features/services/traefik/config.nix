@@ -73,8 +73,8 @@ in {
           # TODO: Figure out how to not hardcode this
           openbooks.loadBalancer.servers = [{url = "http://127.0.0.1:8105";}];
           episteme.loadBalancer.servers = [{url = "http://localhost:8080";}];
-          mosquitto.loadBalancer.servers = [{url = "http:127.0.0.1:8883";}];
-          comp6841.loadBalancer.servers = [{url = "http:127.0.0.1:8081";}];
+          mosquitto.loadBalancer.servers = [{url = "http://127.0.0.1:8883";}];
+          comp6841.loadBalancer.servers = [{url = "http://localhost:8081";}];
         };
       };
     };
