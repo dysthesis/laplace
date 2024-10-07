@@ -6,6 +6,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     episteme.url = "git+https://git.dysthesis.com/dysthesis/episteme.git";
+    comp6841.url = "git+https://git.dysthesis.com/dysthesis/COMP6841-Tutoring.git";
 
     # Modularise your flake
     flake-parts = {
