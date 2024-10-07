@@ -56,15 +56,44 @@ in {
           };
         };
       };
+
       dynamicConfigOptions.http = {
         routers = {
-          miniflux = mkSubdomain "miniflux" "rss";
-          forgejo = mkSubdomain "forgejo" "git";
-          searx = mkSubdomain "searx" "search";
-          openbooks = mkSubdomain "openbooks" "openbooks";
-          episteme = mkSubdomain "episteme" "notes";
-          owntracks = mkSubdomain "mosquitto" "tracks";
-          comp6841 = mkSubdomain "comp6841" "comp6841";
+          miniflux = mkSubdomain {
+            service = "miniflux";
+            subdomain = "rss";
+          };
+
+          forgejo = mkSubdomain {
+            service = "forgejo";
+            subdomain = "git";
+          };
+
+          searx = mkSubdomain {
+            service = "searx";
+            subdomain = "search";
+          };
+
+          openbooks = mkSubdomain {
+            service = "openbooks";
+            subdomain = "openbooks";
+          };
+
+          episteme = mkSubdomain {
+            service = "episteme";
+            subdomain = "notes";
+          };
+
+          owntracks = mkSubdomain {
+            service = "mosquitto";
+            subdomain = "tracks";
+          };
+
+          comp6841 = mkSubdomain {
+            service = "comp6841";
+            subdomain = "comp6841";
+            prefix = "/w1";
+          };
         };
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
