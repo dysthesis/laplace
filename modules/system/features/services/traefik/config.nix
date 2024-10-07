@@ -64,6 +64,7 @@ in {
           openbooks = mkSubdomain "openbooks" "openbooks";
           episteme = mkSubdomain "episteme" "notes";
           owntracks = mkSubdomain "mosquitto" "tracks";
+          comp6841 = mkSubdomain "comp6841" "comp6841";
         };
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
@@ -73,6 +74,7 @@ in {
           openbooks.loadBalancer.servers = [{url = "http://127.0.0.1:8105";}];
           episteme.loadBalancer.servers = [{url = "http://localhost:8080";}];
           mosquitto.loadBalancer.servers = [{url = "http:127.0.0.1:8883";}];
+          comp6841.loadBalancer.servers = [{url = "http:127.0.0.1:8081";}];
         };
       };
     };
