@@ -99,10 +99,6 @@ in {
           };
         };
 
-        middlewares = {
-          strip-w1-prefix.stripPrefix.prefixes = ["/w1"];
-        };
-
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
           forgejo.loadBalancer.servers = [{url = "http://0.0.0.0:${toString config.services.forgejo.settings.server.HTTP_PORT}";}];
