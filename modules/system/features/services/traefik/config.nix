@@ -92,7 +92,6 @@ in {
           comp6841 = mkSubdomain {
             service = "comp6841";
             subdomain = "comp6841";
-            prefix = "/w1";
           };
         };
         services = {
