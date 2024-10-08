@@ -79,10 +79,14 @@ in {
             subdomain = "openbooks";
           };
 
-          episteme = mkSubdomain {
-            service = "episteme";
-            subdomain = "notes";
-          };
+          episteme =
+            mkSubdomain {
+              service = "episteme";
+              subdomain = "notes";
+            }
+            // {
+              middlewares = "strip-w1-prefix";
+            };
 
           owntracks = mkSubdomain {
             service = "mosquitto";
@@ -94,6 +98,11 @@ in {
             subdomain = "comp6841";
           };
         };
+
+        middlewares = {
+          strip-w1-prefix.stripPrefix.prefixes = ["/w1"];
+        };
+
         services = {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
           forgejo.loadBalancer.servers = [{url = "http://0.0.0.0:${toString config.services.forgejo.settings.server.HTTP_PORT}";}];
