@@ -79,14 +79,10 @@ in {
             subdomain = "openbooks";
           };
 
-          episteme =
-            mkSubdomain {
-              service = "episteme";
-              subdomain = "notes";
-            }
-            // {
-              middlewares = "strip-w1-prefix";
-            };
+          episteme = mkSubdomain {
+            service = "episteme";
+            subdomain = "notes";
+          };
 
           owntracks = mkSubdomain {
             service = "mosquitto";
