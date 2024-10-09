@@ -70,11 +70,11 @@
         "treefmt": "treefmt_2"
       },
       "locked": {
-        "lastModified": 1728450212,
-        "narHash": "sha256-2RWw+2zs6xhYjhJNEe8bsBpwLHpffEos/SovYu1dkkc=",
+        "lastModified": 1728452576,
+        "narHash": "sha256-Bp34oO6vWhflC6/qsIXgqEelOFZquu+IJnAH0+YkGS4=",
         "ref": "refs/heads/main",
-        "rev": "e659572db5e80a4be64654069c20ded1980c508a",
-        "revCount": 250,
+        "rev": "7f5dc212cc5b870961db4e354ae24ce65dcb9f04",
+        "revCount": 251,
         "type": "git",
         "url": "https://git.dysthesis.com/dysthesis/episteme.git"
       },
