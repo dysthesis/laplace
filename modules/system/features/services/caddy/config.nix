@@ -24,7 +24,7 @@ in {
         }
 
         :8081 {
-          root * ${inputs.comp6841.packages.${pkgs.system}.week-1}
+          root * ${inputs.comp6841.packages.${pkgs.system}.week-5}
           encode gzip
           file_server
         }
