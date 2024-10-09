@@ -8,11 +8,11 @@
         "treefmt": "treefmt"
       },
       "locked": {
-        "lastModified": 1728277066,
-        "narHash": "sha256-+6UDxxT/bhvLxAkeUxAVpozt9fkvtsUxECiCmukmfSo=",
+        "lastModified": 1728437679,
+        "narHash": "sha256-MPQHED5JwnlTSZZLW5DU1wD7dkndrZ6tuZMM9F2JmCo=",
         "ref": "refs/heads/main",
-        "rev": "4ab3baedb7cde9f8a7632b2bb39219a202a0cf18",
-        "revCount": 12,
+        "rev": "a1ba0621eeb6fa116d2b4ea6ed107cdf0fd79ea8",
+        "revCount": 13,
         "type": "git",
         "url": "https://git.dysthesis.com/dysthesis/COMP6841-Tutoring.git"
       },
