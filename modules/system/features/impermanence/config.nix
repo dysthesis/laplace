@@ -57,7 +57,7 @@ in {
         ++ addIf config.laplace.features.services.owntracks.enable [config.services.mosquitto.dataDir]
         ++ addIf config.laplace.features.services.calibre-web.enable [
           config.services.calibre-web.options.calibreLibrary
-          config.services.calibre-web.dataDir
+          "/var/lib/${config.services.calibre-web.dataDir}"
         ];
 
       files =
