@@ -68,6 +68,12 @@ in {
             user = "calibre-web";
             group = "calibre-web";
           }
+          {
+            directory = config.laplace.features.services.calibre-web.libraryPath;
+            mode = "0750";
+            user = "calibre-web";
+            group = "calibre-web";
+          }
         ];
 
       files =
