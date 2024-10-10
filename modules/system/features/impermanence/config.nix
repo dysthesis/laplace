@@ -63,7 +63,7 @@ in {
             group = "calibre-server";
           }
           {
-            directory = "${config.services.calibre-web.dataDir}";
+            directory = "/var/lib/${config.services.calibre-web.dataDir}";
             mode = "0750";
             user = "calibre-web";
             group = "calibre-web";
