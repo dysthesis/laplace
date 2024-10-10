@@ -1,4 +1,5 @@
 {
+  pkgs,
   config,
   lib,
   ...
@@ -15,6 +16,9 @@ in {
       volumes = [
         "${cfg.configPath}:/config"
         "${cfg.libraryPath}:/books"
+      ];
+      extraOptions = [
+        "--runtime=${pkgs.gvisor}/bin/runsc"
       ];
 
       environment = {
