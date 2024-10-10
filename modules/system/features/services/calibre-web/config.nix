@@ -1,9 +1,10 @@
 {
+  pkgs,
   config,
   lib,
   ...
 }: let
-  inherit (lib) mkIf;
+  inherit (lib) mkIf mkForce;
   cfg = config.laplace.features.services.calibre-web;
 in {
   config = mkIf cfg.enable {
@@ -23,5 +24,7 @@ in {
         libraries = [config.services.calibre-web.options.calibreLibrary];
       };
     };
+    # TODO: upstream that
+    systemd.services.calibre-server.serviceConfig.ExecStart = lib.mkForce "${pkgs.calibre}/bin/calibre-server ${config.services.calibre-web.options.calibreLibrary} --enable-auth";
   };
 }
