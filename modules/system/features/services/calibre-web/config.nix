@@ -4,7 +4,7 @@
   lib,
   ...
 }: let
-  inherit (lib) mkIf mkForce;
+  inherit (lib) mkIf;
   cfg = config.laplace.features.services.calibre-web;
 in {
   config = mkIf cfg.enable {
@@ -14,16 +14,16 @@ in {
         options = {
           enableBookUploading = true;
           enableBookConversion = true;
-          calibreLibrary = "/usr/share/calibre-web";
+          calibreLibrary = cfg.libraryPath;
         };
       };
 
       calibre-server = {
         enable = true;
-        libraries = [config.services.calibre-web.options.calibreLibrary];
+        libraries = [cfg.libraryPath];
       };
     };
     # TODO: upstream that
-    systemd.services.calibre-server.serviceConfig.ExecStart = lib.mkForce "${pkgs.calibre}/bin/calibre-server ${config.services.calibre-web.options.calibreLibrary} --enable-auth";
+    systemd.services.calibre-server.serviceConfig.ExecStart = lib.mkForce "${pkgs.calibre}/bin/calibre-server ${cfg.libraryPath} --enable-auth";
   };
 }
