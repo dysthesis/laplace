@@ -14,7 +14,7 @@ in {
         options = {
           enableBookUploading = true;
           enableBookConversion = true;
-          calibreLibrary = "/var/lib/calibre-web";
+          calibreLibrary = "/usr/share/calibre-web";
         };
       };
 
