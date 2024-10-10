@@ -11,12 +11,6 @@ in {
       default = "/usr/share/calibre";
     };
 
-    configPath = mkOption {
-      type = path;
-      description = "Where the config is stored";
-      default = "/var/lib/calibre-web";
-    };
-
     port = mkOption {
       type = int;
       description = "Which port Calibre should be hosted in";
