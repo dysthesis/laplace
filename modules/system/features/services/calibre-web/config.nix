@@ -1,5 +1,4 @@
 {
-  pkgs,
   config,
   lib,
   ...
@@ -8,23 +7,19 @@
   cfg = config.laplace.features.services.calibre-web;
 in {
   config = mkIf cfg.enable {
-    virtualisation.oci-containers.containers.calibre-web = let
-      inherit (cfg) port;
-    in {
-      image = "ghcr.io/linuxserver/calibre-web";
-      ports = ["${toString port}:8083"];
-      volumes = [
-        "${cfg.configPath}:/config"
-        "${cfg.libraryPath}:/books"
-      ];
-      extraOptions = [
-        "--runtime=${pkgs.gvisor}/bin/runsc"
-      ];
+    # Calibre-Web
+    services.calibre-web = {
+      enable = true;
+      group = "media";
+      listen = {
+        ip = "127.0.0.1";
+        inherit (cfg) port;
+      };
 
-      environment = {
-        PUID = "1000";
-        PGID = "1000";
-        TZ = "Australia/Sydney";
+      options = {
+        calibreLibrary = cfg.libraryPath;
+        enableBookUploading = true;
+        enableBookConversion = true;
       };
     };
   };
