@@ -102,6 +102,7 @@ in {
           openbooks.enable = true;
           caddy.enable = true;
           owntracks.enable = true;
+          excalidraw.enable = true;
         };
 
         nh = {
