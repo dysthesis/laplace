@@ -57,12 +57,16 @@ in {
         ++ addIf config.laplace.features.services.owntracks.enable [config.services.mosquitto.dataDir]
         ++ addIf config.laplace.features.services.calibre-web.enable [
           {
-            directory = config.services.calibre-web.options.calibreLibrary;
-            user = "calibre-web";
+            directory = "/var/lib/calibre-server";
+            mode = "0750";
+            user = "calibre-server";
+            group = "calibre-server";
           }
           {
-            directory = "/var/lib/${config.services.calibre-web.dataDir}";
+            directory = config.services.calibre-web.dataDir;
+            mode = "0750";
             user = "calibre-web";
+            group = "calibre-web";
           }
         ];
 
