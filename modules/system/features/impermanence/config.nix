@@ -56,8 +56,14 @@ in {
         ++ addIf config.laplace.features.services.forgejo.enable [config.services.forgejo.stateDir]
         ++ addIf config.laplace.features.services.owntracks.enable [config.services.mosquitto.dataDir]
         ++ addIf config.laplace.features.services.calibre-web.enable [
-          config.services.calibre-web.options.calibreLibrary
-          "/var/lib/${config.services.calibre-web.dataDir}"
+          {
+            directory = config.services.calibre-web.options.calibreLibrary;
+            user = "calibre-web";
+          }
+          {
+            directory = "/var/lib/${config.services.calibre-web.dataDir}";
+            user = "calibre-web";
+          }
         ];
 
       files =
