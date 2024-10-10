@@ -1,5 +1,4 @@
 {
-  pkgs,
   config,
   lib,
   ...
@@ -8,22 +7,21 @@
   cfg = config.laplace.features.services.calibre-web;
 in {
   config = mkIf cfg.enable {
-    services = {
-      calibre-web = {
-        enable = true;
-        options = {
-          enableBookUploading = true;
-          enableBookConversion = true;
-          calibreLibrary = cfg.libraryPath;
-        };
-      };
+    virtualisation.oci-containers.containers.calibre-web = let
+      inherit (cfg) port;
+    in {
+      image = "ghcr.io/linuxserver/calibre-web";
+      ports = ["${toString port}:8083"];
+      volumes = [
+        "${cfg.configPath}:/config"
+        "${cfg.libraryPath}:/books"
+      ];
 
-      calibre-server = {
-        enable = true;
-        libraries = [cfg.libraryPath];
+      environment = {
+        PUID = "1000";
+        PGID = "1000";
+        TZ = "Australia/Sydney";
       };
     };
-    # TODO: upstream that
-    systemd.services.calibre-server.serviceConfig.ExecStart = lib.mkForce "${pkgs.calibre}/bin/calibre-server ${cfg.libraryPath} --enable-auth";
   };
 }
