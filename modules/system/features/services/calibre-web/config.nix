@@ -11,7 +11,6 @@ in {
     services = {
       calibre-web = {
         enable = true;
-        listen.port = 8084;
         options = {
           enableBookUploading = true;
           enableBookConversion = true;
