@@ -54,7 +54,16 @@ in {
         ++ addIf config.laplace.security.secure-boot.enable ["/etc/secureboot"]
         ++ addIf config.laplace.features.services.traefik.enable [config.services.traefik.dataDir]
         ++ addIf config.laplace.features.services.forgejo.enable [config.services.forgejo.stateDir]
-        ++ addIf config.laplace.features.services.owntracks.enable [config.services.mosquitto.dataDir];
+        ++ addIf config.laplace.features.services.owntracks.enable [config.services.mosquitto.dataDir]
+        ++ addIf config.laplace.features.services.calibre-web.enable [
+          config.laplace.features.services.calibre-web.libraryPath
+          {
+            directory = "/var/lib/${config.services.calibre-web.dataDir}";
+            mode = "0750";
+            user = "calibre-web";
+            group = "calibre-web";
+          }
+        ];
 
       files =
         ["/etc/machine-id"]
