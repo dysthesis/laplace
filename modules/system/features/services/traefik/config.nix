@@ -94,6 +94,11 @@ in {
             subdomain = "draw";
           };
 
+          calibre-web = mkSubdomain {
+            service = "calibre-web";
+            subdomain = "babel";
+          };
+
           comp6841 = mkSubdomain {
             service = "comp6841";
             subdomain = "comp6841";
@@ -104,12 +109,16 @@ in {
           miniflux.loadBalancer.servers = [{url = "http://${config.services.miniflux.config.LISTEN_ADDR}";}];
           forgejo.loadBalancer.servers = [{url = "http://0.0.0.0:${toString config.services.forgejo.settings.server.HTTP_PORT}";}];
           searx.loadBalancer.servers = [{url = "http://${toString config.services.searx.settings.server.bind_address}:${toString config.services.searx.settings.server.port}";}];
+
           # TODO: Figure out how to not hardcode this
           openbooks.loadBalancer.servers = [{url = "http://127.0.0.1:8105";}];
           episteme.loadBalancer.servers = [{url = "http://localhost:8080";}];
           mosquitto.loadBalancer.servers = [{url = "http://127.0.0.1:8883";}];
           comp6841.loadBalancer.servers = [{url = "http://localhost:8081";}];
           excalidraw.loadBalancer.servers = [{url = "http://localhost:3030";}];
+          calibre-web.loadBalancer.servers = let
+            cfg = config.services.calibre-web.listen;
+          in [{url = "http://${cfg.ip}:${toString cfg.port}";}];
         };
       };
     };

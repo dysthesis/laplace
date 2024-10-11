@@ -103,6 +103,7 @@ in {
           caddy.enable = true;
           owntracks.enable = true;
           excalidraw.enable = true;
+          calibre-web.enable = true;
         };
 
         nh = {
