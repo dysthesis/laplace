@@ -1,6 +1,6 @@
 {
   service,
-  subdomain,
+  subdomain ? service,
   prefix ? "/",
 }: {
   inherit service;

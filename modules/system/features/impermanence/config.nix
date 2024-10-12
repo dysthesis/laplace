@@ -63,6 +63,9 @@ in {
             user = "calibre-web";
             group = "calibre-web";
           }
+        ]
+        ++ addIf config.laplace.features.services.vikunja.enable [
+          config.services.vikunja.database.path
         ];
 
       files =
