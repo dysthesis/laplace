@@ -15,7 +15,7 @@ in {
       ;
   in
     mkIf cfg.enable {
-      virtualisation.oci-containers.containers."${subdomain}" = {
+      virtualisation.oci-containers.containers.wallabag = {
         autoStart = true;
         image = "wallabag/wallabag:latest";
         ports = ["${toString port}:80"];
