@@ -23,11 +23,13 @@ in {
           "${dataPath}/data:/var/www/wallabag/data"
           "${dataPath}/images:/var/www/wallabag/web/assets/images"
         ];
+
         environment = {
           SYMFONY__ENV__DOMAIN_NAME = "http://${subdomain}.home";
           SYMFONY__ENV__FOSUSER_CONFIRMATION = "false";
           SYMFONY__ENV__SERVER_NAME = "Wallabag";
         };
+
         extraOptions = ["--pull=always"];
       };
     };
