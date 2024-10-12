@@ -104,6 +104,7 @@ in {
           owntracks.enable = true;
           excalidraw.enable = true;
           calibre-web.enable = true;
+          vikunja.enable = true;
         };
 
         nh = {
