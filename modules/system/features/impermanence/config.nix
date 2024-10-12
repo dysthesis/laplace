@@ -63,14 +63,14 @@ in {
             user = "calibre-web";
             group = "calibre-web";
           }
-        ]
-        ++ addIf config.laplace.features.services.vikunja.enable [
-          config.services.vikunja.database.path
         ];
 
       files =
         ["/etc/machine-id"]
-        ++ addIf config.laplace.network.dnscrypt-proxy.enable ["/etc/dnscrypt-proxy/blocked-names.txt"];
+        ++ addIf config.laplace.network.dnscrypt-proxy.enable ["/etc/dnscrypt-proxy/blocked-names.txt"]
+        ++ addIf config.laplace.features.services.vikunja.enable [
+          config.services.vikunja.database.path
+        ];
 
       users = let
         enabledUsers =
