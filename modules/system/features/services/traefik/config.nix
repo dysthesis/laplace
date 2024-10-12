@@ -76,7 +76,6 @@ in {
 
           openbooks = mkSubdomain {
             service = "openbooks";
-            subdomain = "openbooks";
           };
 
           episteme = mkSubdomain {
@@ -99,6 +98,11 @@ in {
             subdomain = "babel";
           };
 
+          vikunja = mkSubdomain {
+            service = "vikunja";
+            subdomain = "todo";
+          };
+
           comp6841 = mkSubdomain {
             service = "comp6841";
             subdomain = "comp6841";
@@ -119,6 +123,7 @@ in {
           calibre-web.loadBalancer.servers = let
             cfg = config.services.calibre-web.listen;
           in [{url = "http://${cfg.ip}:${toString cfg.port}";}];
+          vikunja.loadBalancer.servers = [{url = "http://localhost:${toString config.services.vikunja.port}";}];
         };
       };
     };

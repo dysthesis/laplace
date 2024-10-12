@@ -63,6 +63,14 @@ in {
             user = "calibre-web";
             group = "calibre-web";
           }
+        ]
+        ++ addIf config.laplace.features.services.vikunja.enable [
+          {
+            directory = "/var/lib/private/vikunja";
+            user = "vikunja";
+            group = "vikunja";
+            mode = "u=rwx,g=,o=";
+          }
         ];
 
       files =
