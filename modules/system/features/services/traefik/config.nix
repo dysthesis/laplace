@@ -103,6 +103,11 @@ in {
             subdomain = "todo";
           };
 
+          wallabag = mkSubdomain {
+            service = "wallabag";
+            inherit (config.laplace.features.services.wallabag) subdomain;
+          };
+
           comp6841 = mkSubdomain {
             service = "comp6841";
             subdomain = "comp6841";
@@ -124,6 +129,7 @@ in {
             cfg = config.services.calibre-web.listen;
           in [{url = "http://${cfg.ip}:${toString cfg.port}";}];
           vikunja.loadBalancer.servers = [{url = "http://localhost:${toString config.services.vikunja.port}";}];
+          wallabag.loadBalancer.servers = [{url = "http://localhost:${toString config.laplace.features.services.wallabag.port}";}];
         };
       };
     };
