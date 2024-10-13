@@ -73,7 +73,10 @@ in {
           }
         ]
         ++ addIf config.laplace.features.services.wallabag.enable [
-          config.laplace.features.services.wallabag.dataPath
+          {
+            directory = config.laplace.features.services.wallabag.dataPath;
+            mode = "0666";
+          }
         ];
 
       files =
