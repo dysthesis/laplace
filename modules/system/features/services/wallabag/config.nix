@@ -17,7 +17,6 @@ in {
     mkIf cfg.enable {
       virtualisation = {
         containers.registries.search = [
-          "docker.io"
           "gcr.io"
           "quay.io"
         ];
