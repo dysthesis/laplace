@@ -13,7 +13,7 @@ in {
       frontendHostname = "todo.dysthesis.com";
       settings = {
         service = {
-          # enableregistration = false;
+          enableregistration = false;
           enablecaldav = true;
           timezone = "Australia/Sydney";
           defaultsettings = {
