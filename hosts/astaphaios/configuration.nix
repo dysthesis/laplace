@@ -105,6 +105,7 @@ in {
           excalidraw.enable = true;
           calibre-web.enable = true;
           vikunja.enable = true;
+          wallabag.enable = true;
         };
 
         nh = {

@@ -71,6 +71,9 @@ in {
             group = "vikunja";
             mode = "u=rwx,g=,o=";
           }
+        ]
+        ++ addIf config.laplace.features.services.wallabag.enable [
+          config.laplace.features.services.wallabag.dataPath
         ];
 
       files =
