@@ -15,29 +15,22 @@ in {
       ;
   in
     mkIf cfg.enable {
-      virtualisation = {
-        containers.registries.search = [
-          "gcr.io"
-          "quay.io"
+      virtualisation.oci-containers.containers.wallabag = {
+        autoStart = true;
+        image = "wallabag/wallabag:latest";
+        ports = ["${toString port}:80"];
+        volumes = [
+          "${dataPath}/data:/var/www/wallabag/data"
+          "${dataPath}/images:/var/www/wallabag/web/assets/images"
         ];
 
-        oci-containers.containers.wallabag = {
-          autoStart = true;
-          image = "wallabag/wallabag:latest";
-          ports = ["${toString port}:80"];
-          volumes = [
-            "${dataPath}/data:/var/www/wallabag/data"
-            "${dataPath}/images:/var/www/wallabag/web/assets/images"
-          ];
-
-          environment = {
-            SYMFONY__ENV__DOMAIN_NAME = "http://${subdomain}.home";
-            SYMFONY__ENV__FOSUSER_CONFIRMATION = "false";
-            SYMFONY__ENV__SERVER_NAME = "Wallabag";
-          };
-
-          extraOptions = ["--pull=always"];
+        environment = {
+          SYMFONY__ENV__DOMAIN_NAME = "http://${subdomain}.home";
+          SYMFONY__ENV__FOSUSER_CONFIRMATION = "false";
+          SYMFONY__ENV__SERVER_NAME = "Wallabag";
         };
+
+        extraOptions = ["--pull=always"];
       };
     };
 }
