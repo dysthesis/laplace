@@ -25,7 +25,7 @@ in {
         ];
 
         environment = {
-          SYMFONY__ENV__DOMAIN_NAME = "http://${subdomain}.home";
+          SYMFONY__ENV__DOMAIN_NAME = "http://${subdomain}.dysthesis.com";
           SYMFONY__ENV__FOSUSER_CONFIRMATION = "false";
           SYMFONY__ENV__SERVER_NAME = "Wallabag";
         };
