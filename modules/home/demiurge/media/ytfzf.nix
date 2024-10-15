@@ -50,6 +50,7 @@
         https://youtube.com/channel/UC2hk14jph2yhIa1xuY3exdQ # Matthew Croughan
         https://youtube.com/channel/UCCKpicnIwBP3VPxBAZWDeNA # Money and Macro
         https://youtube.com/channel/UCODHrzPMGbNv67e84WDZhQQ # fern
+        https://youtube.com/channel/UC17ewSS9f2EnkCyMztCdoKA # gamozolabs
         https://youtube.com/channel/UCczAxLCL79gHXKYaEc9k-ZQ # Imperial
         https://youtube.com/channel/UCtYKe7-XbaDjpUwcU5x0bLg # neo
         https://youtube.com/channel/UCii9ezsUa_mBiSdw0PtSOaw # Hoog
