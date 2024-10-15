@@ -26,6 +26,7 @@ in {
       vesktop
       ghidra
       protonvpn-gui
+      zotero
     ];
   };
 
