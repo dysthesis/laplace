@@ -1501,11 +1501,11 @@
         "treefmt": "treefmt_3"
       },
       "locked": {
-        "lastModified": 1729472886,
-        "narHash": "sha256-7Yk62TA1WYyM2xMbQPyqUdJ54EVCyxYoOk0ZGOBCN/o=",
+        "lastModified": 1729479284,
+        "narHash": "sha256-IhR39H4PwV/DOcMjKBrnD0uc41uCWuBfkqyz+ynvu8c=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "4d4616b1e0a26d34dbef2f0df57874608aeb45bc",
+        "rev": "6ffef7a399fa193b9e4038325ce5a36d632d38eb",
         "type": "github"
       },
       "original": {
