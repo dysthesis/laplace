@@ -106,6 +106,7 @@ in {
           calibre-web.enable = true;
           vikunja.enable = true;
           wallabag.enable = true;
+          firefly-iii.enable = true;
         };
 
         nh = {

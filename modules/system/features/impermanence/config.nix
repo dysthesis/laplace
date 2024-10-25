@@ -77,7 +77,8 @@ in {
             directory = config.laplace.features.services.wallabag.dataPath;
             mode = "0755";
           }
-        ];
+        ]
+        ++ addIf config.laplace.features.services.firefly-iii.enable ["/var/lib/firefly-iii"];
 
       files =
         ["/etc/machine-id"]
