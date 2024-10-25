@@ -14,7 +14,7 @@ in {
         linuxKernel
         ;
     in
-      linuxPackagesFor linuxKernel.kernels.linux_hardened;
+      linuxPackagesFor linuxKernel.kernels.linux;
 
     services.qemuGuest.enable = true;
     networking = {
