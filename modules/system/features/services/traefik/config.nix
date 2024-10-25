@@ -112,6 +112,8 @@ in {
             service = "comp6841";
             subdomain = "comp6841";
           };
+
+          actual = mkSubdomain {service = "actual";};
         };
 
         services = {
@@ -130,6 +132,7 @@ in {
           in [{url = "http://${cfg.ip}:${toString cfg.port}";}];
           vikunja.loadBalancer.servers = [{url = "http://localhost:${toString config.services.vikunja.port}";}];
           wallabag.loadBalancer.servers = [{url = "http://localhost:${toString config.laplace.features.services.wallabag.port}";}];
+          actual.loadBalancer.servers = [{url = "http://${config.laplace.features.services.actual.address}:${toString config.laplace.features.services.actual.port}";}];
         };
       };
     };
