@@ -8,7 +8,6 @@
   inherit
     (lib)
     getExe
-    mkIf
     ;
 in {
   programs.zsh = {
