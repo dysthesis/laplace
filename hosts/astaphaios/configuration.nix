@@ -7,14 +7,14 @@
   initrdSSHKeyPath = "/etc/secrets/initrd/ssh_host_ed25519_key";
 in {
   config = {
-    system.activationScripts.generateInitrdSSHKeys =
-      /*
-      sh
-      */
-      ''
-        mkdir -pv /etc/secrets/initrd
-        ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -N "" -f ${initrdSSHKeyPath}
-      '';
+    boot.kernelPackages = let
+      inherit
+        (pkgs.unstable)
+        linuxPackagesFor
+        linuxKernel
+        ;
+    in
+      linuxPackagesFor linuxKernel.kernels.linux_hardened;
 
     services.qemuGuest.enable = true;
     networking = {
