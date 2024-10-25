@@ -105,6 +105,7 @@
       };
 
       features = {
+        podman.enable = true;
         nh = {
           enable = true;
           flakePath = "/home/demiurge/Documents/Projects/laplace";

@@ -1,7 +1,7 @@
 {
   wayland.windowManager.hyprland.settings = {
     gestures.workspace_swipe = true;
-    xwayland.force_zero_scaling = true;
+    # xwayland.force_zero_scaling = true;
 
     general = {
       gaps_in = 4;

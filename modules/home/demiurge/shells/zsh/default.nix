@@ -1,10 +1,15 @@
 {
+  systemConfig,
   config,
   pkgs,
   lib,
   ...
 }: let
-  inherit (lib) getExe;
+  inherit
+    (lib)
+    getExe
+    mkIf
+    ;
 in {
   programs.zsh = {
     enable = true;
@@ -20,22 +25,30 @@ in {
       highlighters = ["brackets"];
     };
 
-    shellAliases = with pkgs; {
-      ls = "${getExe eza} --icons";
-      ll = "${getExe eza} --icons -l";
-      la = "${getExe eza} --icons -la";
-      grep = "${getExe ripgrep}";
-      cat = "${getExe bat}";
-      ccat = "cat";
-      run = "nix run";
-      v = "nvim";
-      vim = "nvim";
-      temp = "cd $(mktemp -d)";
-      fcd = "cd $(${getExe fd} -tdirectory | ${getExe fzf})";
-      update = "nix flake update $FLAKE && nh os switch";
-      ":q" = "exit";
-      subs = "ytfzf -t -T iterm2 -c SI --sort";
-    };
+    shellAliases = with pkgs;
+      {
+        ls = "${getExe eza} --icons";
+        ll = "${getExe eza} --icons -l";
+        la = "${getExe eza} --icons -la";
+        grep = "${getExe ripgrep}";
+        cat = "${getExe bat}";
+        ccat = "cat";
+        run = "nix run";
+        v = "nvim";
+        vim = "nvim";
+        temp = "cd $(mktemp -d)";
+        fcd = "cd $(${getExe fd} -tdirectory | ${getExe fzf})";
+        update = "nix flake update $FLAKE && nh os switch";
+        ":q" = "exit";
+        subs = "ytfzf -t -T iterm2 -c SI --sort";
+      }
+      // (
+        if systemConfig.laplace.features.podman.enable
+        then {
+          docker = "podman";
+        }
+        else {}
+      );
 
     history = {
       # share history between different zsh sessions
