@@ -9,6 +9,7 @@ in {
   config = mkIf cfg.enable {
     services.firefly-iii = {
       enable = true;
+      package = pkgs.unstable.firefly-iii;
       settings = {
         APP_KEY_FILE = config.sops.secrets.firefly-key.path;
         DB_CONNECTION = "mysql";
