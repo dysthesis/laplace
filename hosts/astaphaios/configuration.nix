@@ -7,14 +7,7 @@
   initrdSSHKeyPath = "/etc/secrets/initrd/ssh_host_ed25519_key";
 in {
   config = {
-    boot.kernelPackages = let
-      inherit
-        (pkgs.unstable)
-        linuxPackagesFor
-        linuxKernel
-        ;
-    in
-      linuxPackagesFor linuxKernel.kernels.linux;
+    boot.kernelPackages = pkgs.linuxPackages_latest;
 
     services.qemuGuest.enable = true;
     networking = {
