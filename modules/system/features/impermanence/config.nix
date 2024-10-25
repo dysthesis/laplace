@@ -78,7 +78,8 @@ in {
             mode = "0755";
           }
         ]
-        ++ addIf config.laplace.features.services.firefly-iii.enable ["/var/lib/firefly-iii"];
+        ++ addIf config.laplace.features.services.firefly-iii.enable ["/var/lib/firefly-iii"]
+        ++ addIf config.laplace.features.services.actual.enable [config.laplace.features.services.actual.dataDir];
 
       files =
         ["/etc/machine-id"]
