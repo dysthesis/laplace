@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs?rev=58b124e48c790137071cb9bfc03733c5aa7073e5";
 
     episteme.url = "git+https://git.dysthesis.com/dysthesis/episteme.git";
     comp6841.url = "git+https://git.dysthesis.com/dysthesis/COMP6841-Tutoring.git";
