@@ -8,6 +8,7 @@
         georgia-fonts
         cartograph-nf
         oledppuccin-tmux
+        ropr
         ;
     };
   };
