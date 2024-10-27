@@ -5,7 +5,7 @@
   ...
 }: let
   inherit
-    (pkgs)
+    (pkgs.unstable)
     linuxPackagesFor
     linuxKernel
     ;
