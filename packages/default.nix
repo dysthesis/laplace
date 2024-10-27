@@ -6,5 +6,5 @@ in {
   georgia-fonts = callPackage ./georgia-fonts {};
   cartograph-nf = callPackage ./cartograph-nf {};
   oledppuccin-tmux = callPackage ./oledppuccin-tmux {};
-  askii = callPackage ./askii {};
+  ropr = callPackage ./ropr {};
 }
