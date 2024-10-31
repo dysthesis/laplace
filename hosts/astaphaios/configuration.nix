@@ -81,6 +81,8 @@ in {
       features = {
         ssh.enable = true;
 
+        podman.enable = true;
+
         restic = {
           enable = true;
           paths = ["/nix/persist"];

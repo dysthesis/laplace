@@ -123,6 +123,8 @@
         impermanence.enable = true;
         virtualisation.enable = true;
 
+        podman.enable = true;
+
         hardening = {
           kernel.enable = true;
           malloc.enable = false; # Scudo breaks firefox?
