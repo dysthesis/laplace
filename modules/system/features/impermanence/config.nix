@@ -127,6 +127,7 @@ in {
               mode = "0700";
             }
           ]
+          ++ addIf config.laplace.features.podman.enable [".local/share/containers"]
           ++ addIf (config.home-manager.users.${user}.programs.password-store.enable or false) [".local/share/password-store"]
           ++ addIf (config.home-manager.users.${user}.programs.atuin.enable or false) [".local/share/atuin"]
           ++ addIf (config.home-manager.users.${user}.programs.direnv.enable or false) [".local/share/direnv"]
