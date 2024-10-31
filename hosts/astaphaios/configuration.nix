@@ -110,7 +110,7 @@ in {
         };
 
         impermanence.enable = true;
-        virtualisation.enable = false;
+        virtualisation.enable = true;
 
         hardening = {
           kernel.enable = true;
