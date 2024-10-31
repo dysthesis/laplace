@@ -14,7 +14,12 @@ in {
         enable = true;
         flags = ["-af"];
       };
-      extraPackages = with pkgs; [gvisor];
+
+      # Extra packages to be installed in the Podman wrapper
+      extraPackages = with pkgs; [
+        podman-compose
+        gvisor
+      ];
     };
   };
 }

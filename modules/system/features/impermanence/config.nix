@@ -50,6 +50,7 @@ in {
             group = "postgres";
           }
         ]
+        ++ addIf config.laplace.features.podman.enable ["/var/lib/containers"]
         ++ addIf config.laplace.network.bluetooth.enable ["/var/lib/bluetooth"]
         ++ addIf config.laplace.security.secure-boot.enable ["/etc/secureboot"]
         ++ addIf config.laplace.features.services.traefik.enable [config.services.traefik.dataDir]

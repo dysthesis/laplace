@@ -28,6 +28,10 @@ in {
       protonvpn-gui
       zotero
     ];
+    file.".gdbinit".text = ''
+      source ${pkgs.pwndbg}/share/pwndbg/gdbinit.py
+      set auto-load safe-path /nix/store
+    '';
   };
 
   imports = importInDirectory ./.;
