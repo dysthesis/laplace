@@ -5,9 +5,9 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.laplace.features.virtualisation.enable;
+  cfg = config.laplace.features.virtualisation;
 in {
-  config = mkIf cfg {
+  config = mkIf cfg.enable {
     virtualisation = {
       spiceUSBRedirection.enable = true;
 
