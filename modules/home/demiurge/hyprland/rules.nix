@@ -12,5 +12,7 @@
     "float, title:^(mpv)$"
     "float, title:^(Picture-in-Picture)$"
     "pin, title:^(Picture-in-Picture)$"
+    # https://www.reddit.com/r/hyprland/comments/16rwbun/hyprland_issue_with_java_gui/
+    "nofocus,class:^ghidra-.+$,title:^win.+$,floating:1,fullscreen:0"
   ];
 }
