@@ -102,6 +102,7 @@ in {
           vikunja.enable = true;
           wallabag.enable = true;
           actual.enable = true;
+          tubearchivist.enable = true;
         };
 
         nh = {

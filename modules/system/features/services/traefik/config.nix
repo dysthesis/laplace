@@ -114,6 +114,11 @@ in {
           };
 
           actual = mkSubdomain {service = "actual";};
+
+          tubearchivist = mkSubdomain {
+            service = "tubearchivist";
+            inherit (config.laplace.features.services.tubearchivist) subdomain;
+          };
         };
 
         services = {
@@ -133,6 +138,7 @@ in {
           vikunja.loadBalancer.servers = [{url = "http://localhost:${toString config.services.vikunja.port}";}];
           wallabag.loadBalancer.servers = [{url = "http://localhost:${toString config.laplace.features.services.wallabag.port}";}];
           actual.loadBalancer.servers = [{url = "http://${config.laplace.features.services.actual.address}:${toString config.laplace.features.services.actual.port}";}];
+          tubearchivist.loadBalancer.servers = [{url = "http://localhost:${toString config.laplace.features.services.tubearchivist.port}";}];
         };
       };
     };
