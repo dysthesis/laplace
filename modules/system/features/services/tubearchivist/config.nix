@@ -72,7 +72,7 @@ in {
       wantedBy = ["multi-user.target"];
       serviceConfig.Type = "oneshot";
       script = let
-        dockercli = "${config.virtualisation.podman.package}/bin/docker";
+        dockercli = "${config.virtualisation.podman.package}/bin/podman";
       in ''
         # Put a true at the end to prevent getting non-zero return code, which will
         # crash the whole service.
