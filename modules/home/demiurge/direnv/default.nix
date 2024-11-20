@@ -19,5 +19,5 @@ in {
       acc
       // {"enable${curr}Integration" = config.programs.${toLower curr}.enable;})
     {}
-    ["Zsh" "Bash" "Fish"];
+    ["Zsh" "Bash"];
 }

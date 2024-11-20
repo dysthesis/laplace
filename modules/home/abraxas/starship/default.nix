@@ -7,9 +7,11 @@
 
   programs.starship = {
     enable = true;
+    enableTransience = true;
+    enableFishIntegration = true;
 
     settings = {
-      add_newline = true;
+      add_newline = false;
 
       character = {
         error_symbol = "[┃](bright-red)";
