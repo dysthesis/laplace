@@ -21,7 +21,7 @@
     groups;
 in {
   config = let
-    shell = "zsh";
+    shell = "bash";
   in
     mkIf cfg {
       users.users.demiurge = {
@@ -50,7 +50,5 @@ in {
             "libvirt"
           ];
       };
-
-      programs.${shell}.enable = true;
     };
 }

@@ -11,7 +11,7 @@
     ;
 in {
   programs.zsh = {
-    enable = true;
+    enable = false;
     dotDir = ".config/zsh";
 
     sessionVariables = {LC_ALL = "en_AU.UTF-8";};

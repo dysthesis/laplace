@@ -3,15 +3,16 @@
   pkgs,
   ...
 }: {
-  home.packages = with pkgs; [
-    # ytfzf
-    (ytfzf.override {
-      mpv = mpv.override {
-        inherit (config.programs.mpv) scripts;
-      };
-    })
-    ueberzugpp
-  ];
+  home.packages =
+    (with pkgs.unstable; [
+      # ytfzf
+      (ytfzf.override {
+        mpv = mpv.override {
+          inherit (config.programs.mpv) scripts;
+        };
+      })
+    ])
+    ++ (with pkgs; [ueberzugpp]);
   home.file = {
     ".config/ytfzf/conf.sh".text =
       /*
