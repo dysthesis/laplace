@@ -12,11 +12,27 @@ config.colors = {
 	background = "#000000",
 	foreground = "#ffffff",
 }
-config.font = wezterm.font("JetBrainsMono Nerd Font", {
-	weight = "Regular",
-	stretch = "Normal",
-	style = "Normal",
+config.font = wezterm.font({
+	family = "JetBrainsMono Nerd Font",
+	harfbuzz_features = {
+		"calt",
+		"clig",
+		"liga",
+		"ss20",
+		"cv02",
+		"cv03",
+		"cv04",
+		"cv05",
+		"cv06",
+		"cv07",
+		"cv11",
+		"cv14",
+		"cv15",
+		"cv16",
+		"cv17",
+	},
 })
+
 config.font_size = size
 config.line_height = 1.2
 config.color_scheme = "Catppuccin Mocha"
