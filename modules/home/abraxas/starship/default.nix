@@ -8,10 +8,9 @@
   programs.starship = {
     enable = true;
     enableTransience = true;
-    enableFishIntegration = true;
 
     settings = {
-      add_newline = false;
+      add_newline = true;
 
       character = {
         error_symbol = "[┃](bright-red)";
@@ -47,8 +46,8 @@
       format = ''
         $character $shell $directory $username $hostname $git_branch $git_status $git_commit $fill
         $character [❯](red)[❯](yellow)[❯ ](green)
-
       '';
+      right_format = "\n$cmd_duration\n";
 
       git_branch = {
         format = "on branch [](fg:surface0)[$symbol](bg:surface0 fg:mauve)[](fg:surface0 bg:mantle)[ $branch]($style)[](fg:mantle) ";
@@ -109,8 +108,6 @@
           yellow = "#f9e2af";
         };
       };
-
-      right_format = "\n$cmd_duration\n";
 
       shell = {
         disabled = false;

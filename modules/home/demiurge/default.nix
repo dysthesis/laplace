@@ -18,20 +18,16 @@ in {
       BROWSER = "${getExe pkgs.firefox}";
       EDITOR = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
     };
-    packages =
-      (with pkgs; [
-        inputs.poincare.packages.${pkgs.system}.default
-        firefox
-        brave
-        signal-desktop
-        vesktop
-        ghidra
-        protonvpn-gui
-        zotero
-      ])
-      ++ (with pkgs.unstable; [
-        zed-editor
-      ]);
+    packages = with pkgs; [
+      inputs.poincare.packages.${pkgs.system}.default
+      firefox
+      brave
+      signal-desktop
+      vesktop
+      ghidra
+      protonvpn-gui
+      zotero
+    ];
 
     file.".gdbinit".text = ''
       source ${pkgs.pwndbg}/share/pwndbg/gdbinit.py
