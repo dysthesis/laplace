@@ -1,18 +1,14 @@
 {
-  systemConfig,
   config,
   pkgs,
   lib,
   ...
-}: let
-  inherit
-    (lib)
-    getExe
-    ;
-in {
+}: {
   programs.zsh = {
     enable = false;
     dotDir = ".config/zsh";
+
+    inherit (config.laplace.shells) shellAliases;
 
     sessionVariables = {LC_ALL = "en_AU.UTF-8";};
 
@@ -23,31 +19,6 @@ in {
       enable = true;
       highlighters = ["brackets"];
     };
-
-    shellAliases = with pkgs;
-      {
-        ls = "${getExe eza} --icons";
-        ll = "${getExe eza} --icons -l";
-        la = "${getExe eza} --icons -la";
-        grep = "${getExe ripgrep}";
-        cat = "${getExe bat}";
-        ccat = "cat";
-        run = "nix run";
-        v = "nvim";
-        vim = "nvim";
-        temp = "cd $(mktemp -d)";
-        fcd = "cd $(${getExe fd} -tdirectory | ${getExe fzf})";
-        update = "nix flake update $FLAKE && nh os switch";
-        ":q" = "exit";
-        subs = "ytfzf -t -T iterm2 -c SI --sort";
-      }
-      // (
-        if systemConfig.laplace.features.podman.enable
-        then {
-          docker = "podman";
-        }
-        else {}
-      );
 
     history = {
       # share history between different zsh sessions
