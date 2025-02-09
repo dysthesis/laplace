@@ -6,7 +6,7 @@
   inherit (lib.laplace.modules) importInDirectory;
 in {
   config.nix = {
-    package = pkgs.nixFlakes;
+    package = pkgs.nixVersions.stable;
     settings = {
       experimental-features = ["nix-command" "flakes"];
       auto-optimise-store = true;

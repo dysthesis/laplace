@@ -47,34 +47,29 @@
       cmd = "${getExe pkgs.signal-desktop} --enable-features=UseOzonePlatform --ozone-platform=wayland";
     }
     rec {
-      name = "term";
+      name = "ghostty.term";
       prefix = "t";
-      cmd = "wezterm start --class=${name}";
+      cmd = "ghostty --class=${name}";
     }
     rec {
-      name = "notes";
+      name = "ghostty.notes";
       prefix = "n";
-      cmd = "wezterm start --class=${name} -- sh -c 'tmux new-session -A -s Notes -c ~/Documents/Notes/'";
+      cmd = "ghostty --class=${name} -e 'tmux attach-session -t Notes || tmux new-session -s Notes -c ~/Documents/Notes/Contents/ nvim'";
     }
     rec {
-      name = "fm";
+      name = "ghostty.fm";
       prefix = "f";
-      cmd = "wezterm start --class=${name} -- yazi";
+      cmd = "ghostty --class=${name} -e yazi";
     }
     rec {
-      name = "btop";
+      name = "ghostty.btop";
       prefix = "b";
-      cmd = "wezterm start --class=${name} -- btop";
+      cmd = "ghostty --class=${name} -e btop";
     }
     rec {
-      name = "task";
+      name = "ghostty.task";
       prefix = "d";
-      cmd = "wezterm start --class=${name} -- ${getExe taskwarrior-0_25_4}";
-    }
-    rec {
-      name = "calendar";
-      prefix = "c";
-      cmd = "wezterm start --class=${name} -- ${getExe pkgs.calcurse}";
+      cmd = "ghostty --class=${name} -e ${getExe taskwarrior-0_25_4}";
     }
   ];
 

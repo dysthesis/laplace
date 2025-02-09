@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   ...
@@ -55,12 +56,12 @@
 in {
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
-    bind =
+    bind = with pkgs;
       [
-        "$mod, Return, exec, wezterm start --always-new-process"
+        "$mod, Return, exec, ghostty"
         "$mod, Q, killactive"
         "$mod, R, exec, bemenu-run"
-        ''$mod, P, exec, ${getExe pkgs.grim} -g "$(${getExe pkgs.slurp})" - | ${getExe pkgs.swappy} -f -''
+        ''$mod, P, exec, ${getExe grim} -g "$(${getExe slurp})" - | ${getExe swappy} -f -''
         "$mod+Shift, P, exec, ${getExe passmenu}"
         "$mod+Shift, Escape, exec, ${getExe powermenu}"
         "$mod, H, movefocus, l"

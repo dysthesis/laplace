@@ -15,7 +15,7 @@ in {
   home.packages = with pkgs; [
     wl-clipboard
     ueberzugpp
-    (nerdfonts.override {fonts = ["JetBrainsMono"];})
+    nerd-fonts.jetbrains-mono
   ];
 
   programs.wezterm = let
@@ -25,7 +25,7 @@ in {
       else 10;
   in
     {
-      enable = true;
+      enable = false;
       package = inputs.wezterm.packages.${pkgs.system}.default;
       extraConfig =
         /*

@@ -14,10 +14,10 @@
       };
     };
 
-    iconTheme = {
-      name = "Tela-black-dark";
-      package = pkgs.tela-icon-theme;
-    };
+    # iconTheme = {
+    #   name = "Tela-black-dark";
+    #   package = pkgs.tela-icon-theme;
+    # };
 
     font = {
       name = "SF Pro Display";

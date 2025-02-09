@@ -6,13 +6,13 @@
   fontSize =
     if systemConfig.networking.hostName == "yaldabaoth"
     then 8
-    else 10;
+    else 9;
   line-height =
     if systemConfig.networking.hostName == "yaldabaoth"
     then 28
     else 34;
 in {
-  home.packages = [(pkgs.nerdfonts.override {fonts = ["JetBrainsMono"];})];
+  home.packages = [pkgs.nerd-fonts.jetbrains-mono];
 
   programs.bemenu = {
     enable = true;

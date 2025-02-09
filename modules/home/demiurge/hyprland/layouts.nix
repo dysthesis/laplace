@@ -9,7 +9,7 @@
     dwindle = {
       pseudotile = false;
       preserve_split = "yes";
-      no_gaps_when_only = false;
+      # no_gaps_when_only = false;
     };
 
     group = {

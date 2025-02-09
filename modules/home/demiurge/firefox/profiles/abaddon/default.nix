@@ -37,6 +37,6 @@ in {
   with self.packages.${pkgs.system}; [
     georgia-fonts
     sf-pro
-    (nerdfonts.override {fonts = ["JetBrainsMono"];})
+    nerd-fonts.jetbrains-mono
   ];
 }

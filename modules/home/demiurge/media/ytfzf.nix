@@ -3,24 +3,22 @@
   pkgs,
   ...
 }: {
-  home.packages =
-    (with pkgs.unstable; [
-      # ytfzf
-      (ytfzf.override {
-        mpv = mpv.override {
-          inherit (config.programs.mpv) scripts;
-        };
-      })
-    ])
-    ++ (with pkgs; [ueberzugpp]);
+  home.packages = with pkgs; [
+    ueberzugpp
+    (ytfzf.override {
+      mpv = mpv.override {
+        inherit (config.programs.mpv) scripts;
+      };
+    })
+  ];
   home.file = {
     ".config/ytfzf/conf.sh".text =
       /*
       sh
       */
       ''
-        pages_to_scrape=5
-        sub_link_count=10
+        pages_to_scrape=10
+        sub_link_count=50
       '';
 
     ".config/ytfzf/subscriptions".text =

@@ -563,6 +563,7 @@
       },
       "original": {
         "owner": "dysthesis",
+        "ref": "main",
         "repo": "poincare",
         "type": "github"
       }
