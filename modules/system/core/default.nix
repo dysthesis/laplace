@@ -70,7 +70,6 @@ in {
 
   fonts.packages = with pkgs;
     mkIf (config.networking.hostName != "astaphaios") [
-      nerd-fonts.jetbrains-mono
       noto-fonts
       noto-fonts-emoji
       noto-fonts-cjk-sans
