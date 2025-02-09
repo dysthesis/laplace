@@ -54,7 +54,7 @@
     rec {
       name = "ghostty.notes";
       prefix = "n";
-      cmd = "ghostty --class=${name} -e 'tmux attach-session -t Notes || tmux new-session -s Notes -c ~/Documents/Notes/Contents/ nvim'";
+      cmd = "ghostty --class=${name} -e 'tmux new-session -As Notes -c ~/Documents/Notes/Contents/ \'direnv exec . nvim\''";
     }
     rec {
       name = "ghostty.fm";
