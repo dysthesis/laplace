@@ -37,6 +37,7 @@ in {
   with self.packages.${pkgs.system}; [
     georgia-fonts
     sf-pro
-    nerd-fonts.jetbrains-mono
+    jbcustom-nf
+    # nerd-fonts.jetbrains-mono
   ];
 }

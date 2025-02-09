@@ -20,7 +20,7 @@
     };
 
     overlayAttrs = {
-      inherit (config.packages) generate-domains-blocklist sf-pro;
+      inherit (config.packages) generate-domains-blocklist sf-pro jbcustom-nf;
     };
   };
 }

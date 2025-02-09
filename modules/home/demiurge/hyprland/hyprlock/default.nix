@@ -1,10 +1,13 @@
 {
+  self,
   systemConfig,
   pkgs,
   ...
 }: {
-  home.packages = with pkgs; [
+  home.packages = with pkgs;
+  with self.packages.${pkgs.system}; [
     jq
+    jbcustom-nf
   ];
   programs.hyprlock = {
     enable = true;
@@ -55,7 +58,7 @@
             shadow_color = rgb(0,0,0)
             shadow_boost = 1.2
             font_size = 150
-            font_family = JetBrainsMono Nerd Font Black
+            font_family = JBMono Nerd Font Black
             position = 0, -100
             halign = center
             valign = top
@@ -67,7 +70,7 @@
             text = cmd[update:1000] date +"%M"
             color = rgba(255, 255, 255, 1)
             font_size = 150
-            font_family = JetBrainsMono Nerd Font Regular
+            font_family = JBMono Nerd Font Regular
             position = 0, -270
             halign = center
             valign = top

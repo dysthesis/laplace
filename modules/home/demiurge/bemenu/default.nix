@@ -1,4 +1,5 @@
 {
+  self,
   systemConfig,
   pkgs,
   ...
@@ -12,7 +13,7 @@
     then 28
     else 34;
 in {
-  home.packages = [pkgs.nerd-fonts.jetbrains-mono];
+  home.packages = [self.packages.${pkgs.system}.jbcustom-nf];
 
   programs.bemenu = {
     enable = true;
@@ -21,7 +22,7 @@ in {
       ignorecase = true;
       bottom = true;
       prompt = "";
-      fn = "JetBrainsMono Nerd Font ${toString fontSize}";
+      fn = "JBMono Nerd Font ${toString fontSize}";
       # Horizontal padding
       hp = 8;
       fb = "#000000";

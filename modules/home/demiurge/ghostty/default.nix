@@ -10,6 +10,9 @@
     toLower
     ;
 in {
+  home.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+  ];
   programs.ghostty =
     {
       enable = true;

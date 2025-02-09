@@ -13,7 +13,7 @@ config.colors = {
 	foreground = "#ffffff",
 }
 config.font = wezterm.font({
-	family = "JetBrainsMono Nerd Font",
+	family = "JBMono Nerd Font",
 	harfbuzz_features = {
 		"calt",
 		"clig",
