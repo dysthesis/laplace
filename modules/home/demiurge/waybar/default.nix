@@ -1,4 +1,5 @@
 {
+  self,
   systemConfig,
   pkgs,
   ...
@@ -30,6 +31,9 @@
     '';
   };
 in {
+  home.packages = with self.packages.${pkgs.system}; [
+    jbcustom-nf
+  ];
   xdg.configFile."waybar/style.css".text = import ./style.nix systemConfig;
   xdg.configFile."waybar/themes" = {
     source = ./themes;

@@ -1,4 +1,12 @@
-{systemConfig, ...}: {
+{
+  self,
+  pkgs,
+  systemConfig,
+  ...
+}: {
+  home.packages = with self.packages.${pkgs.system}; [
+    jbcustom-nf
+  ];
   programs.zathura = {
     enable = true;
     options = {
@@ -7,7 +15,7 @@
           if systemConfig.networking.hostName == "yaldabaoth"
           then 6
           else 8;
-      in "JetBrainsMono Nerd Font ${toString size}";
+      in "JBMono Nerd Font ${toString size}";
       sandbox = "strict";
       smooth-scroll = true;
       guioptions = "sv";

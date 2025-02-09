@@ -7,7 +7,7 @@ in ''
   * {
       border: none;
       border-radius: 0px;
-      font-family: "JetBrainsMono Nerd Font";
+      font-family: "JBMono Nerd Font";
       font-weight: bold;
       font-size: ${toString size}px;
       min-height: ${toString size}px;

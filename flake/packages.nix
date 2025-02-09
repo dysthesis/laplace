@@ -7,6 +7,7 @@
         generate-domains-blocklist
         georgia-fonts
         cartograph-nf
+        jbcustom-nf
         oledppuccin-tmux
         ropr
         ;

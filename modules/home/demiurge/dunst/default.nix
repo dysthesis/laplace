@@ -1,4 +1,5 @@
 {
+  self,
   systemConfig,
   lib,
   pkgs,
@@ -29,7 +30,11 @@
       fi
     '';
 in {
-  home.packages = [volume];
+  home.packages = with pkgs;
+  with self.packages.${pkgs.system}; [
+    volume
+    jbcustom-nf
+  ];
   services.dunst = {
     enable = true;
     # iconTheme = {
@@ -50,7 +55,7 @@ in {
           then 228
           else 380;
         offset = "0x15";
-        font = "JetBrainsMono Nerd Font ${toString (
+        font = "JBMono Nerd Font ${toString (
           if systemConfig.networking.hostName == "yaldabaoth"
           then 8
           else 10

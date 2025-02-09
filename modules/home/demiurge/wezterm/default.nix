@@ -1,4 +1,5 @@
 {
+  self,
   config,
   lib,
   inputs,
@@ -12,10 +13,11 @@
     toLower
     ;
 in {
-  home.packages = with pkgs; [
+  home.packages = with pkgs;
+  with self.packages.${pkgs.system}; [
     wl-clipboard
     ueberzugpp
-    nerd-fonts.jetbrains-mono
+    jbcustom-nf
   ];
 
   programs.wezterm = let

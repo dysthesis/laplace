@@ -1,4 +1,9 @@
 {
+  self,
+  pkgs,
+  ...
+}: {
+  home.packages = with self.packages.${pkgs.system}; [jbcustom-nf];
   wayland.windowManager.hyprland.settings = {
     gestures.workspace_swipe = true;
     # xwayland.force_zero_scaling = true;
@@ -20,7 +25,7 @@
       disable_splash_rendering = true;
       force_default_wallpaper = 0;
       disable_hyprland_logo = true;
-      font_family = "JetBrainsMono Nerd Font";
+      font_family = "JBMono Nerd Font";
 
       vfr = true;
 

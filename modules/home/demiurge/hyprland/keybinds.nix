@@ -1,4 +1,5 @@
 {
+  self,
   config,
   pkgs,
   lib,
@@ -43,7 +44,7 @@
       password_files=( "''${password_files[@]#"$prefix"/}" )
       password_files=( "''${password_files[@]%.gpg}" )
 
-      password=$(printf '%s\n' "''${password_files[@]}" | bemenu -b --fn "JetBrainsMono Nerd Font 10" --fb "#000000" --ff "#ffffff" --nb "#000000" --nf "#ffffff" --tb "#89b4fa" --hb "#000000" --tf "#000000" --hf "#89b4fa" --ab "#000000" -p "󰟵" -H 34 --hp 8 "$@")
+      password=$(printf '%s\n' "''${password_files[@]}" | bemenu -b --fn "JBMono Nerd Font 10" --fb "#000000" --ff "#ffffff" --nb "#000000" --nf "#ffffff" --tb "#89b4fa" --hb "#000000" --tf "#000000" --hf "#89b4fa" --ab "#000000" -p "󰟵" -H 34 --hp 8 "$@")
 
       [[ -n $password ]] || exit
 
@@ -54,6 +55,7 @@
       fi
     '';
 in {
+  home.packages = with self.packages.${pkgs.system}; [jbcustom-nf];
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
     bind = with pkgs;

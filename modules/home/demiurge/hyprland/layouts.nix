@@ -1,4 +1,9 @@
 {
+  self,
+  pkgs,
+  ...
+}: {
+  home.packages = with self.packages.${pkgs.system}; [jbcustom-nf];
   wayland.windowManager.hyprland.settings = {
     master = {
       new_status = "slave";
@@ -16,7 +21,7 @@
       "col.border_active" = "rgba(89b4faff)";
       "col.border_inactive" = "rgba(6c7086ff)";
       groupbar = {
-        font_family = "JetBrainsMono NF";
+        font_family = "JBMono Nerd Font";
         font_size = 8;
         "col.active" = "rgba(89b4faff)";
         "col.inactive" = "rgba(6c7086ff)";
