@@ -67,7 +67,7 @@
   };
 
   # Some dependencies
-  home.packages = with pkgs.unstable; [
+  home.packages = with pkgs; [
     sqlite # For fzf
     fzf
   ];

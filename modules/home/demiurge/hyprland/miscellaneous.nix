@@ -12,7 +12,7 @@
       layout = "master";
       "col.active_border" = "rgb(ffffff)";
 
-      apply_sens_to_raw = 0;
+      # apply_sens_to_raw = 0;
     };
 
     misc = {
@@ -26,7 +26,7 @@
 
       # window swallowing
       enable_swallow = true; # hide windows that spawn other windows
-      swallow_regex = "^(org.wezfurlong.wezterm)$";
+      swallow_regex = "^(ghostty)$";
 
       # dpms
       mouse_move_enables_dpms = true; # enable dpms on mouse/touchpad action

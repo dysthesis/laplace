@@ -32,12 +32,10 @@ in {
   home.packages = [volume];
   services.dunst = {
     enable = true;
-    iconTheme = {
-      package = pkgs.tela-circle-icon-theme.override {
-        colorVariants = ["dracula"];
-      };
-      name = "Tela-dracula-dark";
-    };
+    # iconTheme = {
+    #   package = pkgs.tela-icon-theme;
+    #   name = "Tela-black-dark";
+    # };
     settings = {
       global = {
         monitor = 0;

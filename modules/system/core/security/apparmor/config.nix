@@ -30,16 +30,14 @@ in {
       # apparmor policies
       policies = {
         "default_deny" = {
-          enforce = false;
-          enable = false;
+          state = "disable";
           profile = ''
             profile default_deny /** { }
           '';
         };
 
         "sudo" = {
-          enforce = false;
-          enable = false;
+          state = "disable";
           profile = ''
             ${pkgs.sudo}/bin/sudo {
               file /** rwlkUx,
@@ -48,8 +46,7 @@ in {
         };
 
         "nix" = {
-          enforce = false;
-          enable = false;
+          state = "disable";
           profile = ''
             ${config.nix.package}/bin/nix {
               unconfined,

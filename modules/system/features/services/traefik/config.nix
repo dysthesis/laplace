@@ -78,10 +78,10 @@ in {
             service = "openbooks";
           };
 
-          episteme = mkSubdomain {
-            service = "episteme";
-            subdomain = "notes";
-          };
+          # episteme = mkSubdomain {
+          #   service = "episteme";
+          #   subdomain = "notes";
+          # };
 
           owntracks = mkSubdomain {
             service = "mosquitto";
@@ -128,7 +128,7 @@ in {
 
           # TODO: Figure out how to not hardcode this
           openbooks.loadBalancer.servers = [{url = "http://127.0.0.1:8105";}];
-          episteme.loadBalancer.servers = [{url = "http://localhost:8080";}];
+          # episteme.loadBalancer.servers = [{url = "http://localhost:8080";}];
           mosquitto.loadBalancer.servers = [{url = "http://127.0.0.1:8883";}];
           comp6841.loadBalancer.servers = [{url = "http://localhost:8081";}];
           excalidraw.loadBalancer.servers = [{url = "http://localhost:3030";}];

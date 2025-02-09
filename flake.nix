@@ -2,10 +2,10 @@
   description = "Description for the project";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs?rev=58b124e48c790137071cb9bfc03733c5aa7073e5";
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs";
 
-    episteme.url = "git+https://git.dysthesis.com/dysthesis/episteme.git";
+    # episteme.url = "git+https://git.dysthesis.com/dysthesis/episteme.git";
 
     # Modularise your flake
     flake-parts = {
@@ -15,7 +15,7 @@
 
     # Get Nix to manage your home as well.
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -68,15 +68,7 @@
     impermanence.url = "github:nix-community/impermanence";
 
     # My own Neovim flake
-    poincare = {
-      url = "github:dysthesis/poincare";
-      # inputs = {
-      #   nixpkgs.follows = "nixpkgs";
-      #   flake-parts.follows = "flake-parts";
-      #   systems.follows = "systems";
-      #   treefmt.follows = "treefmt";
-      # };
-    };
+    poincare.url = "github:dysthesis/poincare/main";
 
     # A nice wrapper for Nix
     nh = {

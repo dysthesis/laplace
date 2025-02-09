@@ -1,5 +1,5 @@
 {pkgs, ...}: {
-  packages = with pkgs.unstable; [
+  home.packages = with pkgs; [
     zed-editor
   ];
   xdg.configFile."zed/settings.json".text = builtins.toJSON {

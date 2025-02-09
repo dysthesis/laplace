@@ -3,7 +3,7 @@
     devShells.default = pkgs.mkShell {
       name = "Laplace development shell";
       packages = with pkgs; [
-        nil
+        nixd
         alejandra
         statix
         deadnix
