@@ -1,10 +1,10 @@
 {
-  self,
+  inputs,
   pkgs,
   systemConfig,
   ...
 }: {
-  home.packages = with self.packages.${pkgs.system}; [
+  home.packages = with inputs.babel.packages.${pkgs.system}; [
     jbcustom-nf
   ];
   programs.zathura = {

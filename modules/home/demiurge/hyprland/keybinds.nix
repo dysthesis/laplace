@@ -1,6 +1,5 @@
 {
-  self,
-  config,
+  inputs,
   pkgs,
   lib,
   ...
@@ -55,7 +54,7 @@
       fi
     '';
 in {
-  home.packages = with self.packages.${pkgs.system}; [jbcustom-nf];
+  home.packages = with inputs.babel.packages.${pkgs.system}; [jbcustom-nf];
   wayland.windowManager.hyprland.settings = {
     "$mod" = "SUPER";
     bind = with pkgs;

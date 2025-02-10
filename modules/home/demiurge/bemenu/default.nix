@@ -1,5 +1,5 @@
 {
-  self,
+  inputs,
   systemConfig,
   pkgs,
   ...
@@ -13,7 +13,7 @@
     then 28
     else 34;
 in {
-  home.packages = [self.packages.${pkgs.system}.jbcustom-nf];
+  home.packages = [inputs.babel.packages.${pkgs.system}.jbcustom-nf];
 
   programs.bemenu = {
     enable = true;
