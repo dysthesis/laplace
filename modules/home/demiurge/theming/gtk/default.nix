@@ -1,6 +1,6 @@
 {
   systemConfig,
-  self,
+  inputs,
   pkgs,
   ...
 }: {
@@ -25,7 +25,7 @@
         if systemConfig.networking.hostName == "yaldabaoth"
         then 8
         else 10;
-      package = self.packages.${pkgs.system}.sf-pro;
+      package = inputs.babel.packages.${pkgs.system}.sf-pro;
     };
   };
   home = {

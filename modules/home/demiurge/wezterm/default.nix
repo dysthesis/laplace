@@ -1,5 +1,4 @@
 {
-  self,
   config,
   lib,
   inputs,
@@ -14,7 +13,7 @@
     ;
 in {
   home.packages = with pkgs;
-  with self.packages.${pkgs.system}; [
+  with inputs.babel.packages.${pkgs.system}; [
     wl-clipboard
     ueberzugpp
     jbcustom-nf

@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  self,
+  inputs,
   pkgs,
   ...
 }: let
@@ -28,7 +28,7 @@ in {
       };
 
       services.${name} = let
-        utils = self.packages.${pkgs.system}.generate-domains-blocklist;
+        utils = inputs.babel.packages.${pkgs.system}.generate-domains-blocklist;
         blocklist = pkgs.writeText "blocklist.txt" ''
           https://raw.githubusercontent.com/AdAway/adaway.github.io/master/hosts.txt
           https://easylist-downloads.adblockplus.org/easylist_noelemhide.txt

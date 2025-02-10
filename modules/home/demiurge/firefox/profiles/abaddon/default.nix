@@ -1,5 +1,5 @@
 {
-  self,
+  inputs,
   pkgs,
   lib,
   ...
@@ -34,7 +34,7 @@ in {
 
   imports = importNixInDirectory "default.nix" ./.;
   home.packages = with pkgs;
-  with self.packages.${pkgs.system}; [
+  with inputs.babel.packages.${pkgs.system}; [
     georgia-fonts
     sf-pro
     jbcustom-nf

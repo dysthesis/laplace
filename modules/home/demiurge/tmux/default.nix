@@ -1,5 +1,5 @@
 {
-  self,
+  inputs,
   pkgs,
   lib,
   ...
@@ -51,7 +51,7 @@ in {
     terminal = "screen-256color";
     plugins = with pkgs.tmuxPlugins; [
       {
-        plugin = self.packages.${pkgs.system}.oledppuccin-tmux;
+        plugin = inputs.babel.packages.${pkgs.system}.oledppuccin-tmux;
         extraConfig =
           /*
           tmux

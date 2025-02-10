@@ -1,5 +1,5 @@
 {
-  self,
+  inputs,
   systemConfig,
   lib,
   pkgs,
@@ -31,7 +31,7 @@
     '';
 in {
   home.packages = with pkgs;
-  with self.packages.${pkgs.system}; [
+  with inputs.babel.packages.${pkgs.system}; [
     volume
     jbcustom-nf
   ];

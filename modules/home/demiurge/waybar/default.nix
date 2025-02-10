@@ -1,5 +1,5 @@
 {
-  self,
+  inputs,
   systemConfig,
   pkgs,
   ...
@@ -31,7 +31,7 @@
     '';
   };
 in {
-  home.packages = with self.packages.${pkgs.system}; [
+  home.packages = with inputs.babel.packages.${pkgs.system}; [
     jbcustom-nf
   ];
   xdg.configFile."waybar/style.css".text = import ./style.nix systemConfig;

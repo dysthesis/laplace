@@ -1,11 +1,11 @@
 {
-  self,
+  inputs,
   systemConfig,
   pkgs,
   ...
 }: {
   home.packages = with pkgs;
-  with self.packages.${pkgs.system}; [
+  with inputs.babel.packages.${pkgs.system}; [
     jq
     jbcustom-nf
   ];

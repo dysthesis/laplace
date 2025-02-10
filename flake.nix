@@ -5,6 +5,11 @@
     # nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs.url = "github:NixOS/nixpkgs";
 
+    babel = {
+      url = "github:dysthesis/babel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # episteme.url = "git+https://git.dysthesis.com/dysthesis/episteme.git";
 
     # Modularise your flake
@@ -19,18 +24,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    firefox-addons = {
-      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     wezterm = {
       url = "github:wez/wezterm/main?dir=nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hyprpaper = {
-      url = "github:hyprwm/hyprpaper";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

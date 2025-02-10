@@ -1,9 +1,9 @@
 {
-  self,
+  inputs,
   pkgs,
   ...
 }: {
-  home.packages = with self.packages.${pkgs.system}; [jbcustom-nf];
+  home.packages = with inputs.babel.packages.${pkgs.system}; [jbcustom-nf];
   wayland.windowManager.hyprland.settings = {
     master = {
       new_status = "slave";
