@@ -37,7 +37,7 @@
     '';
 in {
   programs.tmux = {
-    enable = true;
+    enable = false;
 
     aggressiveResize = true;
     secureSocket = true;

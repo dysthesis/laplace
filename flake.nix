@@ -68,7 +68,16 @@
     impermanence.url = "github:nix-community/impermanence";
 
     # My own Neovim flake
-    poincare.url = "github:dysthesis/poincare/main";
+    poincare = {
+      url = "github:dysthesis/poincare/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # tmux flake
+    daedalus = {
+      url = "github:dysthesis/daedalus/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # A nice wrapper for Nix
     nh = {
