@@ -1,7 +1,9 @@
 {
   description = "A pursuit of order.";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # Formatter for the whole codebase
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -10,6 +12,48 @@
     # Personal library
     babel = {
       url = "github:dysthesis/babel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Neovim flake
+    poincare = {
+      url = "github:dysthesis/poincare";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Suckless utilities
+    gungnir = {
+      url = "github:dysthesis/gungnir";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # tmux flake
+    daedalus = {
+      url = "github:dysthesis/daedalus";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Declarative disk management
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Secure boot
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # A nice wrapper for Nix
+    nh = {
+      url = "github:viperML/nh";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # For some reason, this browser isn't in nixpkgs
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
