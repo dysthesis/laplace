@@ -17,8 +17,8 @@
       sh
       */
       ''
-        pages_to_scrape=10
-        sub_link_count=50
+        pages_to_scrape=5
+        sub_link_count=10
       '';
 
     ".config/ytfzf/subscriptions".text =
