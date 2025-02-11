@@ -4,7 +4,7 @@ A NixOS flake. It is a work-in-progress rewrite of my old configurations.
 
 ## Design
 
-### Wrappers as configurations {#wrappers-as-configuration}
+### Wrappers as configurations
 
 Instead of symlinking configuration files to their appropriate directories, _e.g._ `~`, we instead
 
