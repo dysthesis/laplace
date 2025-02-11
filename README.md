@@ -14,6 +14,12 @@ Instead of symlinking configuration files to their appropriate directories, _e.g
 
 Almost all programs should support this. A notable exception is GTK, for which we still use symlinks.
 
+For programs with sufficiently complex configurations, and/or a need to be portable, we separate their configurations into their own flakes. These are done for
+
+- [Neovim](https://github.com/dysthesis/poincare),
+- [tmux](https://github.com/dysthesis/daedalus), and
+- [the Suckless suite](https://github.com/dysthesis/gungnir). 
+
 A notable advantage of this is that it leaves the home directory with almost purely just state. The use of this will be further explored below.
 
 ### Impermanence
