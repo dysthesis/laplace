@@ -1,104 +1,49 @@
 {
-  description = "Description for the project";
-
+  description = "A pursuit of order.";
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs.url = "github:NixOS/nixpkgs";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
+    # Personal library
     babel = {
       url = "github:dysthesis/babel";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # episteme.url = "git+https://git.dysthesis.com/dysthesis/episteme.git";
-
-    # Modularise your flake
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
-    };
-
-    # Get Nix to manage your home as well.
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    wezterm = {
-      url = "github:wez/wezterm/main?dir=nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Hardware QOL stuff for the Framework laptop
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
-
-    # Automate the partitioning of disks
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    systems.url = "github:nix-systems/default-linux";
-
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # Secure boot
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Secrets management
-    sops-nix.url = "github:Mic92/sops-nix";
-
-    /*
-    * The name here is quite contradictory, as _impermanence_ refers to wiping your root on every
-    * boot (or putting it on tmpfs) and having Nix rebuild everything, hence discarding any state.
-    *
-    * The impermanence project provides utilities to provide persistence to the state that you _do_
-    * want to keep.
-    */
-    impermanence.url = "github:nix-community/impermanence";
-
-    # My own Neovim flake
-    poincare = {
-      url = "github:dysthesis/poincare/main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # tmux flake
-    daedalus = {
-      url = "github:dysthesis/daedalus/main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # A nice wrapper for Nix
-    nh = {
-      url = "github:viperML/nh";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Format your entire codebase
-    treefmt = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = inputs @ {flake-parts, ...}: let
-    lib = import ./lib inputs;
-  in
-    flake-parts.lib.mkFlake {
-      inherit inputs;
-      specialArgs = {inherit lib;};
-    } {
-      imports = [
-        ./flake
-        ./hosts
-      ];
+  outputs = inputs @ {
+    self,
+    babel,
+    nixpkgs,
+    treefmt-nix,
+    ...
+  }: let
+    inherit (builtins) mapAttrs;
+    inherit (babel) mkLib;
+    lib = mkLib nixpkgs;
 
-      systems = import inputs.systems;
+    # Systems to support
+    systems = [
+      "aarch64-linux"
+      "x86_64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
+    forAllSystems = lib.babel.forAllSystems systems;
+
+    treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
+  in
+    # Budget flake-parts
+    mapAttrs (_: val: forAllSystems val) {
+      devShells = pkgs: {default = import ./nix/shell pkgs;};
+      # for `nix fmt`
+      formatter = pkgs: treefmt.${pkgs.system}.config.build.wrapper;
+      # for `nix flake check`
+      checks = pkgs: {
+        formatting = treefmt.${pkgs.system}.config.build.check self;
+      };
     };
 }
