@@ -30,7 +30,7 @@ _: {
         privesc = "doas";
         apparmor.enable = true;
         polkit.enable = true;
-        secure-boot.enable = true;
+        secure-boot.enable = false;
         firewall.enable = true;
       };
 
@@ -47,6 +47,9 @@ _: {
       nh = {
         enable = true;
         flakePath = "~/Documents/Projects/laplace";
+      };
+      mnemosyne = {
+        enable = true;
       };
     };
     system.stateVersion = "24.11";
