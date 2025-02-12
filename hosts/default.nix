@@ -139,6 +139,14 @@ in {
               isoName = lib.mkForce "NixOS";
             };
 
+            nix = {
+              package = pkgs.nixVersions.stable;
+              settings = {
+                experimental-features = ["nix-command" "flakes" "pipe-operators"];
+                auto-optimise-store = true;
+              };
+            };
+
             system.stateVersion = "24.11";
             networking.hostName = "erebus";
             nixpkgs.hostPlatform = "x86_64-linux";
