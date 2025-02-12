@@ -15,7 +15,7 @@
   };
   defaultImports = [
     ../system
-
+    ../modules
     inputs.disko.nixosModules.disko
   ];
 in
