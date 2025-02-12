@@ -13,7 +13,14 @@ in {
   imports = [
     ./installer.nix
   ];
-  environment.systemPackages = with pkgs; let
+  environment.systemPackages = let
+    inherit
+      (pkgs)
+      writeText
+      symlinkJoin
+      makeWrapper
+      system
+      ;
     ghostty-config = writeText "ghostty-config" ''
       adjust-cell-height = 20%
       font-family = JetBrainsMono Nerd Font
@@ -32,7 +39,7 @@ in {
       font-feature = cv15
       font-feature = cv16
       font-feature = cv17
-      font-size = 9
+      font-size = 10
       window-padding-x = 20
       window-padding-y = 20
 
@@ -64,18 +71,7 @@ in {
     ghostty-wrapped = symlinkJoin {
       name = "ghostty-wrapped";
       paths = [
-        (ghostty.overrideAttrs
-          (old: {
-            preBuild =
-              (old.preBuild or "")
-              +
-              # bash
-              ''
-                shopt -s globstar
-                sed -i 's/^const xev = @import("xev");$/const xev = @import("xev").Epoll;/' **/*.zig
-                shopt -u globstar
-              '';
-          }))
+        inputs.babel.packages.${system}.ghostty-hardened
       ];
       buildInputs = [makeWrapper];
       postBuild =
@@ -90,7 +86,7 @@ in {
     inputs.daedalus.packages.${system}.default
     inputs.poincare.packages.${system}.default
     ghostty-wrapped
-    nerd-fonts.jetbrains-mono
+    pkgs.nerd-fonts.jetbrains-mono
   ];
 
   documentation = {
