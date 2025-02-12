@@ -8,6 +8,7 @@
   inherit (builtins) mapAttrs;
   hosts = {
     # TODO: map this to all architectures
+    # Installer ISO
     erebus = "x86_64-linux";
   };
   defaultImports = [];
