@@ -324,6 +324,21 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1739319052,
+        "narHash": "sha256-L8Tq1dnW96U70vrNpCCGCLHz4rX1GhNRCrRI/iox9wc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "83a2581c81ff5b06f7c1a4e7cc736a455dfcf7b4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "plugin-lazy:lackluster.nvim": {
       "flake": false,
       "locked": {
@@ -343,9 +358,7 @@
     "poincare": {
       "inputs": {
         "babel": "babel_4",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
+        "nixpkgs": "nixpkgs_2",
         "plugin-lazy:lackluster.nvim": "plugin-lazy:lackluster.nvim",
         "treefmt-nix": "treefmt-nix_3"
       },

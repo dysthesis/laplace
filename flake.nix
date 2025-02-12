@@ -18,7 +18,8 @@
     # Neovim flake
     poincare = {
       url = "github:dysthesis/poincare";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # TODO: enable this again when the fix for neotest makes it to unstable
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Suckless utilities
@@ -88,6 +89,11 @@
       # for `nix flake check`
       checks = pkgs: {
         formatting = treefmt.${pkgs.system}.config.build.check self;
+      };
+    }
+    // {
+      nixosConfigurations = import ./hosts {
+        inherit self lib inputs;
       };
     };
 }
