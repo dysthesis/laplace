@@ -18,7 +18,7 @@ For programs with sufficiently complex configurations, and/or a need to be porta
 
 - [Neovim](https://github.com/dysthesis/poincare),
 - [tmux](https://github.com/dysthesis/daedalus), and
-- [the Suckless suite](https://github.com/dysthesis/gungnir). 
+- [the Suckless suite](https://github.com/dysthesis/gungnir).
 
 A notable advantage of this is that it leaves the home directory with almost purely just state. The use of this will be further explored below.
 
@@ -34,7 +34,6 @@ This results in our machines being stateless by default. To maintain state, we w
 - maintain a persistence directory, _e.g._ `/nix/persist`),
 - place it on an actual volume, and
 - bind-mount paths for which we want to maintain state to it.
-
 
 #### Reverse-impermanence
 
