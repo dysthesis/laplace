@@ -1,11 +1,12 @@
 {
+  inputs,
   config,
-  lib,
   modulesPath,
   ...
 }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
+    inputs.nixos-hardware.nixosModules.framework-13-7040-amd
   ];
 
   boot.initrd.availableKernelModules =
@@ -26,6 +27,4 @@
     "uinput"
   ];
   boot.extraModulePackages = [];
-
-  networking.useDHCP = lib.mkDefault true;
 }

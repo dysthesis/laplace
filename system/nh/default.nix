@@ -1,7 +1,6 @@
 {
   imports = [
     ./config.nix
-    ./disks.nix
-    ./hardware.nix
+    ./options.nix
   ];
 }
