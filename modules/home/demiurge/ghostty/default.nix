@@ -32,9 +32,8 @@ in {
           '';
       });
       settings = {
-        theme = "catppuccin-mocha";
         font-family = "JetBrainsMono Nerd Font";
-        font-size = 9;
+        font-size = 12;
         window-padding-x = 20;
         window-padding-y = 20;
         adjust-cell-height = "20%";

@@ -92,18 +92,18 @@ in {
               ghostty-wrapped = symlinkJoin {
                 name = "ghostty-wrapped";
                 paths = [
-                  ghostty.overrideAttrs
-                  (old: {
-                    preBuild =
-                      (old.preBuild or "")
-                      +
-                      # bash
-                      ''
-                        shopt -s globstar
-                        sed -i 's/^const xev = @import("xev");$/const xev = @import("xev").Epoll;/' **/*.zig
-                        shopt -u globstar
-                      '';
-                  })
+                  (ghostty.overrideAttrs
+                    (old: {
+                      preBuild =
+                        (old.preBuild or "")
+                        +
+                        # bash
+                        ''
+                          shopt -s globstar
+                          sed -i 's/^const xev = @import("xev");$/const xev = @import("xev").Epoll;/' **/*.zig
+                          shopt -u globstar
+                        '';
+                    }))
                 ];
                 buildInputs = [makeWrapper];
                 postBuild =
