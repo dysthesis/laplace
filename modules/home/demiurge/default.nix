@@ -1,9 +1,5 @@
-{
-  inputs,
-  lib,
-  pkgs,
-  ...
-}: let
+{ inputs, lib, pkgs, ... }:
+let
   inherit (lib) getExe;
   inherit (lib.laplace.modules) importInDirectory;
 in {
@@ -30,10 +26,10 @@ in {
       zotero
     ];
 
-    file.".gdbinit".text = ''
-      source ${pkgs.pwndbg}/share/pwndbg/gdbinit.py
-      set auto-load safe-path /nix/store
-    '';
+    # file.".gdbinit".text = ''
+    #   source ${pkgs.pwndbg}/share/pwndbg/gdbinit.py
+    #   set auto-load safe-path /nix/store
+    # '';
   };
 
   imports = importInDirectory ./.;
