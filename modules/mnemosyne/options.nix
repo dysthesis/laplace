@@ -2,20 +2,23 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkOption
     mkEnableOption
     ;
 
-  inherit (lib.types)
+  inherit
+    (lib.types)
     listOf
     str
     ;
-  addIf = cond: content: if cond then content else [ ];
-in
-{
+  addIf = cond: content:
+    if cond
+    then content
+    else [];
+in {
   options.mnemosyne = {
     enable = mkEnableOption "Whether to enable state persistence for ephemeral root";
     persistDir = mkOption {
@@ -33,10 +36,10 @@ in
           "/etc/ssh"
           "/var/lib/bluetooth"
           "/var/lib/pipewire"
-          "/etc/NetworkManager/system-connections"
+          "/etc/NetworkManager"
         ]
-        ++ addIf config.laplace.virtualisation.enable [ "/var/lib/libvirt" ]
-        ++ addIf config.laplace.security.secure-boot.enable [ "/etc/secureboot" ];
+        ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
+        ++ addIf config.laplace.security.secure-boot.enable ["/etc/secureboot"];
     };
     mountOpts = mkOption {
       type = listOf str;
