@@ -1,7 +1,6 @@
 let
   inherit (builtins) mapAttrs;
-in
-{
+in {
   disko.devices = {
     disk.main = {
       device = "/dev/nvme0n1";
@@ -17,7 +16,7 @@ in
               type = "filesystem";
               format = "vfat";
               mountpoint = "/boot";
-              mountOptions = [ "defaults" ];
+              mountOptions = ["defaults"];
             };
           };
 
@@ -32,26 +31,28 @@ in
 
               content = {
                 type = "btrfs";
-                extraArgs = [ "-f" ];
+                extraArgs = ["-f"];
 
-                subvolumes =
-                  let
-                    mountOptions = [
-                      "defaults"
-                      "ssd"
-                      "noatime"
-                      "compress=zstd"
-                      "space_cache=v2"
-                      "discard=async"
-                      "autodefrag"
-                    ];
-                  in
-                  mapAttrs (_name: value: value // { inherit mountOptions; }) {
-                    "@nix".mountpoint = "/nix";
+                subvolumes = let
+                  mountOptions = [
+                    "defaults"
+                    "ssd"
+                    "noatime"
+                    "compress=zstd"
+                    "space_cache=v2"
+                    "discard=async"
+                    "autodefrag"
+                  ];
+                in
+                  mapAttrs (_name: value: value // {mountOptions = mountOptions ++ ["noexec"];}) {
                     "@persist".mountpoint = "/nix/persist";
                     "@home".mountpoint = "/home";
                   }
                   // {
+                    "@nix" = {
+                      mountpoint = "/nix";
+                      inherit mountOptions;
+                    };
                     "@swap" = {
                       mountpoint = "/swap";
                       swap.swapfile.size = "8G";
@@ -72,6 +73,7 @@ in
           "size=2G"
           "defaults"
           "mode=755"
+          "noexec"
         ];
       };
     };
