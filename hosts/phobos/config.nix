@@ -1,11 +1,10 @@
-{lib, ...}: let
-  inherit (lib) fold;
-in {
+{ lib, ... }:
+{
   config = {
     laplace = {
       hardware = {
-        cpu = ["amd"];
-        gpu = ["amd"];
+        cpu = [ "amd" ];
+        gpu = [ "amd" ];
         monitors = [
           {
             name = "eDP";
@@ -43,8 +42,8 @@ in {
 
       impermanence.enable = true;
 
-      display = ["xorg"];
-      users = ["demiurge"];
+      display = [ "xorg" ];
+      users = [ "demiurge" ];
       virtualisation.enable = true;
       nh = {
         enable = true;
