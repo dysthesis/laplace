@@ -1,4 +1,5 @@
 {
+  inputs,
   config,
   lib,
   pkgs,
@@ -12,6 +13,10 @@ in
   config = mkIf (cfg == "xorg") {
     services.xserver = {
       enable = true;
+      windowManager.dwm = {
+        enable = true;
+        package = inputs.gungnir.packages.${pkgs.system}.dwm;
+      };
       displayManager = {
         startx.enable = true;
         # Expose variables to graphical systemd user services
