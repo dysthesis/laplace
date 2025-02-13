@@ -45,7 +45,7 @@
     '';
 
   xinit-dwm = mkWrapper pkgs pkgs.xorg.xinit ''
-    wrapProgram "$out/bin/xinit-dwm" --add-flags ${xinitrc};
+    wrapProgram "$out/bin/startx" --add-flags ${xinitrc};
   '';
 
   cfg = elem "demiurge" config.laplace.users;
