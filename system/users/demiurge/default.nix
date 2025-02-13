@@ -1,5 +1,4 @@
 {
-  self,
   inputs,
   lib,
   config,
@@ -39,7 +38,7 @@
       # Start some services
       ${dunst} &
       ${udiskie} &
-      ${hsetroot} ${../../../assets/wallpaper.png} &
+      ${hsetroot} ${./wallpaper.png} &
       ${inputs.gungnir.packages.${system}.dwm-bar} &
       exec ${wm}
     '';
