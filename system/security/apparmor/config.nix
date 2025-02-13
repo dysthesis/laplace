@@ -30,32 +30,33 @@ in
       packages = [ pkgs.apparmor-profiles ];
 
       # apparmor policies
-      policies = {
-        "default_deny" = {
-          state = "disable";
-          profile = ''
-            profile default_deny /** { }
-          '';
-        };
-
-        "sudo" = {
-          state = "disable";
-          profile = ''
-            ${pkgs.sudo}/bin/sudo {
-              file /** rwlkUx,
-            }
-          '';
-        };
-
-        "nix" = {
-          state = "disable";
-          profile = ''
-            ${config.nix.package}/bin/nix {
-              unconfined,
-            }
-          '';
-        };
-      };
+      # TODO: Figure out what this actually does
+      # policies = {
+      #   "default_deny" = {
+      #     state = "disable";
+      #     profile = ''
+      #       profile default_deny /** { }
+      #     '';
+      #   };
+      #
+      #   "sudo" = {
+      #     state = "disable";
+      #     profile = ''
+      #       ${pkgs.sudo}/bin/sudo {
+      #         file /** rwlkUx,
+      #       }
+      #     '';
+      #   };
+      #
+      #   "nix" = {
+      #     state = "disable";
+      #     profile = ''
+      #       ${config.nix.package}/bin/nix {
+      #         unconfined,
+      #       }
+      #     '';
+      #   };
+      # };
     };
   };
 }

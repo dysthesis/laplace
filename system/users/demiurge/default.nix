@@ -4,20 +4,18 @@
   config,
   pkgs,
   ...
-}: let
-  inherit
-    (pkgs)
+}:
+let
+  inherit (pkgs)
     writeText
     system
     ;
 
-  inherit
-    (lib)
+  inherit (lib)
     mkIf
     ;
   inherit (lib.babel.pkgs) mkWrapper;
-  inherit
-    (builtins)
+  inherit (builtins)
     elem
     filter
     hasAttr
@@ -25,24 +23,25 @@
 
   wm = inputs.gungnir.packages.${system}.dwm;
 
-  xinitrc = with pkgs;
+  xinitrc =
+    with pkgs;
     writeText ".xinitrc"
-    # sh
-    ''
-      # turn off Display Power Management Service (DPMS)
-      xset -dpms
-      setterm -blank 0 -powerdown 0
+      # sh
+      ''
+        # turn off Display Power Management Service (DPMS)
+        xset -dpms
+        setterm -blank 0 -powerdown 0
 
-      # turn off black Screensaver
-      xset s off
+        # turn off black Screensaver
+        xset s off
 
-      # Start some services
-      ${dunst} &
-      ${udiskie} &
-      ${hsetroot} ${./wallpaper.png} &
-      ${inputs.gungnir.packages.${system}.dwm-bar} &
-      exec ${wm}
-    '';
+        # Start some services
+        ${dunst} &
+        ${udiskie} &
+        ${hsetroot} ${./wallpaper.png} &
+        ${inputs.gungnir.packages.${system}.dwm-bar} &
+        exec ${wm}
+      '';
 
   xinit-dwm = mkWrapper pkgs pkgs.xorg.xinit ''
     wrapProgram "$out/bin/startx" --add-flags ${xinitrc};
@@ -50,13 +49,14 @@
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
-in {
+in
+{
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
       shell = pkgs.bash;
       isNormalUser = true;
-      openssh.authorizedKeys.keys = [];
+      openssh.authorizedKeys.keys = [ ];
       hashedPassword = "$y$j9T$WtVEPLB064z6W2eWFUPK81$xT7V9MzUIS.gcoaJzfYjMRY/I5Zi5Hl57XDo9EMwll5";
       extraGroups =
         [
@@ -73,7 +73,8 @@ in {
           "podman"
           "libvirt"
         ];
-      packages = with pkgs;
+      packages =
+        with pkgs;
         [
           signal-desktop
         ]

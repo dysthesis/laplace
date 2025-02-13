@@ -31,6 +31,11 @@ mapAttrs (
       ;
     specialArgs = { inherit lib; };
     config = {
+      nixpkgs.overlays = [
+        (final: _prev: {
+          unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
+        })
+      ];
       imports = [
         ./${hostname}
       ] ++ defaultImports;

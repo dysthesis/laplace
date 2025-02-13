@@ -86,7 +86,9 @@ in
       inputs.daedalus.packages.${system}.default
       inputs.poincare.packages.${system}.default
       ghostty-wrapped
-      pkgs.nerd-fonts.jetbrains-mono
+      (pkgs.nerdfonts.override {
+        fonts = [ "JetBrainsMono" ];
+      })
     ];
 
   documentation = {
@@ -98,14 +100,23 @@ in
   };
 
   # Use the latest kernel packages!
-  boot.kernelPackages = linuxPackagesFor linuxKernel.kernels.linux_hardened;
+  boot = {
+    initrd = {
+      compressor = "zstd";
+      compressorArgs = [
+        "-19"
+        "-T0"
+      ];
+      systemd.enable = true;
+    };
+    kernelPackages = linuxPackagesFor linuxKernel.kernels.linux_hardened;
+  };
 
   isoImage = {
     edition = lib.mkForce "erebus";
     isoName = lib.mkForce "NixOS";
   };
 
-  system.stateVersion = "24.11";
   networking.hostName = "erebus";
   nixpkgs.hostPlatform = "x86_64-linux";
 }
