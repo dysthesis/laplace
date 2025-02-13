@@ -24,7 +24,6 @@
     ;
 
   wm = inputs.gungnir.packages.${system}.dwm;
-  wallpaper = ../.../../../assets/wallpaper.png;
 
   xinitrc = with pkgs;
     writeText ".xinitrc"
@@ -40,7 +39,7 @@
       # Start some services
       ${dunst} &
       ${udiskie} &
-      ${hsetroot} ${wallpaper} &
+      ${hsetroot} ${../../../assets/wallpaper.png} &
       ${inputs.gungnir.packages.${system}.dwm-bar} &
       exec ${wm}
     '';
