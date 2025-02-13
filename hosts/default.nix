@@ -3,7 +3,8 @@
   self,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib.babel.system) mkSystem;
   inherit (builtins) mapAttrs;
   hosts = {
@@ -19,16 +20,20 @@
     inputs.disko.nixosModules.disko
   ];
 in
-  mapAttrs (hostname: system:
-    mkSystem {
-      inherit system hostname self inputs;
-      specialArgs = {inherit lib;};
-      config = {
-        imports =
-          [
-            ./${hostname}
-          ]
-          ++ defaultImports;
-      };
-    })
-  hosts
+mapAttrs (
+  hostname: system:
+  mkSystem {
+    inherit
+      system
+      hostname
+      self
+      inputs
+      ;
+    specialArgs = { inherit lib; };
+    config = {
+      imports = [
+        ./${hostname}
+      ] ++ defaultImports;
+    };
+  }
+) hosts

@@ -2,13 +2,19 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib.babel.modules) importInDirectory;
-in {
+in
+{
   config.nix = {
     package = pkgs.nixVersions.stable;
     settings = {
-      experimental-features = ["nix-command" "flakes" "pipe-operators"];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+        "pipe-operators"
+      ];
       auto-optimise-store = true;
     };
   };

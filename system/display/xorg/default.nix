@@ -3,10 +3,12 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   cfg = config.laplace.display;
-in {
+in
+{
   config = mkIf (cfg == "xorg") {
     services.xserver = {
       enable = true;

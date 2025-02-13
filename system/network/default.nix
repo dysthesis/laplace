@@ -1,5 +1,7 @@
-{lib, ...}: let
+{ lib, ... }:
+let
   inherit (lib.babel.modules) importInDirectory;
-in {
+in
+{
   imports = importInDirectory ./.;
 }
