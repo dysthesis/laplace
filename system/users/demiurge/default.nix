@@ -57,7 +57,7 @@
       */
       ''
         makeWrapper ${lib.getExe pkgs.xorg.xinit} $out/bin/${name} \
-        	--add-flags $src
+        	--add-flags ${xinitrc}
       '';
   };
 
