@@ -4,7 +4,7 @@
       name = "Laplace development shell";
       packages = with pkgs; [
         nixd
-        alejandra
+        nixfmt
         statix
         deadnix
         nvfetcher
