@@ -1,4 +1,5 @@
 {
+  self,
   inputs,
   lib,
   config,
@@ -23,6 +24,7 @@
     ;
 
   wm = inputs.gungnir.packages.${system}.dwm;
+  wallpaper = ./${self}/assets/wallpaper.png;
 
   xinitrc = with pkgs;
     writeText ".xinitrc"
@@ -38,13 +40,13 @@
       # Start some services
       ${dunst} &
       ${udiskie} &
+      ${hsetroot} ${wallpaper} &
       ${inputs.gungnir.packages.${system}.dwm-bar} &
       exec ${wm}
     '';
 
   xinit-dwm = pkgs.stdenv.mkDerivation rec {
     name = "xinit-dwm";
-    src = xinitrc;
     buildInputs = with pkgs; [
       makeWrapper
       xorg.xinit
