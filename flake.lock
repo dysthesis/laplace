@@ -8,11 +8,11 @@
         "treefmt": "treefmt"
       },
       "locked": {
-        "lastModified": 1739336575,
-        "narHash": "sha256-xBgHdMBNjGuXU1oTU0DKOnoG/2jxm6YTZKzdW8lCAjM=",
+        "lastModified": 1739427386,
+        "narHash": "sha256-lxSZv5ZNI+ZrJ+PIAuQCL9LBFhvcEl5KoORISI/kliA=",
         "owner": "dysthesis",
         "repo": "babel",
-        "rev": "3747ee49aefbd43620c94407d2c7a9cdd3e7a794",
+        "rev": "edcf91eadf99c0f59b663ce5647466dcc00a81ca",
         "type": "github"
       },
       "original": {
