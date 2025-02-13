@@ -2,8 +2,8 @@ _: {
   config = {
     laplace = {
       hardware = {
-        cpu = ["amd"];
-        gpu = ["amd"];
+        cpu = [ "amd" ];
+        gpu = [ "amd" ];
         monitors = [
           {
             name = "eDP";
@@ -41,17 +41,15 @@ _: {
 
       impermanence.enable = true;
 
-      display = ["xorg"];
-      users = ["demiurge"];
+      display = [ "xorg" ];
+      users = [ "demiurge" ];
       virtualisation.enable = true;
       nh = {
         enable = true;
         flakePath = "~/Documents/Projects/laplace";
       };
-      mnemosyne = {
-        enable = true;
-      };
     };
+    mnemosyne.enable = true;
     system.stateVersion = "24.11";
   };
 }

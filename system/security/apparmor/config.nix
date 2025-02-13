@@ -3,10 +3,12 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   cfg = config.laplace.security.apparmor.enable;
-in {
+in
+{
   config = mkIf cfg {
     # stolen from https://github.com/NotAShelf/nyx/blob/319b1f6fe4d09ff84d83d1f8fa0d04e0220dfed7/modules/core/common/system/security/apparmor.nix#L7
 
@@ -25,7 +27,7 @@ in {
       killUnconfinedConfinables = true;
 
       # packages to be added to AppArmor’s include path
-      packages = [pkgs.apparmor-profiles];
+      packages = [ pkgs.apparmor-profiles ];
 
       # apparmor policies
       policies = {

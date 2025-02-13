@@ -2,10 +2,12 @@
   lib,
   config,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   cfg = config.laplace.security.privesc;
-in {
+in
+{
   config = mkIf (cfg == "sudo") {
     security.sudo.enable = true;
   };

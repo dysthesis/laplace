@@ -3,37 +3,37 @@
   config,
   lib,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     map
     mkIf
     mkDefault
     mkMerge
-		forEach
+    forEach
     ;
   inherit (lib.strings) concatStringsSep;
   cfg = config.mnemosyne;
-	# Where each persisted directory is stored at.
-	persistPath = path: "${cfg.persistDir}/path";
+  # Where each persisted directory is stored at.
+  persistPath = _path: "${cfg.persistDir}/path";
   # Compose an attribute set of bind mounts for the persisted directories.
-  mkMounts = dirs:
+  mkMounts =
+    dirs:
     dirs
     |> map (path: {
-         "${path}" = {
-           device = persistPath path;
-           fsType = "none";
-           options = cfg.mountOpts;
-         };
-       })
-		|> mkMerge;
-	
-	# Compose a script to create the necessary directories in the persisted state storage.
-	mkSourcePaths = dirs:
-	  dirs
-		|> (dirs: forEach dirs (path: "mkdir -p ${persistPath path}"))
-		|> concatStringsSep "\n";
-in {
+      "${path}" = {
+        device = persistPath path;
+        fsType = "none";
+        options = cfg.mountOpts;
+      };
+    })
+    |> mkMerge;
+
+  # Compose a script to create the necessary directories in the persisted state storage.
+  mkSourcePaths =
+    dirs: dirs |> (dirs: forEach dirs (path: "mkdir -p ${persistPath path}")) |> concatStringsSep "\n";
+in
+{
   # TODO: Add a check to ensure that `cfg.persistDir` is on a persisted volume
   config = mkIf cfg.enable {
     # We need to run the systemd service very early in the boot process
@@ -44,10 +44,10 @@ in {
     fileSystems = mkMounts cfg.dirs;
     # Ensure that the necessary paths exist in the persisted state storage.
     boot.initrd.systemd.services.make-source-of-persistent-dirs = {
-      wantedBy = ["initrd-root-device.target"];
-      before = ["sysroot.mount"];
-      requires = ["persist.mount"];
-      after = ["persist.mount"];
+      wantedBy = [ "initrd-root-device.target" ];
+      before = [ "sysroot.mount" ];
+      requires = [ "persist.mount" ];
+      after = [ "persist.mount" ];
       serviceConfig.Type = "oneshot";
       unitConfig.DefaultDependencies = false;
       script = mkSourcePaths cfg.dirs;

@@ -1,6 +1,8 @@
-{config, ...}: let
+{ config, ... }:
+let
   cfg = config.laplace.network.bluetooth.enable;
-in {
+in
+{
   config = {
     hardware.bluetooth.enable = cfg;
   };

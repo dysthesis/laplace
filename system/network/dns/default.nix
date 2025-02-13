@@ -1,10 +1,15 @@
-{lib, ...}: let
+{ lib, ... }:
+let
   inherit (lib) mkDefault;
-in {
+in
+{
   imports = [
     ./options.nix
     ./config.nix
   ];
 
-  config.networking.nameservers = mkDefault ["1.1.1.1" "1.0.0.1"];
+  config.networking.nameservers = mkDefault [
+    "1.1.1.1"
+    "1.0.0.1"
+  ];
 }

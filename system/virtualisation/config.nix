@@ -3,10 +3,12 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   cfg = config.laplace.virtualisation;
-in {
+in
+{
   config = mkIf cfg.enable {
     virtualisation = {
       spiceUSBRedirection.enable = true;
@@ -23,7 +25,7 @@ in {
 
           ovmf = {
             enable = true;
-            packages = [pkgs.OVMFFull.fd];
+            packages = [ pkgs.OVMFFull.fd ];
           };
         };
 
