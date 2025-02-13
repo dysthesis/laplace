@@ -15,7 +15,7 @@ let
   inherit (lib.strings) concatStringsSep;
   cfg = config.mnemosyne;
   # Where each persisted directory is stored at.
-  persistPath = _path: "${cfg.persistDir}/path";
+  persistPath = path: "${cfg.persistDir}/${path}";
   # Compose an attribute set of bind mounts for the persisted directories.
   mkMounts =
     dirs:
