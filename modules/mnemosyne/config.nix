@@ -12,10 +12,21 @@ let
     mkMerge
     forEach
     ;
-  inherit (lib.strings) concatStringsSep;
+  inherit (lib.strings)
+    concatStringsSep
+    normalizePath
+		removePrefix
+    ;
+  inherit (builtins) replaceStrings;
   cfg = config.mnemosyne;
   # Where each persisted directory is stored at.
-  persistPath = path: "${cfg.persistDir}${path}";
+  persistPath = path: normalizePath "${cfg.persistDir}${path}";
+  # Which systemd service is responsible for mounting the persistence volume
+  persistMountService =
+    cfg.persistDir
+    |> removePrefix "/"
+    |> replaceStrings [ "/" ] [ "-" ]
+    |> (x: "${x}.mount");
   # Compose an attribute set of bind mounts for the persisted directories.
   mkMounts =
     dirs:
@@ -46,8 +57,8 @@ in
     boot.initrd.systemd.services.make-source-of-persistent-dirs = {
       wantedBy = [ "initrd-root-device.target" ];
       before = [ "sysroot.mount" ];
-      requires = [ "persist.mount" ];
-      after = [ "persist.mount" ];
+      requires = [ persistMountService ];
+      after = [ persistMountService ];
       serviceConfig.Type = "oneshot";
       unitConfig.DefaultDependencies = false;
       script = mkSourcePaths cfg.dirs;
