@@ -15,6 +15,7 @@
     (lib)
     mkIf
     ;
+  inherit (lib.babel.pkgs) mkWrapper;
   inherit
     (builtins)
     elem
@@ -43,19 +44,9 @@
       exec ${wm}
     '';
 
-  xinit-dwm = pkgs.stdenv.mkDerivation rec {
-    name = "xinit-dwm";
-    buildInputs = with pkgs; [
-      makeWrapper
-      xorg.xinit
-    ];
-    installPhase =
-      # sh
-      ''
-        makeWrapper ${lib.getExe pkgs.xorg.xinit} $out/bin/${name} \
-        	--add-flags ${xinitrc}
-      '';
-  };
+  xinit-dwm = mkWrapper pkgs pkgs.xorg.xinit ''
+    wrapProgram "$out/bin/xinit-dwm" --add-flags ${xinitrc};
+  '';
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
