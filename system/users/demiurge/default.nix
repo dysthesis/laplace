@@ -4,12 +4,13 @@
   config,
   pkgs,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkIf
     ;
-  inherit (builtins)
+  inherit
+    (builtins)
     elem
     filter
     hasAttr
@@ -17,14 +18,13 @@ let
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
-in
-{
+in {
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
       isNormalUser = true;
-      openssh.authorizedKeys.keys = [ ];
-      hashedPassword = "$y$j9T$WtVEPLB064z6W2eWFUPK81$xT7V9MzUIS.gcoaJzfYjMRY/I5Zi5Hl57XDo9EMwll5";
+      openssh.authorizedKeys.keys = [];
+      hashedPassword = "$y$j9T$zvO0pMcCC7uiQswzHEPri/$VRaKlhJWajtyRvnQwy1CNQE7BX8Kp8MigiBqPhK8zrD";
       extraGroups =
         [
           "wheel"
