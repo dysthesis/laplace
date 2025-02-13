@@ -2,20 +2,16 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   cfg = config.laplace.network.wifi.enable;
   inherit (lib) mkIf;
-in
-{
+in {
   config = mkIf cfg {
-    networking.networkmanager = {
-      enable = true;
-      wifi.macAddress = "random";
-    };
-    programs.nm-applet = {
-      enable = true;
-      indicator = true;
+    networking = {
+      networkmanager = {
+        enable = true;
+        wifi.macAddress = "random";
+      };
     };
   };
 }

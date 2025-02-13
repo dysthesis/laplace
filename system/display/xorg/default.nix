@@ -4,21 +4,37 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.laplace.display;
-in
-{
+in {
   config = mkIf (cfg == "xorg") {
     services.xserver = {
       enable = true;
-      windowManager.dwm = {
-        enable = true;
-        package = inputs.gungnir.packages.${pkgs.system}.dwm;
+      windowManager = {
+        dwm = {
+          enable = true;
+          package = inputs.gungnir.packages.${pkgs.system}.dwm;
+        };
+        session = [
+          {
+            name = "dwm";
+            start = ''
+              dont_stop() {
+                while type dwm >/dev/null ; do dwm && continue || break ; done
+              }
+
+              ${inputs.gungnir.packages.${pkgs.system}.dwm-bar} &
+              dont_stop &
+              waitPID=$!
+            '';
+          }
+        ];
       };
       displayManager = {
-        startx.enable = true;
+        defaultSession = "none+dwm";
+        # Use this until I figure out how to wrap xinit
+        lightdm.enable = true;
         # Expose variables to graphical systemd user services
         importedVariables = [
           "GDK_SCALE"
