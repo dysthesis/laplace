@@ -46,7 +46,7 @@ in
 
     # this allows libvirt to use pulseaudio socket
     # which is useful for virt-manager
-    services.pulseaudio.extraConfig = ''
+    hardware.pulseaudio.extraConfig = ''
       load-module module-native-protocol-unix auth-group=qemu-libvirtd socket=/tmp/pulse-socket
     '';
   };
