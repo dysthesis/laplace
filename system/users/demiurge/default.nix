@@ -6,6 +6,12 @@
   ...
 }: let
   inherit
+    (pkgs)
+    writeText
+    system
+    ;
+
+  inherit
     (lib)
     mkIf
     ;
@@ -15,6 +21,43 @@
     filter
     hasAttr
     ;
+
+  wm = inputs.gungnir.packages.${system}.dwm;
+
+  xinitrc = with pkgs;
+    writeText ".xinitrc"
+    # sh
+    ''
+      # turn off Display Power Management Service (DPMS)
+      xset -dpms
+      setterm -blank 0 -powerdown 0
+
+      # turn off black Screensaver
+      xset s off
+
+      # Start some services
+      ${dunst} &
+      ${udiskie} &
+      ${inputs.gungnir.packages.${system}.dwm-bar} &
+      exec ${wm}
+    '';
+
+  xinit-dwm = pkgs.stdenv.mkDerivation rec {
+    name = "xinit-dwm";
+    src = xinitrc;
+    buildInputs = with pkgs; [
+      makeWrapper
+      xorg.xinit
+    ];
+    installPhase =
+      /*
+      sh
+      */
+      ''
+        makeWrapper ${lib.getExe pkgs.xorg.xinit} $out/bin/${name} \
+        	--add-flags $src
+      '';
+  };
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
@@ -41,14 +84,21 @@ in {
           "podman"
           "libvirt"
         ];
-      packages = with inputs.gungnir.packages.${pkgs.system}; [
-        inputs.poincare.packages.${pkgs.system}.default
-        inputs.daedalus.packages.${pkgs.system}.default
-        inputs.zen-browser.packages.${pkgs.system}.default
-        dwm
-        st
-        dmenu
-      ];
+      packages = with pkgs;
+        [
+          signal-desktop
+        ]
+        ++ [
+          inputs.poincare.packages.${system}.default
+          inputs.daedalus.packages.${system}.default
+          inputs.zen-browser.packages.${system}.default
+          xinit-dwm
+        ]
+        ++ (with inputs.gungnir.packages.${system}; [
+          st
+          dmenu
+          signal-desktop
+        ]);
     };
   };
 }
