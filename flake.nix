@@ -1,7 +1,9 @@
 {
   description = "A pursuit of order.";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    # TODO: See if switching to unstable fixes
+    # https://github.com/NixOS/nixpkgs/issues/222181
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # Formatter for the whole codebase
@@ -63,33 +65,31 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware";
   };
 
-  outputs =
-    inputs@{
-      self,
-      babel,
-      nixpkgs,
-      treefmt-nix,
-      ...
-    }:
-    let
-      inherit (builtins) mapAttrs;
-      inherit (babel) mkLib;
-      lib = mkLib nixpkgs;
+  outputs = inputs @ {
+    self,
+    babel,
+    nixpkgs,
+    treefmt-nix,
+    ...
+  }: let
+    inherit (builtins) mapAttrs;
+    inherit (babel) mkLib;
+    lib = mkLib nixpkgs;
 
-      # Systems to support
-      systems = [
-        "aarch64-linux"
-        "x86_64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-      forAllSystems = lib.babel.forAllSystems systems;
+    # Systems to support
+    systems = [
+      "aarch64-linux"
+      "x86_64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
+    forAllSystems = lib.babel.forAllSystems systems;
 
-      treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
-    in
+    treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
+  in
     # Budget flake-parts
     mapAttrs (_: val: forAllSystems val) {
-      devShells = pkgs: { default = import ./nix/shell pkgs; };
+      devShells = pkgs: {default = import ./nix/shell pkgs;};
       # for `nix fmt`
       formatter = pkgs: treefmt.${pkgs.system}.config.build.wrapper;
       # for `nix flake check`
