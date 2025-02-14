@@ -77,7 +77,6 @@ in {
       packages = with pkgs;
         [
           signal-desktop
-          xorg.xinit
         ]
         ++ [
           inputs.poincare.packages.${system}.default
