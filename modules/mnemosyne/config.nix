@@ -15,7 +15,7 @@ let
   inherit (lib.strings)
     concatStringsSep
     normalizePath
-		removePrefix
+    removePrefix
     ;
   inherit (builtins) replaceStrings;
   cfg = config.mnemosyne;
@@ -23,10 +23,7 @@ let
   persistPath = path: normalizePath "${cfg.persistDir}${path}";
   # Which systemd service is responsible for mounting the persistence volume
   persistMountService =
-    cfg.persistDir
-    |> removePrefix "/"
-    |> replaceStrings [ "/" ] [ "-" ]
-    |> (x: "${x}.mount");
+    cfg.persistDir |> removePrefix "/" |> replaceStrings [ "/" ] [ "-" ] |> (x: "${x}.mount");
   # Compose an attribute set of bind mounts for the persisted directories.
   mkMounts =
     dirs:
