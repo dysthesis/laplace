@@ -36,6 +36,7 @@ in {
       displayManager = {
         defaultSession = "none+dwm";
         # Use this until I figure out how to wrap xinit
+        # Okay this seems to work, just not startx
         lightdm.enable = true;
         # Expose variables to graphical systemd user services
         importedVariables = [
