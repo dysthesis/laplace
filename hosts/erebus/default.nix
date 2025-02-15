@@ -82,15 +82,13 @@ in
           '';
       };
     in
-    with pkgs;
     [
       inputs.daedalus.packages.${system}.default
       inputs.poincare.packages.${system}.default
       ghostty-wrapped
-      nerd-fonts.jetbrains-mono
-      # (pkgs.nerdfonts.override {
-      #   fonts = [ "JetBrainsMono" ];
-      # })
+      (pkgs.nerdfonts.override {
+        fonts = [ "JetBrainsMono" ];
+      })
     ];
 
   documentation = {

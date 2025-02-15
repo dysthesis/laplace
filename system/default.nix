@@ -1,4 +1,5 @@
 {
+  inputs,
   pkgs,
   lib,
   ...
@@ -21,6 +22,14 @@ in
       };
     };
     security.pam.services.login.enableGnomeKeyring = true;
+
+    fonts.packages = with pkgs; [
+      noto-fonts
+      noto-fonts-extra
+      noto-fonts-emoji
+      noto-fonts-cjk-sans
+      inputs.babel.packages.${system}.jbcustom-nf
+    ];
 
     system.stateVersion = "24.11";
   };

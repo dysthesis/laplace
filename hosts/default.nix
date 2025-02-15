@@ -3,7 +3,8 @@
   self,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib.babel.system) mkSystem;
   inherit (builtins) mapAttrs;
   hosts = {
@@ -19,29 +20,26 @@
     inputs.disko.nixosModules.disko
   ];
 in
-  mapAttrs (
-    hostname: system:
-      mkSystem {
-        inherit
-          system
-          hostname
-          self
-          inputs
-          ;
-        specialArgs = {inherit lib;};
-        config = {
-          # profiles.hardened = true;
-          nixpkgs.overlays = [
-            (final: _prev: {
-              unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
-            })
-          ];
-          imports =
-            [
-              ./${hostname}
-            ]
-            ++ defaultImports;
-        };
-      }
-  )
-  hosts
+mapAttrs (
+  hostname: system:
+  mkSystem {
+    inherit
+      system
+      hostname
+      self
+      inputs
+      ;
+    specialArgs = { inherit lib; };
+    config = {
+      # profiles.hardened = true;
+      nixpkgs.overlays = [
+        (final: _prev: {
+          unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
+        })
+      ];
+      imports = [
+        ./${hostname}
+      ] ++ defaultImports;
+    };
+  }
+) hosts
