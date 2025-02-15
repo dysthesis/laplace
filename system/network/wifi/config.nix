@@ -2,12 +2,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   cfg = config.laplace.network.wifi.enable;
   inherit (lib) mkIf;
-in
-{
+in {
   config = mkIf cfg {
     networking = {
       networkmanager = {
@@ -18,6 +16,10 @@ in
           # backend = "iwd";
         };
       };
+    };
+    programs.nm-applet = {
+      enable = true;
+      indicator = true;
     };
   };
 }
