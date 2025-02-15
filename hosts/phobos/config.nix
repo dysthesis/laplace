@@ -58,6 +58,6 @@ in
       };
     };
     mnemosyne.enable = true;
-    boot.kernelPackages = linuxPackagesFor linuxKernel.kernels.linux_hardened;
+    boot.kernelPackages = linuxPackagesFor linuxKernel.kernels.linux_xanmod_latest;
   };
 }
