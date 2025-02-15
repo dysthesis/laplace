@@ -7,47 +7,19 @@
 }: let
   inherit
     (pkgs)
-    writeText
     system
     ;
 
   inherit
     (lib)
     mkIf
-    getExe
     ;
-  inherit (lib.babel.pkgs) mkWrapper;
   inherit
     (builtins)
     elem
     filter
     hasAttr
     ;
-
-  wm = inputs.gungnir.packages.${system}.dwm;
-
-  xinitrc = with pkgs;
-    writeText ".xinitrc"
-    # sh
-    ''
-      # turn off Display Power Management Service (DPMS)
-      xset -dpms
-      setterm -blank 0 -powerdown 0
-
-      # turn off black Screensaver
-      xset s off
-
-      # Start some services
-      ${getExe dunst} &
-      ${getExe udiskie} &
-      ${getExe hsetroot} ${./wallpaper.png} &
-      ${getExe inputs.gungnir.packages.${system}.dwm-bar} &
-      exec ${wm}
-    '';
-
-  xinit-dwm = mkWrapper pkgs pkgs.xorg.xinit ''
-    wrapProgram "$out/bin/startx" --set XINITRC ${xinitrc};
-  '';
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
@@ -86,6 +58,7 @@ in {
         ++ (with inputs.gungnir.packages.${system}; [
           st
           dmenu
+          dwm
           signal-desktop
           btop
         ]);

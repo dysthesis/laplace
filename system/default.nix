@@ -2,9 +2,11 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib.babel.modules) importInDirectory;
-in {
+in
+{
   config = {
     services = {
       gnome.gnome-keyring.enable = true;
