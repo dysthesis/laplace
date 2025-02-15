@@ -65,7 +65,7 @@ in {
           dmenu
           dwm
         ])
-        ++ (with inputs.babel.packages.${pkgs}; [
+        ++ (with inputs.babel.packages.${system}; [
           jbcustom-nf
         ]);
     };
