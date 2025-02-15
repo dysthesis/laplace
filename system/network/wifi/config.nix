@@ -12,6 +12,7 @@ in {
         enable = true;
         wifi = {
           macAddress = "random";
+          powersave = true;
           backend = "iwd";
         };
       };
