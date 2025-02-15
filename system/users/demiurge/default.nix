@@ -53,7 +53,7 @@ in {
           noto-fonts
           noto-fonts-extra
           noto-fonts-emoji
-          noto-fonts-cjk
+          noto-fonts-cjk-sans
         ]
         ++ [
           inputs.poincare.packages.${system}.default
