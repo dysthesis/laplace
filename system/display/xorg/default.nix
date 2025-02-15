@@ -26,6 +26,7 @@ in {
               }
 
               ${inputs.gungnir.packages.${pkgs.system}.dwm-bar} &
+              ${lib.getExe pkgs.hsetroot} ${../../users/demiurge/wallpaper.png}
               dont_stop &
               waitPID=$!
             '';

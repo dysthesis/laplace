@@ -49,6 +49,7 @@ in {
       packages = with pkgs;
         [
           signal-desktop
+          btop
         ]
         ++ [
           inputs.poincare.packages.${system}.default
@@ -59,8 +60,9 @@ in {
           st
           dmenu
           dwm
-          signal-desktop
-          btop
+        ])
+        ++ (with inputs.babel.packages.${pkgs}; [
+          jbcustom-nf
         ]);
     };
   };
