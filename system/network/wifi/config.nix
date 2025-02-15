@@ -8,7 +8,6 @@
 in {
   config = mkIf cfg {
     networking = {
-      iwd.enable = true;
       networkmanager = {
         enable = true;
         wifi = {
