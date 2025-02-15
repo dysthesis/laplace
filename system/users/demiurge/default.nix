@@ -87,6 +87,7 @@ in {
           st
           dmenu
           signal-desktop
+          btop
         ]);
     };
   };
