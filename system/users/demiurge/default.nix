@@ -82,6 +82,7 @@ in {
           inputs.poincare.packages.${system}.default
           inputs.daedalus.packages.${system}.default
           inputs.zen-browser.packages.${system}.default
+          xinit-dwm
         ]
         ++ (with inputs.gungnir.packages.${system}; [
           st
