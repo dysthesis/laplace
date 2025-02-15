@@ -1,10 +1,15 @@
-{ ... }:
-{
+{pkgs, ...}: let
+  inherit
+    (pkgs)
+    linuxPackagesFor
+    linuxKernel
+    ;
+in {
   config = {
     laplace = {
       hardware = {
-        cpu = [ "amd" ];
-        gpu = [ "amd" ];
+        cpu = ["amd"];
+        gpu = ["amd"];
         monitors = [
           {
             name = "eDP";
@@ -43,8 +48,8 @@
       impermanence.enable = true;
       zram.enable = true;
 
-      display = [ "xorg" ];
-      users = [ "demiurge" ];
+      display = ["xorg"];
+      users = ["demiurge"];
       virtualisation.enable = true;
       nh = {
         enable = true;
@@ -52,5 +57,6 @@
       };
     };
     mnemosyne.enable = true;
+    boot.kernelPackages = linuxPackagesFor linuxKernel.kernels.linux_hardened;
   };
 }
