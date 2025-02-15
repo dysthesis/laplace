@@ -26,7 +26,6 @@ in {
               }
 
               ${inputs.gungnir.packages.${pkgs.system}.dwm-bar} &
-              ${lib.getExe pkgs.hsetroot} ${../../users/demiurge/wallpaper.png}
               dont_stop &
               waitPID=$!
             '';
@@ -37,7 +36,10 @@ in {
         defaultSession = "none+dwm";
         # Use this until I figure out how to wrap xinit
         # Okay this seems to work, just not startx
-        lightdm.enable = true;
+        lightdm = {
+          enable = true;
+          background = ../../users/demiurge/wallpaper.png;
+        };
         # Expose variables to graphical systemd user services
         importedVariables = [
           "GDK_SCALE"
