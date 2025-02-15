@@ -50,6 +50,10 @@ in {
         [
           signal-desktop
           btop
+          noto-fonts
+          noto-fonts-extra
+          noto-fonts-emoji
+          noto-fonts-cjk
         ]
         ++ [
           inputs.poincare.packages.${system}.default
