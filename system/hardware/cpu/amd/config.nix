@@ -2,13 +2,12 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
+  inherit (builtins) elem;
   cfg = config.laplace.hardware.cpu;
-in
-{
-  config = mkIf (cfg == "amd") {
+in {
+  config = mkIf (elem "amd" cfg) {
     hardware.cpu.amd.updateMicrocode = true;
     boot.kernelModules = [
       "kvm-amd"
