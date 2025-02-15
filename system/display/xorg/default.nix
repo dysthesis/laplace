@@ -38,7 +38,7 @@ in {
         # Okay this seems to work, just not startx
         lightdm = {
           enable = true;
-          background = ../../users/demiurge/wallpaper.png;
+          background = ./wallpaper.png;
         };
         # Expose variables to graphical systemd user services
         importedVariables = [
