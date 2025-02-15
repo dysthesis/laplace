@@ -1,12 +1,12 @@
 format HOST:
   sudo nix run 'github:nix-community/disko/latest' -- \
-	  --mode destroy,format,mount \
-		./hosts/{{HOST}}/disks.nix
+    --mode destroy,format,mount \
+    ./hosts/{{HOST}}/disks.nix
 
-install HOST: format {{HOST}}
+install HOST: (format HOST)
   sudo nixos-install \
-	  --impure \
-		--flake .#{{HOST}} \
-		--root /mnt \
-		--show-trace \
-		--no-root-password
+    --impure \
+    --flake .#{{HOST}} \
+    --root /mnt \
+    --show-trace \
+    --no-root-password
