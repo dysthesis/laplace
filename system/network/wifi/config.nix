@@ -13,7 +13,7 @@ in {
         wifi = {
           macAddress = "random";
           powersave = true;
-          backend = "iwd";
+          # backend = "iwd";
         };
       };
     };
