@@ -3,21 +3,24 @@
   lib,
   pkgs,
   ...
-}:
-let
-  inherit (lib) mkIf mkDefault;
+}: let
+  inherit
+    (lib)
+    mkIf
+    mkDefault
+    ;
+  inherit (builtins) elem;
   cfg = config.laplace.hardware.gpu;
-in
-{
-  config = mkIf (cfg == "amd") {
+in {
+  config = mkIf (elem "amd" cfg) {
     services.xserver.videoDrivers = mkDefault [
       "modesetting"
       "amdgpu"
     ];
 
     boot = {
-      initrd.kernelModules = [ "amdgpu" ];
-      kernelModules = [ "amdgpu" ];
+      initrd.kernelModules = ["amdgpu"];
+      kernelModules = ["amdgpu"];
     };
 
     hardware.graphics = {
