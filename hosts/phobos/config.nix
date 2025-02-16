@@ -1,16 +1,15 @@
-{ pkgs, ... }:
-let
-  inherit (pkgs)
+{pkgs, ...}: let
+  inherit
+    (pkgs)
     linuxPackagesFor
     linuxKernel
     ;
-in
-{
+in {
   config = {
     laplace = {
       hardware = {
-        cpu = [ "amd" ];
-        gpu = [ "amd" ];
+        cpu = ["amd"];
+        gpu = ["amd"];
         monitors = [
           {
             name = "eDP";
@@ -49,8 +48,8 @@ in
       impermanence.enable = true;
       zram.enable = true;
 
-      display = [ "xorg" ];
-      users = [ "demiurge" ];
+      display = ["xorg"];
+      users = ["demiurge"];
       virtualisation.enable = true;
       nh = {
         enable = true;
@@ -58,6 +57,5 @@ in
       };
     };
     mnemosyne.enable = true;
-    boot.kernelPackages = linuxPackagesFor linuxKernel.kernels.linux_xanmod_latest;
   };
 }
