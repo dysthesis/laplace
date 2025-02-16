@@ -3,13 +3,7 @@
   lib,
   pkgs,
   ...
-}: let
-  inherit
-    (pkgs)
-    linuxPackagesFor
-    linuxKernel
-    ;
-in {
+}: {
   imports = [
     ./installer.nix
   ];

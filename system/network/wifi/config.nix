@@ -11,9 +11,7 @@ in {
       networkmanager = {
         enable = true;
         wifi = {
-          # FIX: This attempts to fix the error with wpa_supplicant
-          # "wlp1s0: Failed to set PTK to the driver"
-          # macAddress = "random";
+          macAddress = "random";
           powersave = true;
           # backend = "iwd";
         };
