@@ -3,11 +3,9 @@
   pkgs,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib.babel.modules) importInDirectory;
-in
-{
+in {
   config = {
     services = {
       gnome.gnome-keyring.enable = true;
@@ -28,6 +26,7 @@ in
       noto-fonts-extra
       noto-fonts-emoji
       noto-fonts-cjk-sans
+      terminus_font
       inputs.babel.packages.${system}.jbcustom-nf
     ];
 
