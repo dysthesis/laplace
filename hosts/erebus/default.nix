@@ -103,16 +103,13 @@ in {
   };
 
   # Use the latest kernel packages!
-  boot = {
-    initrd = {
-      compressor = "zstd";
-      compressorArgs = [
-        "-19"
-        "-T0"
-      ];
-      systemd.enable = true;
-    };
-    kernelPackages = linuxPackagesFor linuxKernel.kernels.linux_hardened;
+  boot.initrd = {
+    compressor = "zstd";
+    compressorArgs = [
+      "-19"
+      "-T0"
+    ];
+    systemd.enable = true;
   };
 
   isoImage = {
