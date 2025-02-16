@@ -31,6 +31,9 @@ in {
     ];
 
     system.stateVersion = "24.11";
+
+    time.timeZone = "Australia/Sydney";
+    i18n.defaultLocale = "en_AU.UTF-8";
   };
   imports = importInDirectory ./.;
 }
