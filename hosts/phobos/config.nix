@@ -57,5 +57,23 @@ in {
       };
     };
     mnemosyne.enable = true;
+    # See if the reason wifi isn't working is because of missing modules
+    boot.kernelModules = [
+      "amdgpu"
+      "kvm-amd"
+      "amd-pstate"
+      "zenpower"
+      "msr"
+      "cros_ec"
+      "cros_ec_lpcs"
+      "bridge"
+      "macvlan"
+      "tap"
+      "tun"
+      "tun"
+      "loop"
+      "atkbd"
+      "ctr"
+    ];
   };
 }
