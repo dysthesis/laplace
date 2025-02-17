@@ -1,4 +1,5 @@
-format HOST:
+format HOST PASSWORD:
+  echo "{{PASSWORD}}" > /tmp/luks.key
   sudo nix run 'github:nix-community/disko/latest' -- \
     --mode destroy,format,mount \
 		--yes-wipe-all-disks \
