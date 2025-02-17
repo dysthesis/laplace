@@ -78,22 +78,6 @@ in {
         fsType = "tmpfs";
         inherit mountOptions;
       };
-      "/home/demiurge/.config" = {
-        fsType = "tmpfs";
-        inherit mountOptions;
-      };
-      "/home/demiurge/.cache" = {
-        fsType = "tmpfs";
-        inherit mountOptions;
-      };
-      "/home/demiurge/.local/state" = {
-        fsType = "tmpfs";
-        inherit mountOptions;
-      };
-      "/home/demiurge/Downloads" = {
-        fsType = "tmpfs";
-        inherit mountOptions;
-      };
     };
   };
 }
