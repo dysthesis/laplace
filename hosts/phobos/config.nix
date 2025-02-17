@@ -53,7 +53,7 @@ in {
       virtualisation.enable = true;
       nh = {
         enable = true;
-        flakePath = "~/Documents/Projects/laplace";
+        flakePath = "/home/demiurge/Documents/Projects/laplace";
       };
     };
     mnemosyne.enable = true;
