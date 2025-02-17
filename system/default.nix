@@ -21,13 +21,16 @@ in {
     };
     security.pam.services.login.enableGnomeKeyring = true;
 
-    fonts.packages = with pkgs; [
+    fonts.packages = with pkgs;
+    with inputs.babel.packages.${system}; [
       noto-fonts
       noto-fonts-extra
       noto-fonts-emoji
       noto-fonts-cjk-sans
       terminus_font
-      inputs.babel.packages.${system}.jbcustom-nf
+      jbcustom-nf
+      sf-pro
+      georgia-fonts
     ];
 
     system.stateVersion = "24.11";
