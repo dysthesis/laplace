@@ -19,7 +19,13 @@ in {
         enable = true;
       };
     };
-    security.pam.services.login.enableGnomeKeyring = true;
+    security = {
+      # For electron stuff
+      chromiumSuidSandbox.enable = true;
+
+      # `login` means TTY login
+      pam.services.login.enableGnomeKeyring = true;
+    };
 
     fonts.packages = with pkgs;
     with inputs.babel.packages.${system}; [
