@@ -2,19 +2,25 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib) mkIf;
+}: let
+  inherit
+    (lib)
+    mkIf
+    mkForce
+    ;
   cfg = config.laplace.network.dnscrypt-proxy.enable;
-in
-{
+in {
   config = mkIf cfg {
     networking = {
-      networkmanager.dns = "none";
+      networkmanager = {
+        dns = "none";
+        dhcp = "dhcpcd";
+      };
       nameservers = [
         "127.0.0.1"
         "::1"
       ];
+      useDHCP = mkForce true;
       dhcpcd.extraConfig = "nohook resolv.conf";
     };
 
@@ -23,14 +29,14 @@ in
       settings = {
         ipv6_servers = true;
         require_dnssec = true;
-        server_names = [ "odoh-cloudflare" ];
+        server_names = ["odoh-cloudflare"];
         odoh_servers = true;
 
         anonymized_dns = {
           routes = [
             {
               server_name = "odoh-cloudflare";
-              via = [ "*" ];
+              via = ["*"];
             }
           ];
           skip_incompatible = false;

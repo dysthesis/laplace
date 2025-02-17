@@ -16,9 +16,7 @@ in {
         };
       };
     };
-    programs.nm-applet = {
-      enable = true;
-      indicator = true;
-    };
+    # slows down boot time
+    systemd.services.NetworkManager-wait-online.enable = false;
   };
 }
