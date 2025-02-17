@@ -86,7 +86,7 @@ in {
         fsType = "tmpfs";
         inherit mountOptions;
       };
-      "/home/demiurge/.local" = {
+      "/home/demiurge/.local/state" = {
         fsType = "tmpfs";
         inherit mountOptions;
       };
