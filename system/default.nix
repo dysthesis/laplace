@@ -22,6 +22,7 @@ in {
     security = {
       # For electron stuff
       chromiumSuidSandbox.enable = true;
+      unprivilegedUsernsClone = true;
 
       # `login` means TTY login
       pam.services.login.enableGnomeKeyring = true;
