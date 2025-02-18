@@ -4,13 +4,11 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.display;
-in
-{
+in {
   config = mkIf (elem "xorg" cfg) {
     services.xserver = {
       enable = true;
@@ -38,10 +36,8 @@ in
         defaultSession = "none+dwm";
         # Use this until I figure out how to wrap xinit
         # Okay this seems to work, just not startx
-        lightdm = {
-          enable = true;
-          background = ./wallpaper.png;
-        };
+        startx.enable = true;
+
         # Expose variables to graphical systemd user services
         importedVariables = [
           "GDK_SCALE"
