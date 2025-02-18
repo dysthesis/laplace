@@ -82,6 +82,7 @@ in
           vesktop
           git
           direnv
+					configured.fish
         ]
         ++ [
           inputs.poincare.packages.${system}.default
