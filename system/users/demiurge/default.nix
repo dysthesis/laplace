@@ -26,6 +26,8 @@
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
 
+  wm = getExe inputs.gungnir.packages.${system}.dwm;
+
   xinitrc = with pkgs;
     writeText ".xinitrc"
     # sh
@@ -40,7 +42,7 @@
       # Start some services
       ${getExe dunst} &
       ${getExe udiskie} &
-      ${getExe hsetroot} ${./wallpaper.png} &
+      ${getExe hsetroot} -cover ${./wallpaper.png} &
       ${getExe inputs.gungnir.packages.${system}.dwm-bar} &
       exec ${wm}
     '';
@@ -88,7 +90,6 @@ in {
         ++ (with inputs.gungnir.packages.${system}; [
           st
           dmenu
-          dwm
         ]);
     };
   };
