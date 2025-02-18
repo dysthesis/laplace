@@ -13,6 +13,7 @@
   inherit
     (lib)
     mkIf
+    getExe
     ;
   inherit (lib.babel.pkgs) mkWrapper;
   inherit
