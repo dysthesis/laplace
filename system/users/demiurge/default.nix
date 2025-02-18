@@ -81,6 +81,7 @@ in
           microfetch
           vesktop
           git
+          direnv
         ]
         ++ [
           inputs.poincare.packages.${system}.default
