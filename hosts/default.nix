@@ -17,6 +17,7 @@ let
   defaultImports = [
     ../system
     ../modules
+    ../config
     inputs.disko.nixosModules.disko
   ];
 in

@@ -3,9 +3,11 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib.babel.modules) importInDirectory;
-in {
+in
+{
   config = {
     services = {
       gnome.gnome-keyring.enable = true;
@@ -28,17 +30,19 @@ in {
       pam.services.login.enableGnomeKeyring = true;
     };
 
-    fonts.packages = with pkgs;
-    with inputs.babel.packages.${system}; [
-      noto-fonts
-      noto-fonts-extra
-      noto-fonts-emoji
-      noto-fonts-cjk-sans
-      terminus_font
-      jbcustom-nf
-      sf-pro
-      georgia-fonts
-    ];
+    fonts.packages =
+      with pkgs;
+      with inputs.babel.packages.${system};
+      [
+        noto-fonts
+        noto-fonts-extra
+        noto-fonts-emoji
+        noto-fonts-cjk-sans
+        terminus_font
+        jbcustom-nf
+        sf-pro
+        georgia-fonts
+      ];
 
     system.stateVersion = "24.11";
 
