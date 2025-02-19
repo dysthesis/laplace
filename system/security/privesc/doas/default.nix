@@ -7,7 +7,6 @@
   cfg = config.laplace.security.privesc;
 in {
   config = mkIf (cfg == "doas") {
-    security.sudo.enable = mkForce false;
     security.doas = {
       enable = mkForce true;
       extraRules = [
