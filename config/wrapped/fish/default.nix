@@ -9,9 +9,9 @@
   writeText,
   nix-direnv,
   direnv,
-}:
-let
-  inherit (lib.strings)
+}: let
+  inherit
+    (lib.strings)
     concatStringsSep
     escapeShellArg
     ;
@@ -36,6 +36,7 @@ let
   plugins = with fishPlugins; [
     foreign-env
     fzf-fish
+    autopair
   ];
   direnvConfig = writeTextDir "direnvrc" ''
     source ${nix-direnv}/share/nix-direnv/direnvrc
@@ -75,12 +76,12 @@ let
     ${concatStringsSep "\n" (formatAliases aliases)}
   '';
 in
-fish.overrideAttrs (old: {
-  patches = [ ./fish-on-tmpfs.patch ];
-  doCheck = false;
-  postInstall =
-    old.postInstall
-    + ''
-      echo "source ${fish_user_config}" >> $out/etc/fish/config.fish
-    '';
-})
+  fish.overrideAttrs (old: {
+    patches = [./fish-on-tmpfs.patch];
+    doCheck = false;
+    postInstall =
+      old.postInstall
+      + ''
+        echo "source ${fish_user_config}" >> $out/etc/fish/config.fish
+      '';
+  })
