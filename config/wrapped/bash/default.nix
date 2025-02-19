@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib.babel.pkgs) mkWrapper;
   config = pkgs.writeText "bash.bashrc" ''
     if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]; then
@@ -11,7 +12,7 @@
     fi
   '';
 in
-  mkWrapper pkgs pkgs.bash ''
-	  wrapProgram $out/bin/bash \
-		  --add-flags '--rcfile' --add-flags '${config}'
-	''
+mkWrapper pkgs pkgs.bash ''
+  	  wrapProgram $out/bin/bash \
+  		  --add-flags '--rcfile' --add-flags '${config}'
+  	''
