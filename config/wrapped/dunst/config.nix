@@ -6,7 +6,7 @@
     width = 300;
     height = 228;
     offset = "0x15";
-    font = "JBMono Nerd Font 10";
+    # font = "JBMono Nerd Font 10";
     corner_radius = 8;
     origin = "top-center";
     notification_limit = 3;
