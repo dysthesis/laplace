@@ -9,9 +9,9 @@
   writeText,
   nix-direnv,
   direnv,
-}:
-let
-  inherit (lib.strings)
+}: let
+  inherit
+    (lib.strings)
     concatStringsSep
     escapeShellArg
     ;
@@ -46,6 +46,7 @@ let
   aliases = {
     ":q" = "exit";
     "v" = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
+    sudo = "doas";
   };
 
   formatAliases = mapAttrsToList (name: value: "alias ${name}=${escapeShellArg value}");
@@ -76,12 +77,12 @@ let
     ${concatStringsSep "\n" (formatAliases aliases)}
   '';
 in
-fish.overrideAttrs (old: {
-  patches = [ ./fish-on-tmpfs.patch ];
-  doCheck = false;
-  postInstall =
-    old.postInstall
-    + ''
-      echo "source ${fish_user_config}" >> $out/etc/fish/config.fish
-    '';
-})
+  fish.overrideAttrs (old: {
+    patches = [./fish-on-tmpfs.patch];
+    doCheck = false;
+    postInstall =
+      old.postInstall
+      + ''
+        echo "source ${fish_user_config}" >> $out/etc/fish/config.fish
+      '';
+  })
