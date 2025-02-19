@@ -2,14 +2,13 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   cfg = config.laplace.network.wifi.enable;
   inherit (lib) mkIf;
-in
-{
+in {
   config = mkIf cfg {
     networking = {
+      enableIPv6 = true;
       networkmanager = {
         enable = true;
         wifi = {
