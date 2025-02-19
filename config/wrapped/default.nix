@@ -16,6 +16,7 @@
       zathura = callPackage ./zathura {inherit lib pkgs;};
       dunst = callPackage ./dunst {inherit lib pkgs;};
       xinit = callPackage ./xinit {inherit inputs lib pkgs;};
+      mpv = callPackage ./mpv {inherit lib pkgs;};
     };
   };
 in {
