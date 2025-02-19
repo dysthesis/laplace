@@ -1,11 +1,21 @@
-{lib, pkgs, ...}: let
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
+let
   inherit (pkgs) callPackage;
   overlay = _final: _prev: {
     configured = {
-      fish = callPackage ./fish {inherit (pkgs) fish;};
-      bash = callPackage ./bash {inherit pkgs lib;};
+      fish = callPackage ./fish {
+        inherit (pkgs) fish;
+        inherit pkgs inputs;
+      };
+      bash = callPackage ./bash { inherit pkgs lib; };
     };
   };
-in {
-  nixpkgs.overlays = [overlay];
+in
+{
+  nixpkgs.overlays = [ overlay ];
 }
