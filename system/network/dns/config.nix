@@ -26,6 +26,8 @@ in {
         extraConfig = "nohook resolv.conf";
       };
     };
+    # https://github.com/NixOS/nixpkgs/issues/341092
+    systemd.services.dhcpcd.enable = false;
 
     services.dnscrypt-proxy2 = {
       enable = true;

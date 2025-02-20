@@ -56,6 +56,7 @@ in {
           vesktop
           git
           direnv
+          brightnessctl
         ]
         ++ (with pkgs.configured; [
           fish
