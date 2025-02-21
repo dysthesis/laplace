@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) makeBinPath;
   inherit (lib.babel.pkgs) mkWrapper;
   dependencies = with pkgs; [
@@ -23,8 +24,8 @@
     mpv = pkgs.configured.mpv;
   };
 in
-  mkWrapper pkgs ytfzf ''
-    wrapProgram $out/bin/ytfzf \
-    --set PATH ${makeBinPath dependencies} \
-    --set XDG_CONFIG_HOME ${./config}
-  ''
+mkWrapper pkgs ytfzf ''
+  wrapProgram $out/bin/ytfzf \
+  --set PATH ${makeBinPath dependencies} \
+  --set XDG_CONFIG_HOME ${./config}
+''

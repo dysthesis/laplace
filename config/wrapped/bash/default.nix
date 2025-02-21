@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib.babel.pkgs) mkWrapper;
   config = pkgs.writeText "bash.bashrc" ''
     if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
@@ -14,7 +15,7 @@
      fi
   '';
 in
-  mkWrapper pkgs pkgs.bash ''
-    wrapProgram $out/bin/bash \
-     --add-flags '--rcfile' --add-flags '${config}'
-  ''
+mkWrapper pkgs pkgs.bash ''
+  wrapProgram $out/bin/bash \
+   --add-flags '--rcfile' --add-flags '${config}'
+''
