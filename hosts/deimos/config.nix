@@ -1,10 +1,9 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   config = {
     laplace = {
       hardware = {
-        cpu = [ "amd" ];
-        gpu = [ "amd" ];
+        cpu = ["amd"];
+        gpu = ["amd"];
         monitors = [
           {
             name = "DP-1";
@@ -52,8 +51,8 @@
 
       impermanence.enable = true;
 
-      users = [ "demiurge" ];
-      display = [ "xorg" ];
+      users = ["demiurge"];
+      display = ["xorg"];
 
       virtualisation.enable = true;
       nh = {
@@ -64,10 +63,5 @@
 
     time.timeZone = "Australia/Sydney";
     i18n.defaultLocale = "en_AU.UTF-8";
-
-    console = {
-      earlySetup = true;
-      font = "${pkgs.terminus_font}/share/consolefonts/ter-120n.psf.gz";
-    };
   };
 }

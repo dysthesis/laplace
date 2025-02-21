@@ -1,10 +1,9 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   config = {
     laplace = {
       hardware = {
-        cpu = [ "amd" ];
-        gpu = [ "amd" ];
+        cpu = ["amd"];
+        gpu = ["amd"];
         monitors = [
           {
             name = "eDP";
@@ -43,8 +42,8 @@
       impermanence.enable = true;
       zram.enable = true;
 
-      display = [ "xorg" ];
-      users = [ "demiurge" ];
+      display = ["xorg"];
+      users = ["demiurge"];
       virtualisation.enable = true;
       nh = {
         enable = true;
@@ -53,9 +52,5 @@
     };
     mnemosyne.enable = true;
     boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
-    console = {
-      earlySetup = true;
-      font = "${pkgs.terminus_font}/share/consolefonts/ter-120n.psf.gz";
-    };
   };
 }

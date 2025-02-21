@@ -2,19 +2,20 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkDefault
     mkOption
     ;
-  inherit (lib.types)
+  inherit
+    (lib.types)
     enum
     ;
   inherit (lib.babel.path) getDirectories;
   inherit (lib.babel.modules) importInDirectory;
-in
-{
+  options = (getDirectories ./.) ++ ["none"];
+in {
   config.boot = {
     initrd.verbose = mkDefault false;
     tmp = {
@@ -23,9 +24,9 @@ in
     };
   };
   options.laplace.bootloader = mkOption {
-    type = enum (getDirectories ./.);
+    type = enum options;
     description = "Which bootloader to use";
-    default = "systemd-boot";
+    default = "none";
   };
   imports = importInDirectory ./.;
 }
