@@ -23,12 +23,17 @@ let
 in
 mapAttrs (
   hostname: system:
+  let
+    defaultProfiles = [ "hardened" ];
+    profiles = if hostname == "erebus" then defaultProfiles else defaultProfiles ++ [ "minimal" ];
+  in
   mkSystem {
     inherit
       system
       hostname
       self
       inputs
+      profiles
       ;
     specialArgs = { inherit lib; };
     config = {

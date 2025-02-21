@@ -2,10 +2,12 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.laplace.network.wifi.enable;
   inherit (lib) mkIf;
-in {
+in
+{
   config = mkIf cfg {
     networking = {
       stevenblack.enable = true;
@@ -22,7 +24,10 @@ in {
     systemd.services.NetworkManager-wait-online.enable = false;
     # From https://github.com/NotAShelf/nyx/blob/d407b4d6e5ab7f60350af61a3d73a62a5e9ac660/modules/core/common/system/os/networking/optimize.nix
     boot = {
-      kernelModules = ["tls" "tcp_bbr"];
+      kernelModules = [
+        "tls"
+        "tcp_bbr"
+      ];
       kernel.sysctl = {
         # TCP hardening
         # Prevent bogus ICMP errors from filling up logs.
