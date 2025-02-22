@@ -12,6 +12,7 @@
         name = "Dysthesis";
         signingKey = "4F41D2DFD42D5568";
       };
+      commit.gpgsign = true;
       branch.autosetupmerge = "true";
       push = {
         default = "current";
