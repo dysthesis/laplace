@@ -2,32 +2,30 @@
   pkgs,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib.babel.modules) importInDirectory;
-in
-{
+in {
   config = {
-    services = {
-      gnome.gnome-keyring.enable = true;
-      dbus = {
-        packages = with pkgs; [
-          dconf
-          gcr
-          udisks2
-        ];
-        implementation = "broker";
-        enable = true;
-      };
-    };
-    security = {
-      # For electron stuff
-      chromiumSuidSandbox.enable = true;
-      unprivilegedUsernsClone = true;
-
-      # `login` means TTY login
-      pam.services.login.enableGnomeKeyring = true;
-    };
+    # services = {
+    #   gnome.gnome-keyring.enable = true;
+    #   dbus = {
+    #     packages = with pkgs; [
+    #       dconf
+    #       gcr
+    #       udisks2
+    #     ];
+    #     implementation = "broker";
+    #     enable = true;
+    #   };
+    # };
+    # security = {
+    #   # For electron stuff
+    #   chromiumSuidSandbox.enable = true;
+    #   unprivilegedUsernsClone = true;
+    #
+    #   # `login` means TTY login
+    #   pam.services.login.enableGnomeKeyring = true;
+    # };
     console = {
       earlySetup = true;
       font = "${pkgs.terminus_font}/share/consolefonts/ter-120n.psf.gz";
