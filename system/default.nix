@@ -1,11 +1,12 @@
 {
-  inputs,
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib.babel.modules) importInDirectory;
-in {
+in
+{
   config = {
     services = {
       gnome.gnome-keyring.enable = true;
@@ -31,17 +32,6 @@ in {
       earlySetup = true;
       font = "${pkgs.terminus_font}/share/consolefonts/ter-120n.psf.gz";
     };
-    fonts.packages = with pkgs;
-    with inputs.babel.packages.${system}; [
-      noto-fonts
-      noto-fonts-extra
-      noto-fonts-emoji
-      noto-fonts-cjk-sans
-      terminus_font
-      jbcustom-nf
-      sf-pro
-      georgia-fonts
-    ];
 
     system.stateVersion = "24.11";
 

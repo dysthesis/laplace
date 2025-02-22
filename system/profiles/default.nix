@@ -8,11 +8,11 @@ let
   inherit (lib.babel.path)
     getDirectories
     ;
-  inherit (lib.babel.modules) importInDirectory;
   options = getDirectories ./.;
+  inherit (lib.babel.modules) importInDirectory;
 in
 {
-  options.laplace.harden = mkOption {
+  options.laplace.profiles = mkOption {
     type = listOf (enum options);
     default = [ ];
   };

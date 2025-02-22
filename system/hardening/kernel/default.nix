@@ -3,9 +3,9 @@
   lib,
   config,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkIf
     mkOverride
     mkDefault
@@ -14,7 +14,8 @@
   inherit (builtins) elem;
 
   cfg = config.laplace.harden;
-in {
+in
+{
   config = mkIf (elem "kernel" cfg) {
     # This section is stolen from https://github.com/NotAShelf/nyx/blob/319b1f6fe4d09ff84d83d1f8fa0d04e0220dfed7/modules/core/common/system/security/kernel.nix#L57
     security = {
