@@ -1,10 +1,12 @@
-{pkgs, ...}: {
+{ ... }:
+{
   config = {
     laplace = {
-      harden = ["kernel"];
+      harden = [ "kernel" ];
+      profiles = [ "desktop" ];
       hardware = {
-        cpu = ["amd"];
-        gpu = ["amd"];
+        cpu = [ "amd" ];
+        gpu = [ "amd" ];
         monitors = [
           {
             name = "DP-1";
@@ -52,8 +54,8 @@
 
       impermanence.enable = true;
 
-      users = ["demiurge"];
-      display = ["xorg"];
+      users = [ "demiurge" ];
+      display = [ "xorg" ];
 
       virtualisation.enable = true;
       nh = {
