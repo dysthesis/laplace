@@ -26,17 +26,16 @@ in {
       btop
       just
       microfetch
+      tor-browser-bundle-bin
     ];
+
+  networking.stevenblack.enable = true;
+
   laplace = {
     profiles = ["desktop"];
-    harden = [
-      "kernel"
-      "malloc"
-    ];
+    harden = ["kernel"];
     zram.enable = true;
-    network = {
-      optimise = true;
-    };
+    network.optimise = true;
   };
 
   isoImage.edition = mkForce "erebus";
