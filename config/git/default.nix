@@ -1,4 +1,7 @@
-{
+{pkgs, ...}: {
+  environment.systemPackages = with pkgs; [
+    difftastic
+  ];
   programs.git = {
     enable = true;
     lfs.enable = true;
@@ -9,7 +12,6 @@
         name = "Dysthesis";
         signingKey = "4F41D2DFD42D5568";
       };
-      signing.signByDefault = true;
       branch.autosetupmerge = "true";
       push = {
         default = "current";
