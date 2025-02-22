@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   config = {
     laplace = {
+      harden = ["kernel"];
       hardware = {
         cpu = ["amd"];
         gpu = ["amd"];

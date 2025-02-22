@@ -4,6 +4,7 @@
   lib,
   ...
 }: let
+  inherit (lib) mkDefault;
   inherit (lib.babel.system) mkSystem;
   inherit (builtins) mapAttrs;
   hosts = {
@@ -17,26 +18,26 @@
     ../system
     ../modules
     ../config
-    # inputs.disko.nixosModules.disko
+    inputs.disko.nixosModules.disko
   ];
 in
   mapAttrs (
-    hostname: system: let
-      profiles = [
-        "minimal"
-      ];
-    in
+    hostname: system:
       mkSystem {
         inherit
           system
           hostname
           self
           inputs
-          profiles
           ;
+        # BUG: For some reason, wifi is fucked if I import the hardened.nix profile,
+        # but not if I add all of the options myself manually. This is so fucking weird.
+        profiles = ["minimal"];
         specialArgs = {inherit lib;};
-        config = {
-          # profiles.hardened = true;
+        config = let
+        in {
+          # Use stable nixpkgs by default, but allow accessing unstable packages
+          # by using `pkgs.unstable`
           nixpkgs.overlays = [
             (final: _prev: {
               unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};

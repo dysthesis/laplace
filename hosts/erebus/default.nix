@@ -28,6 +28,10 @@ in {
       microfetch
     ];
   laplace = {
+    harden = [
+      "kernel"
+      "malloc"
+    ];
     zram.enable = true;
     network = {
       wifi.enable = true;
