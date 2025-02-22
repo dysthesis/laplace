@@ -1,6 +1,11 @@
 {pkgs, ...}: {
   config = {
     laplace = {
+      harden = [
+        "kernel"
+        # TODO: malloc hardening breaks Firefox and its derivatives.
+        # Figure out if it's possible to work around that.
+      ];
       hardware = {
         cpu = ["amd"];
         gpu = ["amd"];
