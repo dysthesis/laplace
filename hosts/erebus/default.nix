@@ -3,25 +3,28 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkForce;
-in {
+in
+{
   imports = [
     ./installer.nix
   ];
-  environment.systemPackages = let
-    inherit
-      (pkgs)
-      system
-      ;
-  in
-    with pkgs; [
+  environment.systemPackages =
+    let
+      inherit (pkgs)
+        system
+        ;
+    in
+    with pkgs;
+    [
       inputs.disko.packages.${system}.default
       inputs.daedalus.packages.${system}.default
       inputs.poincare.packages.${system}.default
       configured.ghostty
       (nerdfonts.override {
-        fonts = ["JetBrainsMono"];
+        fonts = [ "JetBrainsMono" ];
       })
       btop
       just
@@ -32,8 +35,8 @@ in {
   networking.stevenblack.enable = true;
 
   laplace = {
-    profiles = ["desktop"];
-    harden = ["kernel"];
+    profiles = [ "desktop" ];
+    harden = [ "kernel" ];
     zram.enable = true;
     network.optimise = true;
   };

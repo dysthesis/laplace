@@ -62,6 +62,7 @@ in {
           bash
           ytfzf
           zathura
+          ani-cli
         ])
         ++ [
           inputs.poincare.packages.${system}.default

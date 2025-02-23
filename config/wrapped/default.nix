@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (pkgs) callPackage;
   overlay = _final: _prev: {
     configured = {
@@ -12,16 +11,16 @@ let
         inherit (pkgs) fish;
         inherit pkgs inputs;
       };
-      bash = callPackage ./bash { inherit pkgs lib; };
-      ytfzf = callPackage ./ytfzf { inherit lib pkgs; };
-      zathura = callPackage ./zathura { inherit lib pkgs; };
-      dunst = callPackage ./dunst { inherit lib pkgs; };
-      xinit = callPackage ./xinit { inherit inputs lib pkgs; };
-      mpv = callPackage ./mpv { inherit lib pkgs; };
-      ghostty = callPackage ./ghostty { inherit inputs lib pkgs; };
+      bash = callPackage ./bash {inherit pkgs lib;};
+      ytfzf = callPackage ./ytfzf {inherit lib pkgs;};
+      zathura = callPackage ./zathura {inherit lib pkgs;};
+      dunst = callPackage ./dunst {inherit lib pkgs;};
+      xinit = callPackage ./xinit {inherit inputs lib pkgs;};
+      mpv = callPackage ./mpv {inherit lib pkgs;};
+      ghostty = callPackage ./ghostty {inherit inputs lib pkgs;};
+      ani-cli = callPackage ./ani-cli {inherit pkgs;};
     };
   };
-in
-{
-  nixpkgs.overlays = [ overlay ];
+in {
+  nixpkgs.overlays = [overlay];
 }
