@@ -39,6 +39,7 @@
             lib
             pkgs
             inputs
+            config
             ;
         }
       );
