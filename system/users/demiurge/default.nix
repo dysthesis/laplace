@@ -57,6 +57,7 @@ in {
           xclip
           gnupg
           xsecurelock
+          atuin
         ]
         ++ (with pkgs.configured; [
           fish
