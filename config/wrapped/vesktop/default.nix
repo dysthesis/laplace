@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   inputs,
@@ -33,8 +34,10 @@ in
         "org.freedesktop.portal.*" = "talk";
         "org.a11y.Bus" = "talk";
       };
-
-      fonts.enable = true;
+      fonts = {
+        enable = true;
+        fonts = config.fonts.packages;
+      };
       locale.enable = true;
       bubblewrap = {
         network = true;
