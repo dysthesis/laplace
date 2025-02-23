@@ -14,11 +14,7 @@ let
 
   low1k = import ./low1k.nix { inherit anime4k; };
   low1kParsed =
-    low1k 
-    |> mapAttrsToList (k: v: "${k} ${v}") 
-    |> concatStringsSep "\n" 
-    |> writeText "inputs.conf"
-    ;
+    low1k |> mapAttrsToList (k: v: "${k} ${v}") |> concatStringsSep "\n" |> writeText "inputs.conf";
 
   mpv = pkgs.mpv.override {
     scripts = builtins.attrValues {
@@ -36,12 +32,12 @@ let
 
     src = ./config;
     buildPhase =
-        # sh
-        ''
-          mkdir -p $out/
-          cp -r $src/* $out/
-          cp ${low1kParsed} $out/input.conf
-        '';
+      # sh
+      ''
+        mkdir -p $out/
+        cp -r $src/* $out/
+        cp ${low1kParsed} $out/input.conf
+      '';
   });
 in
 mkWrapper pkgs mpv ''

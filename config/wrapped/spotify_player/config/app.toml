@@ -23,10 +23,6 @@ default_device = "nvim"
 notify_streaming_only = false
 seek_duration_secs = 10
 
-[notify_format]
-summary = "{track} • {artists}"
-body = "{album}"
-
 [layout]
 playback_window_position = "Top"
 playback_window_height = 6
@@ -34,3 +30,7 @@ playback_window_height = 6
 [layout.library]
 playlist_percent = 40
 album_percent = 40
+
+[notify_format]
+summary = "{track} • {artists}"
+body = "{album}"
