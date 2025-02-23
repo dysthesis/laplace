@@ -42,5 +42,7 @@ in {
 
       _JAVA_OPTIONS = "-Dsun.java2d.uiScale=2";
     };
+
+    services.redshift.enable = true;
   };
 }
