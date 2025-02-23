@@ -4,17 +4,15 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.laplace.security.secure-boot.enable;
-in
-{
-  imports = [ inputs.lanzaboote.nixosModules.lanzaboote ];
+in {
+  imports = [inputs.lanzaboote.nixosModules.lanzaboote];
   config = mkIf cfg {
     environment.systemPackages = [
       # For debugging and troubleshooting Secure Boot.
-      pkgs.sbctl
+      pkgs.unstable.sbctl
     ];
 
     boot = {
@@ -26,7 +24,7 @@ in
         # for now.
         enable = true;
 
-        pkiBundle = "/etc/secureboot";
+        pkiBundle = "/var/lib/sbctl";
       };
     };
   };

@@ -4,16 +4,18 @@
   config,
   pkgs,
   ...
-}:
-let
-  inherit (pkgs)
+}: let
+  inherit
+    (pkgs)
     system
     ;
 
-  inherit (lib)
+  inherit
+    (lib)
     mkIf
     ;
-  inherit (builtins)
+  inherit
+    (builtins)
     elem
     filter
     hasAttr
@@ -21,8 +23,7 @@ let
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
-in
-{
+in {
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
@@ -47,19 +48,18 @@ in
           "podman"
           "libvirt"
         ];
-      packages =
-        with pkgs;
+      packages = with pkgs;
         [
           signal-desktop
           btop
           microfetch
-          vesktop
           git
           direnv
           brightnessctl
           xclip
           gnupg
           xsecurelock
+          atuin
         ]
         ++ (with pkgs.configured; [
           fish
@@ -69,6 +69,7 @@ in
           ani-cli
           spotify-player
           zen
+          vesktop
         ])
         ++ [
           inputs.poincare.packages.${system}.default
