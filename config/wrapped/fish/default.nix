@@ -9,14 +9,18 @@
   writeText,
   nix-direnv,
   direnv,
-}:
-let
-  inherit (lib.strings)
+}: let
+  inherit (lib) nameValuePair;
+  inherit
+    (lib.strings)
     concatStringsSep
     escapeShellArg
     ;
-  inherit (lib.attrsets) mapAttrsToList;
-  inherit (lib) getExe;
+  inherit
+    (lib.attrsets)
+    mapAttrsToList
+    mapAttrs'
+    ;
   initPlugin = plugin: ''
     begin
       set -l __plugin_dir ${plugin}/share/fish
@@ -43,11 +47,22 @@ let
   '';
 
   # NOTE: Add aliases here
-  aliases = {
-    ":q" = "exit";
-    "v" = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
-    sudo = "doas";
-  };
+  aliases = with pkgs; let
+    inherit (lib) getExe;
+    baseAliases = {
+      ls = "${getExe eza} --icons";
+      ll = "${getExe eza} --icons -l";
+      la = "${getExe eza} --icons -la";
+    };
+    treeAliases = mapAttrs' (name: value: nameValuePair (name + "t") (value + " --tree")) baseAliases;
+    ezaAliases = baseAliases // treeAliases;
+  in
+    {
+      ":q" = "exit";
+      "v" = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
+      sudo = "doas";
+    }
+    // ezaAliases;
 
   formatAliases = mapAttrsToList (name: value: "alias ${name}=${escapeShellArg value}");
   fish_user_config = writeText "user_config.fish" ''
@@ -77,12 +92,12 @@ let
     ${concatStringsSep "\n" (formatAliases aliases)}
   '';
 in
-fish.overrideAttrs (old: {
-  patches = [ ./fish-on-tmpfs.patch ];
-  doCheck = false;
-  postInstall =
-    old.postInstall
-    + ''
-      echo "source ${fish_user_config}" >> $out/etc/fish/config.fish
-    '';
-})
+  fish.overrideAttrs (old: {
+    patches = [./fish-on-tmpfs.patch];
+    doCheck = false;
+    postInstall =
+      old.postInstall
+      + ''
+        echo "source ${fish_user_config}" >> $out/etc/fish/config.fish
+      '';
+  })
