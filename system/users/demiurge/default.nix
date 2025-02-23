@@ -57,6 +57,7 @@ in {
           brightnessctl
           xclip
           gnupg
+          xsecurelock
         ]
         ++ (with pkgs.configured; [
           fish
