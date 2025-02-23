@@ -4,38 +4,15 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.display;
-in
-{
+in {
   config = mkIf (elem "xorg" cfg) {
     services.xserver = {
       enable = true;
-      windowManager = {
-        dwm = {
-          enable = true;
-          package = inputs.gungnir.packages.${pkgs.system}.dwm;
-        };
-        session = [
-          {
-            name = "dwm";
-            start = ''
-              dont_stop() {
-                while type dwm >/dev/null ; do dwm && continue || break ; done
-              }
-
-              ${inputs.gungnir.packages.${pkgs.system}.dwm-bar} &
-              dont_stop &
-              waitPID=$!
-            '';
-          }
-        ];
-      };
       displayManager = {
-        defaultSession = "none+dwm";
         # Use this until I figure out how to wrap xinit
         # Okay this seems to work, just not startx
         startx.enable = true;

@@ -89,6 +89,7 @@
       set -gx DIRENV_LOG_FORMAT ""
       set -gx direnv_config_dir ${direnvConfig}
       ${lib.getExe direnv} hook fish | source
+      dbus-update-activation-environment --systemd --all
     end
 
     set PATH ${deps} $PATH
