@@ -15,10 +15,10 @@ let
   low1k = import ./low1k.nix { inherit anime4k; };
   low1kParsed =
     low1k 
-		|> mapAttrsToList (k: v: "${k} ${v}") 
-		|> concatStringsSep "\n" 
-		|> writeText "inputs.conf"
-		;
+    |> mapAttrsToList (k: v: "${k} ${v}") 
+    |> concatStringsSep "\n" 
+    |> writeText "inputs.conf"
+    ;
 
   mpv = pkgs.mpv.override {
     scripts = builtins.attrValues {

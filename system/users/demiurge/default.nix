@@ -64,6 +64,7 @@ in {
           ytfzf
           zathura
           ani-cli
+          spotify-player
         ])
         ++ [
           inputs.poincare.packages.${system}.default
