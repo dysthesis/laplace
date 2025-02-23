@@ -2,26 +2,10 @@
   pkgs,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib.babel.modules) importInDirectory;
-in
-{
+in {
   config = {
-    # TODO: Move this
-    services.openssh = {
-      enable = lib.mkDefault true;
-      settings = {
-        PermitRootLogin = lib.mkForce "no";
-        UseDns = false;
-        X11Forwarding = false;
-        PasswordAuthentication = lib.mkForce false;
-        KbdInteractiveAuthentication = false;
-      };
-      openFirewall = true;
-      ports = [ 22 ];
-    };
-
     console = {
       earlySetup = true;
       font = "${pkgs.terminus_font}/share/consolefonts/ter-120n.psf.gz";
