@@ -9,7 +9,7 @@
     configured = {
       fish = callPackage ./fish {
         inherit (pkgs) fish;
-        inherit pkgs inputs;
+        inherit pkgs inputs lib;
       };
       bash = callPackage ./bash {inherit pkgs lib;};
       ytfzf = callPackage ./ytfzf {inherit lib pkgs;};

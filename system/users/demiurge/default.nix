@@ -55,6 +55,7 @@ in {
           git
           direnv
           brightnessctl
+          xclip
           gnupg
         ]
         ++ (with pkgs.configured; [
