@@ -36,7 +36,7 @@
         privesc = "doas";
         apparmor.enable = true;
         polkit.enable = true;
-        secure-boot.enable = false;
+        secure-boot.enable = true;
         firewall.enable = true;
         fail2ban.enable = true;
       };
