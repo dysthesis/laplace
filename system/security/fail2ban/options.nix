@@ -1,3 +1,3 @@
 {lib, ...}: let
-  inherit (lib) mkOption;
-in {options.laplace.security.fail2ban.enable = mkOption "Whether or not to enable fail2ban";}
+  inherit (lib) mkEnableOption;
+in {options.laplace.security.fail2ban.enable = mkEnableOption "Whether or not to enable fail2ban";}
