@@ -8,14 +8,11 @@
   inherit (lib) mkIf;
   cfg = config.laplace.security.secure-boot.enable;
 in {
-  imports = with pkgs; [
-    inputs.lanzaboote.nixosModules.lanzaboote
-    unstable.sbctl
-  ];
+  imports = [inputs.lanzaboote.nixosModules.lanzaboote];
   config = mkIf cfg {
     environment.systemPackages = [
       # For debugging and troubleshooting Secure Boot.
-      pkgs.sbctl
+      pkgs.unstable.sbctl
     ];
 
     boot = {
