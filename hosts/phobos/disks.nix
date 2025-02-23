@@ -44,12 +44,15 @@ in {
                     "autodefrag"
                   ];
                 in
-                  mapAttrs (_name: value: value // {inherit mountOptions;}) {
-                    "@nix".mountpoint = "/nix";
+                  mapAttrs (_name: value: value // {mountOptions = mountOptions ++ ["noexec"];}) {
                     "@persist".mountpoint = "/nix/persist";
                     "@home".mountpoint = "/home";
                   }
                   // {
+                    "@nix" = {
+                      mountpoint = "/nix";
+                      inherit mountOptions;
+                    };
                     "@swap" = {
                       mountpoint = "/swap";
                       swap.swapfile.size = "8G";
@@ -62,15 +65,18 @@ in {
       };
     };
 
-    # Make root impermanent
-    nodev = {
+    # Make root and home impermanent
+    nodev = let
+      mountOptions = [
+        "size=2G"
+        "defaults"
+        "mode=755"
+        "noexec"
+      ];
+    in {
       "/" = {
         fsType = "tmpfs";
-        mountOptions = [
-          "size=2G"
-          "defaults"
-          "mode=755"
-        ];
+        inherit mountOptions;
       };
     };
   };
