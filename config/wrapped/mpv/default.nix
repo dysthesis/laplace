@@ -38,9 +38,9 @@ let
     buildPhase =
         # sh
         ''
-                  mkdir -p $out/
-                  cp -r $src/* $out/
-          				cp ${low1kParsed} $out/input.conf
+          mkdir -p $out/
+          cp -r $src/* $out/
+          cp ${low1kParsed} $out/input.conf
         '';
   });
 in

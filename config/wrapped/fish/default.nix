@@ -5,6 +5,7 @@
   fishPlugins,
   lib,
   starship,
+  zoxide,
   writeTextDir,
   writeText,
   nix-direnv,
@@ -65,30 +66,34 @@
     // ezaAliases;
 
   formatAliases = mapAttrsToList (name: value: "alias ${name}=${escapeShellArg value}");
+  deps = with pkgs; lib.makeBinPath [zoxide];
   fish_user_config = writeText "user_config.fish" ''
-      # Only source once
-      # set -q __fish_config_sourced; and exit
-      # set -gx __fish_config_sourced 1
-      ${lib.concatMapStringsSep "\n" initPlugin plugins}
+    # Only source once
+    # set -q __fish_config_sourced; and exit
+    # set -gx __fish_config_sourced 1
+    ${lib.concatMapStringsSep "\n" initPlugin plugins}
 
-      if status is-login
-        fenv source /etc/profile
+    if status is-login
+      fenv source /etc/profile
+    end
+
+    if status is-interactive
+      ${lib.fileContents ./interactive.fish}
+      ${lib.fileContents ./pushd_mod.fish}
+      function starship_transient_prompt_func
+        ${lib.getExe starship} module character
       end
+      ${lib.getExe starship} init fish | source
+      ${lib.getExe zoxide} init fish | source
+      enable_transience
+      set -gx DIRENV_LOG_FORMAT ""
+      set -gx direnv_config_dir ${direnvConfig}
+      ${lib.getExe direnv} hook fish | source
+    end
 
-      if status is-interactive
-        ${lib.fileContents ./interactive.fish}
-        ${lib.fileContents ./pushd_mod.fish}
-        function starship_transient_prompt_func
-          ${lib.getExe starship} module character
-        end
-        ${lib.getExe starship} init fish | source
-        enable_transience
-        set -gx DIRENV_LOG_FORMAT ""
-        set -gx direnv_config_dir ${direnvConfig}
-        ${lib.getExe direnv} hook fish | source
-      end
+    set PATH ${deps} $PATH
 
-      # Load aliases
+    # Load aliases
     ${concatStringsSep "\n" (formatAliases aliases)}
   '';
 in
