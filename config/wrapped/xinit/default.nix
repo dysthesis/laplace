@@ -23,6 +23,7 @@
       dbus-update-activation-environment --systemd --all
 
       # Start some services
+      ${getExe syncthing} -no-browser &
       ${configured.dunst}/bin/dunst &
       ${getExe udiskie} &
       ${getExe hsetroot} -cover ${./wallpaper.png} &
