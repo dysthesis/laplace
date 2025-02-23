@@ -1,21 +1,28 @@
-{ lib, ... }:
-let
+{lib, ...}: let
   inherit (lib) mkOption;
-  inherit (lib.types)
+  inherit
+    (lib.types)
     str
     int
     bool
     listOf
     submodule
     ;
-in
-{
+in {
   options.laplace.hardware.monitors = mkOption {
     type = listOf (submodule {
       options = {
         name = mkOption {
           type = str;
           example = "DP-1";
+        };
+
+        # TODO: Add check to ensure that only one primary monitor exist
+        primary = mkOption {
+          type = bool;
+          example = true;
+          default = false;
+          description = "Whether the current monitor is the primary monitor";
         };
 
         width = mkOption {
@@ -51,6 +58,6 @@ in
         };
       };
     });
-    default = [ ];
+    default = [];
   };
 }
