@@ -28,7 +28,9 @@ in
       description = "Demiurge";
       shell = "${pkgs.configured.bash}/bin/bash";
       isNormalUser = true;
-      openssh.authorizedKeys.keys = [ ];
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPxBpd1Xyr16hfHFvd/AvOz8mLehUCI28QW3WNht4Xkn demiurge@adonaios"
+      ];
       hashedPassword = "$y$j9T$WtVEPLB064z6W2eWFUPK81$xT7V9MzUIS.gcoaJzfYjMRY/I5Zi5Hl57XDo9EMwll5";
       extraGroups =
         [
