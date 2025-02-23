@@ -10,15 +10,14 @@
   writeText,
   nix-direnv,
   direnv,
-}: let
+}:
+let
   inherit (lib) nameValuePair;
-  inherit
-    (lib.strings)
+  inherit (lib.strings)
     concatStringsSep
     escapeShellArg
     ;
-  inherit
-    (lib.attrsets)
+  inherit (lib.attrsets)
     mapAttrsToList
     mapAttrs'
     ;
@@ -48,16 +47,18 @@
   '';
 
   # NOTE: Add aliases here
-  aliases = with pkgs; let
-    inherit (lib) getExe;
-    baseAliases = {
-      ls = "${getExe eza} --icons";
-      ll = "${getExe eza} --icons -l";
-      la = "${getExe eza} --icons -la";
-    };
-    treeAliases = mapAttrs' (name: value: nameValuePair (name + "t") (value + " --tree")) baseAliases;
-    ezaAliases = baseAliases // treeAliases;
-  in
+  aliases =
+    with pkgs;
+    let
+      inherit (lib) getExe;
+      baseAliases = {
+        ls = "${getExe eza} --icons";
+        ll = "${getExe eza} --icons -l";
+        la = "${getExe eza} --icons -la";
+      };
+      treeAliases = mapAttrs' (name: value: nameValuePair (name + "t") (value + " --tree")) baseAliases;
+      ezaAliases = baseAliases // treeAliases;
+    in
     {
       ":q" = "exit";
       "v" = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
@@ -66,7 +67,7 @@
     // ezaAliases;
 
   formatAliases = mapAttrsToList (name: value: "alias ${name}=${escapeShellArg value}");
-  deps = with pkgs; lib.makeBinPath [zoxide];
+  deps = with pkgs; lib.makeBinPath [ zoxide ];
   fish_user_config = writeText "user_config.fish" ''
     # Only source once
     # set -q __fish_config_sourced; and exit
@@ -98,12 +99,12 @@
     ${concatStringsSep "\n" (formatAliases aliases)}
   '';
 in
-  fish.overrideAttrs (old: {
-    patches = [./fish-on-tmpfs.patch];
-    doCheck = false;
-    postInstall =
-      old.postInstall
-      + ''
-        echo "source ${fish_user_config}" >> $out/etc/fish/config.fish
-      '';
-  })
+fish.overrideAttrs (old: {
+  patches = [ ./fish-on-tmpfs.patch ];
+  doCheck = false;
+  postInstall =
+    old.postInstall
+    + ''
+      echo "source ${fish_user_config}" >> $out/etc/fish/config.fish
+    '';
+})
