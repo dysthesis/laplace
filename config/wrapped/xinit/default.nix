@@ -24,6 +24,7 @@
 
       # Start some services
       ${getExe syncthing} -no-browser &
+      ${getExe configured.spotify_player} -d &
       ${configured.dunst}/bin/dunst &
       ${getExe udiskie} &
       ${getExe hsetroot} -cover ${./wallpaper.png} &

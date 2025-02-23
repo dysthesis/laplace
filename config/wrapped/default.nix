@@ -19,6 +19,7 @@
       mpv = callPackage ./mpv {inherit lib pkgs;};
       ghostty = callPackage ./ghostty {inherit inputs lib pkgs;};
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
+      spotify_player = callPackage ./spotify_player {inherit lib pkgs;};
     };
   };
 in {
