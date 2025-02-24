@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (pkgs) writeText;
   taskrc = writeText ".taskrc" ''
@@ -12,7 +13,7 @@
      data.location=~/.local/share/task
   '';
 in
-  mkWrapper pkgs pkgs.taskwarrior ''
-    wrapProgram $out/bin/task \
-     --set TASKRC ${taskrc} \
-  ''
+mkWrapper pkgs pkgs.taskwarrior ''
+  wrapProgram $out/bin/task \
+   --set TASKRC ${taskrc} \
+''
