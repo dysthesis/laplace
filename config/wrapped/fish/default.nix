@@ -69,6 +69,7 @@
   formatAliases = mapAttrsToList (name: value: "alias ${name}=${escapeShellArg value}");
   deps = with pkgs;
     lib.makeBinPath [
+      configured.taskwarrior
       zoxide
       atuin
     ];
@@ -96,6 +97,7 @@
       set -gx direnv_config_dir ${direnvConfig}
       ${lib.getExe direnv} hook fish | source
       dbus-update-activation-environment --systemd --all
+      task list
     end
 
     set PATH ${deps} $PATH
