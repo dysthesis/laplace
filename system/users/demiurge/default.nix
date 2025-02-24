@@ -86,7 +86,10 @@ in {
               then 15
               else 12;
           in [
-            (st {inherit fontSize;})
+            (st {
+              inherit fontSize;
+              borderpx = 20;
+            })
             (dmenu {inherit fontSize;})
           ]
         );
