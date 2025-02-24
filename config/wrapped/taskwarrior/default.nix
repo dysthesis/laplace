@@ -6,9 +6,10 @@
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (pkgs) writeText;
   taskrc = writeText ".taskrc" ''
-    weekstart=monday
-    news.version=2.6.2
-    data.location=~/.local/share/task
+    verbose=blank,footnote,label,new-id,affected,edit,special,project,sync,unwait
+     weekstart=monday
+     news.version=2.6.2
+     data.location=~/.local/share/task
   '';
 in
   mkWrapper pkgs pkgs.taskwarrior ''
