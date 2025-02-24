@@ -42,9 +42,9 @@ in {
     environment.variables = {
       ## Used by GTK 3
       # `GDK_SCALE` is limited to integer values
-      GDK_SCALE = "2";
+      GDK_SCALE = "1";
       # Inverse of GDK_SCALE
-      GDK_DPI_SCALE = "0.5";
+      GDK_DPI_SCALE = "1";
 
       # Used by Qt 5
       QT_AUTO_SCREEN_SCALE_FACTOR = "1";
