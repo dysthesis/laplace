@@ -4,16 +4,18 @@
   config,
   pkgs,
   ...
-}:
-let
-  inherit (pkgs)
+}: let
+  inherit
+    (pkgs)
     system
     ;
 
-  inherit (lib)
+  inherit
+    (lib)
     mkIf
     ;
-  inherit (builtins)
+  inherit
+    (builtins)
     elem
     filter
     hasAttr
@@ -21,8 +23,7 @@ let
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
-in
-{
+in {
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
@@ -47,8 +48,7 @@ in
           "podman"
           "libvirt"
         ];
-      packages =
-        with pkgs;
+      packages = with pkgs;
         [
           signal-desktop
           btop
@@ -79,13 +79,14 @@ in
           inputs.daedalus.packages.${system}.default
         ]
         ++ (
-          with inputs.gungnir.packages.${system};
-          let
-            fontSize = if config.networking.hostName == "phobos" then 14 else 12;
-          in
-          [
-            (st { inherit fontSize; })
-            (dmenu { inherit fontSize; })
+          with inputs.gungnir.packages.${system}; let
+            fontSize =
+              if config.networking.hostName == "phobos"
+              then 15
+              else 12;
+          in [
+            (st {inherit fontSize;})
+            (dmenu {inherit fontSize;})
           ]
         );
     };
