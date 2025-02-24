@@ -23,6 +23,8 @@
       ghostty = callPackage ./ghostty {inherit inputs lib pkgs;};
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
       spotify_player = callPackage ./spotify_player {inherit lib pkgs;};
+      taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
+      taskwarrior-tui = callPackage ./taskwarrior-tui {inherit lib pkgs;};
       zen = guiPackage (
         callPackage ./zen {
           inherit

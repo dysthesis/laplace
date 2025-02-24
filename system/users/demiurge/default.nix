@@ -70,6 +70,8 @@ in {
           spotify-player
           zen
           vesktop
+          taskwarrior
+          taskwarrior-tui
         ])
         ++ [
           inputs.poincare.packages.${system}.default
