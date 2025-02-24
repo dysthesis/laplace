@@ -8,11 +8,129 @@
   inherit (lib) getExe;
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (pkgs) system;
+  inherit
+    (builtins)
+    elemAt
+    length
+    ;
   fontSize =
     if config.networking.hostName == "phobos"
     then 15
     else 12;
-  wm = getExe (inputs.gungnir.packages.${system}.dwm {inherit fontSize;});
+  wm = getExe (inputs.gungnir.packages.${system}.dwm {
+    inherit fontSize;
+    scratchpads = let
+      scratchpadScale = 0.8;
+      cfg = config.laplace.hardware.monitors;
+      monitor = elemAt cfg (length cfg - 1);
+      scale = val: percent: let
+        # Parse the decimal percentage (e.g., 0.8)
+        decimal = builtins.fromJSON (toString percent);
+
+        # Calculate the result as a float
+        result = val * decimal;
+
+        # Get the integer part
+        intPart = builtins.floor result;
+
+        # Round up if there's any fractional part
+        rounded =
+          if result > intPart
+          then intPart + 1
+          else intPart;
+      in
+        rounded;
+
+      floatpos = "50% 50% ${toString (scale monitor.width scratchpadScale)}W ${toString (scale monitor.height scratchpadScale)}H";
+    in [
+      rec {
+        name = "term";
+        class = name;
+        isTerm = 1;
+        cmd = [
+          "st"
+          "-n"
+          "${class}"
+        ];
+        tag = 0;
+        inherit floatpos;
+        key = "t";
+      }
+      rec {
+        name = "btop";
+        class = name;
+        isTerm = 1;
+        cmd = [
+          "st"
+          "-n"
+          "${class}"
+          "-e"
+          "btop"
+        ];
+        tag = 1;
+        inherit floatpos;
+        key = "b";
+      }
+      rec {
+        name = "task";
+        class = name;
+        isTerm = 1;
+        cmd = [
+          "st"
+          "-n"
+          "${class}"
+          "-e"
+          "taskwarrior-tui"
+        ];
+        tag = 2;
+        inherit floatpos;
+        key = "d";
+      }
+      rec {
+        name = "spotify";
+        class = name;
+        isTerm = 1;
+        cmd = [
+          "st"
+          "-n"
+          "${class}"
+          "-e"
+          "spotify_player"
+        ];
+        tag = 3;
+        inherit floatpos;
+        key = "m";
+      }
+      rec {
+        name = "notes";
+        class = name;
+        isTerm = 1;
+        cmd = [
+          "st"
+          "-n"
+          "${class}"
+          "-e"
+          "sh"
+          "-c"
+          "tmux new-session -As Notes -c ~/Documents/Notes/Contents 'direnv exec . nvim'"
+        ];
+        tag = 4;
+        inherit floatpos;
+        key = "n";
+      }
+      {
+        name = "signal_desktop";
+        class = "signal";
+        isTerm = 0;
+        cmd = [
+          "signal-desktop"
+        ];
+        tag = 5;
+        inherit floatpos;
+        key = "s";
+      }
+    ];
+  });
 
   xinitrc = with pkgs;
     writeText ".xinitrc"
