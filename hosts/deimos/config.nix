@@ -43,7 +43,7 @@ _: {
         privesc = "doas";
         apparmor.enable = true;
         polkit.enable = true;
-        secure-boot.enable = false;
+        secure-boot.enable = true;
         firewall.enable = true;
       };
 
@@ -55,7 +55,7 @@ _: {
       impermanence.enable = true;
 
       users = ["demiurge"];
-      display = ["xorg"];
+      display.servers = ["xorg"];
 
       virtualisation.enable = true;
       nh = {
