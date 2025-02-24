@@ -20,26 +20,11 @@
   wm = getExe (inputs.gungnir.packages.${system}.dwm {
     inherit fontSize;
     scratchpads = let
+      inherit (lib.babel.int) scale;
+
       scratchpadScale = 0.8;
       cfg = config.laplace.hardware.monitors;
       monitor = elemAt cfg (length cfg - 1);
-      scale = val: percent: let
-        # Parse the decimal percentage (e.g., 0.8)
-        decimal = builtins.fromJSON (toString percent);
-
-        # Calculate the result as a float
-        result = val * decimal;
-
-        # Get the integer part
-        intPart = builtins.floor result;
-
-        # Round up if there's any fractional part
-        rounded =
-          if result > intPart
-          then intPart + 1
-          else intPart;
-      in
-        rounded;
 
       floatpos = "50% 50% ${toString (scale monitor.width scratchpadScale)}W ${toString (scale monitor.height scratchpadScale)}H";
     in [
