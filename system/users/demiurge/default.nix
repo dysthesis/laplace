@@ -60,6 +60,7 @@ in {
           gnupg
           xsecurelock
           atuin
+          unstable.sbctl
         ]
         ++ (with pkgs.configured; [
           fish
