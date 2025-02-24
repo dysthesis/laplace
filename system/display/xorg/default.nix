@@ -3,11 +3,13 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.display;
-in {
+in
+{
   config = mkIf (elem "xorg" cfg) {
     services.xserver = {
       enable = true;
@@ -27,16 +29,14 @@ in {
         xterm
       ];
       dpi = 180;
-      xrandrHeads =
-        map (curr: {
-          inherit (curr) primary;
-          output = curr.name;
-          monitorConfig = ''
-            Option "PreferredMode" "${toString curr.width}x${toString curr.height}_${toString curr.refreshRate}.00"
-            Option "Position" "${toString curr.pos.x} ${toString curr.pos.y}"
-          '';
-        })
-        config.laplace.hardware.monitors;
+      xrandrHeads = map (curr: {
+        inherit (curr) primary;
+        output = curr.name;
+        monitorConfig = ''
+          Option "PreferredMode" "${toString curr.width}x${toString curr.height}_${toString curr.refreshRate}.00"
+          Option "Position" "${toString curr.pos.x} ${toString curr.pos.y}"
+        '';
+      }) config.laplace.hardware.monitors;
     };
 
     environment.variables = {

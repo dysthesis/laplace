@@ -1,14 +1,15 @@
-{lib, ...}: let
+{ lib, ... }:
+let
   inherit (lib) mkOption;
-  inherit
-    (lib.types)
+  inherit (lib.types)
     str
     int
     bool
     listOf
     submodule
     ;
-in {
+in
+{
   options.laplace.hardware.monitors = mkOption {
     type = listOf (submodule {
       options = {
@@ -58,6 +59,6 @@ in {
         };
       };
     });
-    default = [];
+    default = [ ];
   };
 }
