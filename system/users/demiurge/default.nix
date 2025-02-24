@@ -72,14 +72,20 @@ in {
           vesktop
           taskwarrior
           taskwarrior-tui
+          weechat
         ])
         ++ [
           inputs.poincare.packages.${system}.default
           inputs.daedalus.packages.${system}.default
         ]
-        ++ (with inputs.gungnir.packages.${system}; [
-          st
-          dmenu
+        ++ (with inputs.gungnir.packages.${system}; let
+          fontSize =
+            if config.networking.hostName == "phobos"
+            then 14
+            else 12;
+        in [
+          (st {inherit fontSize;})
+          (dmenu {inherit fontSize;})
         ]);
     };
   };

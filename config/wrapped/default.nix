@@ -18,13 +18,14 @@
       ytfzf = callPackage ./ytfzf {inherit lib pkgs;};
       zathura = callPackage ./zathura {inherit lib pkgs;};
       dunst = callPackage ./dunst {inherit lib pkgs;};
-      xinit = callPackage ./xinit {inherit inputs lib pkgs;};
+      xinit = callPackage ./xinit {inherit inputs lib pkgs config;};
       mpv = callPackage ./mpv {inherit lib pkgs;};
       ghostty = callPackage ./ghostty {inherit inputs lib pkgs;};
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
       spotify_player = callPackage ./spotify_player {inherit lib pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
       taskwarrior-tui = callPackage ./taskwarrior-tui {inherit lib pkgs;};
+      weechat = callPackage ./weechat {inherit lib pkgs;};
       zen = guiPackage (
         callPackage ./zen {
           inherit
