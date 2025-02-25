@@ -12,7 +12,6 @@
     COMP3121 = 3;
     COMP3900 = 2;
     COMP4920 = 2;
-    University = 2;
   };
   mkProjectUrgency = mapAttrsToList (proj: urgency: "urgency.user.project.${proj}.coefficient=${toString urgency}");
 
@@ -22,6 +21,7 @@
     weekstart=monday
     news.version=2.6.0
     data.location=~/.local/share/task
+    hooks.location=${./hooks}
   '';
 in
   mkWrapper pkgs pkgs.taskwarrior ''
