@@ -110,11 +110,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1740445662,
-        "narHash": "sha256-lS08y0ERQJqp2q2gCjjola6QEgL9sgykBYatKdpwzm8=",
+        "lastModified": 1740445826,
+        "narHash": "sha256-H4S7L11u0viYiTY90wivjnIQwIcJG48q5PSZfFvYgYo=",
         "owner": "dysthesis",
         "repo": "daedalus",
-        "rev": "49d14c1ea49b18a6c3748209b98170ae08362637",
+        "rev": "c3000b7b82678de4014b0b65bb74fb1b65129ee5",
         "type": "github"
       },
       "original": {
