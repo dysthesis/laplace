@@ -4,7 +4,7 @@
   ...
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
-  deps = with pkgs; [configured.timewarrior];
+  deps = with pkgs; [configured.timewarrior python3];
 in
   mkWrapper pkgs pkgs.timewarrior ''
     wrapProgram $out/bin/task \

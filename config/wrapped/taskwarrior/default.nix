@@ -23,8 +23,10 @@
     data.location=~/.local/share/task
     hooks.location=${./hooks}
   '';
+  deps = with pkgs; [python3];
 in
   mkWrapper pkgs pkgs.taskwarrior ''
     wrapProgram $out/bin/task \
      --set TASKRC ${taskrc} \
+     --prefix PATH ":" "${lib.makeBinPath deps}"
   ''
