@@ -74,6 +74,7 @@ in {
           taskwarrior
           taskwarrior-tui
           weechat
+          mpv
         ])
         ++ [
           inputs.poincare.packages.${system}.default
