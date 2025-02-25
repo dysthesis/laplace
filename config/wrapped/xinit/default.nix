@@ -136,7 +136,7 @@
       ${configured.dunst}/bin/dunst &
       ${getExe udiskie} &
       ${getExe hsetroot} -cover ${./wallpaper.png} &
-      ${getExe inputs.gungnir.packages.${system}.dwm-bar} &
+      ${getExe (inputs.gungnir.packages.${system}.dwm-bar.override {inherit (pkgs.configured) taskwarrior;})} &
       exec ${wm}
     '';
 in
