@@ -3,7 +3,7 @@
 add_newline = true
 continuation_prompt = "[▸▹ ](dimmed white)"
 
-format = """($nix_shell$container$fill$git_metrics\n)$cmd_duration\
+format = """($nix_shell$container$fill$git_metrics${custom.taskwarrior}\n)$cmd_duration\
 $hostname\
 $localip\
 $shlvl\
@@ -169,7 +169,7 @@ style = "italic dimmed yellow"
 
 [git_branch]
 format = " [$branch(:$remote_branch)]($style)"
-symbol = "[△](bold italic bright-blue)"
+symbol = "[ ](bold italic bright-blue)"
 style = "italic bright-blue"
 truncation_symbol = "⋯"
 truncation_length = 11
@@ -177,7 +177,7 @@ ignore_branches = ["main", "master"]
 only_attached = true
 
 [git_metrics]
-format = '([▴$added]($added_style))([▿$deleted]($deleted_style))'
+format = '([ $added]($added_style))([ $deleted ]($deleted_style))'
 added_style = 'italic dimmed green'
 deleted_style = 'italic dimmed red'
 ignore_submodules = true
@@ -304,14 +304,17 @@ format = " nim [$symbol($version )]($style)"
 
 [nix_shell]
 style = 'bold italic dimmed blue'
-symbol = '✶'
+symbol = '󱄅 '
 format = '[$symbol nix⎪$state⎪]($style) [$name](italic dimmed white)'
-impure_msg = '[⌽](bold dimmed red)'
-pure_msg = '[⌾](bold dimmed green)'
-unknown_msg = '[◌](bold dimmed ellow)'
+impure_msg = '[ ](bold dimmed red)'
+pure_msg = '[⌾ ](bold dimmed green)'
+unknown_msg = '[◌ ](bold dimmed ellow)'
 
 [spack]
 symbol = "◇ "
 format = " spack [$symbol$environment]($style)"
 
-[custom]
+[custom.taskwarrior]
+command = "task rc.verbose: rc.report.next.columns:description rc.report.next.labels:1 limit:1 next"
+when = "which task"
+symbol = " "
