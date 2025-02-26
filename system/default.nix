@@ -1,11 +1,14 @@
 {
   pkgs,
   lib,
+  inputs,
   ...
 }: let
   inherit (lib.babel.modules) importInDirectory;
+  inherit (lib) getExe;
 in {
   config = {
+    environment.sessionVariables.EDITOR = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
     services.openssh = {
       enable = lib.mkDefault true;
       settings = {
