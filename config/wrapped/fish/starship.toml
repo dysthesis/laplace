@@ -122,7 +122,7 @@ truncation_length = 2
 truncation_symbol = "  "
 read_only = " ◈"
 use_os_path_sep = true
-style = "italic blue"
+style = "blue"
 format = '[$path]($style)[$read_only]($read_only_style)'
 repo_root_style = 'bold blue'
 repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) [△](bold bright-blue)'
@@ -145,7 +145,7 @@ disabled = false
 format = "[ $time]($style)"
 time_format = "%R"
 utc_time_offset = "local"
-style = "italic dimmed white"
+style = "dimmed white"
 
 [battery]
 format = "[ $percentage $symbol]($style)"
@@ -177,7 +177,7 @@ ignore_branches = ["main", "master"]
 only_attached = true
 
 [git_metrics]
-format = '([ $added]($added_style))([ $deleted ]($deleted_style))'
+format = '([ $added ]($added_style))([ $deleted ]($deleted_style))'
 added_style = 'italic dimmed green'
 deleted_style = 'italic dimmed red'
 ignore_submodules = true
@@ -303,12 +303,12 @@ symbol = "▴▲▴ "
 format = " nim [$symbol($version )]($style)"
 
 [nix_shell]
-style = 'bold italic dimmed blue'
+style = 'italic dimmed blue'
 symbol = '󱄅 '
-format = '[$symbol nix⎪$state⎪]($style) [$name](italic dimmed white)'
-impure_msg = '[  ](bold dimmed red)'
-pure_msg = '[ ⌾ ](bold dimmed green)'
-unknown_msg = '[ ◌ ](bold dimmed ellow)'
+format = '[$symbol nix⎪$state⎪]($style) [$name](dimmed white)'
+impure_msg = '[  ](dimmed red)'
+pure_msg = '[ ⌾ ](dimmed green)'
+unknown_msg = '[ ◌ ](dimmed yellow)'
 
 [spack]
 symbol = "◇ "
