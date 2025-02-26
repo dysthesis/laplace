@@ -110,11 +110,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1740532432,
-        "narHash": "sha256-ecHEPFq8Sny06BZITxOdoj/wsPXBEsv4bJXDge21W3I=",
+        "lastModified": 1740537689,
+        "narHash": "sha256-Y2Tb9fhZW/ZeXLFXWRu8v4h7PlKVcjSQiMBcuYFPMVI=",
         "owner": "dysthesis",
         "repo": "daedalus",
-        "rev": "e1af9bd193bb961bd23082bb49f4a10fea2889be",
+        "rev": "0805b12ef029f6c1fb0409d7fea92d6495c5bdc2",
         "type": "github"
       },
       "original": {
@@ -232,11 +232,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1740521689,
-        "narHash": "sha256-N1wRIYZMahXw2W8ZIL5Qz3EeptHLTcKcijs5iq2m+3M=",
+        "lastModified": 1740536993,
+        "narHash": "sha256-3nydMmduft0G7XRWGpKC9RS0Lbryo+AZB0AzmAo6Lmc=",
         "owner": "dysthesis",
         "repo": "gungnir",
-        "rev": "f54d2b0d0293c90b025662284959fcf61f865f11",
+        "rev": "1258ec42e9693f5babb64ae2d8bcaa538d345776",
         "type": "github"
       },
       "original": {
