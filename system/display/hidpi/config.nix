@@ -2,10 +2,12 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   cfg = config.laplace.display.hidpi;
-in {
+in
+{
   config = mkIf cfg {
     services.xserver = {
       dpi = 180;

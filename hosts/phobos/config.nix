@@ -6,10 +6,10 @@ _: {
         # TODO: malloc hardening breaks Firefox and its derivatives.
         # Figure out if it's possible to work around that.
       ];
-      profiles = ["desktop"];
+      profiles = [ "desktop" ];
       hardware = {
-        cpu = ["amd"];
-        gpu = ["amd"];
+        cpu = [ "amd" ];
+        gpu = [ "amd" ];
         monitors = [
           {
             name = "eDP";
@@ -50,11 +50,11 @@ _: {
       zram.enable = true;
 
       display = {
-        servers = ["xorg"];
+        servers = [ "xorg" ];
         hidpi = true;
       };
 
-      users = ["demiurge"];
+      users = [ "demiurge" ];
       virtualisation.enable = true;
       nh = {
         enable = true;

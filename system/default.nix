@@ -3,10 +3,12 @@
   lib,
   inputs,
   ...
-}: let
+}:
+let
   inherit (lib.babel.modules) importInDirectory;
   inherit (lib) getExe;
-in {
+in
+{
   config = {
     environment.sessionVariables.EDITOR = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
     services.openssh = {
@@ -19,7 +21,7 @@ in {
         KbdInteractiveAuthentication = false;
       };
       openFirewall = true;
-      ports = [22];
+      ports = [ 22 ];
     };
     console = {
       earlySetup = true;
