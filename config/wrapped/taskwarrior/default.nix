@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (pkgs) writeText;
   inherit (lib.attrsets) mapAttrsToList;
@@ -13,7 +14,9 @@
     COMP3900 = 2;
     COMP4920 = 2;
   };
-  mkProjectUrgency = mapAttrsToList (proj: urgency: "urgency.user.project.${proj}.coefficient=${toString urgency}");
+  mkProjectUrgency = mapAttrsToList (
+    proj: urgency: "urgency.user.project.${proj}.coefficient=${toString urgency}"
+  );
 
   taskrc = writeText ".taskrc" ''
     ${concatStringsSep "\n" (mkProjectUrgency projectUrgency)}
@@ -28,8 +31,8 @@
     python3
   ];
 in
-  mkWrapper pkgs pkgs.taskwarrior ''
-    wrapProgram $out/bin/task \
-     --set TASKRC ${taskrc} \
-     --prefix PATH ":" "${lib.makeBinPath deps}"
-  ''
+mkWrapper pkgs pkgs.taskwarrior ''
+  wrapProgram $out/bin/task \
+   --set TASKRC ${taskrc} \
+   --prefix PATH ":" "${lib.makeBinPath deps}"
+''
