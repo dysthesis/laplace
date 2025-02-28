@@ -2,8 +2,7 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (pkgs) writeText;
   inherit (lib.attrsets) mapAttrsToList;
@@ -31,8 +30,12 @@ let
     python3
   ];
 in
-mkWrapper pkgs pkgs.taskwarrior ''
-  wrapProgram $out/bin/task \
-   --set TASKRC ${taskrc} \
-   --prefix PATH ":" "${lib.makeBinPath deps}"
-''
+  mkWrapper pkgs pkgs.taskwarrior
+  /*
+  bash
+  */
+  ''
+    wrapProgram $out/bin/task \
+     --set TASKRC ${taskrc} \
+     --prefix PATH ":" "${lib.makeBinPath deps}"
+  ''
