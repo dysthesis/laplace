@@ -20,7 +20,7 @@ jobs:
           install_url: https://nixos.org/nix/install
           extra_nix_config: |
             auto-optimise-store = true
-            experimental-features = nix-command flakes
+            experimental-features = nix-command flakes pipe-operators
       - name: Run the Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@v2
       - run: nix flake check --all-systems
