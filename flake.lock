@@ -326,11 +326,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1740721369,
-        "narHash": "sha256-kKeSagsP1p24bo+2dQGCUhyjr6YNeiriIvADA9WqFe4=",
+        "lastModified": 1740721406,
+        "narHash": "sha256-0DFMdccAC65dBaoq2aMUoe1oBrqEA8/k9Bsl/D6gUYo=",
         "owner": "dysthesis",
         "repo": "mandelbrot",
-        "rev": "3789fc827dfd649715b25cd37052101ab88d53a4",
+        "rev": "3f4a7fc34ed30d7cd4fba011f051a99439e364da",
         "type": "github"
       },
       "original": {
