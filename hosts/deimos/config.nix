@@ -1,14 +1,14 @@
 _: {
   config = {
     laplace = {
-      harden = [ "kernel" ];
-      profiles = [ "desktop" ];
+      harden = ["kernel"];
+      profiles = ["desktop"];
       hardware = {
-        cpu = [ "amd" ];
-        gpu = [ "amd" ];
+        cpu = ["amd"];
+        gpu = ["amd"];
         monitors = [
           {
-            name = "DP-1";
+            name = "HDMI-1";
             width = 1920;
             height = 1080;
             refreshRate = 60;
@@ -54,8 +54,8 @@ _: {
 
       impermanence.enable = true;
 
-      users = [ "demiurge" ];
-      display.servers = [ "xorg" ];
+      users = ["demiurge"];
+      display.servers = ["xorg"];
 
       virtualisation.enable = true;
       nh = {
