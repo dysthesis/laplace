@@ -68,10 +68,32 @@
     "babel_4": {
       "inputs": {
         "nixpkgs": [
-          "poincare",
+          "mandelbrot",
           "nixpkgs"
         ],
         "treefmt": "treefmt_4"
+      },
+      "locked": {
+        "lastModified": 1740620918,
+        "narHash": "sha256-WA/ayH5nxIqNe3ImL9NOi0d7kl892PoLXqu1/2Ig58s=",
+        "owner": "dysthesis",
+        "repo": "babel",
+        "rev": "1a4db1717fa4c1768f7e67ea3f8d1dcfa70dd7d0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dysthesis",
+        "repo": "babel",
+        "type": "github"
+      }
+    },
+    "babel_5": {
+      "inputs": {
+        "nixpkgs": [
+          "poincare",
+          "nixpkgs"
+        ],
+        "treefmt": "treefmt_5"
       },
       "locked": {
         "lastModified": 1740620918,
@@ -295,6 +317,28 @@
         "type": "github"
       }
     },
+    "mandelbrot": {
+      "inputs": {
+        "babel": "babel_4",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": "treefmt-nix_3"
+      },
+      "locked": {
+        "lastModified": 1740708679,
+        "narHash": "sha256-ovHo6En0t46i//AC5tmdHMRHd+/G6Ns3C7Eg521Pq6k=",
+        "owner": "dysthesis",
+        "repo": "mandelbrot",
+        "rev": "1eab82db881e2ea618182e4cedef2a18f46b49a1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dysthesis",
+        "repo": "mandelbrot",
+        "type": "github"
+      }
+    },
     "minimal-tmux": {
       "inputs": {
         "nixpkgs": [
@@ -490,17 +534,17 @@
     },
     "poincare": {
       "inputs": {
-        "babel": "babel_4",
+        "babel": "babel_5",
         "nixpkgs": "nixpkgs_3",
         "plugin-lazy:lackluster.nvim": "plugin-lazy:lackluster.nvim",
-        "treefmt-nix": "treefmt-nix_3"
+        "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
-        "lastModified": 1740641613,
-        "narHash": "sha256-uZ2a7xs2wQSz9KGX4S7XiGj8QtjehICU4sw/ix6I1Pc=",
+        "lastModified": 1740709619,
+        "narHash": "sha256-vl7mGbZXMC4WAxs3T48SKp5vfI6dnYx70c3i17zudDA=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "47a683fe3fd89374b513db1383938e2d02094247",
+        "rev": "b494499018f679519f4001ccce06174ae1f8e22b",
         "type": "github"
       },
       "original": {
@@ -543,6 +587,7 @@
         "disko": "disko",
         "gungnir": "gungnir",
         "lanzaboote": "lanzaboote",
+        "mandelbrot": "mandelbrot",
         "nh": "nh",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
@@ -550,7 +595,7 @@
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "poincare": "poincare",
-        "treefmt-nix": "treefmt-nix_4",
+        "treefmt-nix": "treefmt-nix_5",
         "zen-browser": "zen-browser"
       }
     },
@@ -641,7 +686,7 @@
     "treefmt-nix_3": {
       "inputs": {
         "nixpkgs": [
-          "poincare",
+          "mandelbrot",
           "nixpkgs"
         ]
       },
@@ -660,6 +705,27 @@
       }
     },
     "treefmt-nix_4": {
+      "inputs": {
+        "nixpkgs": [
+          "poincare",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1739829690,
+        "narHash": "sha256-mL1szCeIsjh6Khn3nH2cYtwO5YXG6gBiTw1A30iGeDU=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "3d0579f5cc93436052d94b73925b48973a104204",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_5": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -724,6 +790,28 @@
       }
     },
     "treefmt_4": {
+      "inputs": {
+        "nixpkgs": [
+          "mandelbrot",
+          "babel",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1738953846,
+        "narHash": "sha256-yrK3Hjcr8F7qS/j2F+r7C7o010eVWWlm4T1PrbKBOxQ=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "4f09b473c936d41582dd744e19f34ec27592c5fd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt_5": {
       "inputs": {
         "nixpkgs": [
           "poincare",
