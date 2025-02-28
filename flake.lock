@@ -326,14 +326,17 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1740716054,
-        "narHash": "sha256-tWZCdw8dU+r1EuhDY/9WzoJtuJvS/owU5Gqq9xOLUCs=",
-        "path": "/home/demiurge/Documents/Projects/mandelbrot",
-        "type": "path"
+        "lastModified": 1740718672,
+        "narHash": "sha256-mi6kHGI0r8bqQtqCB0p0Un1mcyQdtzetwRO60Jtg5vA=",
+        "owner": "dysthesis",
+        "repo": "mandelbrot",
+        "rev": "e18e3b62c70fb502328adf847fc0ba3ca0806bda",
+        "type": "github"
       },
       "original": {
-        "path": "/home/demiurge/Documents/Projects/mandelbrot",
-        "type": "path"
+        "owner": "dysthesis",
+        "repo": "mandelbrot",
+        "type": "github"
       }
     },
     "minimal-tmux": {
