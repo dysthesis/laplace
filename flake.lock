@@ -321,16 +321,16 @@
       "inputs": {
         "babel": "babel_4",
         "nixpkgs": [
-          "nixpkgs"
+          "nixpkgs-unstable"
         ],
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1740718672,
-        "narHash": "sha256-mi6kHGI0r8bqQtqCB0p0Un1mcyQdtzetwRO60Jtg5vA=",
+        "lastModified": 1740719418,
+        "narHash": "sha256-JegkNAR87lyXbxTe+4nmFSjNBE5c5CoOL6nn05V9rvE=",
         "owner": "dysthesis",
         "repo": "mandelbrot",
-        "rev": "e18e3b62c70fb502328adf847fc0ba3ca0806bda",
+        "rev": "ca82215dc9890cbf312d3e4c187c1699c7bca7f7",
         "type": "github"
       },
       "original": {
