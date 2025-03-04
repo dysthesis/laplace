@@ -601,11 +601,11 @@
         "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
-        "lastModified": 1741043166,
-        "narHash": "sha256-c9ltBHar5DC4/gBjfTnN26YUudRd0j8u3DM/pTiVMn8=",
+        "lastModified": 1741057910,
+        "narHash": "sha256-vxe355trk3AJ2wfbZqyNijKe/0Cry8IhOPLz2ICMeEw=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "c37334aeeef9d64f739e0911ae18d48126e50efe",
+        "rev": "fbc2d82560e46d8525e0e92df0dc7daefe4a8cce",
         "type": "github"
       },
       "original": {
