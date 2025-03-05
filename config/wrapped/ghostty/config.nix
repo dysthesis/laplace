@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{pkgs, ...}:
 pkgs.writeText "ghostty-config" ''
   adjust-cell-height = 20%
-  font-family = JetBrainsMono Nerd Font
+  font-family = JBMono Nerd Font
   font-feature = calt
   font-feature = clig
   font-feature = liga
@@ -17,9 +17,13 @@ pkgs.writeText "ghostty-config" ''
   font-feature = cv15
   font-feature = cv16
   font-feature = cv17
-  font-size = 10
-  window-padding-x = 20
-  window-padding-y = 20
+  font-size = 5
+  window-padding-x = 5
+  window-padding-y = 5
+  background-opacity = 0.75
+  window-decoration = false
+  confirm-close-surface = false
+
 
   ## Lackluster
   # https://github.com/slugbyte/lackluster.nvim/blob/662fba7e6719b7afc155076385c00d79290bc347/extra/ghostty/lackluster
