@@ -2,12 +2,12 @@
   inputs,
   lib,
   pkgs,
+  config,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
-  config = import ./config.nix { inherit pkgs; };
+  cfg = import ./config.nix {inherit pkgs config;};
 in
-mkWrapper pkgs inputs.babel.packages.${pkgs.system}.ghostty-hardened ''
-  wrapProgram $out/bin/ghostty --add-flags "--config-file=${config}"
-''
+  mkWrapper pkgs inputs.babel.packages.${pkgs.system}.ghostty-hardened ''
+    wrapProgram $out/bin/ghostty --add-flags "--config-file=${cfg}"
+  ''

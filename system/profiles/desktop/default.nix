@@ -20,7 +20,9 @@ in {
       jbcustom-nf
       sf-pro
       georgia-fonts
-      nerd-fonts.jetbrains-mono
+      (nerdfonts.override {
+        fonts = ["JetBrainsMono"];
+      })
     ];
     services = {
       gnome.gnome-keyring.enable = true;
