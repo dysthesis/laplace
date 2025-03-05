@@ -1,5 +1,4 @@
-lib:
-let
+lib: let
   inherit (lib) isBool concatStringsSep mapAttrsToList;
 
   options = {
@@ -14,17 +13,22 @@ let
     render-loading = false;
     scroll-full-overlap = "0.01";
     scroll-step = 100;
-    default-bg = "#000000";
+    default-bg = "rgba(0,0,0,0.6)";
     default-fg = "#ffffff";
     recolor-darkcolor = "#ffffff";
-    recolor-lightcolor = "#000000";
+    recolor-lightcolor = "rgba(0,0,0,0.6)";
   };
 
-  formatLine =
-    n: v:
-    let
-      formatValue = v: if isBool v then (if v then "true" else "false") else toString v;
-    in
-    ''set ${n}	"${formatValue v}"'';
+  formatLine = n: v: let
+    formatValue = v:
+      if isBool v
+      then
+        (
+          if v
+          then "true"
+          else "false"
+        )
+      else toString v;
+  in ''set ${n}	"${formatValue v}"'';
 in
-concatStringsSep "\n" (mapAttrsToList formatLine options) + "\n"
+  concatStringsSep "\n" (mapAttrsToList formatLine options) + "\n"
