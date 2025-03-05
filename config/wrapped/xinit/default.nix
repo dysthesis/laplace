@@ -29,7 +29,8 @@
       ${configured.dunst}/bin/dunst &
       ${getExe udiskie} &
       ${getExe hsetroot} -cover ${./wallpaper.png} &
-      ${inputs.mandelbrot.packages.${system}.xmobar}
+      ${inputs.mandelbrot.packages.${system}.xmobar} &
+      ${getExe picom} --backend "glx" --blur-method "dual_kawase" --blur-strength 3 &
 
       exec ${xmonad}/bin/xmonad-configured
     '';

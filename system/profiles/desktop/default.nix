@@ -4,30 +4,24 @@
   config,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.profiles;
-in
-{
+in {
   config = mkIf (elem "desktop" cfg) {
-    fonts.packages =
-      with pkgs;
-      with inputs.babel.packages.${system};
-      [
-        noto-fonts
-        noto-fonts-extra
-        noto-fonts-emoji
-        noto-fonts-cjk-sans
-        terminus_font
-        jbcustom-nf
-        sf-pro
-        georgia-fonts
-        (nerdfonts.override {
-          fonts = [ "JetBrainsMono" ];
-        })
-      ];
+    fonts.packages = with pkgs;
+    with inputs.babel.packages.${system}; [
+      noto-fonts
+      noto-fonts-extra
+      noto-fonts-emoji
+      noto-fonts-cjk-sans
+      terminus_font
+      jbcustom-nf
+      sf-pro
+      georgia-fonts
+      nerd-fonts.jetbrains-mono
+    ];
     services = {
       gnome.gnome-keyring.enable = true;
       dbus = {
@@ -55,7 +49,7 @@ in
       sounds.enable = true;
       portal = {
         enable = true;
-        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+        extraPortals = [pkgs.xdg-desktop-portal-gtk];
       };
     };
   };
