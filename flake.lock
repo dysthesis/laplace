@@ -119,11 +119,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1740859628,
-        "narHash": "sha256-phTefZ1QY/FuWg+bDFAKK3QybriXP0QgWtnhmXarZAA=",
+        "lastModified": 1741203017,
+        "narHash": "sha256-3Yk7EP8BkVEXfjYW0CFTiXOnwUEURNMH8IKvNTFQkvo=",
         "owner": "Saghen",
         "repo": "blink.cmp",
-        "rev": "f29498e5f0f9a78bddb9d1c03c67e213896291d3",
+        "rev": "bf810ebe1251dfa756c7fa328e56b0c2e157d313",
         "type": "github"
       },
       "original": {
@@ -547,27 +547,27 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1741010256,
-        "narHash": "sha256-WZNlK/KX7Sni0RyqLSqLPbK8k08Kq7H7RijPJbq9KHM=",
+        "lastModified": 1741048562,
+        "narHash": "sha256-W4YZ3fvWZiFYYyd900kh8P8wU6DHSiwaH0j4+fai1Sk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ba487dbc9d04e0634c64e3b1f0d25839a0a68246",
+        "rev": "6af28b834daca767a7ef99f8a7defa957d0ade6f",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "nixos-24.11",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1740867647,
-        "narHash": "sha256-ICPOZ5p3RlosXjNRtV05i1ggCYLqe2uBlf0n96P7/LM=",
+        "lastModified": 1741212920,
+        "narHash": "sha256-4puZbbanuWfir5UX9PPByGeko8uE13xkMLK9IsgOtnQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "616bf7f312300e2acdc202d55c0a2b0edccead76",
+        "rev": "85f74898ba4a83b7a1cd5673f82bd5a30dfd9895",
         "type": "github"
       },
       "original": {
@@ -601,11 +601,11 @@
         "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
-        "lastModified": 1741057910,
-        "narHash": "sha256-vxe355trk3AJ2wfbZqyNijKe/0Cry8IhOPLz2ICMeEw=",
+        "lastModified": 1741213118,
+        "narHash": "sha256-N2CDgIQsRVhA167hTuG3/QRR90qumbAMj+2u3+H0b/Y=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "fbc2d82560e46d8525e0e92df0dc7daefe4a8cce",
+        "rev": "e116dccb379f624d4114ee4312cf801863a70de3",
         "type": "github"
       },
       "original": {
