@@ -3,14 +3,19 @@
   pkgs,
   ...
 }: let
+  cfg = config.networking.hostName == "phobos";
   fontSize =
-    if config.networking.hostName == "phobos"
+    if cfg
     then 5
-    else 7;
+    else 9;
+  padding =
+    if cfg
+    then 5
+    else 10;
 in
   pkgs.writeText "ghostty-config" ''
     adjust-cell-height = 20%
-    font-family = JBMono Nerd Font
+    font-family = JetBrainsMono Nerd Font
     font-feature = calt
     font-feature = clig
     font-feature = liga
@@ -27,11 +32,12 @@ in
     font-feature = cv16
     font-feature = cv17
     font-size = ${toString fontSize}
-    window-padding-x = 5
-    window-padding-y = 5
+    window-padding-x = ${toString padding}
+    window-padding-y = ${toString padding}
     background-opacity = 0.75
     window-decoration = false
     confirm-close-surface = false
+    command = fish
 
 
     ## Lackluster
