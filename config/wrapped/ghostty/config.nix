@@ -64,4 +64,7 @@ in
     cursor-color = deeeed
     selection-background = 7a7a7a
     selection-foreground = 0a0a0a
+
+    # Bindings
+    keybind = ctrl+enter=unbind
   ''
