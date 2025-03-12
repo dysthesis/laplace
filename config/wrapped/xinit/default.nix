@@ -31,6 +31,7 @@
       ${getExe hsetroot} -cover ${./wallpaper.png} &
       ${inputs.mandelbrot.packages.${system}.xmobar} &
       ${getExe picom} --backend "glx" --blur-method "dual_kawase" --blur-strength 3 &
+      ${getExe networkmanagerapplet} &
 
       exec ${xmonad}/bin/xmonad-configured
     '';
