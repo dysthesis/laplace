@@ -63,6 +63,8 @@ in {
           unstable.sbctl
           inputs.mandelbrot.packages.${pkgs.system}.xmonad
           inputs.mandelbrot.packages.${pkgs.system}.xmobar
+          protonvpn-gui
+          networkmanagerapplet
         ]
         ++ (with pkgs.configured; [
           fish

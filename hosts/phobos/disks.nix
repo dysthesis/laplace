@@ -71,6 +71,7 @@ in {
         "size=2G"
         "defaults"
         "mode=755"
+        "noexec"
       ];
     in {
       "/" = {
