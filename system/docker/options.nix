@@ -1,5 +1,7 @@
-{lib, ...}: let
+{ lib, ... }:
+let
   inherit (lib) mkEnableOption;
-in {
+in
+{
   options.laplace.docker.enable = mkEnableOption "Whether or not to enable Docker.";
 }
