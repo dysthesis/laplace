@@ -14,10 +14,7 @@ let
 in
 {
   config = mkIf (elem "amd" cfg) {
-    services.xserver.videoDrivers = mkDefault [
-      "modesetting"
-      "amdgpu"
-    ];
+    services.xserver.videoDrivers = ["amdgpu"];
 
     boot = {
       initrd.kernelModules = [ "amdgpu" ];
