@@ -2,6 +2,7 @@
 let
   inherit (lib) mkOption;
   inherit (lib.types)
+    nullOr
     str
     int
     bool
@@ -43,13 +44,13 @@ in
 
         pos = {
           x = mkOption {
-            type = int;
-            default = 0;
+            type = nullOr int;
+            default = null;
           };
 
           y = mkOption {
-            type = int;
-            default = 0;
+            type = nullOr int;
+            default = null;
           };
         };
 
