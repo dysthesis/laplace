@@ -4,7 +4,9 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf;
+  inherit (lib)
+    mkIf
+    optionalString;
   inherit (builtins) elem;
   cfg = config.laplace.display.servers;
 in {
@@ -16,19 +18,27 @@ in {
         xterm
       ];
       xrandrHeads =
-        map (curr: {
+        map (curr: let
+          mkPosition = curr: optionalString ((curr.pos.x != null) && (curr.pos.y != null)) ''
+            Option "Position" "${toString curr.pos.x} ${toString curr.pos.y}"
+          '';
+        in {
           inherit (curr) primary;
           output = curr.name;
           monitorConfig = ''
             Option "PreferredMode" "${toString curr.width}x${toString curr.height}_${toString curr.refreshRate}.00"
-              Option "Position" "${toString curr.pos.x} ${toString curr.pos.y}"
+              ${mkPosition curr}
           '';
         })
           config.laplace.hardware.monitors;
       deviceSection = ''Option "TearFree" "True"'';
       libinput = {
         enable = true;
-        mouse.accelProfile = "flat";
+        mouse = {
+          accelProfile = "flat";
+          accelSpeed = "0.75";
+          naturalScrolling = true;
+        };
         touchpad = {
           naturalScrolling = true;
           accelProfile = "flat";
