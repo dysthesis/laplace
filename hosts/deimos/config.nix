@@ -13,7 +13,7 @@ _: {
             height = 1080;
             refreshRate = 60;
             pos = {
-              x = 0;
+              x = 1920;
               y = 0;
             };
           }
@@ -24,7 +24,7 @@ _: {
             refreshRate = 165;
             primary = true;
             pos = {
-              x = 1920;
+              x = 0;
               y = 0;
             };
           }
