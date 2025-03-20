@@ -83,6 +83,9 @@ in
           xinit
           ghostty
         ])
+        ++ (with inputs.babel.packages.${system}; [
+          askii
+        ])
         ++ [
           inputs.poincare.packages.${system}.default
           inputs.daedalus.packages.${system}.default
