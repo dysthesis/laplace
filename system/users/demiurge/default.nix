@@ -65,6 +65,7 @@ in
           inputs.mandelbrot.packages.${pkgs.system}.xmobar
           protonvpn-gui
           networkmanagerapplet
+          (pkgs.uutils-coreutils.override { prefix = ""; })
         ]
         ++ (with pkgs.configured; [
           fish
