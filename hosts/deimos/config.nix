@@ -8,25 +8,17 @@ _: {
         gpu = [ "amd" ];
         monitors = [
           {
-            name = "HDMI-1";
+            name = "HDMI-A-0";
             width = 1920;
             height = 1080;
             refreshRate = 60;
-            pos = {
-              x = 1920;
-              y = 0;
-            };
           }
           {
-            name = "DP-2";
+            name = "DisplayPort-1";
             width = 1920;
             height = 1080;
             refreshRate = 165;
             primary = true;
-            pos = {
-              x = 0;
-              y = 0;
-            };
           }
         ];
       };
