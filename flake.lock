@@ -68,32 +68,10 @@
     "babel_4": {
       "inputs": {
         "nixpkgs": [
-          "jormungandr",
-          "nixpkgs"
-        ],
-        "treefmt": "treefmt_4"
-      },
-      "locked": {
-        "lastModified": 1741749396,
-        "narHash": "sha256-vEt6fPKyu45BX4XlSoblUewfPWs9vYCdIj6FsyORWUQ=",
-        "owner": "dysthesis",
-        "repo": "babel",
-        "rev": "8090aa510e4f790f4dd91ff3641321424865d10d",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dysthesis",
-        "repo": "babel",
-        "type": "github"
-      }
-    },
-    "babel_5": {
-      "inputs": {
-        "nixpkgs": [
           "mandelbrot",
           "nixpkgs"
         ],
-        "treefmt": "treefmt_5"
+        "treefmt": "treefmt_4"
       },
       "locked": {
         "lastModified": 1740620918,
@@ -109,13 +87,13 @@
         "type": "github"
       }
     },
-    "babel_6": {
+    "babel_5": {
       "inputs": {
         "nixpkgs": [
           "poincare",
           "nixpkgs"
         ],
-        "treefmt": "treefmt_6"
+        "treefmt": "treefmt_5"
       },
       "locked": {
         "lastModified": 1742516315,
@@ -184,31 +162,6 @@
       "original": {
         "owner": "nix-community",
         "repo": "disko",
-        "type": "github"
-      }
-    },
-    "emacs-overlay": {
-      "inputs": {
-        "nixpkgs": [
-          "jormungandr",
-          "nixpkgs"
-        ],
-        "nixpkgs-stable": [
-          "jormungandr",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1742088312,
-        "narHash": "sha256-7OiBYJKYfswIop88vrLe0Y00xD1GFoxBSdkSBPjSpUI=",
-        "owner": "nix-community",
-        "repo": "emacs-overlay",
-        "rev": "e138db11982437a66216ac559de564728e42c4a2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "emacs-overlay",
         "type": "github"
       }
     },
@@ -339,29 +292,6 @@
         "type": "github"
       }
     },
-    "jormungandr": {
-      "inputs": {
-        "babel": "babel_4",
-        "emacs-overlay": "emacs-overlay",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "treefmt-nix": "treefmt-nix_3"
-      },
-      "locked": {
-        "lastModified": 1742337573,
-        "narHash": "sha256-Ojf9tq+Nj0KGDwpOLPCb8uhdOtbW4eXcNAUlpFS8t3c=",
-        "owner": "dysthesis",
-        "repo": "jormungandr",
-        "rev": "f2255a4a93fad011655ede1e60ccdc5f79cdda56",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dysthesis",
-        "repo": "jormungandr",
-        "type": "github"
-      }
-    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane",
@@ -389,11 +319,11 @@
     },
     "mandelbrot": {
       "inputs": {
-        "babel": "babel_5",
+        "babel": "babel_4",
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
-        "treefmt-nix": "treefmt-nix_4"
+        "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
         "lastModified": 1741213666,
@@ -525,11 +455,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1742288794,
-        "narHash": "sha256-Txwa5uO+qpQXrNG4eumPSD+hHzzYi/CdaM80M9XRLCo=",
+        "lastModified": 1742422364,
+        "narHash": "sha256-mNqIplmEohk5jRkqYqG19GA8MbQ/D4gQSK0Mu4LvfRQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b6eaf97c6960d97350c584de1b6dcff03c9daf42",
+        "rev": "a84ebe20c6bc2ecbcfb000a50776219f48d134cc",
         "type": "github"
       },
       "original": {
@@ -541,11 +471,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1742288794,
-        "narHash": "sha256-Txwa5uO+qpQXrNG4eumPSD+hHzzYi/CdaM80M9XRLCo=",
+        "lastModified": 1742422364,
+        "narHash": "sha256-mNqIplmEohk5jRkqYqG19GA8MbQ/D4gQSK0Mu4LvfRQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b6eaf97c6960d97350c584de1b6dcff03c9daf42",
+        "rev": "a84ebe20c6bc2ecbcfb000a50776219f48d134cc",
         "type": "github"
       },
       "original": {
@@ -572,16 +502,16 @@
     },
     "poincare": {
       "inputs": {
-        "babel": "babel_6",
+        "babel": "babel_5",
         "nixpkgs": "nixpkgs_3",
-        "treefmt-nix": "treefmt-nix_5"
+        "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
-        "lastModified": 1742516721,
-        "narHash": "sha256-/RFxz5X5GC69BbaES1QlFGBMmyf5yuSkrG9rCp4tKio=",
+        "lastModified": 1742521445,
+        "narHash": "sha256-7gFSIrxdzWtuXF6p0mUetPJrYcCC/8dfWHb19JE3+CU=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "4601b016b24580e4c2de94f4817ce82d19cb7c0b",
+        "rev": "cda5fbe3fbcfbdc0ed7cd68672252804c8f5daca",
         "type": "github"
       },
       "original": {
@@ -622,7 +552,6 @@
         "daedalus": "daedalus",
         "disko": "disko",
         "gungnir": "gungnir",
-        "jormungandr": "jormungandr",
         "lanzaboote": "lanzaboote",
         "mandelbrot": "mandelbrot",
         "nh": "nh",
@@ -632,7 +561,7 @@
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "poincare": "poincare",
-        "treefmt-nix": "treefmt-nix_6",
+        "treefmt-nix": "treefmt-nix_5",
         "zen-browser": "zen-browser"
       }
     },
@@ -723,7 +652,7 @@
     "treefmt-nix_3": {
       "inputs": {
         "nixpkgs": [
-          "jormungandr",
+          "mandelbrot",
           "nixpkgs"
         ]
       },
@@ -744,27 +673,6 @@
     "treefmt-nix_4": {
       "inputs": {
         "nixpkgs": [
-          "mandelbrot",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1739829690,
-        "narHash": "sha256-mL1szCeIsjh6Khn3nH2cYtwO5YXG6gBiTw1A30iGeDU=",
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "rev": "3d0579f5cc93436052d94b73925b48973a104204",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
-    "treefmt-nix_5": {
-      "inputs": {
-        "nixpkgs": [
           "poincare",
           "nixpkgs"
         ]
@@ -783,7 +691,7 @@
         "type": "github"
       }
     },
-    "treefmt-nix_6": {
+    "treefmt-nix_5": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -850,28 +758,6 @@
     "treefmt_4": {
       "inputs": {
         "nixpkgs": [
-          "jormungandr",
-          "babel",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1739829690,
-        "narHash": "sha256-mL1szCeIsjh6Khn3nH2cYtwO5YXG6gBiTw1A30iGeDU=",
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "rev": "3d0579f5cc93436052d94b73925b48973a104204",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
-    "treefmt_5": {
-      "inputs": {
-        "nixpkgs": [
           "mandelbrot",
           "babel",
           "nixpkgs"
@@ -891,7 +777,7 @@
         "type": "github"
       }
     },
-    "treefmt_6": {
+    "treefmt_5": {
       "inputs": {
         "nixpkgs": [
           "poincare",
