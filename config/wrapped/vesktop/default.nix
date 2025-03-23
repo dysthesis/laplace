@@ -4,20 +4,16 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit lib;
     inherit pkgs;
   };
 in
-mkNixPak {
-  config =
-    { sloth, ... }:
-    let
+  mkNixPak {
+    config = {sloth, ...}: let
       envSuffix = envKey: suffix: sloth.concat' (sloth.env envKey) suffix;
-    in
-    rec {
+    in rec {
       app.package = pkgs.vesktop;
       flatpak.appId = "dev.vencord.Vesktop";
 
@@ -47,7 +43,7 @@ mkNixPak {
         network = true;
         shareIpc = true;
         sockets = {
-          x11 = lib.mkDefault true; # Enable X11 socket
+          wayland = lib.mkDefault true; # Enable X11 socket
           pulse = lib.mkDefault true; # Enable Pulseaudio socket
         };
         bind.ro = [
@@ -64,9 +60,15 @@ mkNixPak {
         bind.rw = [
           (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/pipewire-0") # Pipewire interfacing
           (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/speech-dispatcher") # For TTS and VcNarrator
-          (sloth.concat' sloth.homeDir "/.steam") # Needed for SteamOS integration
           sloth.xdgDownloadDir # For drag-and-drop and download management
           (sloth.concat' sloth.xdgConfigHome "/vesktop") # Vesktop configuration/data directory
+          (sloth.concat [
+            (sloth.env "XDG_RUNTIME_DIR")
+            "/"
+            (sloth.envOr "WAYLAND_DISPLAY" "no")
+          ])
+          (sloth.concat' sloth.xdgCacheHome "/mesa_shader_cache")
+
           [
             (envSuffix "HOME" "/.var/app/${flatpak.appId}/cache")
             sloth.xdgCacheHome
@@ -100,4 +102,4 @@ mkNixPak {
         };
       };
     };
-}
+  }

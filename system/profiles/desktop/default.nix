@@ -4,29 +4,47 @@
   config,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.profiles;
-in
-{
+in {
   config = mkIf (elem "desktop" cfg) {
-    fonts.packages =
-      with pkgs;
-      with inputs.babel.packages.${system};
-      [
-        noto-fonts
-        noto-fonts-extra
-        noto-fonts-emoji
-        noto-fonts-cjk-sans
-        terminus_font
-        jbcustom-nf
-        sf-pro
-        georgia-fonts
-        nerd-fonts.jetbrains-mono
-      ];
+    fonts.packages = with pkgs;
+    with inputs.babel.packages.${system}; [
+      noto-fonts
+      noto-fonts-extra
+      noto-fonts-emoji
+      noto-fonts-cjk-sans
+      terminus_font
+      jbcustom-nf
+      sf-pro
+      georgia-fonts
+      nerd-fonts.jetbrains-mono
+    ];
     services = {
+      logind = {
+        lidSwitch = "suspend";
+        lidSwitchExternalPower = "hibernate";
+        extraConfig = ''
+           HandlePowerKey=poweroff
+          HibernateDelaySec=600
+          SuspendState=mem
+        '';
+      };
+      # libinput = {
+      #   enable = true;
+      #   mouse = {
+      #     accelProfile = "flat";
+      #     accelSpeed = "0.75";
+      #     naturalScrolling = true;
+      #   };
+      #   touchpad = {
+      #     naturalScrolling = true;
+      #     accelProfile = "flat";
+      #     accelSpeed = "0.75";
+      #   };
+      # };
       gnome.gnome-keyring.enable = true;
       dbus = {
         packages = with pkgs; [
@@ -53,7 +71,7 @@ in
       sounds.enable = true;
       portal = {
         enable = true;
-        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+        extraPortals = [pkgs.xdg-desktop-portal-gtk];
       };
     };
   };
