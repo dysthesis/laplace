@@ -1,39 +1,37 @@
 {
+  pkgs,
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
+  inherit (builtins) elem;
   inherit (lib.cli) toGNUCommandLineShell;
   cfg = config.laplace.display.servers;
-in
-{
-  config = mkIf (cfg == "wayland") {
+in {
+  config = mkIf (elem "wayland" cfg) {
+    xdg.portal = {
+      wlr.enable = true;
+      config.common.default = "*";
+      extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    };
     environment.sessionVariables.NIXOS_OZONE_WL = "1";
     systemd.user.services.wlsunset = {
-      Unit = {
-        Description = "Day/night gamma adjustments for Wayland compositors.";
-        PartOf = [ "graphical-session.target" ];
-      };
+      enable = true;
+      description = "Day/night gamma adjustments for Wayland compositors.";
+      partOf = ["graphical-session.target"];
 
-      Service = {
-        ExecStart =
-          let
-            args = toGNUCommandLineShell { } {
-              t = "3700";
-              T = "6200";
-              g = "1.0";
-              l = config.location.latitude;
-              L = config.location.longitude;
-            };
-          in
-          "${cfg.package}/bin/wlsunset ${args}";
-      };
+      script = let
+        args = toGNUCommandLineShell {} {
+          t = "3700";
+          T = "6200";
+          g = "1.0";
+          l = config.location.latitude;
+          L = config.location.longitude;
+        };
+      in "${pkgs.wlsunset}/bin/wlsunset ${args}";
 
-      Install = {
-        WantedBy = [ cfg.systemdTarget ];
-      };
+      wantedBy = ["graphical-session.target"];
     };
   };
 }

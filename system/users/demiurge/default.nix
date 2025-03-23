@@ -50,6 +50,7 @@ in {
         ];
       packages = with pkgs;
         [
+          bemenu
           signal-desktop
           btop
           microfetch

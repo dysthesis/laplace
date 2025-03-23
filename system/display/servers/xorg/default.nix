@@ -4,9 +4,11 @@
   pkgs,
   ...
 }: let
-  inherit (lib)
+  inherit
+    (lib)
     mkIf
-    optionalString;
+    optionalString
+    ;
   inherit (builtins) elem;
   cfg = config.laplace.display.servers;
 in {
@@ -19,9 +21,10 @@ in {
       ];
       xrandrHeads =
         map (curr: let
-          mkPosition = curr: optionalString ((curr.pos.x != null) && (curr.pos.y != null)) ''
-            Option "Position" "${toString curr.pos.x} ${toString curr.pos.y}"
-          '';
+          mkPosition = curr:
+            optionalString ((curr.pos.x != null) && (curr.pos.y != null)) ''
+              Option "Position" "${toString curr.pos.x} ${toString curr.pos.y}"
+            '';
         in {
           inherit (curr) primary;
           output = curr.name;
@@ -30,21 +33,8 @@ in {
               ${mkPosition curr}
           '';
         })
-          config.laplace.hardware.monitors;
+        config.laplace.hardware.monitors;
       deviceSection = ''Option "TearFree" "True"'';
-      libinput = {
-        enable = true;
-        mouse = {
-          accelProfile = "flat";
-          accelSpeed = "0.75";
-          naturalScrolling = true;
-        };
-        touchpad = {
-          naturalScrolling = true;
-          accelProfile = "flat";
-          accelSpeed = "0.75";
-        };
-      };
     };
 
     services.redshift.enable = true;
