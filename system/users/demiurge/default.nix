@@ -53,7 +53,6 @@ in {
           bemenu
           signal-desktop
           btop
-          microfetch
           git
           direnv
           brightnessctl
@@ -62,11 +61,11 @@ in {
           xsecurelock
           atuin
           unstable.sbctl
-          inputs.mandelbrot.packages.${pkgs.system}.xmonad
-          inputs.mandelbrot.packages.${pkgs.system}.xmobar
           protonvpn-gui
           networkmanagerapplet
           (pkgs.uutils-coreutils.override {prefix = "";})
+          inputs.poincare.packages.${system}.default
+          inputs.daedalus.packages.${system}.default
         ]
         ++ (with pkgs.configured; [
           fish
@@ -87,25 +86,7 @@ in {
         ])
         ++ (with inputs.babel.packages.${system}; [
           askii
-        ])
-        ++ [
-          inputs.poincare.packages.${system}.default
-          inputs.daedalus.packages.${system}.default
-        ]
-        ++ (
-          with inputs.gungnir.packages.${system}; let
-            fontSize =
-              if config.networking.hostName == "phobos"
-              then 15
-              else 12;
-          in [
-            (st {
-              inherit fontSize;
-              borderpx = 20;
-            })
-            (dmenu {inherit fontSize;})
-          ]
-        );
+        ]);
     };
   };
 }
