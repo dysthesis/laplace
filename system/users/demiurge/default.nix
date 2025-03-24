@@ -68,6 +68,7 @@ in {
           (inputs.daedalus.packages.${system}.default.override {shell = "${lib.getExe pkgs.configured.fish}";})
         ]
         ++ (with pkgs.configured; [
+          bemenu
           fish
           bash
           ytfzf
