@@ -5,7 +5,9 @@
   ...
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
-  inherit (inputs.gungnir.packages.${pkgs.system}) dwl;
+  dwl = inputs.gungnir.packages.${pkgs.system}.dwl.override {
+    enableXWayland = false;
+  };
   config = pkgs.writeText "bash.bashrc" ''
     if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
        dbus-update-activation-environment --systemd --all
