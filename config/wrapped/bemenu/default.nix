@@ -19,17 +19,17 @@ let
     "-b"
     ''-z''
     ''-p \" \"''
-    ''--fn \"JBMono Nerd Font 10\"''
+    ''--fn \"JBMono Nerd Font 8\"''
     ''-H \"32\"''
     ''--hp \"8\"''
     ''--fb \"#000000\"''
     ''--ff \"#ffffff\"''
     ''--nb \"#000000\"''
     ''--nf \"#ffffff\"''
-    ''--tb \"#89b4fa\"''
-    ''--hb \"#11111b\"''
+    ''--tb \"#7788AA\"''
+    ''--hb \"#080808\"''
     ''--tf \"#000000\"''
-    ''--hf \"#89b4fa\"''
+    ''--hf \"#7788AA\"''
     ''--ab \"#000000\"''
   ];
   flags' = flags |> map (flag: ''--add-flags "${flag}"'') |> concatStringsSep " ";
