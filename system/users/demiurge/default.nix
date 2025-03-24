@@ -4,16 +4,18 @@
   config,
   pkgs,
   ...
-}:
-let
-  inherit (pkgs)
+}: let
+  inherit
+    (pkgs)
     system
     ;
 
-  inherit (lib)
+  inherit
+    (lib)
     mkIf
     ;
-  inherit (builtins)
+  inherit
+    (builtins)
     elem
     filter
     hasAttr
@@ -21,8 +23,7 @@ let
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
-in
-{
+in {
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
@@ -47,8 +48,7 @@ in
           "podman"
           "libvirt"
         ];
-      packages =
-        with pkgs;
+      packages = with pkgs;
         [
           signal-desktop
           btop
@@ -62,7 +62,7 @@ in
           unstable.sbctl
           protonvpn-gui
           networkmanagerapplet
-          (pkgs.uutils-coreutils.override { prefix = ""; })
+          (pkgs.uutils-coreutils.override {prefix = "";})
           inputs.poincare.packages.${system}.default
           (inputs.daedalus.packages.${system}.default.override {
             shell = "${lib.getExe pkgs.configured.fish}";
@@ -70,6 +70,7 @@ in
         ]
         ++ (with pkgs.configured; [
           bemenu
+          yambar
           fish
           bash
           ytfzf
