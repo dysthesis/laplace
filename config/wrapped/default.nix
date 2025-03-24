@@ -14,6 +14,7 @@
         inherit (pkgs) fish;
         inherit pkgs inputs lib;
       };
+      bemenu = callPackage ./bemenu {inherit pkgs lib;};
       bash = callPackage ./bash {inherit pkgs lib inputs config;};
       ytfzf = callPackage ./ytfzf {inherit lib pkgs;};
       zathura = callPackage ./zathura {inherit lib pkgs;};
