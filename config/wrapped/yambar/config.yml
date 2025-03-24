@@ -19,7 +19,7 @@ bar:
   left:
     - dwl:
         number-of-tags: 9
-        dwl-info-filename: "$HOME/.cache/dwl_info"
+        dwl-info-filename: "/home/demiurge/.cache/dwl_info"
         name-of-tags: [1, 2, 3, 4, 5, 6, 7, 8, 9]
         content:
           list:

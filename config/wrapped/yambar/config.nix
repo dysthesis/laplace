@@ -14,13 +14,14 @@ in
     textcolor: &textcolor d0d0d0ff
     focus: &focus 831c1cff
     foreground-highlight: &foreground-highlight 000000ff
-    grey: &grey 080808ff
+    grey: &grey 191919ff
     lightred: &lightred ffaa88ff
     brightred: &brightred d70000ff
-    std_underline: &std_underline {underline: { size: 2, color: *brightred}}
     white: &white ffffffff
     black: &black 000000ff
     orange: &orange ffa600ff
+    font: &font "JBMono Nerd Font:style=solid:size=12"
+    brightgreen: &brightgreen 789978ff
     bar:
       height: 30
       location: bottom
@@ -29,25 +30,123 @@ in
 
       left:
         - dwl:
-          number-of-tags: 9
-    	    dwl-info-filename: "${cacheDir}"
-          name-of-tags: [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
-          content:
-            list:
-              items:
-                - map:
-                    conditions:
-                      # default tag
-                      id == 0: {string: {text: " {layout} {title} ", foreground: *white}}
-
-                      selected: {string: {text: " {name} ", foreground: *white}} #, font: Symbols Nerd Font:pixelsize=35}}
-                      ~empty: {string: {text: " {name} ", foreground: *grey}}
-                      urgent: {string: {text: " {name} ", foreground: *highlight}}
-      right:
-        - clock:
+            number-of-tags: 9
+            dwl-info-filename: "${cacheDir}"
+            name-of-tags: [1, 2, 3, 4, 5, 6, 7, 8, 9]
             content:
-              - string: {text: , font: "Font Awesome 6 Free:style=solid:size=12"}
-              - string: {text: "{date}", right-margin: 5}
-              - string: {text: , font: "Font Awesome 6 Free:style=solid:size=12"}
-              - string: {text: "{time}"}
+              list:
+                items:
+                  - map:
+                      conditions:
+                        id == 0: {string: {text: " {layout} {title} ", font: *font, foreground: *white}}
+                        selected: {string: {text: " {name} ", font: *font, foreground: *white}}
+                        ~empty: {string: {text: " {name} ", font: *font, foreground: *grey}}
+                        urgent: {string: {text: " {name} ", font: *font, foreground: *highlight}}
+      right:
+        - pipewire:
+           content:
+             map:
+               conditions:
+                 type == sink:
+                   map:
+                     conditions:
+                       muted: {string: {text: "Muted.", font: *font, foreground: *grey}}
+                       ~muted: {string: {text: "VOL {cubic_volume}%", foreground: *white, font: *font}}
+                     default: {string: {text: "test"}}
+        - network:
+            content:
+              map:
+                default: {empty: {}}
+                conditions:
+                  name == wlp0s20f3:
+                    map:
+                      conditions:
+                        ~carrier: {empty: {}}
+                        carrier:
+                          map:
+                            default: {string: {text: , font: *font, foreground: *grey}} #"suche nach Signal...", foreground: *grey}}
+                            conditions:
+                              #state == up && ipv4 != "": {string: {text: "verbunden"}} #, right-margin: 5}}
+                              #state == up && ipv6 != "": {string: {text: "verbunden"}} #, right-margin: 5}}
+                              state == down: {string: {text: "No signal", font: *font, foreground: *grey}}
+                              #state == down: {string: {text: , font: *font, foreground: *grey}}
+                              state == up:
+                                map:
+                                  default:
+                                    - string: {text: , font: *font}
+                                    - string: {text: " {ssid}", font: *font} #{dl-speed:mb}/{ul-speed:mb} Mb/s"}
+
+                                  conditions:
+                                    ipv4 == "":
+                                      - string: {text: , font: *font, foreground: *grey}
+                                      - string: {text: " {ssid}", font: *font, foreground: *grey}
+                                    ipv6 == "":
+                                      - string: {text: , font: *font, foreground: *white}
+                                      - string: {text: " {ssid}", font: *font, foreground: *white}
+
+
+        - backlight:
+            name: intel_backlight
+            content: [ string: {text: " ", font: *font}, string: {text: " {percent}%", font: *font}]
+
+        - battery:
+            name: BAT0
+            poll-interval: 30000
+            anchors:
+              discharging: &discharging
+                list:
+                  items:
+                    - ramp:
+                        tag: capacity
+                        items:
+                          - string: {text: " ", foreground: *brightred, font: *font}
+                          - string: {text: " ", foreground: *orange, font: *font}
+                          - string: {text: " ", font: *font}
+                          - string: {text: " ", font: *font}
+                          - string: {text: " ", font: *font}
+                          - string: {text: " ", font: *font}
+                          - string: {text: " ", font: *font}
+                          - string: {text: " ", font: *font}
+                          - string: {text: " ", font: *font}
+                          - string: {text: " ", foreground: *brightgreen, font: *font}
+                    - string: {text: " {capacity}% {estimate}", font: *font} #, right-margin: 5}
+            content:
+              map:
+                conditions:
+                  state == unknown:
+                    <<: *discharging
+                  state == discharging:
+                    <<: *discharging
+                  state == charging:
+                    - string: {text: , foreground: *brightgreen, font: *font}
+                    - string: {text: " {capacity}% {estimate}", font: *font} #, right-margin: 5}
+                  state == full:
+                    - string: {text: , foreground: *brightgreen, font: *font}
+                    - string: {text: " {capacity}%", font: *font} #, right-margin: 5}
+                  state == "not charging":
+                    - ramp:
+                        tag: capacity
+                        items:
+                          - string: {text:  , foreground: *brightred, font: *font}
+                          - string: {text:  , foreground: *orange, font: *font}
+                          - string: {text:  , foreground: *brightgreen, font: *font}
+                          - string: {text:  , foreground: *brightgreen, font: *font}
+                          - string: {text:  , foreground: *brightgreen, font: *font}
+                          - string: {text:  , foreground: *brightgreen, font: *font}
+                          - string: {text:  , foreground: *brightgreen, font: *font}
+                          - string: {text:  , foreground: *brightgreen, font: *font}
+                          - string: {text:  , foreground: *brightgreen, font: *font}
+                          - string: {text:  , foreground: *brightgreen, font: *font}
+                    - string: {text: " {capacity}%", font: *font} #, right-margin: 5}
+
+                #    - script:
+                #        path: ~/docs/scripts/yams-kbd.sh
+                #        args: []
+                #        content: {string: {text: "{kbd}"}}
+        - clock:
+            time-format: "%H:%M"
+            date-format: "%d.%m.%Y"
+            content:
+              - string: {text: " {date}", right-margin: 7, font: *font}
+              - string: {text: " {time}", font: *font}
   ''
