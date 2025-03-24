@@ -8,6 +8,7 @@ let
   inherit (builtins) concatStringsSep;
   flags = [
     "-b"
+		''-p \" \"''
     ''--fn \"JBMono Nerd Font 10\"''
     ''-H \"32\"''
     ''--hp \"8\"''
@@ -26,8 +27,7 @@ in
 builtins.trace "${flags'}" mkWrapper pkgs pkgs.bemenu
   # sh
   ''
-         for file in $out/bin/*; do
-           wrapProgram $file \
-    			 ${flags'}
-         done
+    for file in $out/bin/*; do
+      wrapProgram $file ${flags'}
+    done
   ''
