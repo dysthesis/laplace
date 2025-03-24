@@ -91,6 +91,7 @@ in
           "/dev/video0" # Webcam access | TODO: Find a way to get all video devices
         ];
         env = {
+          ELECTRON_OZONE_PLATFORM_HINT = "wayland";
           XDG_DATA_DIRS = lib.makeSearchPath "share" [
             pkgs.adwaita-icon-theme
             pkgs.shared-mime-info
