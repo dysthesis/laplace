@@ -16,11 +16,12 @@ let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) concatStringsSep;
   flags = [
-    "-b"
-    ''-z''
-    ''-p \" \"''
-    ''--fn \"JBMono Nerd Font 8\"''
-    ''-H \"32\"''
+    "-b"    # bottom
+    ''-z''  # fuzzy
+		''-i''  # ignorecase
+    ''-p \" \"''  # prompt
+    ''--fn \"JBMono Nerd Font 9\"''
+    ''-H \"30\"''
     ''--hp \"8\"''
     ''--fb \"#000000\"''
     ''--ff \"#ffffff\"''
