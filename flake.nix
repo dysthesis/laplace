@@ -27,7 +27,7 @@
 
     # Suckless utilities
     gungnir = {
-      url = "github:dysthesis/gungnir";
+      url = "github:dysthesis/gungnir/no-smartborders";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
