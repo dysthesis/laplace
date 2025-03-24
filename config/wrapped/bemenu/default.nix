@@ -4,11 +4,20 @@
   ...
 }:
 let
+  bemenu = pkgs.bemenu.overrideAttrs (old: {
+    patches = [
+      (pkgs.fetchpatch {
+        url = "https://patch-diff.githubusercontent.com/raw/Cloudef/bemenu/pull/432.patch";
+        hash = "sha256-x9y16hmqjzHhs0RzKUTytP+NgAfXNcBVDmMOSWcXL1s=";
+      })
+    ];
+  });
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) concatStringsSep;
   flags = [
     "-b"
-		''-p \" \"''
+    ''-z''
+    ''-p \" \"''
     ''--fn \"JBMono Nerd Font 10\"''
     ''-H \"32\"''
     ''--hp \"8\"''
@@ -24,7 +33,7 @@ let
   ];
   flags' = flags |> map (flag: ''--add-flags "${flag}"'') |> concatStringsSep " ";
 in
-builtins.trace "${flags'}" mkWrapper pkgs pkgs.bemenu
+mkWrapper pkgs bemenu
   # sh
   ''
     for file in $out/bin/*; do
