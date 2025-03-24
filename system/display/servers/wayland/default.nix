@@ -15,7 +15,10 @@ in {
       config.common.default = "*";
       extraPortals = [pkgs.xdg-desktop-portal-gtk];
     };
-    environment.sessionVariables.NIXOS_OZONE_WL = "1";
+    environment.sessionVariables = {
+      NIXOS_OZONE_WL = "1";
+      ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+    };
     systemd.user.services.wlsunset = {
       enable = true;
       description = "Day/night gamma adjustments for Wayland compositors.";
