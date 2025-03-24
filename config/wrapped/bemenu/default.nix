@@ -6,6 +6,7 @@
 let
   bemenu = pkgs.bemenu.overrideAttrs (old: {
     patches = [
+		  # NOTE: This pull request enables fuzzy finding via the '-z' flag
       (pkgs.fetchpatch {
         url = "https://patch-diff.githubusercontent.com/raw/Cloudef/bemenu/pull/432.patch";
         hash = "sha256-x9y16hmqjzHhs0RzKUTytP+NgAfXNcBVDmMOSWcXL1s=";
