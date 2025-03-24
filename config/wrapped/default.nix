@@ -1,4 +1,5 @@
 {
+  self,
   inputs,
   lib,
   pkgs,
@@ -6,6 +7,7 @@
   ...
 }: let
   inherit (pkgs) callPackage;
+  inherit (lib) makeOverridable;
   overlay = _final: _prev: let
     guiPackage = package: package.config.env;
   in {
@@ -15,9 +17,13 @@
         inherit pkgs inputs lib;
       };
       bemenu = callPackage ./bemenu {inherit pkgs lib;};
-      yambar = callPackage ./yambar {inherit pkgs lib;};
+      yambar = makeOverridable callPackage ./yambar {
+        inherit pkgs lib;
+        cacheDir = "/home/demiurge/.cache/dwl_info";
+      };
       bash = callPackage ./bash {
         inherit
+          self
           pkgs
           lib
           inputs
