@@ -7,14 +7,13 @@
 let
   inherit (lib)
     mkIf
-    mkDefault
     ;
   inherit (builtins) elem;
   cfg = config.laplace.hardware.gpu;
 in
 {
   config = mkIf (elem "amd" cfg) {
-    services.xserver.videoDrivers = ["amdgpu"];
+    services.xserver.videoDrivers = [ "amdgpu" ];
 
     boot = {
       initrd.kernelModules = [ "amdgpu" ];
