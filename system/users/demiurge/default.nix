@@ -65,7 +65,7 @@ in {
           networkmanagerapplet
           (pkgs.uutils-coreutils.override {prefix = "";})
           inputs.poincare.packages.${system}.default
-          inputs.daedalus.packages.${system}.default
+          (inputs.daedalus.packages.${system}.default.override {shell = "${lib.getExe pkgs.configured.fish}";})
         ]
         ++ (with pkgs.configured; [
           fish
