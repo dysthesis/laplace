@@ -254,11 +254,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1742865760,
-        "narHash": "sha256-5PhvBBSwXjOdW3HFGXXz9fkzbAsxDcV+97FKYSTnqvQ=",
+        "lastModified": 1742865871,
+        "narHash": "sha256-d9UFdV+uGAHx0psAJd1QRi6fZ+vDRuXKUXcQ9cEYbeg=",
         "owner": "dysthesis",
         "repo": "gungnir",
-        "rev": "2960a2cc0df0f7f74aafd8f61ce45d4ad55384d6",
+        "rev": "bc8a109f687aad63a0ef95e8b4a8a60263128c6b",
         "type": "github"
       },
       "original": {
