@@ -55,7 +55,7 @@ in {
           git
           direnv
           brightnessctl
-          xclip
+          wl-clipboard
           gnupg
           xsecurelock
           atuin
