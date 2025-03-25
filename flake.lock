@@ -367,11 +367,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1741336922,
-        "narHash": "sha256-ahECQuhpwRKp0TcBsE1rsHlm6t+mUllMojORXmgBcC4=",
+        "lastModified": 1742933628,
+        "narHash": "sha256-Qe/XUKvcaNdQflvhQQSX1PV5SjNx/RCBBDHxbWxE2xI=",
         "owner": "viperML",
         "repo": "nh",
-        "rev": "509dd6c96eefa11e7324f475a86ff4ea447987b7",
+        "rev": "7bd0d00a3f1aab85a7e29d34b4f1f6744263e6c3",
         "type": "github"
       },
       "original": {
@@ -507,11 +507,11 @@
         "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
-        "lastModified": 1742545958,
-        "narHash": "sha256-wR00LzzF7p6fOGd18DH8XaKqDovhsyjJaUQh+VMaVyc=",
+        "lastModified": 1742877343,
+        "narHash": "sha256-4GwW04MyV9zkY2RFtXkzmN1GKxxtukbUnK4XHQGbeR0=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "5bbce520b84393ce2d48d3a2d09bb8b1f73b2931",
+        "rev": "d19d8c46aa7ba5d20a0d6b73a8e3eeb380bda180",
         "type": "github"
       },
       "original": {
