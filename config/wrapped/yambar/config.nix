@@ -14,7 +14,7 @@ in
     textcolor: &textcolor d0d0d0ff
     focus: &focus 831c1cff
     foreground-highlight: &foreground-highlight 000000ff
-    grey: &grey 191919ff
+    grey: &grey 2a2a2aff
     lightred: &lightred ffaa88ff
     brightred: &brightred d70000ff
     white: &white ffffffff
