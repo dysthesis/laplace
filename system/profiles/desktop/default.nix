@@ -10,6 +10,17 @@
   cfg = config.laplace.profiles;
 in {
   config = mkIf (elem "desktop" cfg) {
+    systemd.services.seatd = {
+      enable = true;
+      description = "Seat management daemon";
+      script = "${lib.getExe pkgs.seatd} -g wheel";
+      serviceConfig = {
+        Type = "simple";
+        Restart = "always";
+        RestartSec = "1";
+      };
+      wantedBy = ["mult-user.target"];
+    };
     fonts.packages = with pkgs;
     with inputs.babel.packages.${system}; [
       noto-fonts
