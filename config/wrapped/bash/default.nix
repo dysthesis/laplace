@@ -30,6 +30,7 @@
       "sh", "-c", "${wlr-randr} ${wlr-randr-args}", NULL,
       "sh", "-c", "${lib.getExe pkgs.swaybg} -m fill -i ${./wallpaper.png} 2>/dev/null &", NULL,
       "${yambar}/bin/yambar", "&", NULL,
+      "${pkgs.configured.dunst}/bin/dunst", "&", NULL,
     '';
 
   yambar = pkgs.configured.yambar.override {inherit cacheDir;};
