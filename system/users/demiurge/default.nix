@@ -67,6 +67,9 @@ in {
           (inputs.daedalus.packages.${system}.default.override {
             shell = "${lib.getExe pkgs.configured.fish}";
           })
+          grim
+          slurp
+          swappy
         ]
         ++ (with pkgs.configured; [
           bemenu
