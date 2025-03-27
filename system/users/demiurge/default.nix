@@ -84,7 +84,6 @@ in {
           weechat
           mpv
           timewarrior
-          xinit
           ghostty
         ])
         ++ (with inputs.babel.packages.${system}; [
