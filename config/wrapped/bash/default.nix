@@ -20,25 +20,17 @@
     inherit configH;
   };
   wlr-randr = lib.getExe pkgs.wlr-randr;
-  configure-monitor =
-    fold (
-      curr: acc:
-      # sh
-      ''
-        ${acc}
-        "sh", "-c", "${wlr-randr} --output \"${curr.name}\" --pos ${toString curr.pos.x},${toString curr.pos.y} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate} 2> /dev/null", NULL,
-      ''
-    ) ""
-    config.laplace.hardware.monitors;
+  wlr-randr-args = fold (curr: acc: "${acc} --output ${curr.name} --pos ${toString curr.pos.x},${toString curr.pos.y} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz") "" config.laplace.hardware.monitors;
 
   autostart =
     /*
     sh
     */
     ''
-      ${configure-monitor}
+      "sh", "-c", "${wlr-randr} ${wlr-randr-args}", NULL,
       "sh", "-c", "${lib.getExe pkgs.swaybg} -m fill -i ${./wallpaper.png} 2>/dev/null &", NULL,
       "${yambar}/bin/yambar", "&", NULL,
+      "${pkgs.configured.dunst}/bin/dunst", "&", NULL,
     '';
 
   yambar = pkgs.configured.yambar.override {inherit cacheDir;};

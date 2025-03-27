@@ -1,6 +1,6 @@
 {
   global = {
-    monitor = 0;
+    monitor = 1;
     frame_color = "#ffffff";
     separator_color = "#ffffff";
     width = 300;
