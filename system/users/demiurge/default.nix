@@ -50,6 +50,7 @@ in {
         ];
       packages = with pkgs;
         [
+          swaylock
           signal-desktop
           btop
           git
