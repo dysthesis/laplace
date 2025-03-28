@@ -67,6 +67,9 @@ in {
         enable = true;
       };
     };
+    environment.sessionVariables = {
+      GTK_USE_PORTAL = "1";
+    };
     security = {
       # For electron stuff
       chromiumSuidSandbox.enable = true;
