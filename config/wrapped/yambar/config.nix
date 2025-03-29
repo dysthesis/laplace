@@ -86,7 +86,7 @@ in
 
 
         - backlight:
-            name: intel_backlight
+            name: amdgpu_bl1
             content: [ string: {text: " ", font: *font}, string: {text: " {percent}%", font: *font}]
 
         - battery:
