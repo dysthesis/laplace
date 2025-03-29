@@ -90,7 +90,7 @@ in
             content: [ string: {text: " ", font: *font}, string: {text: " {percent}%", font: *font}]
 
         - battery:
-            name: BAT0
+            name: BAT1
             poll-interval: 30000
             anchors:
               discharging: &discharging
