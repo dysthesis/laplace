@@ -114,7 +114,7 @@
       ${concatStringsSep "\n" (formatAliases aliases)}
 
       ${lib.getExe starship} init fish | source
-      ${lib.getExe zoxide} init fish --command cd | source
+      ${lib.getExe zoxide} init fish --cmd cd | source
       ${lib.getExe atuin} init fish | source
 
       enable_transience
