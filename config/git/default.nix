@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     difftastic
   ];
@@ -36,7 +35,7 @@
       help.autocorrect = "prompt";
       column.ui = "auto";
       diff = {
-        external = "difft";
+        # external = "difft";
         algorithm = "histogram";
         colorMoved = "plain";
         mnemonicPrefix = true;
