@@ -73,6 +73,7 @@ in {
           swappy
         ]
         ++ (with pkgs.configured; [
+          newsraft
           bemenu
           yambar
           fish
