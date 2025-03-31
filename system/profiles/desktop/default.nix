@@ -76,7 +76,12 @@ in {
       unprivilegedUsernsClone = true;
 
       # `login` means TTY login
-      pam.services.login.enableGnomeKeyring = true;
+      pam.services = {
+        login.enableGnomeKeyring = true;
+        swaylock.text = ''
+          auth include login
+        '';
+      };
     };
     xdg = {
       autostart.enable = true;
