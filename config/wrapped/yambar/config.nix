@@ -2,13 +2,12 @@
   pkgs,
   cacheDir ? "$HOME/.cache/dwl_info",
   ...
-}: let
+}:
+let
   inherit (pkgs) writeText;
 in
-  writeText "config.yml"
-  /*
-  yaml
-  */
+writeText "config.yml"
+  # yaml
   ''
     highlight: &highlight fabd2fff
     textcolor: &textcolor d0d0d0ff

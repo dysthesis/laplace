@@ -4,11 +4,13 @@
   config,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.profiles;
-in {
+in
+{
   config = mkIf (elem "desktop" cfg) {
     systemd.services.seatd = {
       enable = true;
@@ -19,22 +21,24 @@ in {
         Restart = "always";
         RestartSec = "1";
       };
-      wantedBy = ["mult-user.target"];
+      wantedBy = [ "mult-user.target" ];
     };
-    fonts.packages = with pkgs;
-    with inputs.babel.packages.${system}; [
-      noto-fonts
-      noto-fonts-extra
-      noto-fonts-emoji
-      noto-fonts-cjk-sans
-      terminus_font
-      jbcustom-nf
-      sf-pro
-      georgia-fonts
-      (nerdfonts.override {
-        fonts = ["JetBrainsMono"];
-      })
-    ];
+    fonts.packages =
+      with pkgs;
+      with inputs.babel.packages.${system};
+      [
+        noto-fonts
+        noto-fonts-extra
+        noto-fonts-emoji
+        noto-fonts-cjk-sans
+        terminus_font
+        jbcustom-nf
+        sf-pro
+        georgia-fonts
+        (nerdfonts.override {
+          fonts = [ "JetBrainsMono" ];
+        })
+      ];
     services = {
       logind = {
         lidSwitch = "suspend";
@@ -92,7 +96,7 @@ in {
       sounds.enable = true;
       portal = {
         enable = true;
-        extraPortals = [pkgs.xdg-desktop-portal-gtk];
+        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
       };
     };
   };
