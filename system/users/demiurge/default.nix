@@ -50,6 +50,7 @@ in {
         ];
       packages = with pkgs;
         [
+          zotero
           swaylock
           signal-desktop
           btop

@@ -27,7 +27,7 @@
     c
     */
     ''
-      "sh", "-c", "exec swayidle -w timeout 300 'swaylock -f'", NULL,
+      "sh", "-c", "exec ${lib.getExe pkgs.swayidle} -w timeout 300 'swaylock -f'", NULL,
       "sh", "-c", "${wlr-randr} ${wlr-randr-args}", NULL,
       "sh", "-c", "${lib.getExe pkgs.swaybg} -m fill -i ${./wallpaper.png} 2>/dev/null &", NULL,
       "${yambar}/bin/yambar", "&", NULL,
