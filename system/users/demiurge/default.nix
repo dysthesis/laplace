@@ -64,6 +64,7 @@ in {
           unstable.sbctl
           protonvpn-gui
           networkmanagerapplet
+          tor-browser-bundle-bin
           (pkgs.uutils-coreutils.override {prefix = "";})
           inputs.poincare.packages.${system}.default
           (inputs.daedalus.packages.${system}.default.override {
@@ -93,9 +94,6 @@ in {
           mpv
           timewarrior
           ghostty
-        ])
-        ++ (with inputs.babel.packages.${system}; [
-          askii
         ]);
     };
   };
