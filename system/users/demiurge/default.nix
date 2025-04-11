@@ -50,6 +50,8 @@ in {
         ];
       packages = with pkgs;
         [
+          zotero
+          swaylock
           signal-desktop
           btop
           git
@@ -62,6 +64,7 @@ in {
           unstable.sbctl
           protonvpn-gui
           networkmanagerapplet
+          tor-browser-bundle-bin
           (pkgs.uutils-coreutils.override {prefix = "";})
           inputs.poincare.packages.${system}.default
           (inputs.daedalus.packages.${system}.default.override {
@@ -70,8 +73,11 @@ in {
           grim
           slurp
           swappy
+          lazyjj
         ]
         ++ (with pkgs.configured; [
+          jujutsu
+          newsraft
           bemenu
           yambar
           fish
@@ -87,11 +93,7 @@ in {
           weechat
           mpv
           timewarrior
-          xinit
           ghostty
-        ])
-        ++ (with inputs.babel.packages.${system}; [
-          askii
         ]);
     };
   };

@@ -36,7 +36,7 @@
       help.autocorrect = "prompt";
       column.ui = "auto";
       diff = {
-        external = "difft";
+        # external = "difft";
         algorithm = "histogram";
         colorMoved = "plain";
         mnemonicPrefix = true;

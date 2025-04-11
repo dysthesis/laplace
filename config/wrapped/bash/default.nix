@@ -1,5 +1,4 @@
 {
-  self,
   inputs,
   lib,
   pkgs,
@@ -20,15 +19,19 @@
     inherit configH;
   };
   wlr-randr = lib.getExe pkgs.wlr-randr;
-  wlr-randr-args = fold (curr: acc: "${acc} --output ${curr.name} --pos ${toString curr.pos.x},${toString curr.pos.y} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz") "" config.laplace.hardware.monitors;
+  wlr-randr-args =
+    fold (
+      curr: acc: "${acc} --output ${curr.name} --pos ${toString curr.pos.x},${toString curr.pos.y} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz"
+    ) ""
+    config.laplace.hardware.monitors;
 
   autostart =
-    /*
-    sh
-    */
+    # c
     ''
+      "sh", "-c", "exec ${lib.getExe pkgs.swayidle} -w timeout 300 'swaylock -f'", NULL,
       "sh", "-c", "${wlr-randr} ${wlr-randr-args}", NULL,
       "sh", "-c", "${lib.getExe pkgs.swaybg} -m fill -i ${./wallpaper.png} 2>/dev/null &", NULL,
+      "sh", "-c", "${lib.getExe pkgs.polkit_gnome} &", NULL,
       "${yambar}/bin/yambar", "&", NULL,
       "${pkgs.configured.dunst}/bin/dunst", "&", NULL,
     '';
@@ -58,9 +61,7 @@
        fi
     '';
 in
-  mkWrapper
-  pkgs
-  pkgs.bash ''
+  mkWrapper pkgs pkgs.bash ''
     wrapProgram $out/bin/bash \
      --add-flags '--rcfile' --add-flags '${configuration}'
   ''

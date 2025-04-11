@@ -88,6 +88,7 @@ mkNixPak {
             };
           in
           {
+            GTK_USE_PORTAL = "1";
             XDG_DATA_DIRS = lib.makeSearchPath "share" [
               pkgs.shared-mime-info
               cursorPackage

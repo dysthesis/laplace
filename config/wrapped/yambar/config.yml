@@ -26,56 +26,125 @@ bar:
             items:
               - map:
                   conditions:
-                    id == 0: {string: {text: " {layout} {title} ", font: *font, foreground: *white}}
-                    selected: {string: {text: " {name} ", font: *font, foreground: *white}}
-                    ~empty: {string: {text: " {name} ", font: *font, foreground: *grey}}
-                    urgent: {string: {text: " {name} ", font: *font, foreground: *highlight}}
+                    id == 0:
+                      {
+                        string:
+                          {
+                            text: " {layout} {title} ",
+                            font: *font,
+                            foreground: *white,
+                          },
+                      }
+                    selected:
+                      {
+                        string:
+                          { text: " {name} ", font: *font, foreground: *white },
+                      }
+                    ~empty:
+                      {
+                        string:
+                          { text: " {name} ", font: *font, foreground: *grey },
+                      }
+                    urgent:
+                      {
+                        string:
+                          {
+                            text: " {name} ",
+                            font: *font,
+                            foreground: *highlight,
+                          },
+                      }
   right:
     - pipewire:
-       content:
-         map:
-           conditions:
-             type == sink:
-               map:
-                 conditions:
-                   muted: {string: {text: "Muted.", font: *font, foreground: *grey}}
-                   ~muted: {string: {text: "VOL {cubic_volume}%", foreground: *white, font: *font}}
-                 default: {string: {text: "test"}}
+        content:
+          map:
+            conditions:
+              type == sink:
+                map:
+                  conditions:
+                    muted:
+                      {
+                        string:
+                          { text: "Muted.", font: *font, foreground: *grey },
+                      }
+                    ~muted:
+                      {
+                        string:
+                          {
+                            text: "VOL {cubic_volume}%",
+                            foreground: *white,
+                            font: *font,
+                          },
+                      }
+                  default: { string: { text: "test" } }
     - network:
         content:
           map:
-            default: {empty: {}}
+            default: { empty: {} }
             conditions:
               name == wlp0s20f3:
                 map:
                   conditions:
-                    ~carrier: {empty: {}}
+                    ~carrier: { empty: {} }
                     carrier:
                       map:
-                        default: {string: {text: , font: *font, foreground: *grey}} #"suche nach Signal...", foreground: *grey}}
+                        default: {
+                            string: { text: , font: *font, foreground: *grey },
+                          } #"suche nach Signal...", foreground: *grey}}
                         conditions:
                           #state == up && ipv4 != "": {string: {text: "verbunden"}} #, right-margin: 5}}
                           #state == up && ipv6 != "": {string: {text: "verbunden"}} #, right-margin: 5}}
-                          state == down: {string: {text: "No signal", font: *font, foreground: *grey}}
+                          state == down:
+                            {
+                              string:
+                                {
+                                  text: "No signal",
+                                  font: *font,
+                                  foreground: *grey,
+                                },
+                            }
                           #state == down: {string: {text: , font: *font, foreground: *grey}}
                           state == up:
                             map:
                               default:
-                                - string: {text: , font: *font}
-                                - string: {text: " {ssid}", font: *font} #{dl-speed:mb}/{ul-speed:mb} Mb/s"}
-                                  
+                                - string: { text: , font: *font }
+                                - string: { text: " {ssid}", font: *font } #{dl-speed:mb}/{ul-speed:mb} Mb/s"}
+
                               conditions:
                                 ipv4 == "":
-                                  - string: {text: , font: *font, foreground: *grey}
-                                  - string: {text: " {ssid}", font: *font, foreground: *grey}
+                                  - string:
+                                      {
+                                        text: ,
+                                        font: *font,
+                                        foreground: *grey,
+                                      }
+                                  - string:
+                                      {
+                                        text: " {ssid}",
+                                        font: *font,
+                                        foreground: *grey,
+                                      }
                                 ipv6 == "":
-                                  - string: {text: , font: *font, foreground: *white}
-                                  - string: {text: " {ssid}", font: *font, foreground: *white}
-
+                                  - string:
+                                      {
+                                        text: ,
+                                        font: *font,
+                                        foreground: *white,
+                                      }
+                                  - string:
+                                      {
+                                        text: " {ssid}",
+                                        font: *font,
+                                        foreground: *white,
+                                      }
 
     - backlight:
         name: intel_backlight
-        content: [ string: {text: " ", font: *font}, string: {text: " {percent}%", font: *font}]
+        content:
+          [
+            string: { text: " ", font: *font },
+            string: { text: " {percent}%", font: *font },
+          ]
 
     - battery:
         name: BAT0
@@ -87,17 +156,19 @@ bar:
                 - ramp:
                     tag: capacity
                     items:
-                      - string: {text: " ", foreground: *brightred, font: *font}
-                      - string: {text: " ", foreground: *orange, font: *font}
-                      - string: {text: " ", font: *font}
-                      - string: {text: " ", font: *font}
-                      - string: {text: " ", font: *font}
-                      - string: {text: " ", font: *font}
-                      - string: {text: " ", font: *font}
-                      - string: {text: " ", font: *font}
-                      - string: {text: " ", font: *font}
-                      - string: {text: " ", foreground: *brightgreen, font: *font}
-                - string: {text: " {capacity}% {estimate}", font: *font} #, right-margin: 5}
+                      - string:
+                          { text: " ", foreground: *brightred, font: *font }
+                      - string: { text: " ", foreground: *orange, font: *font }
+                      - string: { text: " ", font: *font }
+                      - string: { text: " ", font: *font }
+                      - string: { text: " ", font: *font }
+                      - string: { text: " ", font: *font }
+                      - string: { text: " ", font: *font }
+                      - string: { text: " ", font: *font }
+                      - string: { text: " ", font: *font }
+                      - string:
+                          { text: " ", foreground: *brightgreen, font: *font }
+                - string: { text: " {capacity}% {estimate}", font: *font } #, right-margin: 5}
         content:
           map:
             conditions:
@@ -106,26 +177,35 @@ bar:
               state == discharging:
                 <<: *discharging
               state == charging:
-                - string: {text: , foreground: *brightgreen, font: *font}
-                - string: {text: " {capacity}% {estimate}", font: *font} #, right-margin: 5}
+                - string: { text: , foreground: *brightgreen, font: *font }
+                - string: { text: " {capacity}% {estimate}", font: *font } #, right-margin: 5}
               state == full:
-                - string: {text: , foreground: *brightgreen, font: *font}
-                - string: {text: " {capacity}%", font: *font} #, right-margin: 5}
+                - string: { text: , foreground: *brightgreen, font: *font }
+                - string: { text: " {capacity}%", font: *font } #, right-margin: 5}
               state == "not charging":
                 - ramp:
                     tag: capacity
                     items:
-                      - string: {text:  , foreground: *brightred, font: *font}
-                      - string: {text:  , foreground: *orange, font: *font}
-                      - string: {text:  , foreground: *brightgreen, font: *font}
-                      - string: {text:  , foreground: *brightgreen, font: *font}
-                      - string: {text:  , foreground: *brightgreen, font: *font}
-                      - string: {text:  , foreground: *brightgreen, font: *font}
-                      - string: {text:  , foreground: *brightgreen, font: *font}
-                      - string: {text:  , foreground: *brightgreen, font: *font}
-                      - string: {text:  , foreground: *brightgreen, font: *font}
-                      - string: {text:  , foreground: *brightgreen, font: *font}
-                - string: {text: " {capacity}%", font: *font} #, right-margin: 5}
+                      - string:
+                          { text:  , foreground: *brightred, font: *font }
+                      - string: { text:  , foreground: *orange, font: *font }
+                      - string:
+                          { text:  , foreground: *brightgreen, font: *font }
+                      - string:
+                          { text:  , foreground: *brightgreen, font: *font }
+                      - string:
+                          { text:  , foreground: *brightgreen, font: *font }
+                      - string:
+                          { text:  , foreground: *brightgreen, font: *font }
+                      - string:
+                          { text:  , foreground: *brightgreen, font: *font }
+                      - string:
+                          { text:  , foreground: *brightgreen, font: *font }
+                      - string:
+                          { text:  , foreground: *brightgreen, font: *font }
+                      - string:
+                          { text:  , foreground: *brightgreen, font: *font }
+                - string: { text: " {capacity}%", font: *font } #, right-margin: 5}
 
             #    - script:
             #        path: ~/docs/scripts/yams-kbd.sh
@@ -135,5 +215,5 @@ bar:
         time-format: "%H:%M"
         date-format: "%d.%m.%Y"
         content:
-          - string: {text: " {date}", right-margin: 7, font: *font}
-          - string: {text: " {time}", font: *font}
+          - string: { text: " {date}", right-margin: 7, font: *font }
+          - string: { text: " {time}", font: *font }
