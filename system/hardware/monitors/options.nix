@@ -1,7 +1,7 @@
-{lib, ...}: let
+{ lib, ... }:
+let
   inherit (lib) mkOption;
-  inherit
-    (lib.types)
+  inherit (lib.types)
     oneOf
     nullOr
     str
@@ -11,7 +11,8 @@
     listOf
     submodule
     ;
-in {
+in
+{
   options.laplace.hardware.monitors = mkOption {
     type = listOf (submodule {
       options = {
@@ -39,7 +40,10 @@ in {
         };
 
         refreshRate = mkOption {
-          type = oneOf [int float];
+          type = oneOf [
+            int
+            float
+          ];
           default = 60;
         };
 
@@ -61,6 +65,6 @@ in {
         };
       };
     });
-    default = [];
+    default = [ ];
   };
 }

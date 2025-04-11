@@ -7,5 +7,6 @@ pkgs.mkShell {
     statix
     deadnix
     just
+    npins
   ];
 }

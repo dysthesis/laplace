@@ -73,40 +73,59 @@ let
     lib.makeBinPath [
       zoxide
       atuin
+      fzf
     ];
-  fish_user_config = writeText "user_config.fish" ''
-    # Only source once
-    # set -q __fish_config_sourced; and exit
-    # set -gx __fish_config_sourced 1
-    ${lib.concatMapStringsSep "\n" initPlugin plugins}
+  fish_user_config =
+    writeText "user_config.fish"
+      # fish
+      ''
+          # Only source once
+          # set -q __fish_config_sourced; and exit
+          # set -gx __fish_config_sourced 1
+          ${lib.concatMapStringsSep "\n" initPlugin plugins}
 
-    if status is-login
-      fenv source /etc/profile
-    end
+          if status is-login
+            fenv source /etc/profile
+          end
 
-    if status is-interactive
-      ${lib.fileContents ./interactive.fish}
-      ${lib.fileContents ./pushd_mod.fish}
-      set -gx STARSHIP_CONFIG ${./starship.toml}
-      function starship_transient_prompt_func
-        ${lib.getExe starship} module character
-      end
-      ${lib.getExe starship} init fish | source
-      ${lib.getExe zoxide} init fish | source
-      ${lib.getExe atuin} init fish | source
-      enable_transience
-      set -gx DIRENV_LOG_FORMAT ""
-      set -gx direnv_config_dir ${direnvConfig}
-      ${lib.getExe direnv} hook fish | source
-      dbus-update-activation-environment --systemd --all
-      task list
-    end
+          if status is-interactive
+            ${lib.fileContents ./interactive.fish}
+            ${lib.fileContents ./pushd_mod.fish}
+            set -gx STARSHIP_CONFIG ${./starship.toml}
+            function starship_transient_prompt_func
+              ${lib.getExe starship} module character
+            end
+            set -gx DIRENV_LOG_FORMAT ""
+            set -gx direnv_config_dir ${direnvConfig}
+            ${lib.getExe direnv} hook fish | source
+            dbus-update-activation-environment --systemd --all
+            task list
+          end
 
-    set PATH ${deps} $PATH
+          function cpfile
+              for file in $argv
+                  # Convert the file path to an absolute path and prepend the file URI scheme
+                  echo "file://" (realpath $file)
+              end | wl-copy --type text/uri-list
+          end
+        function git
+            if test (count $argv) -eq 0
+                ${lib.getExe pkgs.lazygit}
+            else
+                command git $argv
+            end
+        end
 
-    # Load aliases
-    ${concatStringsSep "\n" (formatAliases aliases)}
-  '';
+          set PATH ${deps} $PATH
+
+          # Load aliases
+          ${concatStringsSep "\n" (formatAliases aliases)}
+
+          ${lib.getExe starship} init fish | source
+          ${lib.getExe zoxide} init fish --cmd cd | source
+
+          enable_transience
+      '';
 in
 fish.overrideAttrs (old: {
   # patches = [ ./fish-on-tmpfs.patch ];

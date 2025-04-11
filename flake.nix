@@ -3,8 +3,8 @@
   inputs = {
     # TODO: See if switching to unstable fixes
     # https://github.com/NixOS/nixpkgs/issues/222181
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 
     # Formatter for the whole codebase
     treefmt-nix = {

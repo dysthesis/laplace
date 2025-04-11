@@ -4,11 +4,13 @@
   config,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.profiles;
-in {
+in
+{
   config = mkIf (elem "desktop" cfg) {
     systemd.services.seatd = {
       enable = true;
@@ -19,20 +21,24 @@ in {
         Restart = "always";
         RestartSec = "1";
       };
-      wantedBy = ["mult-user.target"];
+      wantedBy = [ "mult-user.target" ];
     };
-    fonts.packages = with pkgs;
-    with inputs.babel.packages.${system}; [
-      noto-fonts
-      noto-fonts-extra
-      noto-fonts-emoji
-      noto-fonts-cjk-sans
-      terminus_font
-      jbcustom-nf
-      sf-pro
-      georgia-fonts
-      nerd-fonts.jetbrains-mono
-    ];
+    fonts.packages =
+      with pkgs;
+      with inputs.babel.packages.${system};
+      [
+        noto-fonts
+        noto-fonts-extra
+        noto-fonts-emoji
+        noto-fonts-cjk-sans
+        terminus_font
+        jbcustom-nf
+        sf-pro
+        georgia-fonts
+        (nerdfonts.override {
+          fonts = [ "JetBrainsMono" ];
+        })
+      ];
     services = {
       logind = {
         lidSwitch = "suspend";
@@ -67,13 +73,21 @@ in {
         enable = true;
       };
     };
+    environment.sessionVariables = {
+      GTK_USE_PORTAL = "1";
+    };
     security = {
       # For electron stuff
       chromiumSuidSandbox.enable = true;
       unprivilegedUsernsClone = true;
 
       # `login` means TTY login
-      pam.services.login.enableGnomeKeyring = true;
+      pam.services = {
+        login.enableGnomeKeyring = true;
+        swaylock.text = ''
+          auth include login
+        '';
+      };
     };
     xdg = {
       autostart.enable = true;
@@ -82,7 +96,7 @@ in {
       sounds.enable = true;
       portal = {
         enable = true;
-        extraPortals = [pkgs.xdg-desktop-portal-gtk];
+        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
       };
     };
   };
