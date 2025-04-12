@@ -1,0 +1,7 @@
+keys:
+  - &deimos age1as3g9vmk34s6w4dw3rlua3wdwgxfzr2f9jm6282eqjncnwagwu4snycmx9
+creation_rules:
+  - path_regex: system/secrets/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
