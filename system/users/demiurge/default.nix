@@ -59,7 +59,6 @@ in {
           brightnessctl
           wl-clipboard
           gnupg
-          xsecurelock
           atuin
           unstable.sbctl
           protonvpn-gui
@@ -73,10 +72,9 @@ in {
           grim
           slurp
           swappy
-          lazyjj
+          bat
         ]
         ++ (with pkgs.configured; [
-          jujutsu
           newsraft
           bemenu
           yambar
