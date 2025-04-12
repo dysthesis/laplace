@@ -44,7 +44,7 @@ in {
                     "autodefrag"
                   ];
                 in
-                  mapAttrs (_name: value: value // {mountOptions = mountOptions ++ ["noexec"];}) {
+                  mapAttrs (_name: value: value // {mountOptions = mountOptions ++ [];}) {
                     "@persist".mountpoint = "/nix/persist";
                     "@home".mountpoint = "/home";
                   }
@@ -71,7 +71,6 @@ in {
         "size=2G"
         "defaults"
         "mode=755"
-        "noexec"
       ];
     in {
       "/" = {
