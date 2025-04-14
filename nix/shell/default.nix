@@ -8,5 +8,6 @@ pkgs.mkShell {
     deadnix
     just
     npins
+    sops
   ];
 }

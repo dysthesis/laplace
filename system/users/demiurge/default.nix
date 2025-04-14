@@ -50,6 +50,7 @@ in {
         ];
       packages = with pkgs;
         [
+          inputs.babel.packages.${system}.fzf-bibtex
           zotero
           swaylock
           signal-desktop
@@ -59,7 +60,6 @@ in {
           brightnessctl
           wl-clipboard
           gnupg
-          xsecurelock
           atuin
           unstable.sbctl
           protonvpn-gui
@@ -68,15 +68,29 @@ in {
           (pkgs.uutils-coreutils.override {prefix = "";})
           inputs.poincare.packages.${system}.default
           (inputs.daedalus.packages.${system}.default.override {
-            shell = "${lib.getExe pkgs.configured.fish}";
+            shell = "${pkgs.configured.fish}/bin/fish";
           })
           grim
           slurp
           swappy
-          lazyjj
+          bat
+          (pkgs.writeShellScriptBin "bibfzf" ''
+            # Adjust the command below to extract the citation keys or titles from your .bib file.
+            # For example, assume each entry starts with an '@' and the key is within braces.
+            selected=$(grep -h '^@' ~/path/to/library.bib | sed 's/@.*{//' | sed 's/,.*//' | fzf --prompt="Select a citation: ")
+
+            if [ -n "$selected" ]; then
+              # Display the full BibTeX entry for the selected citation.
+              awk -v key="$selected" '
+                BEGIN {found=0}
+                $0 ~ "@" {found=0}
+                $0 ~ key {found=1}
+                found {print}
+              ' $argv
+            fi
+          '')
         ]
         ++ (with pkgs.configured; [
-          jujutsu
           newsraft
           bemenu
           yambar
