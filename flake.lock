@@ -347,11 +347,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1745545039,
-        "narHash": "sha256-gWthNSMi+8dN+uROmHJMl354QaXK9Cya4saYQxal2Lo=",
+        "lastModified": 1745546127,
+        "narHash": "sha256-RCqFZPJAdNp07oiI09uzTfvG6V3FUsEL8T8GIE02nlQ=",
         "owner": "dysthesis",
         "repo": "jormungandr",
-        "rev": "273c03a382648ebc132ab439b4f60ce409cfcd94",
+        "rev": "3f7b912f9dbad7b62334a28192f37e7289444190",
         "type": "github"
       },
       "original": {
@@ -523,11 +523,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1745544479,
-        "narHash": "sha256-2fJNCP93U06MN47/ROnZT0yia5h29WcTqaDorHI52o0=",
+        "lastModified": 1745545660,
+        "narHash": "sha256-wzAUDZZHv9WH7eA11C4GdlBVZRtl0Ls+DZc6u9s368s=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5cfaab2c5c1492cbec3e5e85a4dca8601858a06a",
+        "rev": "1c5021fbd6f1342ffa5076a1daf8ccf51b8745f4",
         "type": "github"
       },
       "original": {
