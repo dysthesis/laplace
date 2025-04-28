@@ -92,7 +92,7 @@ in {
           '')
         ]
         ++ (with pkgs.configured; [
-          river
+          hyprland
           newsraft
           bemenu
           yambar
