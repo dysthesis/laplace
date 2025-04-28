@@ -54,7 +54,7 @@
             PATH \
             XCURSOR_SZE \
             XCURSOR_THEME
-         exec ${pkgs.configured.river}/bin/river
+         exec ${lib.getExe pkgs.configured.hyprland}
        fi
        if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]; then
          shopt -q login_shell && LOGIN_OPTION="--login" || LOGIN_OPTION=""

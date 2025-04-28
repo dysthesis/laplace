@@ -13,6 +13,8 @@
   in {
     configured = {
       river = callPackage ./river {inherit pkgs lib;};
+      waybar = callPackage ./waybar {inherit config pkgs lib;};
+      hyprland = callPackage ./hyprland {inherit pkgs lib;};
       jujutsu = callPackage ./jujutsu {inherit pkgs lib;};
       newsraft = callPackage ./newsraft {inherit pkgs lib;};
       fish = callPackage ./fish {
