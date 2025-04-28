@@ -1,12 +1,7 @@
-{
-  pkgs,
-  cacheDir ? "$HOME/.cache/dwl_info",
-  ...
-}:
-let
+{pkgs, ...}: let
   inherit (pkgs) writeText;
 in
-writeText "config.yml"
+  writeText "config.yml"
   # yaml
   ''
     highlight: &highlight fabd2fff
@@ -21,6 +16,12 @@ writeText "config.yml"
     orange: &orange ffa600ff
     font: &font "JBMono Nerd Font:style=solid:size=12"
     brightgreen: &brightgreen 789978ff
+
+    bg_default: &bg_default
+      stack:
+        - background: {color: 81A1C1ff}
+        - underline: {size: 4, color: D8DEE9ff}
+
     bar:
       height: 30
       location: bottom
@@ -28,30 +29,60 @@ writeText "config.yml"
       foreground: *white
 
       left:
-        - dwl:
-            number-of-tags: 9
-            dwl-info-filename: "${cacheDir}"
-            name-of-tags: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        - river:
+            anchors:
+              - base: &river_base
+                  left-margin: 10
+                  right-margin: 13
+                  default: {string: {text: , font: *font}}
+                  conditions:
+                    id == 1: {string: {text: 1, font: *font}}
+                    id == 2: {string: {text: 2, font: *font}}
+                    id == 3: {string: {text: 3, font: *font}}
+                    id == 4: {string: {text: 4, font: *font}}
+                    id == 5: {string: {text: 5, font: *font}}
             content:
-              list:
-                items:
-                  - map:
-                      conditions:
-                        id == 0: {string: {text: " {layout} {title} ", font: *font, foreground: *white}}
-                        selected: {string: {text: " {name} ", font: *font, foreground: *white}}
-                        ~empty: {string: {text: " {name} ", font: *font, foreground: *grey}}
-                        urgent: {string: {text: " {name} ", font: *font, foreground: *highlight}}
+              map:
+                on-click:
+                  left: sh -c "riverctl set-focused-tags $((1 << ({id} - 1)))"
+                  right: sh -c "riverctl toggle-focused-tags $((1 << ({id} -1)))"
+                  middle: sh -c "riverctl toggle-view-tags $((1 << ({id} -1)))"
+                conditions:
+                  state == urgent:
+                    map:
+                      <<: *river_base
+                      deco: {background: {color: D08770ff}}
+                  state == focused:
+                    map:
+                      <<: *river_base
+                      deco: *bg_default
+                  state == visible && ~occupied:
+                    map:
+                      <<: *river_base
+                  state == visible && occupied:
+                    map:
+                      <<: *river_base
+                      deco: *bg_default
+                  state == unfocused:
+                    map:
+                      <<: *river_base
+                  state == invisible && ~occupied: {empty: {}}
+                  state == invisible && occupied:
+                    map:
+                      <<: *river_base
+                      deco: {underline: {size: 3, color: ea6962ff}}
+
       right:
         - pipewire:
-           content:
-             map:
-               conditions:
-                 type == sink:
-                   map:
-                     conditions:
-                       muted: {string: {text: "Muted.", font: *font, foreground: *grey}}
-                       ~muted: {string: {text: "VOL {cubic_volume}%", foreground: *white, font: *font}}
-                     default: {string: {text: "test"}}
+            content:
+              map:
+                conditions:
+                  type == sink:
+                    map:
+                      conditions:
+                        muted: {string: {text: "Muted.", font: *font, foreground: *grey}}
+                        ~muted: {string: {text: "VOL {cubic_volume}%", foreground: *white, font: *font}}
+                      default: {string: {text: "test"}}
         - network:
             content:
               map:
@@ -63,18 +94,14 @@ writeText "config.yml"
                         ~carrier: {empty: {}}
                         carrier:
                           map:
-                            default: {string: {text: , font: *font, foreground: *grey}} #"suche nach Signal...", foreground: *grey}}
+                            default: {string: {text: , font: *font, foreground: *grey}}
                             conditions:
-                              #state == up && ipv4 != "": {string: {text: "verbunden"}} #, right-margin: 5}}
-                              #state == up && ipv6 != "": {string: {text: "verbunden"}} #, right-margin: 5}}
                               state == down: {string: {text: "No signal", font: *font, foreground: *grey}}
-                              #state == down: {string: {text: , font: *font, foreground: *grey}}
                               state == up:
                                 map:
                                   default:
                                     - string: {text: , font: *font}
-                                    - string: {text: " {ssid}", font: *font} #{dl-speed:mb}/{ul-speed:mb} Mb/s"}
-
+                                    - string: {text: " {ssid}", font: *font}
                                   conditions:
                                     ipv4 == "":
                                       - string: {text: , font: *font, foreground: *grey}
@@ -82,8 +109,6 @@ writeText "config.yml"
                                     ipv6 == "":
                                       - string: {text: , font: *font, foreground: *white}
                                       - string: {text: " {ssid}", font: *font, foreground: *white}
-
-
         - backlight:
             name: amdgpu_bl1
             content: [ string: {text: " ", font: *font}, string: {text: " {percent}% ", font: *font}]
@@ -108,7 +133,7 @@ writeText "config.yml"
                           - string: {text: " ", font: *font}
                           - string: {text: " ", font: *font}
                           - string: {text: " ", foreground: *brightgreen, font: *font}
-                    - string: {text: " {capacity}% {estimate}", font: *font} #, right-margin: 5}
+                    - string: {text: " {capacity}% {estimate}", font: *font}
             content:
               map:
                 conditions:
@@ -118,10 +143,10 @@ writeText "config.yml"
                     <<: *discharging
                   state == charging:
                     - string: {text: , foreground: *brightgreen, font: *font}
-                    - string: {text: " {capacity}% {estimate}", font: *font} #, right-margin: 5}
+                    - string: {text: " {capacity}% {estimate}", font: *font}
                   state == full:
                     - string: {text: , foreground: *brightgreen, font: *font}
-                    - string: {text: " {capacity}%", font: *font} #, right-margin: 5}
+                    - string: {text: " {capacity}%", font: *font}
                   state == "not charging":
                     - ramp:
                         tag: capacity
@@ -136,12 +161,8 @@ writeText "config.yml"
                           - string: {text:  , foreground: *brightgreen, font: *font}
                           - string: {text:  , foreground: *brightgreen, font: *font}
                           - string: {text:  , foreground: *brightgreen, font: *font}
-                    - string: {text: " {capacity}%", font: *font} #, right-margin: 5}
+                    - string: {text: " {capacity}%", font: *font}
 
-                #    - script:
-                #        path: ~/docs/scripts/yams-kbd.sh
-                #        args: []
-                #        content: {string: {text: "{kbd}"}}
         - clock:
             time-format: "%H:%M"
             date-format: "%d.%m.%Y"

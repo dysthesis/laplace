@@ -90,8 +90,11 @@ in {
         enable = true;
       };
     };
-    environment.sessionVariables = {
-      GTK_USE_PORTAL = "1";
+    environment = {
+      sessionVariables = {
+        GTK_USE_PORTAL = "1";
+      };
+      systemPackages = with pkgs; [xdg-utils];
     };
     security = {
       # For electron stuff

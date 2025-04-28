@@ -25,6 +25,11 @@
       # inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    jormungandr = {
+      url = "path:/home/demiurge/Documents/Projects/jormungandr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Suckless utilities
     gungnir = {
       url = "github:dysthesis/gungnir";

@@ -12,6 +12,7 @@
     guiPackage = package: package.config.env;
   in {
     configured = {
+      river = callPackage ./river {inherit pkgs lib;};
       jujutsu = callPackage ./jujutsu {inherit pkgs lib;};
       newsraft = callPackage ./newsraft {inherit pkgs lib;};
       fish = callPackage ./fish {

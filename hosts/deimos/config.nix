@@ -45,7 +45,7 @@ _: {
         apparmor.enable = true;
         polkit.enable = true;
         secure-boot.enable = true;
-        firewall.enable = true;
+        firewall.enable = false;
       };
 
       sound = {

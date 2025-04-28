@@ -51,7 +51,7 @@ in {
       packages = with pkgs;
         [
           inputs.babel.packages.${system}.fzf-bibtex
-          zotero
+          unstable.zotero
           swaylock
           signal-desktop
           btop
@@ -74,6 +74,7 @@ in {
           slurp
           swappy
           bat
+          obsidian
           (pkgs.writeShellScriptBin "bibfzf" ''
             # Adjust the command below to extract the citation keys or titles from your .bib file.
             # For example, assume each entry starts with an '@' and the key is within braces.
@@ -91,6 +92,7 @@ in {
           '')
         ]
         ++ (with pkgs.configured; [
+          river
           newsraft
           bemenu
           yambar
