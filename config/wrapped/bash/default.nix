@@ -44,7 +44,7 @@
     # bash
     ''
       if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-         dbus-update-activation-environment --systemd --all
+         # dbus-update-activation-environment --systemd --all
          systemctl import-environment --user \
             DISPLAY \
             WAYLAND_DISPLAY \
@@ -54,7 +54,7 @@
             PATH \
             XCURSOR_SZE \
             XCURSOR_THEME
-         exec ${lib.getExe dwl} > ${cacheDir}
+         exec ${pkgs.configured.river}/bin/river
        fi
        if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]; then
          shopt -q login_shell && LOGIN_OPTION="--login" || LOGIN_OPTION=""
