@@ -2,16 +2,15 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkIf
     mkForce
     ;
 
   cfg = config.laplace.security.firewall.enable;
-in
-{
+in {
   config = mkIf cfg {
     services.opensnitch.enable = true;
 
@@ -22,8 +21,11 @@ in
         443
         8080
         80
+        23319 # zotero
       ];
-      allowedUDPPorts = [ ];
+      allowedUDPPorts = [
+        23319 # zotero
+      ];
       allowPing = false;
       logReversePathDrops = true;
       logRefusedConnections = false;
