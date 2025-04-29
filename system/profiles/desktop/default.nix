@@ -6,6 +6,7 @@
   ...
 }: let
   inherit (lib) mkIf;
+  inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) elem;
   cfg = config.laplace.profiles;
 in {

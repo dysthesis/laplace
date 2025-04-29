@@ -32,7 +32,7 @@ in {
         "Q" = "killactive";
         "F" = "fullscreen";
         "Return" = exec pkgs.configured.ghostty;
-        "S" = ''exec, '${getExe pkgs.slurp} | ${getExe pkgs.grim} -g - - | ${pkgs.wl-clipboard}/bin/wl-copy' '';
+        "P" = ''exec, '${getExe pkgs.slurp} | ${getExe pkgs.grim} -g - - | ${pkgs.wl-clipboard}/bin/wl-copy' '';
         "R" = "exec, ${pkgs.configured.bemenu}/bin/bemenu-run";
       }
       // mapAttrs (_key: value: "movefocus, ${value}") {
