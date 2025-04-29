@@ -71,6 +71,7 @@
       "v" = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
       sudo = "doas";
       cat = "${getExe bat}";
+      temp = "cd $(mktemp -d)";
     }
     // ezaAliases;
 

@@ -43,6 +43,7 @@ in {
     };
     fonts.packages = with pkgs;
     with inputs.babel.packages.${system}; [
+      fast-fonts
       noto-fonts
       noto-fonts-extra
       noto-fonts-emoji
@@ -89,8 +90,11 @@ in {
         enable = true;
       };
     };
-    environment.sessionVariables = {
-      GTK_USE_PORTAL = "1";
+    environment = {
+      sessionVariables = {
+        GTK_USE_PORTAL = "1";
+      };
+      systemPackages = with pkgs; [xdg-utils];
     };
     security = {
       # For electron stuff

@@ -32,6 +32,7 @@ _: {
       };
 
       bootloader = "systemd-boot";
+      docker.enable = true;
 
       network = {
         bluetooth.enable = true;
@@ -44,7 +45,7 @@ _: {
         apparmor.enable = true;
         polkit.enable = true;
         secure-boot.enable = true;
-        firewall.enable = true;
+        firewall.enable = false;
       };
 
       sound = {
