@@ -113,7 +113,20 @@
       "aarch64-darwin"
     ];
 
-    forAllSystems = lib.babel.forAllSystems {inherit systems;};
+    overlays = [
+      (self: super: {
+        ggml = super.ggml.overrideAttrs (old: {
+          CMAKE_FLAGS =
+            (old.CMAKE_FLAGS or [])
+            ++ [
+              "-DGGML_HIP=ON"
+              "-DGGML_HIP_ARCHITECTURE=gfx1032"
+            ];
+        });
+      })
+    ];
+
+    forAllSystems = lib.babel.forAllSystems {inherit systems overlays;};
 
     treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
   in

@@ -1,0 +1,1863 @@
+[32m>[39m Building NixOS configuration
+[?25l[35;1mwarning:[0m Git tree '/home/demiurge/Documents/Projects/laplace' is dirty
+[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 0s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 1s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 2s[0m[1G[2K[1m⏱ 3s[0m[1G[2K[1m⏱ 3s[0m[1G[2K[31;1merror:[0m
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1529:14[0m:
+         1528|         zipAttrsWith (
+         1529|           n: values:
+             |              [31;1m^[0m
+         1530|           let
+
+       … while calling the '[35;1mhead[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1534:13[0m:
+         1533|           if length values == 1 || pred here (elemAt values 1) (head values) then
+         1534|             head values
+             |             [31;1m^[0m
+         1535|           else
+
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1182:17[0m:
+         1181|         mapAttrs (
+         1182|           name: value:
+             |                 [31;1m^[0m
+         1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1183:85[0m:
+         1182|           name: value:
+         1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+             |                                                                                     [31;1m^[0m
+         1184|         );
+
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:273:71[0m:
+          272|           # For definitions that have an associated option
+          273|           declaredConfig = mapAttrsRecursiveCond (v: !isOption v) (_: v: v.value) options;
+             |                                                                       [31;1m^[0m
+          274|
+
+       … while evaluating the attribute '[35;1mvalue[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:992:7[0m:
+          991|     // {
+          992|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+             |       [31;1m^[0m
+          993|       inherit (res.defsFinal') highestPrio;
+
+       … while evaluating the option `system.build.toplevel':
+
+       … while evaluating the attribute '[35;1mmergedValue[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1033:5[0m:
+         1032|     # Type-check the remaining definitions, and merge them. Or throw if no definitions.
+         1033|     mergedValue =
+             |     [31;1m^[0m
+         1034|       if isDefined then
+
+       … while evaluating a branch condition
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1034:7[0m:
+         1033|     mergedValue =
+         1034|       if isDefined then
+             |       [31;1m^[0m
+         1035|         if all (def: type.check def.value) defsFinal then
+
+       … while evaluating the attribute '[35;1mvalues[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1027:9[0m:
+         1026|       {
+         1027|         values = defs''';
+             |         [31;1m^[0m
+         1028|         inherit (defs'') highestPrio;
+
+       … while evaluating a branch condition
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1021:11[0m:
+         1020|           # Avoid sorting if we don't have to.
+         1021|           if any (def: def.value._type or "" == "order") defs''.values then
+             |           [31;1m^[0m
+         1022|             sortProperties defs''.values
+
+       … while calling the '[35;1many[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1021:14[0m:
+         1020|           # Avoid sorting if we don't have to.
+         1021|           if any (def: def.value._type or "" == "order") defs''.values then
+             |              [31;1m^[0m
+         1022|             sortProperties defs''.values
+
+       … while evaluating the attribute '[35;1mvalues[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1136:7[0m:
+         1135|     {
+         1136|       values = concatMap (def: if getPrio def == highestPrio then [ (strip def) ] else [ ]) defs;
+             |       [31;1m^[0m
+         1137|       inherit highestPrio;
+
+       … while calling the '[35;1mconcatMap[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1136:16[0m:
+         1135|     {
+         1136|       values = concatMap (def: if getPrio def == highestPrio then [ (strip def) ] else [ ]) defs;
+             |                [31;1m^[0m
+         1137|       inherit highestPrio;
+
+       … while calling the '[35;1mconcatMap[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1007:17[0m:
+         1006|         # Process mkMerge and mkIf properties.
+         1007|         defs' = concatMap (
+             |                 [31;1m^[0m
+         1008|           m:
+
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1008:11[0m:
+         1007|         defs' = concatMap (
+         1008|           m:
+             |           [31;1m^[0m
+         1009|           map (value: {
+
+       … while calling the '[35;1mmap[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1009:11[0m:
+         1008|           m:
+         1009|           map (value: {
+             |           [31;1m^[0m
+         1010|             inherit (m) file;
+
+       … while evaluating definitions from `/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix':
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1012:81[0m:
+         1011|             inherit value;
+         1012|           }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                 [31;1m^[0m
+         1013|         ) defs;
+
+       … while calling [35;1m'dischargeProperties'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1093:5[0m:
+         1092|   dischargeProperties =
+         1093|     def:
+             |     [31;1m^[0m
+         1094|     if def._type or "" == "merge" then
+
+       … while evaluating a branch condition
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1094:5[0m:
+         1093|     def:
+         1094|     if def._type or "" == "merge" then
+             |     [31;1m^[0m
+         1095|       concatMap dischargeProperties def.contents
+
+       … while evaluating the attribute '[35;1mvalue[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:732:23[0m:
+          731|               inherit (module) file;
+          732|               inherit value;
+             |                       [31;1m^[0m
+          733|             }
+
+       … while evaluating a branch condition
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:84:5[0m:
+           83|   baseSystemAssertWarn =
+           84|     if failedAssertions != [ ] then
+             |     [31;1m^[0m
+           85|       throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: "- ${x}") failedAssertions)}"
+
+       … while calling the '[35;1mmap[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:22[0m:
+           80|
+           81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+             |                      [31;1m^[0m
+           82|
+
+       … while calling the '[35;1mfilter[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:42[0m:
+           80|
+           81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+             |                                          [31;1m^[0m
+           82|
+
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:50[0m:
+           80|
+           81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+             |                                                  [31;1m^[0m
+           82|
+
+       … in the argument of the not operator
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:54[0m:
+           80|
+           81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+             |                                                      [31;1m^[0m
+           82|
+
+       … while evaluating the attribute '[35;1massertion[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1115:17[0m:
+         1114|               (shell: {
+         1115|                 assertion =
+             |                 [31;1m^[0m
+         1116|                   !user.ignoreShellProgramCheck
+
+       … in the right operand of the IMPL (->) operator
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1117:19[0m:
+         1116|                   !user.ignoreShellProgramCheck
+         1117|                   -> (user.shell == pkgs.${shell})
+             |                   [31;1m^[0m
+         1118|                   -> (config.programs.${shell}.enable == true);
+
+       … in the left operand of the IMPL (->) operator
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1118:19[0m:
+         1117|                   -> (user.shell == pkgs.${shell})
+         1118|                   -> (config.programs.${shell}.enable == true);
+             |                   [31;1m^[0m
+         1119|                 message = ''
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1117:23[0m:
+         1116|                   !user.ignoreShellProgramCheck
+         1117|                   -> (user.shell == pkgs.${shell})
+             |                       [31;1m^[0m
+         1118|                   -> (config.programs.${shell}.enable == true);
+
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1182:17[0m:
+         1181|         mapAttrs (
+         1182|           name: value:
+             |                 [31;1m^[0m
+         1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1183:85[0m:
+         1182|           name: value:
+         1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+             |                                                                                     [31;1m^[0m
+         1184|         );
+
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:273:71[0m:
+          272|           # For definitions that have an associated option
+          273|           declaredConfig = mapAttrsRecursiveCond (v: !isOption v) (_: v: v.value) options;
+             |                                                                       [31;1m^[0m
+          274|
+
+       … while evaluating the attribute '[35;1mvalue[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:992:7[0m:
+          991|     // {
+          992|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+             |       [31;1m^[0m
+          993|       inherit (res.defsFinal') highestPrio;
+
+       … while evaluating the option `users.users.demiurge.shell':
+
+       [35;1m(10 duplicate frames omitted)[0m
+
+       … while evaluating definitions from `/nix/store/lfr1lsa10dd4ya02pw9r5g6ljx2y4gyi-users/demiurge':
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1012:81[0m:
+         1011|             inherit value;
+         1012|           }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+             |                                                                                 [31;1m^[0m
+         1013|         ) defs;
+
+       … while calling [35;1m'dischargeProperties'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1093:5[0m:
+         1092|   dischargeProperties =
+         1093|     def:
+             |     [31;1m^[0m
+         1094|     if def._type or "" == "merge" then
+
+       … while evaluating a branch condition
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1094:5[0m:
+         1093|     def:
+         1094|     if def._type or "" == "merge" then
+             |     [31;1m^[0m
+         1095|       concatMap dischargeProperties def.contents
+
+       … while evaluating the attribute '[35;1mvalue[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:732:23[0m:
+          731|               inherit (module) file;
+          732|               inherit value;
+             |                       [31;1m^[0m
+          733|             }
+
+       … while calling the '[35;1mgetAttr[0m' builtin
+         [34;1mat [35;1m<nix/derivation-internal.nix>:50:17[0m:
+           49|     value = commonAttrs // {
+           50|       outPath = builtins.getAttr outputName strict;
+             |                 [31;1m^[0m
+           51|       drvPath = strict.drvPath;
+
+       … while calling the '[35;1mderivationStrict[0m' builtin
+         [34;1mat [35;1m<nix/derivation-internal.nix>:37:12[0m:
+           36|
+           37|   strict = derivationStrict drvAttrs;
+             |            [31;1m^[0m
+           38|
+
+       … while evaluating derivation '[35;1m-nix-store-mc4485g4apaqzjx59dsmqscls1zc3p2w-bash-5.2p37-wrapped[0m'
+         whose name attribute is located at [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/stdenv/generic/make-derivation.nix:396:13[0m
+
+       … while evaluating attribute '[35;1mbuildCommand[0m' of derivation '[35;1m-nix-store-mc4485g4apaqzjx59dsmqscls1zc3p2w-bash-5.2p37-wrapped[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:76:17[0m:
+           75|         enableParallelBuilding = true;
+           76|         inherit buildCommand name;
+             |                 [31;1m^[0m
+           77|         passAsFile = [ "buildCommand" ] ++ (derivationArgs.passAsFile or [ ]);
+
+       … from call site
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/bash/default.nix:43:5[0m:
+           42|   configuration =
+           43|     pkgs.writeText "bash.bashrc"
+             |     [31;1m^[0m
+           44|     # bash
+
+       … while calling [35;1m'writeText'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:166:11[0m:
+          165|   writeText =
+          166|     name: text:
+             |           [31;1m^[0m
+          167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+
+       … in the condition of the assert statement
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:168:5[0m:
+          167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+          168|     assert lib.assertMsg (lib.strings.isConvertibleWithToString text)
+             |     [31;1m^[0m
+          169|       ''pkgs.writeText ${lib.strings.escapeNixString name}: The second argument should be a string, but it's a ${builtins.typeOf text} instead.'';
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:168:12[0m:
+          167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+          168|     assert lib.assertMsg (lib.strings.isConvertibleWithToString text)
+             |            [31;1m^[0m
+          169|       ''pkgs.writeText ${lib.strings.escapeNixString name}: The second argument should be a string, but it's a ${builtins.typeOf text} instead.'';
+
+       … while calling [35;1m'assertMsg'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/asserts.nix:39:21[0m:
+           38|   # TODO(Profpatsch): add tests that check stderr
+           39|   assertMsg = pred: msg: pred || builtins.throw msg;
+             |                     [31;1m^[0m
+           40|
+
+       … in the left operand of the OR (||) operator
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/asserts.nix:39:31[0m:
+           38|   # TODO(Profpatsch): add tests that check stderr
+           39|   assertMsg = pred: msg: pred || builtins.throw msg;
+             |                               [31;1m^[0m
+           40|
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:168:27[0m:
+          167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+          168|     assert lib.assertMsg (lib.strings.isConvertibleWithToString text)
+             |                           [31;1m^[0m
+          169|       ''pkgs.writeText ${lib.strings.escapeNixString name}: The second argument should be a string, but it's a ${builtins.typeOf text} instead.'';
+
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:5[0m:
+         2338|     in
+         2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+             |     [31;1m^[0m
+         2340|
+
+       … in the left operand of the OR (||) operator
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:48[0m:
+         2338|     in
+         2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+             |                                                [31;1m^[0m
+         2340|
+
+       … in the left operand of the OR (||) operator
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:23[0m:
+         2338|     in
+         2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+             |                       [31;1m^[0m
+         2340|
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:8[0m:
+         2338|     in
+         2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+             |        [31;1m^[0m
+         2340|
+
+       … while calling [35;1m'isStringLike'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:18[0m:
+         2358|   */
+         2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+             |                  [31;1m^[0m
+         2360|
+
+       … in the left operand of the OR (||) operator
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:59[0m:
+         2358|   */
+         2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+             |                                                           [31;1m^[0m
+         2360|
+
+       … in the left operand of the OR (||) operator
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:44[0m:
+         2358|   */
+         2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+             |                                            [31;1m^[0m
+         2360|
+
+       … in the left operand of the OR (||) operator
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:32[0m:
+         2358|   */
+         2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+             |                                [31;1m^[0m
+         2360|
+
+       … while calling the '[35;1misString[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:21[0m:
+         2358|   */
+         2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+             |                     [31;1m^[0m
+         2360|
+
+       … from call site
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/bash/default.nix:57:17[0m:
+           56|             XCURSOR_THEME
+           57|          exec ${lib.getExe pkgs.configured.hyprland}
+             |                 [31;1m^[0m
+           58|        fi
+
+       … while calling [35;1m'getExe'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/meta.nix:433:5[0m:
+          432|   getExe =
+          433|     x:
+             |     [31;1m^[0m
+          434|     getExe' x (
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/meta.nix:434:5[0m:
+          433|     x:
+          434|     getExe' x (
+             |     [31;1m^[0m
+          435|       x.meta.mainProgram or (
+
+       … while calling [35;1m'getExe''[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/meta.nix:479:8[0m:
+          478|   getExe' =
+          479|     x: y:
+             |        [31;1m^[0m
+          480|     assert assertMsg (isDerivation x)
+
+       … while calling the '[35;1mgetAttr[0m' builtin
+         [34;1mat [35;1m<nix/derivation-internal.nix>:50:17[0m:
+           49|     value = commonAttrs // {
+           50|       outPath = builtins.getAttr outputName strict;
+             |                 [31;1m^[0m
+           51|       drvPath = strict.drvPath;
+
+       … while calling the '[35;1mderivationStrict[0m' builtin
+         [34;1mat [35;1m<nix/derivation-internal.nix>:37:12[0m:
+           36|
+           37|   strict = derivationStrict drvAttrs;
+             |            [31;1m^[0m
+           38|
+
+       … while evaluating derivation '[35;1m-nix-store-dpzwm4md2vlgdr0iicixjv75755qsjmw-hyprland-0.45.2-wrapped[0m'
+         whose name attribute is located at [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/stdenv/generic/make-derivation.nix:396:13[0m
+
+       … while evaluating attribute '[35;1mbuildCommand[0m' of derivation '[35;1m-nix-store-dpzwm4md2vlgdr0iicixjv75755qsjmw-hyprland-0.45.2-wrapped[0m'
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:76:17[0m:
+           75|         enableParallelBuilding = true;
+           76|         inherit buildCommand name;
+             |                 [31;1m^[0m
+           77|         passAsFile = [ "buildCommand" ] ++ (derivationArgs.passAsFile or [ ]);
+
+       … from call site
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:95:12[0m:
+           94|              |> pkgs.writeText "hyprland.conf";
+           95|   config = mkConfig (import ./config {inherit pkgs lib;});
+             |            [31;1m^[0m
+           96| in
+
+       … while calling [35;1m'mkConfig'[0m
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:92:14[0m:
+           91|
+           92|   mkConfig = conf: toHyprconf initialIndent conf
+             |              [31;1m^[0m
+           93|              |> toString
+
+       … from call site
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:94:17[0m:
+           93|              |> toString
+           94|              |> pkgs.writeText "hyprland.conf";
+             |                 [31;1m^[0m
+           95|   config = mkConfig (import ./config {inherit pkgs lib;});
+
+       [35;1m(15 duplicate frames omitted)[0m
+
+       … while calling the '[35;1mtoString[0m' builtin
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:93:14[0m:
+           92|   mkConfig = conf: toHyprconf initialIndent conf
+           93|              |> toString
+             |              [31;1m^[0m
+           94|              |> pkgs.writeText "hyprland.conf";
+
+       … from call site
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:92:20[0m:
+           91|
+           92|   mkConfig = conf: toHyprconf initialIndent conf
+             |                    [31;1m^[0m
+           93|              |> toString
+
+       … while calling [35;1m'toHyprconf'[0m
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:30:24[0m:
+           29|
+           30|   toHyprconf = indent: attrs: let
+             |                        [31;1m^[0m
+           31|     sections =
+
+       … while calling the '[35;1mconcatStringsSep[0m' builtin
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:89:9[0m:
+           88|       mkFields importantFields
+           89|       + concatStringsSep "\n" (mapAttrsToList mkSection sections)
+             |         [31;1m^[0m
+           90|       + mkFields fields;
+
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1079:35[0m:
+         1078|   */
+         1079|   mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (attrNames attrs);
+             |                                   [31;1m^[0m
+         1080|
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1079:41[0m:
+         1078|   */
+         1079|   mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (attrNames attrs);
+             |                                         [31;1m^[0m
+         1080|
+
+       … while calling [35;1m'mkSection'[0m
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:34:21[0m:
+           33|
+           34|   mkSection = name: attrs:
+             |                     [31;1m^[0m
+           35|     if lib.isList attrs then
+
+       … from call site
+         [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:61:11[0m:
+           60|         ${renderFields animationAttrs}
+           61|         ${renderFields otherAttrs}
+             |           [31;1m^[0m
+           62|         ${indent}}
+
+       … while calling [35;1manonymous lambda[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:199:5[0m:
+          198|     in
+          199|     attrs: concatStrings (concatLists (mapAttrsToList mkLines attrs));
+             |     [31;1m^[0m
+          200|
+
+       … while calling the '[35;1mconcatStringsSep[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:199:12[0m:
+          198|     in
+          199|     attrs: concatStrings (concatLists (mapAttrsToList mkLines attrs));
+             |            [31;1m^[0m
+          200|
+
+       … while calling [35;1m'mkLine'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:192:19[0m:
+          191|     let
+          192|       mkLine = k: v: indent + mkKeyValue k v + "\n";
+             |                   [31;1m^[0m
+          193|       mkLines =
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:192:31[0m:
+          191|     let
+          192|       mkLine = k: v: indent + mkKeyValue k v + "\n";
+             |                               [31;1m^[0m
+          193|       mkLines =
+
+       … while calling [35;1m'mkKeyValueDefault'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:164:13[0m:
+          163|     }:
+          164|     sep: k: v:
+             |             [31;1m^[0m
+          165|     "${escape [ sep ] k}${sep}${mkValueString v}";
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:165:33[0m:
+          164|     sep: k: v:
+          165|     "${escape [ sep ] k}${sep}${mkValueString v}";
+             |                                 [31;1m^[0m
+          166|
+
+       … while calling [35;1m'mkValueStringDefault'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:93:5[0m:
+           92|     { }:
+           93|     v:
+             |     [31;1m^[0m
+           94|     let
+
+       … from call site
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:118:7[0m:
+          117|     else if isAttrs v then
+          118|       err "attrsets" v
+             |       [31;1m^[0m
+          119|     # functions can’t be printed of course
+
+       … while calling [35;1m'err'[0m
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:95:16[0m:
+           94|     let
+           95|       err = t: v: abort ("generators.mkValueStringDefault: " + "${t} not supported: ${toPretty { } v}");
+             |                [31;1m^[0m
+           96|     in
+
+       … while calling the '[35;1mabort[0m' builtin
+         [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:95:19[0m:
+           94|     let
+           95|       err = t: v: abort ("generators.mkValueStringDefault: " + "${t} not supported: ${toPretty { } v}");
+             |                   [31;1m^[0m
+           96|     in
+
+       [31;1merror:[0m evaluation aborted with the following error message: '[35;1mgenerators.mkValueStringDefault: attrsets not supported: {
+         contrast = 0.7;
+         enabled = true;
+         ignore_opacity = false;
+         new_optimizations = 1;
+         passes = 3;
+         size = 3;
+         special = false;
+         xray = true;
+       }[0m'
+┏━[1;31m 1 Errors: [0m
+┃ [31;1merror:[0m
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1529:14[0m:
+┃          1528|         zipAttrsWith (
+┃          1529|           n: values:
+┃              |              [31;1m^[0m
+┃          1530|           let
+┃ 
+┃        … while calling the '[35;1mhead[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1534:13[0m:
+┃          1533|           if length values == 1 || pred here (elemAt values 1) (head values) then
+┃          1534|             head values
+┃              |             [31;1m^[0m
+┃          1535|           else
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1182:17[0m:
+┃          1181|         mapAttrs (
+┃          1182|           name: value:
+┃              |                 [31;1m^[0m
+┃          1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1183:85[0m:
+┃          1182|           name: value:
+┃          1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+┃              |                                                                                     [31;1m^[0m
+┃          1184|         );
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:273:71[0m:
+┃           272|           # For definitions that have an associated option
+┃           273|           declaredConfig = mapAttrsRecursiveCond (v: !isOption v) (_: v: v.value) options;
+┃              |                                                                       [31;1m^[0m
+┃           274|
+┃ 
+┃        … while evaluating the attribute '[35;1mvalue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:992:7[0m:
+┃           991|     // {
+┃           992|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+┃              |       [31;1m^[0m
+┃           993|       inherit (res.defsFinal') highestPrio;
+┃ 
+┃        … while evaluating the option `system.build.toplevel':
+┃ 
+┃        … while evaluating the attribute '[35;1mmergedValue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1033:5[0m:
+┃          1032|     # Type-check the remaining definitions, and merge them. Or throw if no definitions.
+┃          1033|     mergedValue =
+┃              |     [31;1m^[0m
+┃          1034|       if isDefined then
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1034:7[0m:
+┃          1033|     mergedValue =
+┃          1034|       if isDefined then
+┃              |       [31;1m^[0m
+┃          1035|         if all (def: type.check def.value) defsFinal then
+┃ 
+┃        … while evaluating the attribute '[35;1mvalues[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1027:9[0m:
+┃          1026|       {
+┃          1027|         values = defs''';
+┃              |         [31;1m^[0m
+┃          1028|         inherit (defs'') highestPrio;
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1021:11[0m:
+┃          1020|           # Avoid sorting if we don't have to.
+┃          1021|           if any (def: def.value._type or "" == "order") defs''.values then
+┃              |           [31;1m^[0m
+┃          1022|             sortProperties defs''.values
+┃ 
+┃        … while calling the '[35;1many[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1021:14[0m:
+┃          1020|           # Avoid sorting if we don't have to.
+┃          1021|           if any (def: def.value._type or "" == "order") defs''.values then
+┃              |              [31;1m^[0m
+┃          1022|             sortProperties defs''.values
+┃ 
+┃        … while evaluating the attribute '[35;1mvalues[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1136:7[0m:
+┃          1135|     {
+┃          1136|       values = concatMap (def: if getPrio def == highestPrio then [ (strip def) ] else [ ]) defs;
+┃              |       [31;1m^[0m
+┃          1137|       inherit highestPrio;
+┃ 
+┃        … while calling the '[35;1mconcatMap[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1136:16[0m:
+┃          1135|     {
+┃          1136|       values = concatMap (def: if getPrio def == highestPrio then [ (strip def) ] else [ ]) defs;
+┃              |                [31;1m^[0m
+┃          1137|       inherit highestPrio;
+┃ 
+┃        … while calling the '[35;1mconcatMap[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1007:17[0m:
+┃          1006|         # Process mkMerge and mkIf properties.
+┃          1007|         defs' = concatMap (
+┃              |                 [31;1m^[0m
+┃          1008|           m:
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1008:11[0m:
+┃          1007|         defs' = concatMap (
+┃          1008|           m:
+┃              |           [31;1m^[0m
+┃          1009|           map (value: {
+┃ 
+┃        … while calling the '[35;1mmap[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1009:11[0m:
+┃          1008|           m:
+┃          1009|           map (value: {
+┃              |           [31;1m^[0m
+┃          1010|             inherit (m) file;
+┃ 
+┃        … while evaluating definitions from `/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix':
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1012:81[0m:
+┃          1011|             inherit value;
+┃          1012|           }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+┃              |                                                                                 [31;1m^[0m
+┃          1013|         ) defs;
+┃ 
+┃        … while calling [35;1m'dischargeProperties'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1093:5[0m:
+┃          1092|   dischargeProperties =
+┃          1093|     def:
+┃              |     [31;1m^[0m
+┃          1094|     if def._type or "" == "merge" then
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1094:5[0m:
+┃          1093|     def:
+┃          1094|     if def._type or "" == "merge" then
+┃              |     [31;1m^[0m
+┃          1095|       concatMap dischargeProperties def.contents
+┃ 
+┃        … while evaluating the attribute '[35;1mvalue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:732:23[0m:
+┃           731|               inherit (module) file;
+┃           732|               inherit value;
+┃              |                       [31;1m^[0m
+┃           733|             }
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:84:5[0m:
+┃            83|   baseSystemAssertWarn =
+┃            84|     if failedAssertions != [ ] then
+┃              |     [31;1m^[0m
+┃            85|       throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: "- ${x}") failedAssertions)}"
+┃ 
+┃        … while calling the '[35;1mmap[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:22[0m:
+┃            80|
+┃            81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+┃              |                      [31;1m^[0m
+┃            82|
+┃ 
+┃        … while calling the '[35;1mfilter[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:42[0m:
+┃            80|
+┃            81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+┃              |                                          [31;1m^[0m
+┃            82|
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:50[0m:
+┃            80|
+┃            81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+┃              |                                                  [31;1m^[0m
+┃            82|
+┃ 
+┃        … in the argument of the not operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:54[0m:
+┃            80|
+┃            81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+┃              |                                                      [31;1m^[0m
+┃            82|
+┃ 
+┃        … while evaluating the attribute '[35;1massertion[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1115:17[0m:
+┃          1114|               (shell: {
+┃          1115|                 assertion =
+┃              |                 [31;1m^[0m
+┃          1116|                   !user.ignoreShellProgramCheck
+┃ 
+┃        … in the right operand of the IMPL (->) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1117:19[0m:
+┃          1116|                   !user.ignoreShellProgramCheck
+┃          1117|                   -> (user.shell == pkgs.${shell})
+┃              |                   [31;1m^[0m
+┃          1118|                   -> (config.programs.${shell}.enable == true);
+┃ 
+┃        … in the left operand of the IMPL (->) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1118:19[0m:
+┃          1117|                   -> (user.shell == pkgs.${shell})
+┃          1118|                   -> (config.programs.${shell}.enable == true);
+┃              |                   [31;1m^[0m
+┃          1119|                 message = ''
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1117:23[0m:
+┃          1116|                   !user.ignoreShellProgramCheck
+┃          1117|                   -> (user.shell == pkgs.${shell})
+┃              |                       [31;1m^[0m
+┃          1118|                   -> (config.programs.${shell}.enable == true);
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1182:17[0m:
+┃          1181|         mapAttrs (
+┃          1182|           name: value:
+┃              |                 [31;1m^[0m
+┃          1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1183:85[0m:
+┃          1182|           name: value:
+┃          1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+┃              |                                                                                     [31;1m^[0m
+┃          1184|         );
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:273:71[0m:
+┃           272|           # For definitions that have an associated option
+┃           273|           declaredConfig = mapAttrsRecursiveCond (v: !isOption v) (_: v: v.value) options;
+┃              |                                                                       [31;1m^[0m
+┃           274|
+┃ 
+┃        … while evaluating the attribute '[35;1mvalue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:992:7[0m:
+┃           991|     // {
+┃           992|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+┃              |       [31;1m^[0m
+┃           993|       inherit (res.defsFinal') highestPrio;
+┃ 
+┃        … while evaluating the option `users.users.demiurge.shell':
+┃ 
+┃        [35;1m(10 duplicate frames omitted)[0m
+┃ 
+┃        … while evaluating definitions from `/nix/store/lfr1lsa10dd4ya02pw9r5g6ljx2y4gyi-users/demiurge':
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1012:81[0m:
+┃          1011|             inherit value;
+┃          1012|           }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+┃              |                                                                                 [31;1m^[0m
+┃          1013|         ) defs;
+┃ 
+┃        … while calling [35;1m'dischargeProperties'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1093:5[0m:
+┃          1092|   dischargeProperties =
+┃          1093|     def:
+┃              |     [31;1m^[0m
+┃          1094|     if def._type or "" == "merge" then
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1094:5[0m:
+┃          1093|     def:
+┃          1094|     if def._type or "" == "merge" then
+┃              |     [31;1m^[0m
+┃          1095|       concatMap dischargeProperties def.contents
+┃ 
+┃        … while evaluating the attribute '[35;1mvalue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:732:23[0m:
+┃           731|               inherit (module) file;
+┃           732|               inherit value;
+┃              |                       [31;1m^[0m
+┃           733|             }
+┃ 
+┃        … while calling the '[35;1mgetAttr[0m' builtin
+┃          [34;1mat [35;1m<nix/derivation-internal.nix>:50:17[0m:
+┃            49|     value = commonAttrs // {
+┃            50|       outPath = builtins.getAttr outputName strict;
+┃              |                 [31;1m^[0m
+┃            51|       drvPath = strict.drvPath;
+┃ 
+┃        … while calling the '[35;1mderivationStrict[0m' builtin
+┃          [34;1mat [35;1m<nix/derivation-internal.nix>:37:12[0m:
+┃            36|
+┃            37|   strict = derivationStrict drvAttrs;
+┃              |            [31;1m^[0m
+┃            38|
+┃ 
+┃        … while evaluating derivation '[35;1m-nix-store-mc4485g4apaqzjx59dsmqscls1zc3p2w-bash-5.2p37-wrapped[0m'
+┃          whose name attribute is located at [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/stdenv/generic/make-derivation.nix:396:13[0m
+┃ 
+┃        … while evaluating attribute '[35;1mbuildCommand[0m' of derivation '[35;1m-nix-store-mc4485g4apaqzjx59dsmqscls1zc3p2w-bash-5.2p37-wrapped[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:76:17[0m:
+┃            75|         enableParallelBuilding = true;
+┃            76|         inherit buildCommand name;
+┃              |                 [31;1m^[0m
+┃            77|         passAsFile = [ "buildCommand" ] ++ (derivationArgs.passAsFile or [ ]);
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/bash/default.nix:43:5[0m:
+┃            42|   configuration =
+┃            43|     pkgs.writeText "bash.bashrc"
+┃              |     [31;1m^[0m
+┃            44|     # bash
+┃ 
+┃        … while calling [35;1m'writeText'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:166:11[0m:
+┃           165|   writeText =
+┃           166|     name: text:
+┃              |           [31;1m^[0m
+┃           167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+┃ 
+┃        … in the condition of the assert statement
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:168:5[0m:
+┃           167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+┃           168|     assert lib.assertMsg (lib.strings.isConvertibleWithToString text)
+┃              |     [31;1m^[0m
+┃           169|       ''pkgs.writeText ${lib.strings.escapeNixString name}: The second argument should be a string, but it's a ${builtins.typeOf text} instead.'';
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:168:12[0m:
+┃           167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+┃           168|     assert lib.assertMsg (lib.strings.isConvertibleWithToString text)
+┃              |            [31;1m^[0m
+┃           169|       ''pkgs.writeText ${lib.strings.escapeNixString name}: The second argument should be a string, but it's a ${builtins.typeOf text} instead.'';
+┃ 
+┃        … while calling [35;1m'assertMsg'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/asserts.nix:39:21[0m:
+┃            38|   # TODO(Profpatsch): add tests that check stderr
+┃            39|   assertMsg = pred: msg: pred || builtins.throw msg;
+┃              |                     [31;1m^[0m
+┃            40|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/asserts.nix:39:31[0m:
+┃            38|   # TODO(Profpatsch): add tests that check stderr
+┃            39|   assertMsg = pred: msg: pred || builtins.throw msg;
+┃              |                               [31;1m^[0m
+┃            40|
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:168:27[0m:
+┃           167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+┃           168|     assert lib.assertMsg (lib.strings.isConvertibleWithToString text)
+┃              |                           [31;1m^[0m
+┃           169|       ''pkgs.writeText ${lib.strings.escapeNixString name}: The second argument should be a string, but it's a ${builtins.typeOf text} instead.'';
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:5[0m:
+┃          2338|     in
+┃          2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+┃              |     [31;1m^[0m
+┃          2340|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:48[0m:
+┃          2338|     in
+┃          2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+┃              |                                                [31;1m^[0m
+┃          2340|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:23[0m:
+┃          2338|     in
+┃          2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+┃              |                       [31;1m^[0m
+┃          2340|
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:8[0m:
+┃          2338|     in
+┃          2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+┃              |        [31;1m^[0m
+┃          2340|
+┃ 
+┃        … while calling [35;1m'isStringLike'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:18[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                  [31;1m^[0m
+┃          2360|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:59[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                                                           [31;1m^[0m
+┃          2360|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:44[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                                            [31;1m^[0m
+┃          2360|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:32[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                                [31;1m^[0m
+┃          2360|
+┃ 
+┃        … while calling the '[35;1misString[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:21[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                     [31;1m^[0m
+┃          2360|
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/bash/default.nix:57:17[0m:
+┃            56|             XCURSOR_THEME
+┃            57|          exec ${lib.getExe pkgs.configured.hyprland}
+┃              |                 [31;1m^[0m
+┃            58|        fi
+┃ 
+┃        … while calling [35;1m'getExe'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/meta.nix:433:5[0m:
+┃           432|   getExe =
+┃           433|     x:
+┃              |     [31;1m^[0m
+┃           434|     getExe' x (
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/meta.nix:434:5[0m:
+┃           433|     x:
+┃           434|     getExe' x (
+┃              |     [31;1m^[0m
+┃           435|       x.meta.mainProgram or (
+┃ 
+┃        … while calling [35;1m'getExe''[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/meta.nix:479:8[0m:
+┃           478|   getExe' =
+┃           479|     x: y:
+┃              |        [31;1m^[0m
+┃           480|     assert assertMsg (isDerivation x)
+┃ 
+┃        … while calling the '[35;1mgetAttr[0m' builtin
+┃          [34;1mat [35;1m<nix/derivation-internal.nix>:50:17[0m:
+┃            49|     value = commonAttrs // {
+┃            50|       outPath = builtins.getAttr outputName strict;
+┃              |                 [31;1m^[0m
+┃            51|       drvPath = strict.drvPath;
+┃ 
+┃        … while calling the '[35;1mderivationStrict[0m' builtin
+┃          [34;1mat [35;1m<nix/derivation-internal.nix>:37:12[0m:
+┃            36|
+┃            37|   strict = derivationStrict drvAttrs;
+┃              |            [31;1m^[0m
+┃            38|
+┃ 
+┃        … while evaluating derivation '[35;1m-nix-store-dpzwm4md2vlgdr0iicixjv75755qsjmw-hyprland-0.45.2-wrapped[0m'
+┃          whose name attribute is located at [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/stdenv/generic/make-derivation.nix:396:13[0m
+┃ 
+┃        … while evaluating attribute '[35;1mbuildCommand[0m' of derivation '[35;1m-nix-store-dpzwm4md2vlgdr0iicixjv75755qsjmw-hyprland-0.45.2-wrapped[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:76:17[0m:
+┃            75|         enableParallelBuilding = true;
+┃            76|         inherit buildCommand name;
+┃              |                 [31;1m^[0m
+┃            77|         passAsFile = [ "buildCommand" ] ++ (derivationArgs.passAsFile or [ ]);
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:95:12[0m:
+┃            94|              |> pkgs.writeText "hyprland.conf";
+┃            95|   config = mkConfig (import ./config {inherit pkgs lib;});
+┃              |            [31;1m^[0m
+┃            96| in
+┃ 
+┃        … while calling [35;1m'mkConfig'[0m
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:92:14[0m:
+┃            91|
+┃            92|   mkConfig = conf: toHyprconf initialIndent conf
+┃              |              [31;1m^[0m
+┃            93|              |> toString
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:94:17[0m:
+┃            93|              |> toString
+┃            94|              |> pkgs.writeText "hyprland.conf";
+┃              |                 [31;1m^[0m
+┃            95|   config = mkConfig (import ./config {inherit pkgs lib;});
+┃ 
+┃        [35;1m(15 duplicate frames omitted)[0m
+┃ 
+┃        … while calling the '[35;1mtoString[0m' builtin
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:93:14[0m:
+┃            92|   mkConfig = conf: toHyprconf initialIndent conf
+┃            93|              |> toString
+┃              |              [31;1m^[0m
+┃            94|              |> pkgs.writeText "hyprland.conf";
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:92:20[0m:
+┃            91|
+┃            92|   mkConfig = conf: toHyprconf initialIndent conf
+┃              |                    [31;1m^[0m
+┃            93|              |> toString
+┃ 
+┃        … while calling [35;1m'toHyprconf'[0m
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:30:24[0m:
+┃            29|
+┃            30|   toHyprconf = indent: attrs: let
+┃              |                        [31;1m^[0m
+┃            31|     sections =
+┃ 
+┃        … while calling the '[35;1mconcatStringsSep[0m' builtin
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:89:9[0m:
+┃            88|       mkFields importantFields
+┃            89|       + concatStringsSep "\n" (mapAttrsToList mkSection sections)
+┃              |         [31;1m^[0m
+┃            90|       + mkFields fields;
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1079:35[0m:
+┃          1078|   */
+┃          1079|   mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (attrNames attrs);
+┃              |                                   [31;1m^[0m
+┃          1080|
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1079:41[0m:
+┃          1078|   */
+┃          1079|   mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (attrNames attrs);
+┃              |                                         [31;1m^[0m
+┃          1080|
+┃ 
+┃        … while calling [35;1m'mkSection'[0m
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:34:21[0m:
+┃            33|
+┃            34|   mkSection = name: attrs:
+┃              |                     [31;1m^[0m
+┃            35|     if lib.isList attrs then
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:61:11[0m:
+┃            60|         ${renderFields animationAttrs}
+┃            61|         ${renderFields otherAttrs}
+┃              |           [31;1m^[0m
+┃            62|         ${indent}}
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:199:5[0m:
+┃           198|     in
+┃           199|     attrs: concatStrings (concatLists (mapAttrsToList mkLines attrs));
+┃              |     [31;1m^[0m
+┃           200|
+┃ 
+┃        … while calling the '[35;1mconcatStringsSep[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:199:12[0m:
+┃           198|     in
+┃           199|     attrs: concatStrings (concatLists (mapAttrsToList mkLines attrs));
+┃              |            [31;1m^[0m
+┃           200|
+┃ 
+┃        … while calling [35;1m'mkLine'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:192:19[0m:
+┃           191|     let
+┃           192|       mkLine = k: v: indent + mkKeyValue k v + "\n";
+┃              |                   [31;1m^[0m
+┃           193|       mkLines =
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:192:31[0m:
+┃           191|     let
+┃           192|       mkLine = k: v: indent + mkKeyValue k v + "\n";
+┃              |                               [31;1m^[0m
+┃           193|       mkLines =
+┃ 
+┃        … while calling [35;1m'mkKeyValueDefault'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:164:13[0m:
+┃           163|     }:
+┃           164|     sep: k: v:
+┃              |             [31;1m^[0m
+┃           165|     "${escape [ sep ] k}${sep}${mkValueString v}";
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:165:33[0m:
+┃           164|     sep: k: v:
+┃           165|     "${escape [ sep ] k}${sep}${mkValueString v}";
+┃              |                                 [31;1m^[0m
+┃           166|
+┃ 
+┃        … while calling [35;1m'mkValueStringDefault'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:93:5[0m:
+┃            92|     { }:
+┃            93|     v:
+┃              |     [31;1m^[0m
+┃            94|     let
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:118:7[0m:
+┃           117|     else if isAttrs v then
+┃           118|       err "attrsets" v
+┃              |       [31;1m^[0m
+┃           119|     # functions can’t be printed of course
+┃ 
+┃        … while calling [35;1m'err'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:95:16[0m:
+┃            94|     let
+┃            95|       err = t: v: abort ("generators.mkValueStringDefault: " + "${t} not supported: ${toPretty { } v}");
+┃              |                [31;1m^[0m
+┃            96|     in
+┃ 
+┃        … while calling the '[35;1mabort[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:95:19[0m:
+┃            94|     let
+┃            95|       err = t: v: abort ("generators.mkValueStringDefault: " + "${t} not supported: ${toPretty { } v}");
+┃              |                   [31;1m^[0m
+┃            96|     in
+┃ 
+┃        [31;1merror:[0m evaluation aborted with the following error message: '[35;1mgenerators.mkValueStringDefault: attrsets not supported: {
+┃          contrast = 0.7;
+┃          enabled = true;
+┃          ignore_opacity = false;
+┃          new_optimizations = 1;
+┃          passes = 3;
+┃          size = 3;
+┃          special = false;
+┃          xray = true;
+┃        }[0m'[0m
+┣━━━     
+┗━ ∑ [1m⏱ 3s[0m[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K[1F[2K┏━[1;31m 1 Errors: [0m
+┃ [31;1merror:[0m
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1529:14[0m:
+┃          1528|         zipAttrsWith (
+┃          1529|           n: values:
+┃              |              [31;1m^[0m
+┃          1530|           let
+┃ 
+┃        … while calling the '[35;1mhead[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1534:13[0m:
+┃          1533|           if length values == 1 || pred here (elemAt values 1) (head values) then
+┃          1534|             head values
+┃              |             [31;1m^[0m
+┃          1535|           else
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1182:17[0m:
+┃          1181|         mapAttrs (
+┃          1182|           name: value:
+┃              |                 [31;1m^[0m
+┃          1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1183:85[0m:
+┃          1182|           name: value:
+┃          1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+┃              |                                                                                     [31;1m^[0m
+┃          1184|         );
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:273:71[0m:
+┃           272|           # For definitions that have an associated option
+┃           273|           declaredConfig = mapAttrsRecursiveCond (v: !isOption v) (_: v: v.value) options;
+┃              |                                                                       [31;1m^[0m
+┃           274|
+┃ 
+┃        … while evaluating the attribute '[35;1mvalue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:992:7[0m:
+┃           991|     // {
+┃           992|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+┃              |       [31;1m^[0m
+┃           993|       inherit (res.defsFinal') highestPrio;
+┃ 
+┃        … while evaluating the option `system.build.toplevel':
+┃ 
+┃        … while evaluating the attribute '[35;1mmergedValue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1033:5[0m:
+┃          1032|     # Type-check the remaining definitions, and merge them. Or throw if no definitions.
+┃          1033|     mergedValue =
+┃              |     [31;1m^[0m
+┃          1034|       if isDefined then
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1034:7[0m:
+┃          1033|     mergedValue =
+┃          1034|       if isDefined then
+┃              |       [31;1m^[0m
+┃          1035|         if all (def: type.check def.value) defsFinal then
+┃ 
+┃        … while evaluating the attribute '[35;1mvalues[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1027:9[0m:
+┃          1026|       {
+┃          1027|         values = defs''';
+┃              |         [31;1m^[0m
+┃          1028|         inherit (defs'') highestPrio;
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1021:11[0m:
+┃          1020|           # Avoid sorting if we don't have to.
+┃          1021|           if any (def: def.value._type or "" == "order") defs''.values then
+┃              |           [31;1m^[0m
+┃          1022|             sortProperties defs''.values
+┃ 
+┃        … while calling the '[35;1many[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1021:14[0m:
+┃          1020|           # Avoid sorting if we don't have to.
+┃          1021|           if any (def: def.value._type or "" == "order") defs''.values then
+┃              |              [31;1m^[0m
+┃          1022|             sortProperties defs''.values
+┃ 
+┃        … while evaluating the attribute '[35;1mvalues[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1136:7[0m:
+┃          1135|     {
+┃          1136|       values = concatMap (def: if getPrio def == highestPrio then [ (strip def) ] else [ ]) defs;
+┃              |       [31;1m^[0m
+┃          1137|       inherit highestPrio;
+┃ 
+┃        … while calling the '[35;1mconcatMap[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1136:16[0m:
+┃          1135|     {
+┃          1136|       values = concatMap (def: if getPrio def == highestPrio then [ (strip def) ] else [ ]) defs;
+┃              |                [31;1m^[0m
+┃          1137|       inherit highestPrio;
+┃ 
+┃        … while calling the '[35;1mconcatMap[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1007:17[0m:
+┃          1006|         # Process mkMerge and mkIf properties.
+┃          1007|         defs' = concatMap (
+┃              |                 [31;1m^[0m
+┃          1008|           m:
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1008:11[0m:
+┃          1007|         defs' = concatMap (
+┃          1008|           m:
+┃              |           [31;1m^[0m
+┃          1009|           map (value: {
+┃ 
+┃        … while calling the '[35;1mmap[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1009:11[0m:
+┃          1008|           m:
+┃          1009|           map (value: {
+┃              |           [31;1m^[0m
+┃          1010|             inherit (m) file;
+┃ 
+┃        … while evaluating definitions from `/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix':
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1012:81[0m:
+┃          1011|             inherit value;
+┃          1012|           }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+┃              |                                                                                 [31;1m^[0m
+┃          1013|         ) defs;
+┃ 
+┃        … while calling [35;1m'dischargeProperties'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1093:5[0m:
+┃          1092|   dischargeProperties =
+┃          1093|     def:
+┃              |     [31;1m^[0m
+┃          1094|     if def._type or "" == "merge" then
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1094:5[0m:
+┃          1093|     def:
+┃          1094|     if def._type or "" == "merge" then
+┃              |     [31;1m^[0m
+┃          1095|       concatMap dischargeProperties def.contents
+┃ 
+┃        … while evaluating the attribute '[35;1mvalue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:732:23[0m:
+┃           731|               inherit (module) file;
+┃           732|               inherit value;
+┃              |                       [31;1m^[0m
+┃           733|             }
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:84:5[0m:
+┃            83|   baseSystemAssertWarn =
+┃            84|     if failedAssertions != [ ] then
+┃              |     [31;1m^[0m
+┃            85|       throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: "- ${x}") failedAssertions)}"
+┃ 
+┃        … while calling the '[35;1mmap[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:22[0m:
+┃            80|
+┃            81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+┃              |                      [31;1m^[0m
+┃            82|
+┃ 
+┃        … while calling the '[35;1mfilter[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:42[0m:
+┃            80|
+┃            81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+┃              |                                          [31;1m^[0m
+┃            82|
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:50[0m:
+┃            80|
+┃            81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+┃              |                                                  [31;1m^[0m
+┃            82|
+┃ 
+┃        … in the argument of the not operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/system/activation/top-level.nix:81:54[0m:
+┃            80|
+┃            81|   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+┃              |                                                      [31;1m^[0m
+┃            82|
+┃ 
+┃        … while evaluating the attribute '[35;1massertion[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1115:17[0m:
+┃          1114|               (shell: {
+┃          1115|                 assertion =
+┃              |                 [31;1m^[0m
+┃          1116|                   !user.ignoreShellProgramCheck
+┃ 
+┃        … in the right operand of the IMPL (->) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1117:19[0m:
+┃          1116|                   !user.ignoreShellProgramCheck
+┃          1117|                   -> (user.shell == pkgs.${shell})
+┃              |                   [31;1m^[0m
+┃          1118|                   -> (config.programs.${shell}.enable == true);
+┃ 
+┃        … in the left operand of the IMPL (->) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1118:19[0m:
+┃          1117|                   -> (user.shell == pkgs.${shell})
+┃          1118|                   -> (config.programs.${shell}.enable == true);
+┃              |                   [31;1m^[0m
+┃          1119|                 message = ''
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/nixos/modules/config/users-groups.nix:1117:23[0m:
+┃          1116|                   !user.ignoreShellProgramCheck
+┃          1117|                   -> (user.shell == pkgs.${shell})
+┃              |                       [31;1m^[0m
+┃          1118|                   -> (config.programs.${shell}.enable == true);
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1182:17[0m:
+┃          1181|         mapAttrs (
+┃          1182|           name: value:
+┃              |                 [31;1m^[0m
+┃          1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1183:85[0m:
+┃          1182|           name: value:
+┃          1183|           if isAttrs value && cond value then recurse (path ++ [ name ]) value else f (path ++ [ name ]) value
+┃              |                                                                                     [31;1m^[0m
+┃          1184|         );
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:273:71[0m:
+┃           272|           # For definitions that have an associated option
+┃           273|           declaredConfig = mapAttrsRecursiveCond (v: !isOption v) (_: v: v.value) options;
+┃              |                                                                       [31;1m^[0m
+┃           274|
+┃ 
+┃        … while evaluating the attribute '[35;1mvalue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:992:7[0m:
+┃           991|     // {
+┃           992|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+┃              |       [31;1m^[0m
+┃           993|       inherit (res.defsFinal') highestPrio;
+┃ 
+┃        … while evaluating the option `users.users.demiurge.shell':
+┃ 
+┃        [35;1m(10 duplicate frames omitted)[0m
+┃ 
+┃        … while evaluating definitions from `/nix/store/lfr1lsa10dd4ya02pw9r5g6ljx2y4gyi-users/demiurge':
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1012:81[0m:
+┃          1011|             inherit value;
+┃          1012|           }) (addErrorContext "while evaluating definitions from `${m.file}':" (dischargeProperties m.value))
+┃              |                                                                                 [31;1m^[0m
+┃          1013|         ) defs;
+┃ 
+┃        … while calling [35;1m'dischargeProperties'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1093:5[0m:
+┃          1092|   dischargeProperties =
+┃          1093|     def:
+┃              |     [31;1m^[0m
+┃          1094|     if def._type or "" == "merge" then
+┃ 
+┃        … while evaluating a branch condition
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:1094:5[0m:
+┃          1093|     def:
+┃          1094|     if def._type or "" == "merge" then
+┃              |     [31;1m^[0m
+┃          1095|       concatMap dischargeProperties def.contents
+┃ 
+┃        … while evaluating the attribute '[35;1mvalue[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/modules.nix:732:23[0m:
+┃           731|               inherit (module) file;
+┃           732|               inherit value;
+┃              |                       [31;1m^[0m
+┃           733|             }
+┃ 
+┃        … while calling the '[35;1mgetAttr[0m' builtin
+┃          [34;1mat [35;1m<nix/derivation-internal.nix>:50:17[0m:
+┃            49|     value = commonAttrs // {
+┃            50|       outPath = builtins.getAttr outputName strict;
+┃              |                 [31;1m^[0m
+┃            51|       drvPath = strict.drvPath;
+┃ 
+┃        … while calling the '[35;1mderivationStrict[0m' builtin
+┃          [34;1mat [35;1m<nix/derivation-internal.nix>:37:12[0m:
+┃            36|
+┃            37|   strict = derivationStrict drvAttrs;
+┃              |            [31;1m^[0m
+┃            38|
+┃ 
+┃        … while evaluating derivation '[35;1m-nix-store-mc4485g4apaqzjx59dsmqscls1zc3p2w-bash-5.2p37-wrapped[0m'
+┃          whose name attribute is located at [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/stdenv/generic/make-derivation.nix:396:13[0m
+┃ 
+┃        … while evaluating attribute '[35;1mbuildCommand[0m' of derivation '[35;1m-nix-store-mc4485g4apaqzjx59dsmqscls1zc3p2w-bash-5.2p37-wrapped[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:76:17[0m:
+┃            75|         enableParallelBuilding = true;
+┃            76|         inherit buildCommand name;
+┃              |                 [31;1m^[0m
+┃            77|         passAsFile = [ "buildCommand" ] ++ (derivationArgs.passAsFile or [ ]);
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/bash/default.nix:43:5[0m:
+┃            42|   configuration =
+┃            43|     pkgs.writeText "bash.bashrc"
+┃              |     [31;1m^[0m
+┃            44|     # bash
+┃ 
+┃        … while calling [35;1m'writeText'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:166:11[0m:
+┃           165|   writeText =
+┃           166|     name: text:
+┃              |           [31;1m^[0m
+┃           167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+┃ 
+┃        … in the condition of the assert statement
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:168:5[0m:
+┃           167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+┃           168|     assert lib.assertMsg (lib.strings.isConvertibleWithToString text)
+┃              |     [31;1m^[0m
+┃           169|       ''pkgs.writeText ${lib.strings.escapeNixString name}: The second argument should be a string, but it's a ${builtins.typeOf text} instead.'';
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:168:12[0m:
+┃           167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+┃           168|     assert lib.assertMsg (lib.strings.isConvertibleWithToString text)
+┃              |            [31;1m^[0m
+┃           169|       ''pkgs.writeText ${lib.strings.escapeNixString name}: The second argument should be a string, but it's a ${builtins.typeOf text} instead.'';
+┃ 
+┃        … while calling [35;1m'assertMsg'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/asserts.nix:39:21[0m:
+┃            38|   # TODO(Profpatsch): add tests that check stderr
+┃            39|   assertMsg = pred: msg: pred || builtins.throw msg;
+┃              |                     [31;1m^[0m
+┃            40|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/asserts.nix:39:31[0m:
+┃            38|   # TODO(Profpatsch): add tests that check stderr
+┃            39|   assertMsg = pred: msg: pred || builtins.throw msg;
+┃              |                               [31;1m^[0m
+┃            40|
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:168:27[0m:
+┃           167|     # TODO: To fully deprecate, replace the assertion with `lib.isString` and remove the warning
+┃           168|     assert lib.assertMsg (lib.strings.isConvertibleWithToString text)
+┃              |                           [31;1m^[0m
+┃           169|       ''pkgs.writeText ${lib.strings.escapeNixString name}: The second argument should be a string, but it's a ${builtins.typeOf text} instead.'';
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:5[0m:
+┃          2338|     in
+┃          2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+┃              |     [31;1m^[0m
+┃          2340|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:48[0m:
+┃          2338|     in
+┃          2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+┃              |                                                [31;1m^[0m
+┃          2340|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:23[0m:
+┃          2338|     in
+┃          2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+┃              |                       [31;1m^[0m
+┃          2340|
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2339:8[0m:
+┃          2338|     in
+┃          2339|     x: isStringLike x || elem (typeOf x) types || (isList x && lib.all isConvertibleWithToString x);
+┃              |        [31;1m^[0m
+┃          2340|
+┃ 
+┃        … while calling [35;1m'isStringLike'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:18[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                  [31;1m^[0m
+┃          2360|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:59[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                                                           [31;1m^[0m
+┃          2360|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:44[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                                            [31;1m^[0m
+┃          2360|
+┃ 
+┃        … in the left operand of the OR (||) operator
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:32[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                                [31;1m^[0m
+┃          2360|
+┃ 
+┃        … while calling the '[35;1misString[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/strings.nix:2359:21[0m:
+┃          2358|   */
+┃          2359|   isStringLike = x: isString x || isPath x || x ? outPath || x ? __toString;
+┃              |                     [31;1m^[0m
+┃          2360|
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/bash/default.nix:57:17[0m:
+┃            56|             XCURSOR_THEME
+┃            57|          exec ${lib.getExe pkgs.configured.hyprland}
+┃              |                 [31;1m^[0m
+┃            58|        fi
+┃ 
+┃        … while calling [35;1m'getExe'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/meta.nix:433:5[0m:
+┃           432|   getExe =
+┃           433|     x:
+┃              |     [31;1m^[0m
+┃           434|     getExe' x (
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/meta.nix:434:5[0m:
+┃           433|     x:
+┃           434|     getExe' x (
+┃              |     [31;1m^[0m
+┃           435|       x.meta.mainProgram or (
+┃ 
+┃        … while calling [35;1m'getExe''[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/meta.nix:479:8[0m:
+┃           478|   getExe' =
+┃           479|     x: y:
+┃              |        [31;1m^[0m
+┃           480|     assert assertMsg (isDerivation x)
+┃ 
+┃        … while calling the '[35;1mgetAttr[0m' builtin
+┃          [34;1mat [35;1m<nix/derivation-internal.nix>:50:17[0m:
+┃            49|     value = commonAttrs // {
+┃            50|       outPath = builtins.getAttr outputName strict;
+┃              |                 [31;1m^[0m
+┃            51|       drvPath = strict.drvPath;
+┃ 
+┃        … while calling the '[35;1mderivationStrict[0m' builtin
+┃          [34;1mat [35;1m<nix/derivation-internal.nix>:37:12[0m:
+┃            36|
+┃            37|   strict = derivationStrict drvAttrs;
+┃              |            [31;1m^[0m
+┃            38|
+┃ 
+┃        … while evaluating derivation '[35;1m-nix-store-dpzwm4md2vlgdr0iicixjv75755qsjmw-hyprland-0.45.2-wrapped[0m'
+┃          whose name attribute is located at [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/stdenv/generic/make-derivation.nix:396:13[0m
+┃ 
+┃        … while evaluating attribute '[35;1mbuildCommand[0m' of derivation '[35;1m-nix-store-dpzwm4md2vlgdr0iicixjv75755qsjmw-hyprland-0.45.2-wrapped[0m'
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/pkgs/build-support/trivial-builders/default.nix:76:17[0m:
+┃            75|         enableParallelBuilding = true;
+┃            76|         inherit buildCommand name;
+┃              |                 [31;1m^[0m
+┃            77|         passAsFile = [ "buildCommand" ] ++ (derivationArgs.passAsFile or [ ]);
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:95:12[0m:
+┃            94|              |> pkgs.writeText "hyprland.conf";
+┃            95|   config = mkConfig (import ./config {inherit pkgs lib;});
+┃              |            [31;1m^[0m
+┃            96| in
+┃ 
+┃        … while calling [35;1m'mkConfig'[0m
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:92:14[0m:
+┃            91|
+┃            92|   mkConfig = conf: toHyprconf initialIndent conf
+┃              |              [31;1m^[0m
+┃            93|              |> toString
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:94:17[0m:
+┃            93|              |> toString
+┃            94|              |> pkgs.writeText "hyprland.conf";
+┃              |                 [31;1m^[0m
+┃            95|   config = mkConfig (import ./config {inherit pkgs lib;});
+┃ 
+┃        [35;1m(15 duplicate frames omitted)[0m
+┃ 
+┃        … while calling the '[35;1mtoString[0m' builtin
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:93:14[0m:
+┃            92|   mkConfig = conf: toHyprconf initialIndent conf
+┃            93|              |> toString
+┃              |              [31;1m^[0m
+┃            94|              |> pkgs.writeText "hyprland.conf";
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:92:20[0m:
+┃            91|
+┃            92|   mkConfig = conf: toHyprconf initialIndent conf
+┃              |                    [31;1m^[0m
+┃            93|              |> toString
+┃ 
+┃        … while calling [35;1m'toHyprconf'[0m
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:30:24[0m:
+┃            29|
+┃            30|   toHyprconf = indent: attrs: let
+┃              |                        [31;1m^[0m
+┃            31|     sections =
+┃ 
+┃        … while calling the '[35;1mconcatStringsSep[0m' builtin
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:89:9[0m:
+┃            88|       mkFields importantFields
+┃            89|       + concatStringsSep "\n" (mapAttrsToList mkSection sections)
+┃              |         [31;1m^[0m
+┃            90|       + mkFields fields;
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1079:35[0m:
+┃          1078|   */
+┃          1079|   mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (attrNames attrs);
+┃              |                                   [31;1m^[0m
+┃          1080|
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/attrsets.nix:1079:41[0m:
+┃          1078|   */
+┃          1079|   mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (attrNames attrs);
+┃              |                                         [31;1m^[0m
+┃          1080|
+┃ 
+┃        … while calling [35;1m'mkSection'[0m
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:34:21[0m:
+┃            33|
+┃            34|   mkSection = name: attrs:
+┃              |                     [31;1m^[0m
+┃            35|     if lib.isList attrs then
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/amaahz697lgrw4c3sriq70awj2kha90k-config/wrapped/hyprland/default.nix:61:11[0m:
+┃            60|         ${renderFields animationAttrs}
+┃            61|         ${renderFields otherAttrs}
+┃              |           [31;1m^[0m
+┃            62|         ${indent}}
+┃ 
+┃        … while calling [35;1manonymous lambda[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:199:5[0m:
+┃           198|     in
+┃           199|     attrs: concatStrings (concatLists (mapAttrsToList mkLines attrs));
+┃              |     [31;1m^[0m
+┃           200|
+┃ 
+┃        … while calling the '[35;1mconcatStringsSep[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:199:12[0m:
+┃           198|     in
+┃           199|     attrs: concatStrings (concatLists (mapAttrsToList mkLines attrs));
+┃              |            [31;1m^[0m
+┃           200|
+┃ 
+┃        … while calling [35;1m'mkLine'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:192:19[0m:
+┃           191|     let
+┃           192|       mkLine = k: v: indent + mkKeyValue k v + "\n";
+┃              |                   [31;1m^[0m
+┃           193|       mkLines =
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:192:31[0m:
+┃           191|     let
+┃           192|       mkLine = k: v: indent + mkKeyValue k v + "\n";
+┃              |                               [31;1m^[0m
+┃           193|       mkLines =
+┃ 
+┃        … while calling [35;1m'mkKeyValueDefault'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:164:13[0m:
+┃           163|     }:
+┃           164|     sep: k: v:
+┃              |             [31;1m^[0m
+┃           165|     "${escape [ sep ] k}${sep}${mkValueString v}";
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:165:33[0m:
+┃           164|     sep: k: v:
+┃           165|     "${escape [ sep ] k}${sep}${mkValueString v}";
+┃              |                                 [31;1m^[0m
+┃           166|
+┃ 
+┃        … while calling [35;1m'mkValueStringDefault'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:93:5[0m:
+┃            92|     { }:
+┃            93|     v:
+┃              |     [31;1m^[0m
+┃            94|     let
+┃ 
+┃        … from call site
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:118:7[0m:
+┃           117|     else if isAttrs v then
+┃           118|       err "attrsets" v
+┃              |       [31;1m^[0m
+┃           119|     # functions can’t be printed of course
+┃ 
+┃        … while calling [35;1m'err'[0m
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:95:16[0m:
+┃            94|     let
+┃            95|       err = t: v: abort ("generators.mkValueStringDefault: " + "${t} not supported: ${toPretty { } v}");
+┃              |                [31;1m^[0m
+┃            96|     in
+┃ 
+┃        … while calling the '[35;1mabort[0m' builtin
+┃          [34;1mat [35;1m/nix/store/wxb0mwz1mgrg49d47rwnbdfldsgl2k83-source/lib/generators.nix:95:19[0m:
+┃            94|     let
+┃            95|       err = t: v: abort ("generators.mkValueStringDefault: " + "${t} not supported: ${toPretty { } v}");
+┃              |                   [31;1m^[0m
+┃            96|     in
+┃ 
+┃        [31;1merror:[0m evaluation aborted with the following error message: '[35;1mgenerators.mkValueStringDefault: attrsets not supported: {
+┃          contrast = 0.7;
+┃          enabled = true;
+┃          ignore_opacity = false;
+┃          new_optimizations = 1;
+┃          passes = 3;
+┃          size = 3;
+┃          special = false;
+┃          xray = true;
+┃        }[0m'[0m
+┣━━━                                                            
+┗━ ∑ [1m[31m⚠ Exited with 1 errors reported by nix at 18:58:39 after 3s[0m[0m[?25h
+Error: 
+   0: [91mCommand exited with status Exited(1)[0m
+
+Location:
+   [35msrc/commands.rs[0m:[35m151[0m

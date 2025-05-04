@@ -43,6 +43,7 @@ in {
           "/var/lib/private/miniflux"
           "/var/lib/postgresql"
         ]
+        ++ addIf config.laplace.services.ollama.enable ["/var/lib/private/ollama"]
         ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
         ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"];
     };

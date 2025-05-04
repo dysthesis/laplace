@@ -12,6 +12,7 @@
     guiPackage = package: package.config.env;
   in {
     configured = {
+      btop = callPackage ./btop {inherit pkgs lib;};
       river = callPackage ./river {inherit pkgs lib;};
       waybar = callPackage ./waybar {inherit config pkgs lib;};
       hyprland = callPackage ./hyprland {inherit pkgs lib;};

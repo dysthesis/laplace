@@ -36,7 +36,7 @@
     rec {
       name = "ghostty.btop";
       prefix = "b";
-      cmd = "ghostty --class=${name} -e btop";
+      cmd = "ghostty --class=${name} -e ${getExe pkgs.configured.btop}";
     }
   ];
 

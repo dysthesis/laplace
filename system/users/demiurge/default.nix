@@ -54,7 +54,6 @@ in {
           unstable.zotero
           swaylock
           signal-desktop
-          btop
           git
           direnv
           brightnessctl
@@ -92,6 +91,7 @@ in {
           '')
         ]
         ++ (with pkgs.configured; [
+          btop
           hyprland
           newsraft
           bemenu
