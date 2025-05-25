@@ -57,6 +57,7 @@ in {
           git
           direnv
           brightnessctl
+          prismlauncher
           wl-clipboard
           gnupg
           atuin

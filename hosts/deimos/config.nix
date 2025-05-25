@@ -37,7 +37,7 @@ _: {
       network = {
         bluetooth.enable = true;
         wifi.enable = true;
-        dnscrypt-proxy.enable = true;
+        vpn.enable = true;
       };
 
       security = {
@@ -64,7 +64,6 @@ _: {
         flakePath = "/home/demiurge/Documents/Projects/laplace";
       };
       services = {
-        ollama.enable = true;
         miniflux.enable = true;
       };
     };
@@ -72,5 +71,16 @@ _: {
     mnemosyne.enable = true;
     time.timeZone = "Australia/Sydney";
     i18n.defaultLocale = "en_AU.UTF-8";
+
+    networking.nameservers = [
+      "9.9.9.9"
+      "9.0.0.9"
+    ];
+    services.resolved = {
+      enable = true;
+      dnssec = "true";
+      fallbackDns = ["9.9.9.9" "9.0.0.9"];
+      dnsovertls = "true";
+    };
   };
 }
