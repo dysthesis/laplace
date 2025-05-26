@@ -25,7 +25,7 @@ in {
       };
     };
     nixpkgs.config = {
-      allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) ["obsidian"];
+      allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) ["obsidian" "steam" "steam-unwrapped"];
       allowBroken = true;
       rocmSupport = true;
     };
