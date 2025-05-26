@@ -23,24 +23,47 @@ in {
         };
         wantedBy = ["mult-user.target"];
       };
-      user.services.syncthing = {
-        enable = true;
-        description = "Syncthing";
-        unitConfig.partOf = ["default.target"];
+      user.services =
+        {
+          syncthing = {
+            enable = true;
+            description = "Syncthing";
+            unitConfig.partOf = ["default.target"];
 
-        script =
-          /*
-          bash
-          */
-          ''
-            ${lib.getExe pkgs.syncthing} \
-              -no-browser \
-              -no-restart \
-              -logflags=0
-          '';
+            script =
+              /*
+              bash
+              */
+              ''
+                ${lib.getExe pkgs.syncthing} \
+                  -no-browser \
+                  -no-restart \
+                  -logflags=0
+              '';
 
-        wantedBy = ["default.target"];
-      };
+            wantedBy = ["default.target"];
+          };
+        }
+        // mkIf (elem "wayland" config.laplace.display.servers) {
+          swaybg = {
+            description = "Wayland Background Manager";
+            bindsTo = ["graphical-session.target"];
+            after = ["graphical-session.target"];
+            partOf = ["graphical-session.target"];
+            requisite = ["graphical-session.target"];
+            wantedBy = ["graphical-session.target"];
+
+            startLimitIntervalSec = 10;
+            startLimitBurst = 5;
+            script =
+              #sh
+              ''
+                #!/bin/sh
+                exec ${lib.getExe pkgs.swaybg} -i ${./wallpaper.png}
+              '';
+            serviceConfig.Restart = "on-failure";
+          };
+        };
     };
     fonts.packages = with pkgs;
     with inputs.babel.packages.${system}; [

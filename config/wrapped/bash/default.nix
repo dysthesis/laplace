@@ -2,49 +2,25 @@
   inputs,
   lib,
   pkgs,
-  config,
   ...
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
-  inherit
-    (lib)
-    fold
-    ;
-  cacheDir = "/home/demiurge/.cache/dwl_info";
-  configH = inputs.gungnir.packages.${pkgs.system}.dwl-config.override {
-    inherit autostart;
-  };
   dwl = inputs.gungnir.packages.${pkgs.system}.dwl.override {
     enableXWayland = false;
-    inherit configH;
   };
-  wlr-randr = lib.getExe pkgs.wlr-randr;
-  wlr-randr-args =
-    fold (
-      curr: acc: "${acc} --output ${curr.name} --pos ${toString curr.pos.x},${toString curr.pos.y} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz"
-    ) ""
-    config.laplace.hardware.monitors;
-
-  autostart =
-    # c
-    ''
-      "sh", "-c", "exec ${lib.getExe pkgs.swayidle} -w timeout 300 'swaylock -f'", NULL,
-      "sh", "-c", "${wlr-randr} ${wlr-randr-args}", NULL,
-      "sh", "-c", "${lib.getExe pkgs.swaybg} -m fill -i ${./wallpaper.png} 2>/dev/null &", NULL,
-      "sh", "-c", "${lib.getExe pkgs.polkit_gnome} &", NULL,
-      "sh", "-c", "systemctl --user start wlsunset", NULL,
-      "${yambar}/bin/yambar", "&", NULL,
-      "${pkgs.configured.dunst}/bin/dunst", "&", NULL,
-    '';
-
-  yambar = pkgs.configured.yambar.override {inherit cacheDir;};
+  # wlr-randr = lib.getExe pkgs.wlr-randr;
+  # wlr-randr-args =
+  #   fold (
+  #     curr: acc: "${acc} --output ${curr.name} --pos ${toString curr.pos.x},${toString curr.pos.y} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz"
+  #   ) ""
+  #   config.laplace.hardware.monitors;
 
   configuration =
     pkgs.writeText "bash.bashrc"
     # bash
     ''
       if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-         # dbus-update-activation-environment --systemd --all
+         dbus-update-activation-environment --systemd --all
          systemctl import-environment --user \
             DISPLAY \
             WAYLAND_DISPLAY \
@@ -54,7 +30,7 @@
             PATH \
             XCURSOR_SZE \
             XCURSOR_THEME
-         exec ${lib.getExe pkgs.configured.hyprland}
+         exec ${lib.getExe dwl}
        fi
        if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]; then
          shopt -q login_shell && LOGIN_OPTION="--login" || LOGIN_OPTION=""
