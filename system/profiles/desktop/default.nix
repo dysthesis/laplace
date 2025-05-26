@@ -53,9 +53,7 @@ in {
       jbcustom-nf
       sf-pro
       georgia-fonts
-      (nerdfonts.override {
-        fonts = ["JetBrainsMono"];
-      })
+      nerd-fonts.jetbrains-mono
     ];
     services = {
       logind = {

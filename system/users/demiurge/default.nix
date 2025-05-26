@@ -106,7 +106,7 @@ in {
           zen
           vesktop
           taskwarrior
-          taskwarrior-tui
+          # taskwarrior-tui
           weechat
           mpv
           timewarrior
