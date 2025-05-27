@@ -47,7 +47,7 @@
         end
       end
     '';
-   plugins = with fishPlugins; [
+  plugins = with fishPlugins; [
     fzf-fish
     autopair
   ];
@@ -72,6 +72,7 @@
       sudo = "doas";
       cat = "${getExe bat}";
       temp = "cd $(mktemp -d)";
+      t = "${getExe pkgs.configured.todo-txt-cli}";
     }
     // ezaAliases;
 
@@ -151,9 +152,9 @@ in
   ''
     wrapProgram $out/bin/fish \
       --prefix XDG_DATA_DIRS : "${
-        lib.makeSearchPathOutput "out" "share" [
-          loadPlugin
-          config
-        ]
-      }"
+      lib.makeSearchPathOutput "out" "share" [
+        loadPlugin
+        config
+      ]
+    }"
   ''
