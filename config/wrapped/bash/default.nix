@@ -42,17 +42,17 @@
     # load colors
     cpu() {
       cpu_val=$(grep -o "^[^ ]*" /proc/loadavg)
-      colour "   " "cba6f7"
+      colour "   " "708090"
       printf "$cpu_val"
     }
 
     mem() {
-      colour "   " "89b4fa"
+      colour "   " "789978"
       printf " $(free -h | awk '/^Mem/ { print $3 }' | sed s/i//g)"
     }
 
     clock() {
-      printf "  ^fg(b4befe)󱑆 ^fg()"
+      colour "  󱑆 " "7788AA"
       printf "$(date "+%Y-%m-%d %H:%M")"
     }
 
@@ -63,7 +63,7 @@
     }
 
     volume() {
-      printf "  ^fg(eba0ac)  ^fg()"
+      colour "    " "FFAA88"
       echo "$(echo "scale=2; $(${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}') * 100" | ${lib.getExe pkgs.bc} | cut -d '.' -f 1) %"
     }
 
@@ -72,7 +72,7 @@
       echo "$(echo "scale=2; $(cat /sys/class/backlight/*/brightness) / 255 * 100" | bc | cut -d '.' -f 1) %"
     }
 
-    DELIMITER="  ^fg(313244)|^fg()"
+    DELIMITER=$(colour "  |" "2A2A2A")
     while true; do
       [ $interval = 0 ] || [ $(($interval % 3600)) = 0 ]
       interval=$((interval + 1))
