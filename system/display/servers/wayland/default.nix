@@ -73,7 +73,7 @@ in {
             wlr-randr = lib.getExe pkgs.wlr-randr;
             wlr-randr-args =
               fold (
-                curr: acc: "${acc} --output ${curr.name} --pos ${toString curr.pos.x},${toString curr.pos.y} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz"
+                curr: acc: "${acc} --output ${curr.name} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz"
               ) ""
               config.laplace.hardware.monitors;
           in
@@ -83,33 +83,13 @@ in {
               exec ${wlr-randr} ${wlr-randr-args}
             '';
         };
-        dwl = {
-          description = "dwl - Wayland window manager";
-          bindsTo = ["graphical-session.target"];
-          wants = ["graphical-session-pre.target"];
-          after = ["graphical-session-pre.target"];
-          # We explicitly unset PATH here, as we want it to be set by
-          # systemctl --user import-environment in startsway
-          environment.PATH = lib.mkForce null;
-          serviceConfig = let
-            dwl = inputs.gungnir.packages.${pkgs.system}.dwl.override {
-              enableXWayland = false;
-            };
-          in {
-            Type = "simple";
-            ExecStart = "${lib.getExe dwl}";
-            Restart = "on-failure";
-            RestartSec = 1;
-            TimeoutStopSec = 10;
-          };
-        };
       };
-      targets."dwl-session" = {
+
+      targets.dwl-session = {
         description = "dwl compositor session";
         documentation = ["man:systemd.special(7)"];
         bindsTo = ["graphical-session.target"];
-        wants = ["graphical-session-pre.target"];
-        after = ["graphical-session-pre.target"];
+        after = ["graphical-session.target"];
       };
     };
   };
