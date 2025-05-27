@@ -7,7 +7,23 @@
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (lib.cli) toGNUCommandLineShell;
-  inherit (lib) fold;
+  inherit
+    (lib)
+    fold
+    map
+    concatStringsSep
+    optionalString
+    ;
+  isLaptop = config.networking.hostName == "phobos";
+  laptopModules = [
+    "brightness"
+    "battery"
+  ];
+  mkLaptopModules = modules:
+    modules
+    |> map (x: "$(${x})$DELIMITER")
+    |> concatStringsSep "";
+
   # fml steam needs xorg
   dwl = inputs.gungnir.packages.${pkgs.system}.dwl.override {
     enableXWayland = true;
@@ -17,16 +33,21 @@
   dwl-bar = pkgs.writeShellScriptBin "dwl-bar" ''
     interval=0
 
+    colour() {
+      text="$1"
+      col="$2"
+      printf "^fg($col)$text^fg()"
+    }
+
     # load colors
     cpu() {
       cpu_val=$(grep -o "^[^ ]*" /proc/loadavg)
-
-      printf "  ^fg(cba6f7) ^fg()"
+      colour "   " "cba6f7"
       printf "$cpu_val"
     }
 
     mem() {
-      printf "  ^fg(89b4fa) ^fg()"
+      colour "   " "89b4fa"
       printf " $(free -h | awk '/^Mem/ { print $3 }' | sed s/i//g)"
     }
 
@@ -43,7 +64,7 @@
 
     volume() {
       printf "  ^fg(eba0ac)  ^fg()"
-      echo "$(echo "scale=2; $(${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}') * 100" | bc  | cut -d '.' -f 1) %"
+      echo "$(echo "scale=2; $(${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}') * 100" | ${lib.getExe pkgs.bc} | cut -d '.' -f 1) %"
     }
 
     brightness() {
@@ -56,7 +77,7 @@
       [ $interval = 0 ] || [ $(($interval % 3600)) = 0 ]
       interval=$((interval + 1))
 
-      sleep 1 && echo "$(volume)$DELIMITER$(brightness)$DELIMITER$(battery)$DELIMITER$(cpu)$DELIMITER$(mem)$DELIMITER$(clock)"
+      sleep 1 && echo "${lib.optionalString isLaptop (mkLaptopModules laptopModules)}$(volume)$DELIMITER$(cpu)$DELIMITER$(mem)$DELIMITER$(clock)"
     done
   '';
   startup = let
