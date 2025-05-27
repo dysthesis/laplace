@@ -4,7 +4,6 @@ todo-txt-cli.overrideAttrs (old: {
     /*
     sh
     */
-    builtins.trace "${./todo.cfg}"
     ''
       ${old.installPhase or ""}
       cp ${./todo.cfg} $out/bin/todo.cfg

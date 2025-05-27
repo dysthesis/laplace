@@ -1,13 +1,18 @@
 {
+  config,
   inputs,
   lib,
   pkgs,
   ...
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.cli) toGNUCommandLineShell;
+  inherit (lib) fold;
   dwl = inputs.gungnir.packages.${pkgs.system}.dwl.override {
     enableXWayland = false;
   };
+
+  # TODO: Fix bar script for deimos
   dwl-bar = pkgs.writeShellScriptBin "dwl-bar" ''
     interval=0
 
@@ -53,17 +58,45 @@
       sleep 1 && echo "$(volume)$DELIMITER$(brightness)$DELIMITER$(battery)$DELIMITER$(cpu)$DELIMITER$(mem)$DELIMITER$(clock)"
     done
   '';
-  startup = pkgs.writeShellScriptBin "startup" ''
-    if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
-      eval $(dbus-launch --exit-with-session --sh-syntax)
-    fi
-    ## https://bbs.archlinux.org/viewtopic.php?id=224652
-    # Need QT theme for syncthing tray
-    systemctl import-environment --user DISPLAY WAYLAND_DISPLAY XDG_SESSION_TYPE DBUS_SESSION_BUS_ADDRESS \
-      QT_QPA_PLATFORMTHEME PATH XCURSOR_SIZE XCURSOR_THEME
+  startup = let
+    wlsunset = let
+      args = toGNUCommandLineShell {} {
+        t = "3700";
+        T = "6200";
+        g = "1.0";
+        l = config.location.latitude;
+        L = config.location.longitude;
+      };
+    in "${pkgs.wlsunset}/bin/wlsunset ${args} &";
+    swaybg = ''
+      ${lib.getExe pkgs.swaybg} -i ${./wallpaper.png} &
+    '';
+    wlr-randr = let
+      wlr-randr = lib.getExe pkgs.wlr-randr;
+      wlr-randr-args =
+        fold (
+          curr: acc: "${acc} --output ${curr.name} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz"
+        ) ""
+        config.laplace.hardware.monitors;
+    in ''
+      ${wlr-randr} ${wlr-randr-args}
+    '';
+  in
+    pkgs.writeShellScriptBin "startup" ''
+      if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+        eval $(dbus-launch --exit-with-session --sh-syntax)
+      fi
+      ## https://bbs.archlinux.org/viewtopic.php?id=224652
+      # Need QT theme for syncthing tray
+      systemctl import-environment --user DISPLAY WAYLAND_DISPLAY XDG_SESSION_TYPE DBUS_SESSION_BUS_ADDRESS \
+        QT_QPA_PLATFORMTHEME PATH XCURSOR_SIZE XCURSOR_THEME
 
-    systemctl --user start dwl-session.target
-  '';
+      ${wlsunset}
+      ${swaybg}
+      ${wlr-randr}
+
+      systemctl --user start dwl-session.target
+    '';
   configuration =
     pkgs.writeText "bash.bashrc"
     # sh

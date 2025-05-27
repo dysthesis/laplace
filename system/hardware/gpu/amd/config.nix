@@ -3,38 +3,34 @@
   lib,
   pkgs,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkIf
     ;
   inherit (builtins) elem;
   cfg = config.laplace.hardware.gpu;
-in
-{
+in {
   config = mkIf (elem "amd" cfg) {
-    services.xserver.videoDrivers = [ "amdgpu" ];
+    services.xserver.videoDrivers = ["amdgpu"];
 
     boot = {
-      initrd.kernelModules = [ "amdgpu" ];
-      kernelModules = [ "amdgpu" ];
+      initrd.kernelModules = ["amdgpu"];
+      kernelModules = ["amdgpu"];
     };
 
+    # NOTE: Get rid of amdvlk
+    # See: https://github.com/mpv-player/mpv/issues/14934#issuecomment-2799897534
     hardware.graphics = {
       enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
-        amdvlk
         mesa
         vulkan-tools
         vulkan-loader
         vulkan-validation-layers
         vulkan-extension-layer
         rocmPackages.clr
-      ];
-
-      extraPackages32 = with pkgs; [
-        driversi686Linux.amdvlk
       ];
     };
   };
