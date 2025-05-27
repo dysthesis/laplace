@@ -8,8 +8,9 @@
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (lib.cli) toGNUCommandLineShell;
   inherit (lib) fold;
+  # fml steam needs xorg
   dwl = inputs.gungnir.packages.${pkgs.system}.dwl.override {
-    enableXWayland = false;
+    enableXWayland = true;
   };
 
   # TODO: Fix bar script for deimos
