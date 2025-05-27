@@ -34,7 +34,7 @@ in
     font-size = ${toString fontSize}
     window-padding-x = ${toString padding}
     window-padding-y = ${toString padding}
-    background-opacity = 0.75
+    background-opacity = 1
     window-decoration = false
     confirm-close-surface = false
     command = fish
