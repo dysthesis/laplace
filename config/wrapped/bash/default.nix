@@ -8,13 +8,6 @@
   dwl = inputs.gungnir.packages.${pkgs.system}.dwl.override {
     enableXWayland = false;
   };
-  # wlr-randr = lib.getExe pkgs.wlr-randr;
-  # wlr-randr-args =
-  #   fold (
-  #     curr: acc: "${acc} --output ${curr.name} --pos ${toString curr.pos.x},${toString curr.pos.y} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz"
-  #   ) ""
-  #   config.laplace.hardware.monitors;
-
   configuration =
     pkgs.writeText "bash.bashrc"
     # bash
@@ -30,7 +23,9 @@
             PATH \
             XCURSOR_SZE \
             XCURSOR_THEME
-         exec ${lib.getExe dwl}
+       systemctl --user start dwl-session.target
+       exec ${lib.getExe dwl} &
+
        fi
        if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]; then
          shopt -q login_shell && LOGIN_OPTION="--login" || LOGIN_OPTION=""
