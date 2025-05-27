@@ -73,6 +73,7 @@
       cat = "${getExe bat}";
       temp = "cd $(mktemp -d)";
       t = "${getExe pkgs.configured.todo-txt-cli}";
+      subs = "${pkgs.configured.ytfzf}/bin/ytfzf -cS --sort";
     }
     // ezaAliases;
 
