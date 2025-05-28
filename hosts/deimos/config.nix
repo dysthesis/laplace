@@ -63,9 +63,6 @@ _: {
         enable = true;
         flakePath = "/home/demiurge/Documents/Projects/laplace";
       };
-      services = {
-        miniflux.enable = true;
-      };
     };
 
     mnemosyne.enable = true;
