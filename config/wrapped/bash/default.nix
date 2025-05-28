@@ -111,6 +111,7 @@
     swaybg = ''
       ${lib.getExe pkgs.swaybg} -i ${./wallpaper.png} &
     '';
+    dunst = "${pkgs.configured.dunst}/bin/dunst &";
     wlr-randr = let
       wlr-randr = lib.getExe pkgs.wlr-randr;
       wlr-randr-args =
@@ -133,6 +134,7 @@
 
       ${wlsunset}
       ${swaybg}
+      ${dunst}
       ${wlr-randr}
 
       systemctl --user start dwl-session.target

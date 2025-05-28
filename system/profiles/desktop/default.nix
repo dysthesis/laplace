@@ -42,16 +42,6 @@ in {
 
           wantedBy = ["default.target"];
         };
-        dunst = {
-          enable = true;
-          description = "Dunst - Notification manager";
-          bindsTo = ["graphical-session.target"];
-          after = ["graphical-session.target"];
-          partOf = ["graphical-session.target"];
-          requisite = ["graphical-session.target"];
-          wantedBy = ["graphical-session.target"];
-          serviceConfig.ExecStart = "${pkgs.configured.dunst}/bin/dunst";
-        };
       };
     };
     fonts.packages = with pkgs;
