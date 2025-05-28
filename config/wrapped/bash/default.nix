@@ -95,7 +95,7 @@
       [ $interval = 0 ] || [ $(($interval % 3600)) = 0 ]
       interval=$((interval + 1))
 
-      sleep 1 && echo "${lib.optionalString isLaptop (mkLaptopModules laptopModules)}$(volume)$DELIMITER$(cpu)$DELIMITER$(mem)$DELIMITER$(clock)$DELIMITER$(weather)            "
+      sleep 1 && echo "${lib.optionalString isLaptop (mkLaptopModules laptopModules)}$(volume)$DELIMITER$(cpu)$DELIMITER$(mem)$DELIMITER$(clock)$DELIMITER$(weather)          "
     done
   '';
   startup = let
