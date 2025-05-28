@@ -24,6 +24,20 @@
     |> map (x: "$(${x})$DELIMITER")
     |> concatStringsSep "";
 
+  weather = pkgs.stdenv.mkDerivation {
+    name = "weather";
+    buildInputs = [
+      (pkgs.python311.withPackages
+        (pythonPackages: with pythonPackages; [ftputil]))
+    ];
+    unpackPhase = "true";
+    installPhase = ''
+      mkdir -p $out/bin
+      cp ${./weather.py} $out/bin/weather
+      chmod +x $out/bin/weather
+    '';
+  };
+
   # fml steam needs xorg
   dwl = inputs.gungnir.packages.${pkgs.system}.dwl.override {
     enableXWayland = true;
@@ -49,6 +63,10 @@
     mem() {
       colour "   " "789978"
       printf " $(free -h | awk '/^Mem/ { print $3 }' | sed s/i//g)"
+    }
+
+    weather() {
+      printf "  $(${weather}/bin/weather dwl IDN10064)"
     }
 
     clock() {
@@ -77,7 +95,7 @@
       [ $interval = 0 ] || [ $(($interval % 3600)) = 0 ]
       interval=$((interval + 1))
 
-      sleep 1 && echo "${lib.optionalString isLaptop (mkLaptopModules laptopModules)}$(volume)$DELIMITER$(cpu)$DELIMITER$(mem)$DELIMITER$(clock)"
+      sleep 1 && echo "${lib.optionalString isLaptop (mkLaptopModules laptopModules)}$(volume)$DELIMITER$(cpu)$DELIMITER$(mem)$DELIMITER$(clock)$DELIMITER$(weather)  "
     done
   '';
   startup = let
