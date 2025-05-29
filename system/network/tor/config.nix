@@ -36,6 +36,8 @@ in {
       package = pkgs.proxychains-ng;
 
       proxyDNS = true;
+      # NOTE: We use mkForce here because by default, a tor proxy is already
+      # configured, but it uses the outdated "socks4" instead of "socks5"
       proxies = lib.mkForce {
         tor = {
           enable = true;
