@@ -1,10 +1,7 @@
 {lib, ...}: {
   options.laplace.services.llama-cpp = {
     enable =
-      (lib.mkEnableOption "LLaMa.cpp")
-      // {
-        default = true;
-      };
+      lib.mkEnableOption "LLaMa.cpp";
     host = lib.mkOption {
       type = lib.types.str;
       default = "127.0.0.1";
