@@ -1,7 +1,9 @@
 keys:
   - &deimos age1as3g9vmk34s6w4dw3rlua3wdwgxfzr2f9jm6282eqjncnwagwu4snycmx9
+  - &phobos age1c0vyvpklhylqldt7c42ru2c0jg5rl7wppz4suhywq5tv36lcagaqvj82em
 creation_rules:
   - path_regex: system/secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:
           - *deimos
+          - *phobos
