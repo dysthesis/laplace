@@ -13,6 +13,7 @@
   in {
     configured = {
       btop = callPackage ./btop {inherit pkgs lib;};
+      irssi = callPackage ./irssi {inherit config pkgs lib;};
       todo-txt-cli = callPackage ./todo-txt {};
       river = callPackage ./river {inherit pkgs lib;};
       waybar = callPackage ./waybar {inherit config pkgs lib;};
