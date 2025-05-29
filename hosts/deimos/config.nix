@@ -38,6 +38,10 @@ _: {
         bluetooth.enable = true;
         wifi.enable = true;
         vpn.enable = true;
+        tor = {
+          enable = true;
+          libera-chat-map.enable = true;
+        };
       };
 
       security = {

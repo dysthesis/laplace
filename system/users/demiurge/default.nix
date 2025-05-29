@@ -106,8 +106,8 @@ in {
           zen
           vesktop
           taskwarrior
+          irssi
           # taskwarrior-tui
-          weechat
           mpv
           timewarrior
           ghostty
