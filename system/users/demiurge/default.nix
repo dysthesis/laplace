@@ -69,6 +69,7 @@ in {
           inputs.poincare.packages.${system}.default
           (inputs.daedalus.packages.${system}.default.override {
             shell = "${pkgs.configured.fish}/bin/fish";
+            inherit (pkgs.configured) fzf;
           })
           grim
           slurp

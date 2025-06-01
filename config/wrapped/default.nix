@@ -12,6 +12,7 @@
     guiPackage = package: package.config.env;
   in {
     configured = {
+      fzf = callPackage ./fzf {inherit lib pkgs;};
       btop = callPackage ./btop {inherit pkgs lib;};
       irssi = callPackage ./irssi {inherit config pkgs lib;};
       todo-txt-cli = callPackage ./todo-txt {};
