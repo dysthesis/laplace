@@ -2,12 +2,12 @@
   config,
   pkgs,
   ...
-}: let
+}:
+let
   weather = pkgs.stdenv.mkDerivation {
     name = "weather";
     buildInputs = [
-      (pkgs.python311.withPackages
-        (pythonPackages: with pythonPackages; [ftputil]))
+      (pkgs.python311.withPackages (pythonPackages: with pythonPackages; [ ftputil ]))
     ];
     unpackPhase = "true";
     installPhase = ''
@@ -20,10 +20,7 @@
     layer = "top";
     position = "bottom";
     mod = "dock";
-    height =
-      if config.networking.hostName == "yaldabaoth"
-      then 28
-      else 34;
+    height = if config.networking.hostName == "yaldabaoth" then 28 else 34;
     exclusive = true;
     passthrough = false;
     gtk-layer-shell = true;
@@ -101,7 +98,13 @@
         warning = 30;
         critical = 15;
       };
-      format-icons = ["" "" "" "" ""];
+      format-icons = [
+        ""
+        ""
+        ""
+        ""
+        ""
+      ];
       format = "{icon} {capacity}%";
       max-length = 25;
     };
@@ -109,14 +112,21 @@
     backlight = {
       device = "amdgpu_bl0";
       format = "{icon} {percent}%";
-      format-icons = ["" ""];
+      format-icons = [
+        ""
+        ""
+      ];
     };
 
     wireplumber = {
       format = "{icon} {volume}%";
       format-muted = "";
       on-click = "helvum";
-      format-icons = ["" "" ""];
+      format-icons = [
+        ""
+        ""
+        ""
+      ];
     };
 
     clock = {
@@ -202,4 +212,4 @@
     };
   };
 in
-  pkgs.writeText "waybar-config.json" (builtins.toJSON waybarConf)
+pkgs.writeText "waybar-config.json" (builtins.toJSON waybarConf)

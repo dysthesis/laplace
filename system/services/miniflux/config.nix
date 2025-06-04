@@ -2,13 +2,15 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.laplace.services.miniflux.enable;
   inherit (lib) mkIf;
-in {
+in
+{
   config = mkIf cfg {
     # Tell sops-nix that this should be found in the default sops file.
-    sops.secrets.miniflux_admin = {};
+    sops.secrets.miniflux_admin = { };
 
     services.miniflux = {
       enable = true;
@@ -20,7 +22,7 @@ in {
     };
 
     users = {
-      groups.miniflux = {};
+      groups.miniflux = { };
       users.miniflux = {
         isSystemUser = true;
         group = "miniflux";

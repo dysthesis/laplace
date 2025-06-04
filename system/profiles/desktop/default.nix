@@ -4,12 +4,13 @@
   config,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
-  inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) elem;
   cfg = config.laplace.profiles;
-in {
+in
+{
   config = mkIf (elem "desktop" cfg) {
     systemd = {
       services.seatd = {
@@ -21,18 +22,16 @@ in {
           Restart = "always";
           RestartSec = "1";
         };
-        wantedBy = ["mult-user.target"];
+        wantedBy = [ "mult-user.target" ];
       };
       user.services = {
         syncthing = {
           enable = true;
           description = "Syncthing";
-          unitConfig.partOf = ["default.target"];
+          unitConfig.partOf = [ "default.target" ];
 
           script =
-            /*
-            bash
-            */
+            # bash
             ''
               ${lib.getExe pkgs.syncthing} \
                 -no-browser \
@@ -40,23 +39,25 @@ in {
                 -logflags=0
             '';
 
-          wantedBy = ["default.target"];
+          wantedBy = [ "default.target" ];
         };
       };
     };
-    fonts.packages = with pkgs;
-    with inputs.babel.packages.${system}; [
-      fast-fonts
-      noto-fonts
-      noto-fonts-extra
-      noto-fonts-emoji
-      noto-fonts-cjk-sans
-      terminus_font
-      jbcustom-nf
-      sf-pro
-      georgia-fonts
-      nerd-fonts.jetbrains-mono
-    ];
+    fonts.packages =
+      with pkgs;
+      with inputs.babel.packages.${system};
+      [
+        fast-fonts
+        noto-fonts
+        noto-fonts-extra
+        noto-fonts-emoji
+        noto-fonts-cjk-sans
+        terminus_font
+        jbcustom-nf
+        sf-pro
+        georgia-fonts
+        nerd-fonts.jetbrains-mono
+      ];
     services = {
       logind = {
         lidSwitch = "suspend";
@@ -95,7 +96,7 @@ in {
       sessionVariables = {
         GTK_USE_PORTAL = "1";
       };
-      systemPackages = with pkgs; [xdg-utils];
+      systemPackages = with pkgs; [ xdg-utils ];
     };
     security = {
       # For electron stuff
@@ -117,7 +118,7 @@ in {
       sounds.enable = true;
       portal = {
         enable = true;
-        extraPortals = [pkgs.xdg-desktop-portal-gtk];
+        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
       };
     };
   };

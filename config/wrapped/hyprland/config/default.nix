@@ -90,6 +90,6 @@
 }
 // (import ./animations.nix)
 // (import ./decoration.nix)
-// (import ./keybinds.nix {inherit pkgs lib;})
+// (import ./keybinds.nix { inherit pkgs lib; })
 // (import ./input.nix)
 // (import ./rules.nix)
