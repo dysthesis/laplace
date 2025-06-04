@@ -1,25 +1,22 @@
 {
-  inputs,
   pkgs,
   config,
   lib,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkIf
-    fold
     ;
-  inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) elem;
-  inherit (lib.cli) toGNUCommandLineShell;
   cfg = config.laplace.display.servers;
-in {
+in
+{
   config = mkIf (elem "wayland" cfg) {
     xdg.portal = {
       wlr.enable = true;
       config.common.default = "*";
-      extraPortals = [pkgs.xdg-desktop-portal-gtk];
+      extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
     };
     environment.sessionVariables = {
       NIXOS_OZONE_WL = "1";
@@ -29,9 +26,9 @@ in {
     systemd.user = {
       targets.dwl-session = {
         description = "dwl compositor session";
-        documentation = ["man:systemd.special(7)"];
-        bindsTo = ["graphical-session.target"];
-        after = ["graphical-session.target"];
+        documentation = [ "man:systemd.special(7)" ];
+        bindsTo = [ "graphical-session.target" ];
+        after = [ "graphical-session.target" ];
       };
     };
   };

@@ -2,13 +2,16 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib.babel.modules) importInDirectory;
-in {
+in
+{
   config = {
     nix = {
       package = pkgs.nixVersions.stable;
       settings = {
+        extra-platforms = [ "aarch64-linux" ];
         experimental-features = [
           "nix-command"
           "flakes"
@@ -24,10 +27,18 @@ in {
         auto-optimise-store = true;
       };
     };
-    nixpkgs.config = {
-      allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) ["obsidian" "steam" "steam-unwrapped"];
-      allowBroken = true;
-      rocmSupport = true;
+    nixpkgs = {
+      config = {
+        allowUnfreePredicate =
+          pkg:
+          builtins.elem (lib.getName pkg) [
+            "obsidian"
+            "steam"
+            "steam-unwrapped"
+          ];
+        allowBroken = true;
+        rocmSupport = true;
+      };
     };
   };
   imports = importInDirectory ./.;

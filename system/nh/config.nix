@@ -3,13 +3,15 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   cfg = config.laplace.nh;
-in {
+in
+{
   config = mkIf cfg.enable {
     environment.sessionVariables.NH_FLAKE = cfg.flakePath;
 
-    environment.systemPackages = [pkgs.nh];
+    environment.systemPackages = [ pkgs.nh ];
   };
 }

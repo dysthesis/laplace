@@ -1,4 +1,5 @@
-{pkgs, ...}: let
+{ pkgs, ... }:
+let
   inherit (builtins) concatStringsSep map;
   inherit (pkgs.lib) getExe;
   rivercarro = getExe pkgs.rivercarro;
@@ -52,37 +53,30 @@
     "Super Left send-layout-cmd ${rivercarro} 'main-location left'"
   ];
 in
-  /*
-  sh
-  */
-  ''
+# sh
+''
 
-     ${concatStringsSep "\n"
-      (map
-        (
-          bind: "riverctl map normal ${bind}"
-        )
-        binds-normal)}
+   ${concatStringsSep "\n" (map (bind: "riverctl map normal ${bind}") binds-normal)}
 
-    # Super + Left Mouse Button to move views
-    riverctl map-pointer normal Super BTN_LEFT move-view
+  # Super + Left Mouse Button to move views
+  riverctl map-pointer normal Super BTN_LEFT move-view
 
-    # Super + Right Mouse Button to resize views
-    riverctl map-pointer normal Super BTN_RIGHT resize-view
+  # Super + Right Mouse Button to resize views
+  riverctl map-pointer normal Super BTN_RIGHT resize-view
 
-    for i in $(seq 1 9)
-    do
-        tags=$((1 << ($i - 1)))
+  for i in $(seq 1 9)
+  do
+      tags=$((1 << ($i - 1)))
 
-        riverctl map normal Super $i spawn "${getExe pkgs.river-bnf} $tags"
+      riverctl map normal Super $i spawn "${getExe pkgs.river-bnf} $tags"
 
-        # Super+Shift+[1-9] to tag focused view with tag [0-8]
-        riverctl map normal Super+Shift $i set-view-tags $tags
+      # Super+Shift+[1-9] to tag focused view with tag [0-8]
+      riverctl map normal Super+Shift $i set-view-tags $tags
 
-        # Super+Control+[1-9] to toggle focus of tag [0-8]
-        riverctl map normal Super+Control $i toggle-focused-tags $tags
+      # Super+Control+[1-9] to toggle focus of tag [0-8]
+      riverctl map normal Super+Control $i toggle-focused-tags $tags
 
-        # Super+Shift+Control+[1-9] to toggle tag [0-8] of focused view
-        riverctl map normal Super+Shift+Control $i toggle-view-tags $tags
-    done
-  ''
+      # Super+Shift+Control+[1-9] to toggle tag [0-8] of focused view
+      riverctl map normal Super+Shift+Control $i toggle-view-tags $tags
+  done
+''

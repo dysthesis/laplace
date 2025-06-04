@@ -8,11 +8,9 @@ let
   inherit (lib.babel.system) mkSystem;
   inherit (builtins) mapAttrs;
   hosts = {
-    # TODO: map this to all architectures
-    # Installer ISO
-    erebus = "x86_64-linux";
-    phobos = "x86_64-linux";
-    deimos = "x86_64-linux";
+    erebus = "aarch64-linux"; # Raspberry Pi
+    phobos = "x86_64-linux"; # Laptop
+    deimos = "x86_64-linux"; # PC
   };
   defaultImports = [
     ../system

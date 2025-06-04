@@ -1,11 +1,11 @@
-{lib, ...}: let
-  inherit (lib) 
-  mapAttrsToList
-  mapAttrs
-  map
-  ;
-  inherit
-    (builtins)
+{ lib, ... }:
+let
+  inherit (lib)
+    mapAttrsToList
+    mapAttrs
+    map
+    ;
+  inherit (builtins)
     typeOf
     toString
     concatLists
@@ -30,20 +30,19 @@
       natural-scroll = true;
     };
   };
-  mkSingleConfig = opt: value: let
-    value' =
-      if typeOf value == "bool"
-      then
-        if value
-        then "enabled"
-        else "disabled"
-      else toString value;
-  in "${opt} ${value'}";
-  
-  mkInputConfig = config:
+  mkSingleConfig =
+    opt: value:
+    let
+      value' = if typeOf value == "bool" then if value then "enabled" else "disabled" else toString value;
+    in
+    "${opt} ${value'}";
+
+  mkInputConfig =
+    config:
     config
     # The value of each key (device) is now a list of strings specifying the option and value
     |> mapAttrs (_key: value: mapAttrsToList mkSingleConfig value)
     |> mapAttrsToList (key: value: map (val: "${key} ${val}") value)
     |> concatLists;
-in mkInputConfig inputConfigs
+in
+mkInputConfig inputConfigs

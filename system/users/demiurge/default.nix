@@ -4,18 +4,16 @@
   config,
   pkgs,
   ...
-}: let
-  inherit
-    (pkgs)
+}:
+let
+  inherit (pkgs)
     system
     ;
 
-  inherit
-    (lib)
+  inherit (lib)
     mkIf
     ;
-  inherit
-    (builtins)
+  inherit (builtins)
     elem
     filter
     hasAttr
@@ -23,7 +21,8 @@
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
-in {
+in
+{
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
@@ -50,64 +49,63 @@ in {
           "libvirt"
         ];
 
-      packages = let
-        basePackages = with pkgs;
-          [
-            (uutils-coreutils.override {prefix = "";})
-            gnupg
-          ]
-          ++ (with pkgs.configured; [
-            fish
-          ]);
-        desktopPackages = with pkgs;
-          [
-            unstable.zotero
-            swaylock
-            signal-desktop
-            git
-            direnv
-            brightnessctl
-            prismlauncher
-            wl-clipboard
-            unstable.sbctl
-            tor-browser-bundle-bin
-            inputs.poincare.packages.${system}.default
-            (inputs.daedalus.packages.${system}.default.override {
-              shell = "${pkgs.configured.fish}/bin/fish";
-              inherit (pkgs.configured) fzf;
-            })
-            grim
-            slurp
-            swappy
-            bat
-            obsidian
-          ]
-          ++ (with pkgs.configured; [
-            btop
-            newsraft
-            bemenu
-            yambar
-            bash
-            ytfzf
-            zathura
-            ani-cli
-            spotify-player
-            zen
-            vesktop
-            taskwarrior
-            irssi
-            mpv
-            timewarrior
-            ghostty
-          ]);
+      packages =
+        let
+          basePackages =
+            with pkgs;
+            [
+              (uutils-coreutils.override { prefix = ""; })
+              gnupg
+            ]
+            ++ (with pkgs.configured; [
+              fish
+            ]);
+          desktopPackages =
+            with pkgs;
+            [
+              unstable.zotero
+              swaylock
+              signal-desktop
+              git
+              direnv
+              brightnessctl
+              prismlauncher
+              wl-clipboard
+              unstable.sbctl
+              tor-browser-bundle-bin
+              inputs.poincare.packages.${system}.default
+              (inputs.daedalus.packages.${system}.default.override {
+                shell = "${pkgs.configured.fish}/bin/fish";
+                inherit (pkgs.configured) fzf;
+              })
+              grim
+              slurp
+              swappy
+              bat
+              obsidian
+            ]
+            ++ (with pkgs.configured; [
+              btop
+              newsraft
+              bemenu
+              yambar
+              bash
+              ytfzf
+              zathura
+              ani-cli
+              spotify-player
+              zen
+              vesktop
+              taskwarrior
+              irssi
+              mpv
+              timewarrior
+              ghostty
+            ]);
 
-        addIf = cond: content:
-          if cond
-          then content
-          else [];
-      in
-        basePackages
-        ++ addIf (elem "desktop" cfg) desktopPackages;
+          addIf = cond: content: if cond then content else [ ];
+        in
+        basePackages ++ addIf (elem "desktop" config.laplace.profiles) desktopPackages;
     };
   };
 }

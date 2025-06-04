@@ -3,12 +3,14 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   cfg = config.laplace.network.vpn;
-in {
+in
+{
   config = mkIf cfg.enable {
-    sops.secrets.mullvad = {};
+    sops.secrets.mullvad = { };
     services.mullvad-vpn = {
       enable = true;
       package = pkgs.mullvad-vpn;

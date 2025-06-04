@@ -27,7 +27,6 @@ let
       revision,
       url ? null,
       hash,
-      branch ? null,
       ...
     }:
     assert repository ? type;

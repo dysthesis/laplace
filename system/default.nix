@@ -2,6 +2,7 @@
   pkgs,
   lib,
   inputs,
+  config,
   ...
 }:
 let
@@ -11,6 +12,8 @@ in
 {
   config = {
     environment.sessionVariables.EDITOR = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
+    boot.binfmt.emulatedSystems =
+      if (config.nixpkgs.system != "aarch64-linux") then [ "aarch64-linux" ] else [ ];
     services.openssh = {
       enable = lib.mkDefault true;
       settings = {

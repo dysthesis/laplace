@@ -4,10 +4,10 @@
     "usbhid"
     "usb_storage"
   ];
-  boot.initrd.kernelModules = [];
+  boot.initrd.kernelModules = [ ];
   boot.kernelModules = [
     "kvm-amd"
     "uinput"
   ];
-  boot.extraModulePackages = [];
+  boot.extraModulePackages = [ ];
 }

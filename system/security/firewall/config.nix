@@ -2,15 +2,16 @@
   config,
   lib,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkIf
     mkForce
     ;
 
   cfg = config.laplace.security.firewall.enable;
-in {
+in
+{
   config = mkIf cfg {
     services.opensnitch.enable = true;
 

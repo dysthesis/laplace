@@ -3,7 +3,8 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (builtins) replaceStrings;
   inherit (lib) concatMapStringsSep;
   # Quotes an argument for use in Exec* service lines.
@@ -13,17 +14,20 @@
   # in the input will be turned it ";" and thus lose its special meaning.
   # Every $ is escaped to $$, this makes it unnecessary to disable environment
   # substitution for the directive.
-  escapeSystemdExecArg = arg: let
-    s =
-      if builtins.isPath arg
-      then "${arg}"
-      else if builtins.isString arg
-      then arg
-      else if builtins.isInt arg || builtins.isFloat arg
-      then toString arg
-      else throw "escapeSystemdExecArg only allows strings, paths and numbers";
-  in
-    replaceStrings ["%" "$"] ["%%" "$$"] (builtins.toJSON s);
+  escapeSystemdExecArg =
+    arg:
+    let
+      s =
+        if builtins.isPath arg then
+          "${arg}"
+        else if builtins.isString arg then
+          arg
+        else if builtins.isInt arg || builtins.isFloat arg then
+          toString arg
+        else
+          throw "escapeSystemdExecArg only allows strings, paths and numbers";
+    in
+    replaceStrings [ "%" "$" ] [ "%%" "$$" ] (builtins.toJSON s);
 
   # Quotes a list of arguments into a single string for use in a Exec*
   # line.
@@ -39,7 +43,8 @@
   llamacppConfig = config.services.llama-cpp;
   inherit (cfg) modelName;
   inherit (lib) mkIf;
-in {
+in
+{
   config = mkIf cfg.enable {
     services.llama-cpp = {
       enable = false;
@@ -49,29 +54,31 @@ in {
         openclSupport = true;
       };
       inherit (cfg) port host;
-      extraFlags = let
-        concurrency = 4;
-      in [
-        "-c"
-        "${builtins.toString (concurrency * 2048)}"
-        "-ngl"
-        "100"
-        "-np"
-        "${builtins.toString concurrency}"
-        "-cb"
-        "-fa"
-        "--metrics"
-        "-sm"
-        "none"
-      ];
+      extraFlags =
+        let
+          concurrency = 4;
+        in
+        [
+          "-c"
+          "${builtins.toString (concurrency * 2048)}"
+          "-ngl"
+          "100"
+          "-np"
+          "${builtins.toString concurrency}"
+          "-cb"
+          "-fa"
+          "--metrics"
+          "-sm"
+          "none"
+        ];
     };
 
     systemd.services.llama-cpp = {
       description = "LLaMA C++ server";
-      after = ["network.target"];
-      wantedBy = ["multi-user.target"];
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" ];
 
-      path = with pkgs; [curl];
+      path = with pkgs; [ curl ];
       postStart = ''
         curl \
           --fail \
@@ -102,6 +109,6 @@ in {
       group = "llama-cpp";
       isSystemUser = true;
     };
-    users.groups.llama-cpp = {};
+    users.groups.llama-cpp = { };
   };
 }

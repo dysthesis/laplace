@@ -1,7 +1,8 @@
-{pkgs, ...}: let
+{ pkgs, ... }:
+let
   inherit (pkgs) writeText;
 in
-  writeText "config.yml"
+writeText "config.yml"
   # yaml
   ''
     highlight: &highlight fabd2fff

@@ -3,9 +3,9 @@
   lib,
   pkgs,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     getExe
     fold
     ;
@@ -40,15 +40,12 @@
     }
   ];
 
-  mkCondition = curr: acc: let
-    ifStatement =
-      if acc == ''''
-      then "if"
-      else "elif";
-  in
-    /*
-    sh
-    */
+  mkCondition =
+    curr: acc:
+    let
+      ifStatement = if acc == '''' then "if" else "elif";
+    in
+    # sh
     ''
       ${acc}
       ${ifStatement} [ "''$1" = "${curr.name}" ]; then
@@ -56,9 +53,7 @@
     '';
 
   conditional =
-    /*
-    sh
-    */
+    # sh
     ''
       ${fold mkCondition '''' scratchpads}
       fi
@@ -66,30 +61,28 @@
 
   script =
     writeShellScriptBin "scratchpad"
-    /*
-    sh
-    */
-    ''
-      windows_in(){
-      hyprctl clients -j | ${getExe pkgs.jq} ".[] | select(.workspace.name == \"special:''$1\" )"
-      }
+      # sh
+      ''
+        windows_in(){
+        hyprctl clients -j | ${getExe pkgs.jq} ".[] | select(.workspace.name == \"special:''$1\" )"
+        }
 
-      toggle_scratchpad(){
-          workspace_name="''$1"
-          cmd="''$2"
+        toggle_scratchpad(){
+            workspace_name="''$1"
+            cmd="''$2"
 
-          windows=''$( windows_in "''$workspace_name" )
-          # If not on latest , check the edit history of this post
-          if [ -z "''$windows" ];then
-              hyprctl dispatch "exec [workspace special:''$workspace_name] ''$cmd"
-              else
-              hyprctl dispatch togglespecialworkspace "''$workspace_name"
-          fi
-      }
+            windows=''$( windows_in "''$workspace_name" )
+            # If not on latest , check the edit history of this post
+            if [ -z "''$windows" ];then
+                hyprctl dispatch "exec [workspace special:''$workspace_name] ''$cmd"
+                else
+                hyprctl dispatch togglespecialworkspace "''$workspace_name"
+            fi
+        }
 
-      ${conditional}
-    '';
+        ${conditional}
+      '';
 in
-  map
-  (scratchpad: "${mod}, ${scratchpad.prefix}, exec, ${getExe script} ${scratchpad.name}")
-  scratchpads
+map (
+  scratchpad: "${mod}, ${scratchpad.prefix}, exec, ${getExe script} ${scratchpad.name}"
+) scratchpads
