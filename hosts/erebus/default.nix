@@ -1,45 +1,51 @@
 {
-  inputs,
   lib,
-  pkgs,
+  modulesPath,
   ...
-}:
-let
+}: let
   inherit (lib) mkForce;
-in
-{
+in {
+  # Instead of using nixos-install, we build an image using `nix build .#nixosConfigurations.erebus.
+  # config.system.build.sdImage`, and burn it to the SD card
   imports = [
-    ./installer.nix
+    "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
+    ./hardware.nix
   ];
-  environment.systemPackages =
-    let
-      inherit (pkgs)
-        system
-        ;
-    in
-    with pkgs;
-    [
-      inputs.disko.packages.${system}.default
-      inputs.daedalus.packages.${system}.default
-      inputs.poincare.packages.${system}.default
-      configured.ghostty
 
-      btop
-      just
-      microfetch
-      tor-browser-bundle-bin
-    ];
+  installer.cloneConfig = lib.mkForce false;
 
   networking.stevenblack.enable = true;
 
   laplace = {
-    profiles = [ "desktop" ];
-    harden = [ "kernel" ];
+    harden = ["kernel"];
     zram.enable = true;
     network.optimise = true;
+    docker.enable = true;
+    network.wifi.enable = true;
+    security = {
+      privesc = "doas";
+      firewall.enable = true;
+    };
+    users = ["demiurge"];
+    nh = {
+      enable = true;
+      flakePath = "/home/demiurge/Documents/Projects/laplace";
+    };
   };
 
+  time.timeZone = "Australia/Sydney";
+  i18n.defaultLocale = "en_AU.UTF-8";
   isoImage.edition = mkForce "erebus";
+  networking.nameservers = [
+    "9.9.9.9"
+    "9.0.0.9"
+  ];
+  services.resolved = {
+    enable = true;
+    dnssec = "true";
+    fallbackDns = ["9.9.9.9" "9.0.0.9"];
+    dnsovertls = "true";
+  };
 
   boot.tmp.useTmpfs = mkForce false;
 }

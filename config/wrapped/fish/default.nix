@@ -70,6 +70,10 @@
       ":q" = "exit";
       "v" = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
       sudo = "doas";
+      randstr = ''
+
+tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 13; echo
+      '';
       cat = "${getExe bat}";
       temp = "cd $(mktemp -d)";
       t = "${getExe pkgs.configured.todo-txt-cli}";
