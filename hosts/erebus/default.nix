@@ -2,11 +2,9 @@
   lib,
   modulesPath,
   ...
-}:
-let
+}: let
   inherit (lib) mkForce;
-in
-{
+in {
   # Instead of using nixos-install, we build an image using `nix build .#nixosConfigurations.erebus.
   # config.system.build.sdImage`, and burn it to the SD card
   imports = [
@@ -14,20 +12,20 @@ in
     ./hardware.nix
   ];
 
-  networking.stevenblack.enable = true;
-
   laplace = {
-    harden = [ "kernel" ];
+    harden = ["kernel"];
     zram.enable = true;
-    network.optimise = true;
     docker.enable = true;
-    network.wifi.enable = true;
+    network = {
+      wifi.enable = true;
+      optimise = true;
+    };
     security = {
       privesc = "doas";
       firewall.enable = true;
     };
     services.cloudflared.enable = true;
-    users = [ "demiurge" ];
+    users = ["demiurge"];
     nh = {
       enable = true;
       flakePath = "/home/demiurge/Documents/Projects/laplace";
@@ -35,10 +33,7 @@ in
   };
   time.timeZone = "Australia/Sydney";
   i18n.defaultLocale = "en_AU.UTF-8";
-  networking.nameservers = [
-    "9.9.9.9"
-    "9.0.0.9"
-  ];
+
   services.resolved = {
     enable = true;
     dnssec = "true";
@@ -49,5 +44,22 @@ in
     dnsovertls = "true";
   };
 
-  boot.tmp.useTmpfs = mkForce false;
+  fileSystems = {
+    "/mnt/data" = {
+      device = "/dev/disk/by-uuid/9e58df18-7075-4baa-9ee1-dc8e8d3b3b06";
+      fsType = "ext4";
+      options = ["data=journal"];
+    };
+  };
+
+  networking = {
+    # wireless.networks."SSID".psk = "PSK";
+    nameservers = [
+      "9.9.9.9"
+      "9.0.0.9"
+    ];
+    stevenblack.enable = true;
+  };
+
+  boot.tmp.useTmpfs = true;
 }
