@@ -1,4 +1,5 @@
 {
+  inputs,
   pkgs,
   lib,
   config,
@@ -8,6 +9,10 @@
   inherit (lib) getExe;
 in {
   config = {
+    environment.sessionVariables = {
+      BROWSER = lib.getExe pkgs.configured.zen;
+      EDITOR = lib.getExe inputs.poincare.packages.${pkgs.system}.default;
+    };
     boot.binfmt.emulatedSystems =
       if (config.nixpkgs.system != "aarch64-linux")
       then ["aarch64-linux"]
