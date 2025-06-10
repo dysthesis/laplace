@@ -44,16 +44,16 @@ in {
     dnsovertls = "true";
   };
 
-  fileSystems = {
-    "/mnt/data" = {
-      device = "/dev/disk/by-uuid/9e58df18-7075-4baa-9ee1-dc8e8d3b3b06";
-      fsType = "ext4";
-      options = ["data=journal"];
-    };
-  };
+  # fileSystems = {
+  #   "/mnt/data" = {
+  #     device = "/dev/disk/by-uuid/9e58df18-7075-4baa-9ee1-dc8e8d3b3b06";
+  #     fsType = "ext4";
+  #     options = ["data=journal"];
+  #   };
+  # };
 
   networking = {
-    # wireless.networks."SSID".psk = "PSK";
+    wireless.networks."Connecting…".psk = "4ade712dbff1b6101b91baca0c40bd5c30fa4e57da80838df27b625905b82310";
     nameservers = [
       "9.9.9.9"
       "9.0.0.9"
