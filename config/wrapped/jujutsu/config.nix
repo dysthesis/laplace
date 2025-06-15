@@ -11,7 +11,7 @@ in
       email = "antheoraviel@protonmail.com";
     };
     template-aliases."format_timestamp(timestamp)" = "timestamp.ago()";
-    git.sign-on-push = "true";
+    git.sign-on-push = true;
     signing = {
       behaviour = "own";
       backend = "gpg";
