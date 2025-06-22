@@ -67,13 +67,13 @@
     ezaAliases = baseAliases // treeAliases;
   in
     {
+      "t" = "${getExe pkgs.configured.taskwarrior}";
       ":q" = "exit";
       "v" = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
       sudo = "doas";
       cat = "${getExe bat}";
       notes = "${getExe inputs.daedalus.packages.${system}.default} new-session -As Notes -c ~/Documents/Notes/Contents ${getExe direnv} exec . $EDITOR";
       temp = "cd $(mktemp -d)";
-      t = "${getExe pkgs.configured.todo-txt-cli}";
       subs = "${pkgs.configured.ytfzf}/bin/ytfzf -cS --sort";
     }
     // ezaAliases;
