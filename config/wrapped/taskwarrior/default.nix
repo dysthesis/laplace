@@ -2,8 +2,7 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (pkgs) writeText;
   inherit (lib.attrsets) mapAttrsToList;
@@ -11,8 +10,8 @@ let
 
   projectUrgency = {
     COMP3121 = 3;
-    COMP3900 = 2;
-    COMP4920 = 2;
+    COMP6453 = 3;
+    COMP2041 = 2;
   };
   mkProjectUrgency = mapAttrsToList (
     proj: urgency: "urgency.user.project.${proj}.coefficient=${toString urgency}"
@@ -31,7 +30,7 @@ let
     python3
   ];
 in
-mkWrapper pkgs pkgs.taskwarrior
+  mkWrapper pkgs pkgs.taskwarrior
   # bash
   ''
     wrapProgram $out/bin/task \

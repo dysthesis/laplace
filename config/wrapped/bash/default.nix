@@ -37,7 +37,7 @@
 
   # fml steam needs xorg
   dwl = inputs.gungnir.packages.${pkgs.system}.dwl.override {
-    enableXWayland = true;
+    enableXWayland = false;
   };
 
   startup = let
@@ -98,7 +98,7 @@
                XCURSOR_SZE \
                XCURSOR_THEME
             systemctl --user start dwl-session.target
-            ${lib.getExe inputs.status.packages.${pkgs.system}.default} | exec ${lib.getExe dwl} -s ${lib.getExe startup}
+            exec $(${lib.getExe inputs.status.packages.${pkgs.system}.default} | ${lib.getExe dwl} -s ${lib.getExe startup})
         fi
       '';
   in
