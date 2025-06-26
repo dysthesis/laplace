@@ -12,6 +12,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    read = {
+      url = "github:dysthesis/read";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Personal library
     babel = {
       url = "github:dysthesis/babel";
