@@ -10,6 +10,5 @@ in
   # sh
   ''
     wrapProgram $out/bin/read \
-      --add-flags "${./feeds}" \
-      --add-flags "64"
+      --set URLS "${./feeds}" \
   ''
