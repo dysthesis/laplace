@@ -102,6 +102,7 @@ in {
             mpv
             timewarrior
             ghostty
+            zk
           ]);
 
         addIf = cond: content:
