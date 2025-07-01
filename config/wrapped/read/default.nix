@@ -9,6 +9,6 @@ in
   mkWrapper pkgs read
   # sh
   ''
-    wrapProgram $out/bin/read \
+    wrapProgram $out/bin/rd \
       --set URLS "${./feeds}" \
   ''

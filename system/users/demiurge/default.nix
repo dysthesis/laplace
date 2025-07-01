@@ -86,6 +86,7 @@ in {
             bat
           ]
           ++ (with pkgs.configured; [
+            read
             btop
             newsraft
             bemenu
