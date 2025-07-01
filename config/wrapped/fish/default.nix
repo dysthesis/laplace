@@ -75,7 +75,6 @@
       notes = "${getExe inputs.daedalus.packages.${system}.default} new-session -As Notes -c ~/Documents/Notes/Contents ${getExe direnv} exec . $EDITOR";
       temp = "cd $(mktemp -d)";
       subs = "${pkgs.configured.ytfzf}/bin/ytfzf -cS --sort";
-      rd = "${getExe pkgs.configured.read}";
     }
     // ezaAliases;
 
