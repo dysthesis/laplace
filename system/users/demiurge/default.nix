@@ -62,7 +62,6 @@ in {
           ++ (with pkgs.configured; [
             fish
             jujutsu
-            helix
           ]);
         desktopPackages = with pkgs;
           [
