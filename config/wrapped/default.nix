@@ -16,9 +16,8 @@
         inherit lib pkgs;
         inherit (inputs.read.packages.${pkgs.system}) read;
       };
-      zk = callPackage ./zk {
-        inherit lib pkgs;
-      };
+      zk = callPackage ./zk { inherit lib pkgs; };
+      helix = callPackage ./helix { inherit lib pkgs; };
       fzf = callPackage ./fzf {inherit lib pkgs;};
       btop = callPackage ./btop {inherit pkgs lib;};
       irssi = callPackage ./irssi {inherit config pkgs lib;};
