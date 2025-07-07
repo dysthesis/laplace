@@ -2,9 +2,8 @@
   lib,
   modulesPath,
   ...
-}: let
-  inherit (lib) mkForce;
-in {
+}:
+{
   # Instead of using nixos-install, we build an image using `nix build .#nixosConfigurations.erebus.
   # config.system.build.sdImage`, and burn it to the SD card
   imports = [
@@ -13,7 +12,7 @@ in {
   ];
 
   laplace = {
-    harden = ["kernel"];
+    harden = [ "kernel" ];
     zram.enable = true;
     docker.enable = true;
     network = {
@@ -25,7 +24,7 @@ in {
       firewall.enable = true;
     };
     services.cloudflared.enable = true;
-    users = ["demiurge"];
+    users = [ "demiurge" ];
     nh = {
       enable = true;
       flakePath = "/home/demiurge/Documents/Projects/laplace";
@@ -53,7 +52,8 @@ in {
   # };
 
   networking = {
-    wireless.networks."Connecting…".psk = "4ade712dbff1b6101b91baca0c40bd5c30fa4e57da80838df27b625905b82310";
+    wireless.networks."Connecting…".psk =
+      "4ade712dbff1b6101b91baca0c40bd5c30fa4e57da80838df27b625905b82310";
     nameservers = [
       "9.9.9.9"
       "9.0.0.9"

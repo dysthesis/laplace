@@ -6,11 +6,11 @@
       "usb_storage"
     ];
 
-    initrd.kernelModules = [];
+    initrd.kernelModules = [ ];
     kernelModules = [
       "kvm-amd"
       "uinput"
     ];
-    extraModulePackages = [];
+    extraModulePackages = [ ];
   };
 }
