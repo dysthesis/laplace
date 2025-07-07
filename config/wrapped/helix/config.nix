@@ -1,5 +1,6 @@
-{pkgs, ...}: let
-  tomlFormat = pkgs.formats.toml {};
+{ pkgs, ... }:
+let
+  tomlFormat = pkgs.formats.toml { };
   config = {
     theme = "kanagawa-dragon";
     editor = {
@@ -14,4 +15,4 @@
     };
   };
 in
-  tomlFormat.generate "helix-config" config
+tomlFormat.generate "helix-config" config

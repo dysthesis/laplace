@@ -21,7 +21,7 @@ let
     ''-i'' # ignorecase
     ''-p \" \"'' # prompt
     ''--fn \"JBMono Nerd Font 9\"''
-    ''-H \"30\"''
+    ''-H \"26\"''
     ''--hp \"8\"''
     ''--fb \"#000000\"''
     ''--ff \"#ffffff\"''

@@ -14,7 +14,7 @@ rustPlatform.buildRustPackage rec {
     rev = "v${version}";
     sha256 = "sha256-M8tiEUPfP5EWfPp7i6r0lpHC5ZUsEYeEKVz5gUpe4+A=";
   };
-  cargoHash = "sha256-B5peoyT/+miHXyoRGFLUv9qFzZZFsExrI46Zy0K7NL4=";
+  cargoHash = "sha256-HLygJDtea2E8m3KG8IvJBEH69Bi6Ojm+d21904ISpys=";
   nativeBuildInputs = [ installShellFiles ];
 
   # Because there's a test that requires terminal access
