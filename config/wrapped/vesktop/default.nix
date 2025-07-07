@@ -4,24 +4,19 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit lib;
     inherit pkgs;
   };
 in
-mkNixPak {
-  config =
-    { sloth, ... }:
-    let
+  mkNixPak {
+    config = {sloth, ...}: let
       envSuffix = envKey: suffix: sloth.concat' (sloth.env envKey) suffix;
-    in
-    rec {
+    in rec {
       app.package = pkgs.vesktop;
       flatpak.appId = "dev.vencord.Vesktop";
 
-      # Enable D-Bus and set policies
       dbus.enable = true;
       gpu = {
         enable = true;
@@ -29,7 +24,7 @@ mkNixPak {
       };
 
       dbus.policies = {
-        "org.kde.StatusNotifierWatcher" = "talk"; # Tray functionalities on KDE
+        "org.kde.StatusNotifierWatcher" = "talk";
         "${flatpak.appId}" = "own";
         "org.freedesktop.DBus" = "talk";
         "org.gtk.vfs.*" = "talk";
@@ -37,63 +32,70 @@ mkNixPak {
         "ca.desrt.dconf" = "talk";
         "org.freedesktop.portal.*" = "talk";
         "org.a11y.Bus" = "talk";
+
+        "org.freedesktop.Notifications" = "talk";
       };
+
       fonts = {
         enable = true;
         fonts = config.fonts.packages;
       };
+
       locale.enable = true;
+
       bubblewrap = {
         network = true;
         shareIpc = true;
         sockets = {
-          wayland = lib.mkDefault true; # Enable X11 socket
-          pulse = lib.mkDefault true; # Enable Pulseaudio socket
+          wayland = lib.mkDefault true;
+          pulse = lib.mkDefault true;
         };
-        bind.ro = [
-          sloth.xdgVideosDir # Read-only access to Videos
-          sloth.xdgPicturesDir # Read-only access to Pictures
-          "/run/dbus/system_bus_socket" # Not entirely sure why if needed but it was warning in terminal that it couldn't be found
-          "/etc/resolv.conf"
-          (envSuffix "XDG_RUNTIME_DIR" "/doc")
-          (sloth.concat' sloth.xdgConfigHome "/gtk-2.0")
-          (sloth.concat' sloth.xdgConfigHome "/gtk-3.0")
-          (sloth.concat' sloth.xdgConfigHome "/gtk-4.0")
-          (sloth.concat' sloth.xdgConfigHome "/fontconfig")
-        ];
-        bind.rw = [
-          (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/pipewire-0") # Pipewire interfacing
-          (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/speech-dispatcher") # For TTS and VcNarrator
-          sloth.xdgDownloadDir # For drag-and-drop and download management
-          (sloth.concat' sloth.xdgConfigHome "/vesktop") # Vesktop configuration/data directory
-          (sloth.concat [
-            (sloth.env "XDG_RUNTIME_DIR")
-            "/"
-            (sloth.envOr "WAYLAND_DISPLAY" "no")
-          ])
-          (sloth.concat' sloth.xdgCacheHome "/mesa_shader_cache")
+        bind = {
+          ro = [
+            sloth.xdgVideosDir
+            sloth.xdgPicturesDir
+            "/run/dbus/system_bus_socket"
+            "/etc/resolv.conf"
+            (envSuffix "XDG_RUNTIME_DIR" "/doc")
+            (sloth.concat' sloth.xdgConfigHome "/gtk-2.0")
+            (sloth.concat' sloth.xdgConfigHome "/gtk-3.0")
+            (sloth.concat' sloth.xdgConfigHome "/gtk-4.0")
+            (sloth.concat' sloth.xdgConfigHome "/fontconfig")
+          ];
+          rw = [
+            (envSuffix "XDG_RUNTIME_DIR" "/bus")
 
-          [
-            (envSuffix "HOME" "/.var/app/${flatpak.appId}/cache")
-            sloth.xdgCacheHome
-          ]
-          (sloth.concat' sloth.xdgCacheHome "/fontconfig")
-          (sloth.concat' sloth.xdgCacheHome "/mesa_shader_cache")
+            (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/pipewire-0")
+            (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/speech-dispatcher")
+            sloth.xdgDownloadDir
+            (sloth.concat' sloth.xdgConfigHome "/vesktop")
 
-          (sloth.concat [
-            (sloth.env "XDG_RUNTIME_DIR")
-            "/"
-            (sloth.envOr "WAYLAND_DISPLAY" "no")
-          ])
+            # This is the correct way to bind the Wayland socket.
+            # The duplicate below is removed.
+            (sloth.concat [
+              (sloth.env "XDG_RUNTIME_DIR")
+              "/"
+              (sloth.envOr "WAYLAND_DISPLAY" "no")
+            ])
 
-          (envSuffix "XDG_RUNTIME_DIR" "/at-spi/bus")
-          (envSuffix "XDG_RUNTIME_DIR" "/gvfsd")
-          (envSuffix "XDG_RUNTIME_DIR" "/pulse")
-        ];
-        bind.dev = [
-          "/dev/dri" # Device access for GPU
-          "/dev/video0" # Webcam access | TODO: Find a way to get all video devices
-        ];
+            (sloth.concat' sloth.xdgCacheHome "/mesa_shader_cache")
+
+            # This is a bit redundant if you have sloth.xdgCacheHome already,
+            # but keeping it for clarity.
+            [
+              (envSuffix "HOME" "/.var/app/${flatpak.appId}/cache")
+              sloth.xdgCacheHome
+            ]
+
+            (envSuffix "XDG_RUNTIME_DIR" "/at-spi/bus")
+            (envSuffix "XDG_RUNTIME_DIR" "/gvfsd")
+          ];
+          dev = [
+            "/dev/dri"
+            "/dev/video0"
+          ];
+        };
+
         env = {
           ELECTRON_OZONE_PLATFORM_HINT = "wayland";
           XDG_DATA_DIRS = lib.makeSearchPath "share" [
@@ -107,4 +109,4 @@ mkNixPak {
         };
       };
     };
-}
+  }
