@@ -1,0 +1,94 @@
+set realname = "Antheo Raviel"
+set from = "z5437039@ad.unsw.edu.au"
+set use_from = yes
+set envelope_from = yes
+
+set smtp_url = "smtp://z5437039@ad.unsw.edu.au@smtp.office365.com:587"
+set imap_user = "z5437039@ad.unsw.edu.au"
+set folder = "imaps://z5437039@ad.unsw.edu.au@outlook.office365.com"
+set spoolfile = "+INBOX"
+set ssl_force_tls = yes
+
+# G to get mail
+bind index G imap-fetch-mail
+set editor = "nvim"
+set charset = "utf-8"
+set record = ''
+set imap_authenticators="oauthbearer:xoauth2"
+set imap_oauth_refresh_command="~/.local/scripts/mutt_oauth2.py ~/.local/share/unsw.token"
+set smtp_authenticators=${imap_authenticators}
+set smtp_oauth_refresh_command=${imap_oauth_refresh_command}
+set ssl_force_tls = "yes"
+set ssl_starttls  = "yes"
+set mail_check_stats
+set sleep_time = 0
+set sort=threads
+set sort_aux=reverse-last-date-received
+
+# HTML emails
+# set mailcap_path   = ~/.config/neomutt/mailcap
+# auto_view text/html
+
+## h to exit in every menu, l to go deeper, j and k for up and down, g and G for top and bottom
+bind pager,browser			h			exit
+bind attach,alias			h			exit
+bind pager				l			view-attachments
+bind pager 				k 			previous-line
+bind pager 				j 			next-line
+bind pager				g			top
+bind pager				G			bottom
+bind index				j			next-entry
+bind index				k			previous-entry
+bind attach,index 			g 			first-entry
+bind attach,index 			G 			last-entry
+bind index				l			display-message
+bind attach				l			view-attach
+bind browser,alias			l			select-entry
+bind index				/			search
+# Reply to all recipients
+bind index,pager 			R			group-reply
+## default binding for limit is l
+bind index				?			limit
+## default binding for help is ?
+bind index,pager,attach			<F1>			help
+## default binding for header view (toggle-weed) is h
+bind pager				H			display-toggle-weed
+bind attach,index,pager 		\CD 			next-page
+bind attach,index,pager 		\CU 			previous-page
+bind index,pager B sidebar-toggle-visible
+
+# Catppuccin
+color normal	  	default	default         # Text is "Text"
+color index	    	color2	default ~N      # New Messages are Green
+color index	    	color1	default ~F      # Flagged messages are Red
+color index	    	color13	default ~T      # Tagged Messages are Red
+color index	    	color1	default ~D      # Messages to delete are Red
+color attachment	color5	default         # Attachments are Pink
+color signature	 	color8	default         # Signatures are Surface 2
+color search		color4 	default         # Highlighted results are Blue
+
+color indicator		default	color8          # currently highlighted message Surface 2=Background Text=Foreground
+color error		color1 default          # error messages are Red
+color status		color15 default         # status line "Subtext 0"
+color tree        	color15 default         # thread tree arrows Subtext 0
+color tilde       	color15 default         # blank line padding Subtext 0
+
+color hdrdefault  	color13 default         # default headers Pink
+color header		color13 default "^From:"
+color header	 	color13 default "^Subject:"
+
+color quoted		color15 default         # Subtext 0
+color quoted1		color7 default          # Subtext 1
+color quoted2		color8 default          # Surface 2
+color quoted3		color0 default          # Surface 1
+color quoted4		color0 default
+color quoted5		color0 default
+
+color body		color2 default		[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+               # email addresses Green
+color body	  	color2 default		(https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+        # URLs Green
+color body		color4 default		(^|[[:space:]])\\*[^[:space:]]+\\*([[:space:]]|$) # *bold* text Blue
+color body		color4 default		(^|[[:space:]])_[^[:space:]]+_([[:space:]]|$)     # _underlined_ text Blue
+color body		color4 default		(^|[[:space:]])/[^[:space:]]+/([[:space:]]|$)     # /italic/ text Blue
+
+color sidebar_flagged   color1 default    # Mailboxes with flagged mails are Red
+color sidebar_new       color10 default   # Mailboxes with new mail are Green
