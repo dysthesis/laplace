@@ -19,7 +19,6 @@ in
       set spoolfile = "+INBOX"
       set ssl_force_tls = yes
       set ssl_starttls = yes
-      mailboxes =Important =Starred =Drafts ="Sent Mail" =Spam =Trash
 
       set header_cache = "$XDG_CACHE_HOME/mutt/headers"
       set message_cachedir = "$XDG_CACHE_HOME/mutt/bodies"
