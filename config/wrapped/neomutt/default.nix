@@ -8,12 +8,9 @@
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (lib) makeBinPath;
 
-  # Create a python environment with the dependencies for your oauth script.
-  # Add any other libraries your script needs to this list.
+  config = import ./config.nix {inherit pkgs lib;};
   pythonWithDeps = pkgs.python3.withPackages (ps: [
     ps.requests
-    # ps.keyring # This is often another dependency, add if needed
-    # ps.requests-oauthlib # Add if needed
   ]);
 
   deps = [
@@ -24,6 +21,6 @@
 in
   mkWrapper pkgs neomutt ''
     wrapProgram $out/bin/neomutt \
-      --add-flags "-F ${./neomuttrc}" \
+      --add-flags "-F ${config}" \
       --prefix PATH : "${makeBinPath deps}"
   ''
