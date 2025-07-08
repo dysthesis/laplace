@@ -8,5 +8,6 @@ pkgs.writeTextFile {
   text = ''
     text/html; ${lib.getExe pkgs.w3m} -I %{charset} -T text/html; copiousoutput;
     application/pdf; ${lib.getExe pkgs.configured.zathura} %s;
+    text/plain; cat %s; copiousoutput
   '';
 }
