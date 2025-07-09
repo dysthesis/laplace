@@ -1,20 +1,22 @@
 {
-  lib,
+  pkgs,
+  inputs,
   modulesPath,
   ...
-}:
-{
+}: {
   # Instead of using nixos-install, we build an image using `nix build .#nixosConfigurations.erebus.
   # config.system.build.sdImage`, and burn it to the SD card
   imports = [
     "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
+    inputs.nixos-hardware.nixosModules.raspberry-pi-3
     ./hardware.nix
   ];
 
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_rpi3;
   laplace = {
-    harden = [ "kernel" ];
+    harden = ["kernel"];
     zram.enable = true;
-    docker.enable = true;
+    # docker.enable = true;
     network = {
       wifi.enable = true;
       optimise = true;
@@ -24,12 +26,13 @@
       firewall.enable = true;
     };
     services.cloudflared.enable = true;
-    users = [ "demiurge" ];
+    users = ["demiurge"];
     nh = {
       enable = true;
       flakePath = "/home/demiurge/Documents/Projects/laplace";
     };
   };
+
   time.timeZone = "Australia/Sydney";
   i18n.defaultLocale = "en_AU.UTF-8";
 
@@ -52,14 +55,15 @@
   # };
 
   networking = {
-    wireless.networks."Connecting…".psk =
-      "4ade712dbff1b6101b91baca0c40bd5c30fa4e57da80838df27b625905b82310";
+    wireless = {
+      networks."Connecting…".psk = "4ade712dbff1b6101b91baca0c40bd5c30fa4e57da80838df27b625905b82310";
+      interfaces = ["wlan0"];
+    };
     nameservers = [
       "9.9.9.9"
       "9.0.0.9"
     ];
     stevenblack.enable = true;
   };
-
   boot.tmp.useTmpfs = true;
 }
