@@ -23,19 +23,22 @@
 
   cfg = elem "demiurge" config.laplace.users;
   ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
+  isDesktop = elem "desktop" config.laplace.profiles;
 in {
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
       shell =
-        if config.networking.hostName == "erebus"
-        then pkgs.bash
-        else "${pkgs.configured.bash}/bin/bash";
+        if isDesktop
+        then "${pkgs.configured.bash}/bin/bash"
+        else pkgs.bash;
+
       isNormalUser = true;
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF4Rfg1TJZb861LSAJZn1xKNO1PXf7Oz2Mucq//9Dr9s demiurge@phobos"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUPaVrhCJ8fDKDYCcIeICgCv6W+0GdGmMDrngIg1oKg demiurge@deimos"
       ];
+
       hashedPassword = "$y$j9T$WtVEPLB064z6W2eWFUPK81$xT7V9MzUIS.gcoaJzfYjMRY/I5Zi5Hl57XDo9EMwll5";
       extraGroups =
         [
@@ -54,17 +57,13 @@ in {
         ];
 
       packages = let
-        basePackages = with pkgs;
-          [
-            (uutils-coreutils.override {prefix = "";})
-            gnupg
-          ]
-          ++ (with pkgs.configured; [
-            fish
-            jujutsu
-          ]);
+        basePackages = with pkgs; [
+          gnupg
+        ];
+
         desktopPackages = with pkgs;
           [
+            (uutils-coreutils.override {prefix = "";})
             unstable.zotero
             swaylock
             signal-desktop
@@ -109,6 +108,7 @@ in {
             zk
             taskwarrior-tui
             neomutt
+            jujutsu
           ]);
 
         addIf = cond: content:
@@ -116,7 +116,7 @@ in {
           then content
           else [];
       in
-        basePackages ++ addIf (elem "desktop" config.laplace.profiles) desktopPackages;
+        basePackages ++ addIf isDesktop desktopPackages;
     };
   };
 }

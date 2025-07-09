@@ -1,9 +1,8 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     difftastic
   ];
-  programs.git = {
+  programs.git = rec {
     enable = true;
     lfs.enable = true;
     config = {
@@ -12,6 +11,10 @@
         email = "antheoraviel@protonmail.com";
         name = "Dysthesis";
         signingKey = "4F41D2DFD42D5568";
+      };
+      filter.encrypt = {
+        clean = "gpg --batch --yes --encrypt --recipient ${config.user.signingKey}";
+        smudge = "gpg --batch --yes --decrypt";
       };
       commit = {
         gpgsign = true;
