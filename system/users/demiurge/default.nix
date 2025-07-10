@@ -109,6 +109,7 @@ in {
             taskwarrior-tui
             neomutt
             jujutsu
+            helix
           ]);
 
         addIf = cond: content:
