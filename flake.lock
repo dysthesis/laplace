@@ -486,8 +486,8 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1748410175,
-        "narHash": "sha256-+d+Ex18ik7xOvefnQqvZSPkRPfWzSWgxSwciAwZcoeg=",
+        "lastModified": 1752312474,
+        "narHash": "sha256-YsTPoa4h5DhF33FGZW54LRsWi2gvRW5OJh3vKGdhSVk=",
         "path": "/home/demiurge/Documents/Projects/jormungandr",
         "type": "path"
       },
@@ -591,11 +591,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1751774635,
-        "narHash": "sha256-DuOznGdgMxeSlPpUu6Wkq0ZD5e2Cfv9XRZeZlHWMd1s=",
+        "lastModified": 1752305182,
+        "narHash": "sha256-6i4Q68G7wzNq1m2+l3lJUYgGZ9PwULvSVJpRSTTC46o=",
         "owner": "nix-community",
         "repo": "nix-index-database",
-        "rev": "85686025ba6d18df31cc651a91d5adef63378978",
+        "rev": "ad29e2961dd0d58372384563bf00d510fc9f2e15",
         "type": "github"
       },
       "original": {
@@ -659,11 +659,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1752297020,
-        "narHash": "sha256-1P/GqkUZLRz8kJr0UR8h5gYxNy01FsvCtCm+lSEyfKQ=",
+        "lastModified": 1752316024,
+        "narHash": "sha256-+ELnCf5PgV6fVNeGvqVEkCGwu/RVbVUvDHTrcPRXdO4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "1b7cbe23d5209cdbb7dbb4322675263e34696c47",
+        "rev": "fad352492ecf613d91f6553154da101a4d4e97b6",
         "type": "github"
       },
       "original": {
@@ -710,11 +710,11 @@
         "treefmt-nix": "treefmt-nix_5"
       },
       "locked": {
-        "lastModified": 1752297589,
-        "narHash": "sha256-HDz2wNc4vNOtp8WovlWBQEQkmuMWm+0rigBtBy+RgUQ=",
+        "lastModified": 1752312923,
+        "narHash": "sha256-VHnKt6DTkmHfrebIocAsW45RSBc5ZmOlkqUnHMxeUjU=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "38bbf9c5fe261f2720a9eda32d669a1a8dd50fed",
+        "rev": "bf02e535b3fc0172ebddba55bba8af4100b41919",
         "type": "github"
       },
       "original": {
