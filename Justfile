@@ -1,5 +1,11 @@
+update FLAKE="":
+  nix flake update --commit-lock-file {{FLAKE}} && git push
+
+upgrade: update
+  nh os switch
+
 format HOST:
-  sudo disko
+  sudo disko \
     --mode destroy,format,mount \
     --yes-wipe-all-disks \
     ./hosts/{{HOST}}/disks.nix
