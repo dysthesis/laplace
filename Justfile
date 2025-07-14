@@ -1,8 +1,10 @@
 update FLAKE="":
   nix flake update --commit-lock-file {{FLAKE}} && git push
 
-upgrade: update
+rebuild:
   nh os switch
+
+upgrade: update rebuild
 
 format HOST:
   sudo disko \
