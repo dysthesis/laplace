@@ -16,6 +16,7 @@
         inherit lib pkgs;
         inherit (inputs.read.packages.${pkgs.system}) read;
       };
+      pass = callPackage ./pass {inherit lib pkgs;};
       neomutt = callPackage ./neomutt {inherit lib pkgs;};
       zk = callPackage ./zk {inherit lib pkgs;};
       helix = callPackage ./helix {inherit lib pkgs;};
