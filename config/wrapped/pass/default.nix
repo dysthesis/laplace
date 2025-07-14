@@ -1,12 +1,17 @@
 {
   pkgs,
   lib,
-  pass-wayland,
+  pass,
   ...
 }: let
+  passBuild = pass.override {
+    waylandSupport = true;
+    x11Support = false;
+    dmenuSupport = false;
+  };
   inherit (lib.babel.pkgs) mkWrapper;
 in
-  mkWrapper pkgs pass-wayland
+  mkWrapper pkgs passBuild
   /*
   bash
   */
