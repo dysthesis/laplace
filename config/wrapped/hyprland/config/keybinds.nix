@@ -66,6 +66,13 @@ in {
     ++ workspaces
     ++ (import ./scratchpads.nix {inherit pkgs lib mod hyprland;});
 
+  binde = mkKeys mod {
+    "right" = "resizeactive, 10 0";
+    "left" = "resizeactive, -10 0";
+    "up" = "resizeactive, 0, -10";
+    "down" = "resizeactive, 0, 10";
+  };
+
   bindle = mapAttrsToList (key: value: ", ${key}, exec, ${value}") {
     "XF86AudioRaiseVolume" = "wpctl set-volume @DEFAULT_AUDIO_SINK@ ${audioIncreaseDelta}%+";
     "XF86AudioLowerVolume" = "wpctl set-volume @DEFAULT_AUDIO_SINK@ ${audioIncreaseDelta}%-";
