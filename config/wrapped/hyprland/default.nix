@@ -1,12 +1,14 @@
 {
+  hyprland,
+  config,
   pkgs,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
 
-  inherit (lib)
+  inherit
+    (lib)
     all
     concatMapStringsSep
     concatStrings
@@ -24,70 +26,68 @@ let
   # From:
   #   https://github.com/sioodmy/dotfiles/blob/d82f7db5080d0ff4d4920a11378e08df365aeeec/user/wrapped/hypr/tohyprconf.nix
   indentLevel = 0;
-  importantPrefixes = [ "$" ];
+  importantPrefixes = ["$"];
   initialIndent = concatStrings (replicate indentLevel "  ");
 
-  toHyprconf =
-    indent: attrs:
-    let
-      sections = filterAttrs (_n: v: isAttrs v || (isList v && all isAttrs v)) attrs;
+  toHyprconf = indent: attrs: let
+    sections = filterAttrs (_n: v: isAttrs v || (isList v && all isAttrs v)) attrs;
 
-      mkSection' =
-        name: attrs:
-        if lib.isList attrs then
-          concatMapStringsSep "\n" (a: mkSection' name a) attrs
-        else
-          ''
-            ${indent}${name} {
-            ${toHyprconf "  ${indent}" attrs}${indent}}
-          '';
+    mkSection' = name: attrs:
+      if lib.isList attrs
+      then concatMapStringsSep "\n" (a: mkSection' name a) attrs
+      else ''
+        ${indent}${name} {
+        ${toHyprconf "  ${indent}" attrs}${indent}}
+      '';
 
-      mkSection =
-        name: attrs:
-        if name == "animations" && !lib.isList attrs then
-          let
-            bezierAttrs = lib.filterAttrs (k: _: builtins.match "bezier" k != null) attrs;
-            animationAttrs = lib.filterAttrs (k: _: builtins.match "animation" k != null) attrs;
-            otherAttrs = builtins.removeAttrs attrs (lib.attrNames bezierAttrs ++ lib.attrNames animationAttrs);
-            renderFields = lib.generators.toKeyValue {
-              listsAsDuplicateKeys = true;
-              inherit indent;
-            };
-          in
-          ''
-            ${indent}animations {
-            ${renderFields bezierAttrs}
-            ${renderFields animationAttrs}
-            ${renderFields otherAttrs}
-            ${indent}  }
-          ''
-        else
-          mkSection' name attrs;
+    mkSection = name: attrs:
+      if name == "animations" && !lib.isList attrs
+      then let
+        bezierAttrs = lib.filterAttrs (k: _: builtins.match "bezier" k != null) attrs;
+        animationAttrs = lib.filterAttrs (k: _: builtins.match "animation" k != null) attrs;
+        otherAttrs = builtins.removeAttrs attrs (lib.attrNames bezierAttrs ++ lib.attrNames animationAttrs);
+        renderFields = lib.generators.toKeyValue {
+          listsAsDuplicateKeys = true;
+          inherit indent;
+        };
+      in ''
+        ${indent}animations {
+        ${renderFields bezierAttrs}
+        ${renderFields animationAttrs}
+        ${renderFields otherAttrs}
+        ${indent}  }
+      ''
+      else mkSection' name attrs;
 
-      mkFields = generators.toKeyValue {
-        listsAsDuplicateKeys = true;
-        inherit indent;
-      };
+    mkFields = generators.toKeyValue {
+      listsAsDuplicateKeys = true;
+      inherit indent;
+    };
 
-      allFields = filterAttrs (_n: v: !(isAttrs v || (isList v && all isAttrs v))) attrs;
+    allFields = filterAttrs (_n: v: !(isAttrs v || (isList v && all isAttrs v))) attrs;
 
-      isImportantField =
-        n: _: foldl (acc: prev: if hasPrefix prev n then true else acc) false importantPrefixes;
+    isImportantField = n: _:
+      foldl (acc: prev:
+        if hasPrefix prev n
+        then true
+        else acc)
+      false
+      importantPrefixes;
 
-      importantFields = filterAttrs isImportantField allFields;
+    importantFields = filterAttrs isImportantField allFields;
 
-      fields = builtins.removeAttrs allFields (mapAttrsToList (n: _: n) importantFields);
-    in
+    fields = builtins.removeAttrs allFields (mapAttrsToList (n: _: n) importantFields);
+  in
     mkFields importantFields
     + concatStringsSep "\n" (mapAttrsToList mkSection sections)
     + mkFields fields;
 
   mkConfig = conf: toHyprconf initialIndent conf |> toString |> pkgs.writeText "hyprland.conf";
-  config = mkConfig (import ./config { inherit pkgs lib; });
+  hyprlandConf = mkConfig (import ./config {inherit pkgs lib config hyprland;});
 in
-mkWrapper pkgs pkgs.hyprland
+  mkWrapper pkgs hyprland
   # sh
   ''
     wrapProgram $out/bin/Hyprland \
-      --add-flags "-c ${config}"
+      --add-flags "-c ${hyprlandConf}"
   ''
