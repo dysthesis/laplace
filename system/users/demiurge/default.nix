@@ -110,6 +110,7 @@ in {
             neomutt
             jujutsu
             pass
+            bibata-hyprcursor
           ]);
 
         addIf = cond: content:
