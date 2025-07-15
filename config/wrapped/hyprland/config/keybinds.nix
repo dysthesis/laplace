@@ -1,4 +1,5 @@
 {
+  hyprlock ? pkgs.hyprlock,
   hyprland ? pkgs.hyprland,
   pkgs,
   lib,
@@ -38,6 +39,13 @@ in {
         "Return" = exec pkgs.configured.ghostty;
         "P" = ''exec, '${getExe pkgs.slurp} | ${getExe pkgs.grim} -g - - | ${pkgs.wl-clipboard}/bin/wl-copy' '';
         "R" = "exec, ${pkgs.configured.bemenu}/bin/bemenu-run";
+        "G" = "togglegroup,";
+        "W" = "moveintogroup, u";
+        "A" = "moveintogroup, l";
+        "S" = "moveintogroup, d";
+        "D" = "moveintogroup, r";
+        "Tab" = "changegroupactive, f";
+        "Alt" = ", ,resizeactive,";
       }
       // mapAttrs (_key: value: "movefocus, ${value}") {
         "H" = "l";
@@ -47,8 +55,13 @@ in {
       }
     )
     ++ (mkKeys modShift {
+      "W" = "moveoutofgroup, up";
+      "A" = "moveoutofgroup, left";
+      "S" = "moveoutofgroup, down";
+      "D" = "moveoutofgroup, right";
       "F" = "togglefloating";
-      "L" = exec pkgs.hyprlock;
+      "L" = exec hyprlock;
+      "Tab" = "changegroupactive, b";
     })
     ++ workspaces
     ++ (import ./scratchpads.nix {inherit pkgs lib mod hyprland;});

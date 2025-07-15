@@ -1,4 +1,6 @@
 {
+  hypridle ? pkgs.hypridle,
+  hyprlock ? pkgs.hyprlock,
   hyprland ? pkgs.hyprland,
   pkgs,
   lib,
@@ -46,7 +48,8 @@
       ${swaybg}
       ${dunst}
       ${wlr-randr}
-      ${lib.getExe pkgs.hypridle}
+      ${lib.getExe pkgs.configured.waybar}
+      ${lib.getExe hypridle}
     '';
 in
   {
@@ -131,6 +134,6 @@ in
   }
   // (import ./animations.nix)
   // (import ./decoration.nix)
-  // (import ./keybinds.nix {inherit pkgs lib hyprland;})
+  // (import ./keybinds.nix {inherit pkgs lib hyprland hyprlock;})
   // (import ./input.nix)
   // (import ./rules.nix)
