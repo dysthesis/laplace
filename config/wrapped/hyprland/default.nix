@@ -1,4 +1,6 @@
 {
+  hypridle,
+  hyprlock,
   hyprland,
   config,
   pkgs,
@@ -82,8 +84,28 @@
     + concatStringsSep "\n" (mapAttrsToList mkSection sections)
     + mkFields fields;
 
+  hypridleConf = pkgs.writeText "hypridle.conf" (toHyprconf initialIndent (import ./config/hypridle.nix {
+    hyprlock = configuredHyprLock;
+    inherit lib;
+  }));
+
+  configuredHyprIdle = mkWrapper pkgs hypridle ''
+    wrapProgram $out/bin/hypridle \
+      --add-flags "-c ${hypridleConf}"
+  '';
+
+  hyprlockConf = pkgs.writeText "hyprlock.conf" (toHyprconf initialIndent (import ./config/hyprlock.nix));
+  configuredHyprLock = mkWrapper pkgs hyprlock ''
+    wrapProgram $out/bin/hyprlock \
+      --add-flags "-c ${hyprlockConf}"
+  '';
+
   mkConfig = conf: toHyprconf initialIndent conf |> toString |> pkgs.writeText "hyprland.conf";
-  hyprlandConf = mkConfig (import ./config {inherit pkgs lib config hyprland;});
+  hyprlandConf = mkConfig (import ./config {
+    inherit pkgs lib config hyprland;
+    hypridle = configuredHyprIdle;
+    hyprlock = configuredHyprLock;
+  });
 in
   mkWrapper pkgs hyprland
   # sh
