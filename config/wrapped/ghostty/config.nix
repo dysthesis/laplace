@@ -7,12 +7,9 @@
   cfg = config.networking.hostName == "phobos";
   fontSize =
     if cfg
-    then 11
+    then 7
     else 9;
-  padding =
-    if cfg
-    then 15
-    else 10;
+  padding = 10;
 in
   pkgs.writeText "ghostty-config" ''
     adjust-cell-height = 20%
