@@ -56,7 +56,7 @@ in
     env = [
       "QT_WAYLAND_DISABLE_WINDOWDECORATION,1"
       "HYPRCURSOR_THEME,Bibata-Modern-Classic-Hyprcursor"
-      "HYPRCURSOR_SIZE,${toString 20}"
+      "HYPRCURSOR_SIZE,${toString 16}"
     ];
     exec-once = [
       "${lib.getExe startup}"
