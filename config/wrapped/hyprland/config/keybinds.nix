@@ -37,7 +37,6 @@ in {
         "Q" = "killactive";
         "F" = "fullscreen";
         "Return" = exec pkgs.configured.ghostty;
-        "P" = ''exec, '${getExe pkgs.slurp} | ${getExe pkgs.grim} -g - - | ${pkgs.wl-clipboard}/bin/wl-copy' '';
         "R" = "exec, ${pkgs.configured.bemenu}/bin/bemenu-run";
         "G" = "togglegroup,";
         "W" = "moveintogroup, u";
@@ -61,6 +60,7 @@ in {
       "D" = "moveoutofgroup, right";
       "F" = "togglefloating";
       "L" = exec hyprlock;
+      "P" = "${lib.getExe pkgs.grimblast} --notify copy area";
       "Tab" = "changegroupactive, b";
     })
     ++ workspaces
