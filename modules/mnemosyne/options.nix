@@ -48,6 +48,8 @@ in {
         ]
         ++ addIf config.laplace.services.ollama.enable ["/var/lib/private/ollama" "/var/lib/private/open-webui"]
         ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
+        ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
+        ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
         ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"];
     };
     mountOpts = mkOption {
