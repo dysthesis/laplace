@@ -22,7 +22,7 @@
     ;
 
   cfg = elem "demiurge" config.laplace.users;
-  ifTheyExist = groups: filter (group: hasAttr group config.users.groups) groups;
+  ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
   isDesktop = elem "desktop" config.laplace.profiles;
 in {
   config = mkIf cfg {
@@ -49,11 +49,13 @@ in {
           "nix"
           "networkmanager"
         ]
-        ++ ifTheyExist [
+        ++ ifExists [
           "network"
           "docker"
           "podman"
           "libvirt"
+          "render"
+          "ollama"
         ];
 
       packages = let
