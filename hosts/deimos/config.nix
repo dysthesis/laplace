@@ -62,7 +62,10 @@ _: {
       users = ["demiurge"];
       display.servers = ["wayland"];
 
-      services.ollama.enable = true;
+      services = {
+        ollama.enable = true;
+        searxng.enable = true;
+      };
 
       virtualisation.enable = true;
       nh = {

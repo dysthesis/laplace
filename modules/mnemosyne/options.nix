@@ -2,20 +2,23 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkOption
     mkEnableOption
     ;
 
-  inherit (lib.types)
+  inherit
+    (lib.types)
     listOf
     str
     ;
-  addIf = cond: content: if cond then content else [ ];
-in
-{
+  addIf = cond: content:
+    if cond
+    then content
+    else [];
+in {
   options.mnemosyne = {
     enable = mkEnableOption "Whether to enable state persistence for ephemeral root";
     persistDir = mkOption {
@@ -43,9 +46,9 @@ in
           "/etc/mullvad-vpn"
           "/var/cache/mullvad-vpn"
         ]
-        ++ addIf config.laplace.services.ollama.enable [ "/var/lib/private/ollama" ]
-        ++ addIf config.laplace.virtualisation.enable [ "/var/lib/libvirt" ]
-        ++ addIf config.laplace.security.secure-boot.enable [ "/var/lib/sbctl" ];
+        ++ addIf config.laplace.services.ollama.enable ["/var/lib/private/ollama" "/var/lib/private/open-webui"]
+        ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
+        ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"];
     };
     mountOpts = mkOption {
       type = listOf str;
