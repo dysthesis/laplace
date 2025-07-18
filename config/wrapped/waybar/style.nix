@@ -5,8 +5,8 @@
 }: let
   size =
     if config.networking.hostName == "phobos"
-    then 7
-    else 8;
+    then 5
+    else 9;
 in
   pkgs.writeText "style.css" ''
     * {
