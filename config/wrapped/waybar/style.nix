@@ -7,6 +7,11 @@
     if config.networking.hostName == "phobos"
     then 5
     else 9;
+
+  margin =
+    if config.networking.hostName == "phobos"
+    then 2
+    else 3;
 in
   pkgs.writeText "style.css" ''
     * {
@@ -53,8 +58,8 @@ in
     	  text-shadow: none;
         padding: 0px;
         border-radius: 16px;
-        margin-top: 3px;
-        margin-bottom: 3px;
+        margin-top: ${toString margin}px;
+        margin-bottom: ${toString margin}px;
         padding-left: 3px;
         padding-right: 3px;
         color: @wb-color;
@@ -65,10 +70,10 @@ in
     #workspaces button.active {
         background: @wb-act-bg;
         color: @wb-act-color;
-        margin-left: 3px;
+        margin-left: ${toString margin}px;
         padding-left: ${toString size}px;
         padding-right: ${toString size}px;
-        margin-right: 3px;
+        margin-right: ${toString margin}px;
         animation: gradient_f 20s ease-in infinite;
         transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
     }
@@ -87,8 +92,8 @@ in
     	text-shadow: none;
         padding: 0px;
         border-radius: 9px;
-        margin-top: 3px;
-        margin-bottom: 3px;
+        margin-top: ${toString margin}px;
+        margin-bottom: ${toString margin}px;
         padding-left: 3px;
         padding-right: 3px;
         color: @wb-color;
@@ -99,10 +104,10 @@ in
     #taskbar button.active {
         background: @wb-act-bg;
         color: @wb-act-color;
-        margin-left: 3px;
+        margin-left: ${toString margin}px;
         padding-left: 12px;
         padding-right: 12px;
-        margin-right: 3px;
+        margin-right: ${toString margin}px;
         animation: gradient_f 20s ease-in infinite;
         transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
     }
@@ -160,37 +165,37 @@ in
 
     #custom-r_end {
         border-radius: 0px 21px 21px 0px;
-        margin-right: 9px;
+        margin-right: ${toString margin}px;
         padding-right: 3px;
     }
 
     #custom-l_end {
         border-radius: 21px 0px 0px 21px;
-        margin-left: 9px;
+        margin-left: ${toString margin}px;
         padding-left: 3px;
     }
 
     #custom-sr_end {
         border-radius: 0px;
-        margin-right: 9px;
+        margin-right: ${toString margin}px;
         padding-right: 3px;
     }
 
     #custom-sl_end {
         border-radius: 0px;
-        margin-left: 9px;
+        margin-left: ${toString margin}px;
         padding-left: 3px;
     }
 
     #custom-rr_end {
         border-radius: 0px 7px 7px 0px;
-        margin-right: 9px;
+        margin-right: ${toString margin}px;
         padding-right: 3px;
     }
 
     #custom-rl_end {
         border-radius: 7px 0px 0px 7px;
-        margin-left: 9px;
+        margin-left: ${toString margin}px;
         padding-left: 3px;
     }
   ''
