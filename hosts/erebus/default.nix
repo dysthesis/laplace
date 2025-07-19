@@ -14,6 +14,9 @@
 
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_rpi3;
   laplace = {
+    services = {
+      searxng.enable = true;
+    };
     harden = ["kernel"];
     zram.enable = true;
     # docker.enable = true;
@@ -56,6 +59,15 @@
       "9.9.9.9"
       "9.0.0.9"
     ];
+    services.resolved = {
+      enable = true;
+      dnssec = "true";
+      fallbackDns = [
+        "9.9.9.9"
+        "9.0.0.9"
+      ];
+      dnsovertls = "true";
+    };
     stevenblack.enable = true;
     enableIPv6 = true;
   };
