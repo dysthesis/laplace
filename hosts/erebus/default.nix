@@ -18,7 +18,7 @@
     zram.enable = true;
     # docker.enable = true;
     network = {
-      wifi.enable = true;
+      # wifi.enable = true;
       optimise = true;
     };
     security = {
@@ -57,6 +57,7 @@
       "9.0.0.9"
     ];
     stevenblack.enable = true;
+    enableIPv6 = true;
   };
   boot.tmp.useTmpfs = true;
 }
