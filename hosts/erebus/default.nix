@@ -71,5 +71,12 @@
     stevenblack.enable = true;
     enableIPv6 = true;
   };
+  fileSystems = {
+    "/mnt/data" = {
+      device = "/dev/disk/by-uuid/9e58df18-7075-4baa-9ee1-dc8e8d3b3b06";
+      fsType = "ext4";
+      options = ["data=journal"];
+    };
+  };
   boot.tmp.useTmpfs = true;
 }

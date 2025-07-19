@@ -26,4 +26,4 @@ image DISK:
   zstdcat result/sd-image/nixos-image-sd-card-*-linux.img.zst  | sudo dd of={{DISK}} status=progress
 
 sync-server:
-  rsync -av -e ssh . demiurge@192.168.1.185:Documents/Projects/laplace
+  rsync -av -e ssh $(pwd) demiurge@192.168.1.185:Documents/Projects/laplace
