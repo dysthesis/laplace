@@ -27,3 +27,6 @@ image DISK:
 
 sync-server:
   rsync -av -e ssh $(pwd) demiurge@192.168.1.185:Documents/Projects/laplace
+
+clean:
+  fd "core|result|out|test" --no-ignore-vcs -x rm
