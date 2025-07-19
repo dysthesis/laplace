@@ -59,24 +59,17 @@
       "9.9.9.9"
       "9.0.0.9"
     ];
-    services.resolved = {
-      enable = true;
-      dnssec = "true";
-      fallbackDns = [
-        "9.9.9.9"
-        "9.0.0.9"
-      ];
-      dnsovertls = "true";
-    };
     stevenblack.enable = true;
     enableIPv6 = true;
   };
-  fileSystems = {
-    "/mnt/data" = {
-      device = "/dev/disk/by-uuid/9e58df18-7075-4baa-9ee1-dc8e8d3b3b06";
-      fsType = "ext4";
-      options = ["data=journal"];
-    };
+  networking.useNetworkd = true;
+  systemd.network.enable = true;
+
+  # Tell networkd to acquire address + route via DHCP
+  systemd.network.networks."30-wlan0" = {
+    matchConfig.Name = "wlan0";
+    networkConfig.DHCP = "yes";
   };
+
   boot.tmp.useTmpfs = true;
 }

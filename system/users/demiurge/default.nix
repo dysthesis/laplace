@@ -62,7 +62,7 @@ in {
         basePackages = with pkgs; [
           rsync
           gnupg
-          configured.helix
+          inputs.poincare.packages.${system}.default
         ];
 
         desktopPackages = with pkgs;
