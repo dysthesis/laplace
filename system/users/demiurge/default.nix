@@ -61,6 +61,7 @@ in {
       packages = let
         basePackages = with pkgs; [
           gnupg
+          configured.helix
         ];
 
         desktopPackages = with pkgs;

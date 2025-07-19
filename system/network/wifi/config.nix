@@ -16,7 +16,7 @@ in {
       stevenblack.enable = true;
       enableIPv6 = true;
       networkmanager = {
-        enable = mkDefault true;
+        enable = mkDefault (!config.networking.wireless.enable);
         unmanaged = [
           "docker0"
           "rndis0"

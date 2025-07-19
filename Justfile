@@ -19,3 +19,8 @@ install HOST: (format HOST)
     --root /mnt \
     --show-trace \
     --no-root-password
+
+image DISK:
+  nix build ".#nixosConfigurations.erebus.config.system.build.sdImage" && \
+  sudo wipefs -a {{DISK}} && \
+  zstdcat result/sd-image/nixos-image-sd-card-*-linux.img.zst  | sudo dd of={{DISK}} status=progress
