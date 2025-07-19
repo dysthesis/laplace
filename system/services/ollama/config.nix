@@ -24,8 +24,11 @@ in {
           else null;
         environmentVariables = {
           HCC_AMDGPU_TARGET = "gfx1030"; # used to be necessary, but doesn't seem to anymore
-          OLLAMA_CONTEXT_LENGTH = "2048";
-          OLLAMA_FLASH_ATTENTION = "1";
+          ENABLE_WEB_SEARCH = "True";
+          WEB_SEARCH_ENGINE = "searxng";
+          WEB_SEARCH_RESULT_COUNT = "20";
+          WEB_SEARCH_CONCURRENT_REQUESTS = "20";
+          SEARXNG_QUERY_URL = "http://localhost:8100/search?q=<query>";
         };
         # results in environment variable "HSA_OVERRIDE_GFX_VERSION=10.3.0"
         rocmOverrideGfx = "10.3.0";
