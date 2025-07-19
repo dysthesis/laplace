@@ -9,5 +9,6 @@ pkgs.mkShell {
     just
     npins
     sops
+    rsync
   ];
 }
