@@ -60,6 +60,7 @@ in {
 
       packages = let
         basePackages = with pkgs; [
+          rsync
           gnupg
           configured.helix
         ];
