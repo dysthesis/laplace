@@ -2,19 +2,21 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   cfg = config.laplace.network.wifi;
-  inherit (lib) mkIf;
-in
-{
+  inherit
+    (lib)
+    mkIf
+    mkDefault
+    ;
+in {
   config = mkIf cfg.enable {
     networking = {
-      wireless.enable = false;
+      wireless.enable = mkDefault false;
       stevenblack.enable = true;
       enableIPv6 = true;
       networkmanager = {
-        enable = true;
+        enable = mkDefault true;
         unmanaged = [
           "docker0"
           "rndis0"
@@ -25,7 +27,7 @@ in
         };
       };
     };
-    programs.nm-applet.enable = true;
+    programs.nm-applet.enable = config.networking.networkmanager.enable;
     # slows down boot time
     systemd.services.NetworkManager-wait-online.enable = false;
   };
