@@ -63,6 +63,8 @@ in {
           rsync
           gnupg
           inputs.poincare.packages.${system}.default
+          age
+          sops
         ];
 
         desktopPackages = with pkgs;
