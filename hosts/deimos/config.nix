@@ -1,11 +1,11 @@
 _: {
   config = {
     laplace = {
-      harden = ["kernel"];
-      profiles = ["desktop"];
+      harden = [ "kernel" ];
+      profiles = [ "desktop" ];
       hardware = {
-        cpu = ["amd"];
-        gpu = ["amd"];
+        cpu = [ "amd" ];
+        gpu = [ "amd" ];
         monitors = [
           {
             name = "HDMI-A-1";
@@ -59,8 +59,8 @@ _: {
 
       impermanence.enable = true;
 
-      users = ["demiurge"];
-      display.servers = ["wayland"];
+      users = [ "demiurge" ];
+      display.servers = [ "wayland" ];
 
       services = {
         ollama.enable = true;

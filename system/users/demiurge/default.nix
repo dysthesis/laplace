@@ -4,18 +4,13 @@
   config,
   pkgs,
   ...
-}: let
-  inherit
-    (pkgs)
-    system
-    ;
+}:
+let
 
-  inherit
-    (lib)
+  inherit (lib)
     mkIf
     ;
-  inherit
-    (builtins)
+  inherit (builtins)
     elem
     filter
     hasAttr
@@ -24,14 +19,12 @@
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
   isDesktop = elem "desktop" config.laplace.profiles;
-in {
+in
+{
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
-      shell =
-        if isDesktop
-        then "${pkgs.configured.bash}/bin/bash"
-        else pkgs.bash;
+      shell = if isDesktop then "${pkgs.configured.bash}/bin/bash" else pkgs.bash;
 
       isNormalUser = true;
       openssh.authorizedKeys.keys = [
@@ -58,28 +51,25 @@ in {
           "ollama"
         ];
 
-      packages = let
-        basePackages = with pkgs; [
-          rsync
-          gnupg
-          inputs.poincare.packages.${system}.default
-          age
-          sops
-        ];
+      packages =
+        let
+          basePackages = with pkgs; [
+            rsync
+            gnupg
+            inputs.poincare.packages.${system}.default
+            age
+            sops
+          ];
 
-        desktopPackages = with pkgs;
-          [
-            (uutils-coreutils.override {prefix = "";})
-            unstable.zotero
-            swaylock
-            signal-desktop
+          cli = with pkgs; [
+            (uutils-coreutils.override { prefix = ""; })
+            bat
+          ];
+
+          dev = with pkgs; [
             git
             direnv
-            brightnessctl
-            prismlauncher
-            wl-clipboard
-            unstable.sbctl
-            tor-browser-bundle-bin
+            configured.jujutsu
             inputs.poincare.packages.${system}.default
             (inputs.daedalus.packages.${system}.default.override {
               shell = "${pkgs.configured.fish}/bin/fish";
@@ -88,42 +78,63 @@ in {
                 "~/Documents/University/"
               ];
             })
+          ];
+
+          desktop = with pkgs; [
+            swaylock
+            brightnessctl
+            wl-clipboard
             grim
             slurp
             swappy
-            bat
-          ]
-          ++ (with pkgs.configured; [
-            read
-            btop
-            newsraft
             bemenu
             yambar
             bash
-            ytfzf
+            ghostty
+            bibata-hyprcursor
+          ];
+
+          applications = with pkgs; [
+            unstable.zotero
+            signal-desktop
+            prismlauncher
+            tor-browser-bundle-bin
+          ];
+
+          system = with pkgs; [
+            unstable.sbctl
+          ];
+
+          apps = with pkgs.configured; [
             zathura
-            ani-cli
             spotify-player
             zen
             vesktop
-            taskwarrior
             irssi
             mpv
-            timewarrior
-            ghostty
-            zk
-            taskwarrior-tui
             neomutt
-            jujutsu
-            pass
-            bibata-hyprcursor
-          ]);
+          ];
 
-        addIf = cond: content:
-          if cond
-          then content
-          else [];
-      in
+          productivity = with pkgs.configured; [
+            read
+            newsraft
+            taskwarrior
+            timewarrior
+            taskwarrior-tui
+            zk
+            pass
+          ];
+
+          misc = with pkgs.configured; [
+            btop
+            ytfzf
+            ani-cli
+          ];
+
+          desktopPackages = cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;
+
+          addIf = cond: content: if cond then content else [ ];
+        in
         basePackages ++ addIf isDesktop desktopPackages;
     };
   };
