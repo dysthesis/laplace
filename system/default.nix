@@ -4,19 +4,19 @@
   lib,
   config,
   ...
-}: let
+}:
+let
   inherit (lib.babel.modules) importInDirectory;
   inherit (lib) getExe;
-in {
+in
+{
   config = {
     environment.sessionVariables = {
       BROWSER = lib.getExe pkgs.configured.zen;
       EDITOR = lib.getExe inputs.poincare.packages.${pkgs.system}.default;
     };
     boot.binfmt.emulatedSystems =
-      if (config.nixpkgs.system != "aarch64-linux")
-      then ["aarch64-linux"]
-      else [];
+      if (config.nixpkgs.system != "aarch64-linux") then [ "aarch64-linux" ] else [ ];
     services.openssh = {
       enable = lib.mkDefault true;
       settings = {
@@ -27,7 +27,7 @@ in {
         KbdInteractiveAuthentication = false;
       };
       openFirewall = true;
-      ports = [22];
+      ports = [ 22 ];
     };
     console = {
       earlySetup = true;

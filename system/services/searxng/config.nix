@@ -3,13 +3,15 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.laplace.services.searxng.enable;
   inherit (lib) mkIf;
   port = 8100;
-in {
+in
+{
   config = mkIf cfg {
-    networking.firewall.allowedTCPPorts = [port];
+    networking.firewall.allowedTCPPorts = [ port ];
     services.searx = {
       package = pkgs.searxng;
       enable = true;
@@ -41,7 +43,10 @@ in {
           autocomplete = "brave";
           safe_search = 0;
           default_lang = "en-AU";
-          formats = ["html" "json"];
+          formats = [
+            "html"
+            "json"
+          ];
         };
         server = {
           inherit port;
