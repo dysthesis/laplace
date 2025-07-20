@@ -31,7 +31,7 @@ in {
     };
     console = {
       earlySetup = true;
-      font = "${pkgs.terminus_font}/share/consolefonts/ter-120n.psf.gz";
+      font = lib.mkIf (builtins.elem "desktop" config.laplace.profiles) "${pkgs.terminus_font}/share/consolefonts/ter-120n.psf.gz";
     };
 
     system.stateVersion = "24.11";
