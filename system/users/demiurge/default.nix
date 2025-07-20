@@ -4,13 +4,13 @@
   config,
   pkgs,
   ...
-}:
-let
-
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkIf
     ;
-  inherit (builtins)
+  inherit
+    (builtins)
     elem
     filter
     hasAttr
@@ -19,12 +19,14 @@ let
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
   isDesktop = elem "desktop" config.laplace.profiles;
-in
-{
+in {
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
-      shell = if isDesktop then "${pkgs.configured.bash}/bin/bash" else pkgs.bash;
+      shell =
+        if isDesktop
+        then "${pkgs.configured.bash}/bin/bash"
+        else pkgs.bash;
 
       isNormalUser = true;
       openssh.authorizedKeys.keys = [
@@ -51,90 +53,91 @@ in
           "ollama"
         ];
 
-      packages =
-        let
-          basePackages = with pkgs; [
-            rsync
-            gnupg
-            inputs.poincare.packages.${system}.default
-            age
-            sops
-          ];
+      packages = let
+        basePackages = with pkgs; [
+          rsync
+          gnupg
+          inputs.poincare.packages.${pkgs.system}.default
+          age
+          sops
+        ];
 
-          cli = with pkgs; [
-            (uutils-coreutils.override { prefix = ""; })
-            bat
-          ];
+        cli = with pkgs; [
+          (uutils-coreutils.override {prefix = "";})
+          bat
+        ];
 
-          dev = with pkgs; [
-            git
-            direnv
-            configured.jujutsu
-            inputs.poincare.packages.${system}.default
-            (inputs.daedalus.packages.${system}.default.override {
-              shell = "${pkgs.configured.fish}/bin/fish";
-              targets = [
-                "~/Documents/Projects/"
-                "~/Documents/University/"
-              ];
-            })
-          ];
+        dev = with pkgs; [
+          git
+          direnv
+          configured.jujutsu
+          inputs.poincare.packages.${pkgs.system}.default
+          (inputs.daedalus.packages.${pkgs.system}.default.override {
+            shell = "${pkgs.configured.fish}/bin/fish";
+            targets = [
+              "~/Documents/Projects/"
+              "~/Documents/University/"
+            ];
+          })
+        ];
 
-          desktop = with pkgs; [
-            swaylock
-            brightnessctl
-            wl-clipboard
-            grim
-            slurp
-            swappy
-            bemenu
-            yambar
-            bash
-            ghostty
-            bibata-hyprcursor
-          ];
+        desktop = with pkgs; [
+          brightnessctl
+          wl-clipboard
+          grim
+          slurp
+          swappy
+          yambar
+          bash
+          configured.bibata-hyprcursor
+          configured.bemenu
+          configured.ghostty
+        ];
 
-          applications = with pkgs; [
-            unstable.zotero
-            signal-desktop
-            prismlauncher
-            tor-browser-bundle-bin
-          ];
+        applications = with pkgs; [
+          unstable.zotero
+          signal-desktop
+          prismlauncher
+          tor-browser-bundle-bin
+        ];
 
-          system = with pkgs; [
-            unstable.sbctl
-          ];
+        system = with pkgs; [
+          unstable.sbctl
+        ];
 
-          apps = with pkgs.configured; [
-            zathura
-            spotify-player
-            zen
-            vesktop
-            irssi
-            mpv
-            neomutt
-          ];
+        apps = with pkgs.configured; [
+          zathura
+          spotify-player
+          zen
+          vesktop
+          irssi
+          mpv
+          neomutt
+        ];
 
-          productivity = with pkgs.configured; [
-            read
-            newsraft
-            taskwarrior
-            timewarrior
-            taskwarrior-tui
-            zk
-            pass
-          ];
+        productivity = with pkgs.configured; [
+          read
+          newsraft
+          taskwarrior
+          timewarrior
+          taskwarrior-tui
+          zk
+          pass
+        ];
 
-          misc = with pkgs.configured; [
-            btop
-            ytfzf
-            ani-cli
-          ];
+        misc = with pkgs.configured; [
+          btop
+          ytfzf
+          ani-cli
+        ];
 
-          desktopPackages = cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;
+        desktopPackages = cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;
 
-          addIf = cond: content: if cond then content else [ ];
-        in
+        addIf = cond: content:
+          if cond
+          then content
+          else [];
+      in
         basePackages ++ addIf isDesktop desktopPackages;
     };
   };
