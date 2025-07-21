@@ -12,9 +12,9 @@
   monitorToSwayConfig = monitor: let
     fragments = [
       "output ${monitor.name}"
-      "resolution ${toString monitor.width}x${toString monitor.height}"
-      "bg ${../hyprland/wallpaper.png}"
+      "mode ${toString monitor.width}x${toString monitor.height}"
       (lib.optionalString (monitor.pos.x != null && monitor.pos.y != null) "pos ${toString monitor.pos.x} ${toString monitor.pos.y}")
+      "bg ${../hyprland/wallpaper.png} fill"
     ];
   in
     # Join the fragments with spaces to form a single line.
@@ -43,6 +43,14 @@ in
     name = "sway-config";
     text = ''
       ${monitorConfig}
+
+      smart_borders on
+      default_border pixel
+      titlebar_border_thickness 0
+      titlebar_padding 1
+
+      font JBMono Nerd Font 8
+
       set $mod Mod4
       # Home row direction keys, like vim
       set $left h
@@ -181,16 +189,16 @@ in
       bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 
       bar {
+          swaybar_command ${sway}/bin/swaybar
           position bottom
 
           # When the status_command prints a new line to stdout, swaybar updates.
           # The default just shows the current date and time.
-          status_command while ${pkgs.uutils-coreutils-noprefix}/bin/date +'%Y-%m-%d %X'; do sleep 1; done
-
+          status_command ${lib.getExe pkgs.i3status}
           colors {
               statusline #ffffff
-              background #323232
-              inactive_workspace #32323200 #32323200 #5c5c5c
+              background #000000
+              inactive_workspace #00000000 #00000000 #5c5c5c
           }
       }
 
