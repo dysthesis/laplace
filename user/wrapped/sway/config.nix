@@ -93,7 +93,9 @@
     */
     ''
       target="$1"
-      focused=$("${sway}/bin/swaymsg -t get_outputs | ${lib.getExe jq} -r '.[] | select(.focused == true) | .name'")
+      focused="$(${sway}/bin/swaymsg -t get_outputs | ${lib.getExe jq} -r '.[] | select(.focused == true) | .name')"
+      echo "Currently focused: $focused" >> $HOME/.cache/focus_ws_log
+      echo "Currently focused: $focused" >> $HOME/.cache/focus_ws_log
       ${sway}/bin/swaymsg workspace "$target"
       ${sway}/bin/swaymsg move workspace to "$focused"
     ''
