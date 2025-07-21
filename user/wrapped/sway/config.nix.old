@@ -1,0 +1,129 @@
+{
+  writeTextFile,
+  lib,
+  pkgs,
+  config,
+  swaylock,
+  ...
+}: let
+  # Generate configurations for a signle monitor
+  monitorToSwayConfig = monitor: let
+    fragments = [
+      "output ${monitor.name}"
+      "resolution ${toString monitor.width}x${toString monitor.height}@${toString monitor.refreshRate}"
+      (lib.optionalString (monitor.pos.x != null && monitor.pos.y != null) "pos ${toString monitor.pos.x} ${toString monitor.pos.y}")
+    ];
+  in
+    # Join the fragments with spaces to form a single line.
+    lib.concatStringsSep " " fragments;
+
+  # Map all of our monitors into config text
+  monitorConfig =
+    config.laplace.hardware.monitors
+    # For each monitor, convert them into a configuration line...
+    |> lib.map monitorToSwayConfig
+    # and combine them into a signle, newline-delimited string.
+    |> lib.concatStringsSep "\n";
+
+  inherit (lib.cli) toGNUCommandLineShell;
+  wlsunset = let
+    args = toGNUCommandLineShell {} {
+      t = "3700";
+      T = "6200";
+      g = "1.0";
+      l = config.location.latitude;
+      L = config.location.longitude;
+    };
+  in "${pkgs.wlsunset}/bin/wlsunset ${args}";
+in
+  writeTextFile {
+    name = "sway-config";
+    text = ''
+      set $mod Mod4  # super key as mod
+      output * bg ${../hyprland/wallpaper.png} fill
+
+      # Home row direction keys, like vim
+      set $left h
+      set $down j
+      set $up k
+      set $right l
+
+      exec swayidle -w \
+          timeout 300 ${lib.getExe swaylock} -f \
+          timeout 600 'swaymsg "output * dpms off"' \
+              resume 'swaymsg "output * dpms on"'
+
+      exec ${wlsunset}
+      exec ${pkgs.configured.dunst}/bin/dunst
+
+      # Keybinds
+      bindsym $mod+Return exec ${lib.getExe pkgs.configured.ghostty}
+      bindsym $mod+r exec ${pkgs.configured.bemenu}/bin/bemenu-run
+      bindsym $mod+q kill
+
+      bindsym $mod+$left focus left
+      bindsym $mod+$down focus down
+      bindsym $mod+$up focus up
+      bindsym $mod+$right focus right
+
+      bindsym $mod+Shift+$left move left
+      bindsym $mod+Shift+$down move down
+      bindsym $mod+Shift+$up move up
+      bindsym $mod+Shift+$right move right
+
+      mode "resize" {
+          bindsym $left resize shrink width 10px
+          bindsym $down resize grow height 10px
+          bindsym $up resize shrink height 10px
+          bindsym $right resize grow width 10px
+
+          # Return to default mode
+          bindsym Return mode "default"
+          bindsym Escape mode "default"
+      }
+      bindsym $mod+Shift+r mode "resize"
+
+      bindsym $mod+b splith
+      bindsym $mod+v splitv
+      bindsym $mod+f fullscreen
+      bindsym $mod+a focus parent
+      bindsym $mod+Shift+space floating toggle
+      bindsym $mod+space focus mode_toggle
+
+      bindsym $mod+1 workspace 1
+      bindsym $mod+2 workspace 2
+      bindsym $mod+3 workspace 3
+      bindsym $mod+4 workspace 4
+      bindsym $mod+5 workspace 5
+      bindsym $mod+6 workspace 6
+      bindsym $mod+7 workspace 7
+      bindsym $mod+8 workspace 8
+      bindsym $mod+9 workspace 9
+      bindsym $mod+0 workspace 10
+      # Move focused container to workspace
+      bindsym $mod+Shift+1 move container to workspace 1
+      bindsym $mod+Shift+2 move container to workspace 2
+      bindsym $mod+Shift+3 move container to workspace 3
+      bindsym $mod+Shift+4 move container to workspace 4
+      bindsym $mod+Shift+5 move container to workspace 5
+      bindsym $mod+Shift+6 move container to workspace 6
+      bindsym $mod+Shift+7 move container to workspace 7
+      bindsym $mod+Shift+8 move container to workspace 8
+      bindsym $mod+Shift+9 move container to workspace 9
+      bindsym $mod+Shift+0 move container to workspace 10
+
+      bar {
+          position bottom
+
+          status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
+
+          colors {
+              statusline #ffffff
+              background #000000
+              inactive_workspace #00000000 #00000000 #5c5c5c
+          }
+      }
+
+      default_border pixel 1
+    '';
+  }
