@@ -37,9 +37,10 @@
   mkScratchpad = scratchpad: ''
     for_window [app_id="${scratchpad.name}"] move scratchpad
     for_window [app_id="${scratchpad.name}"] scratchpad show
+    for_window [app_id="${scratchpad.name}"] position center
+    for_window [app_id="${scratchpad.name}"] resize set 75ppt 75ppt
     bindsym $mod+${scratchpad.prefix} exec sh -c '${sway}/bin/swaymsg [app_id="${scratchpad.name}"] scratchpad show || exec ${scratchpad.cmd}'
   '';
-
   scratchpads = [
     {
       name = "signal";
@@ -49,17 +50,21 @@
     rec {
       name = "ghostty.term";
       prefix = "t";
-      cmd = "ghostty --class=${name}";
+      cmd = "${pkgs.configured.ghostty}/bin/ghostty --class=${name}";
     }
     rec {
       name = "ghostty.notes";
       prefix = "n";
-      cmd = "ghostty --class=${name} -e 'tmux new-session -As Notes -c ~/Documents/Notes/Contents/ \'direnv exec . nvim\''";
+      cmd = let
+        notes-launcher = pkgs.writeShellScriptBin "notes-launcher" ''
+          exec ${pkgs.configured.ghostty}/bin/ghostty --class=${name} -e ${pkgs.tmux}/bin/tmux new-session -As Notes -c "$HOME/Documents/Notes/Contents" 'direnv exec . nvim'
+        '';
+      in "${getExe notes-launcher}";
     }
     rec {
       name = "ghostty.music";
       prefix = "m";
-      cmd = "ghostty --class=${name} -e spotify_player";
+      cmd = "${pkgs.configured.ghostty}/bin/ghostty --class=${name} -e spotify_player";
     }
   ];
 
@@ -101,9 +106,6 @@ in
       set $menu ${pkgs.configured.bemenu}/bin/bemenu-run
 
       ${scratchpadCfg}
-
-      # Set wallpaper
-      output * bg ${../hyprland/wallpaper.png}
 
       exec ${lib.getExe swayidle} -w \
                timeout 300 '${lib.getExe swaylock} -f -c 000000' \
