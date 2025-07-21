@@ -8,6 +8,7 @@
   config,
   ...
 }: let
+  inherit (lib) getExe;
   cfg = config.networking.hostName == "phobos";
   fontSize =
     if cfg
@@ -31,6 +32,40 @@
     # For each monitor, convert them into a configuration line...
     |> lib.map monitorToSwayConfig
     # and combine them into a signle, newline-delimited string.
+    |> lib.concatStringsSep "\n";
+
+  mkScratchpad = scratchpad: ''
+    for_window [app_id="${scratchpad.name}"] move scratchpad
+    for_window [app_id="${scratchpad.name}"] scratchpad show
+    bindsym $mod+${scratchpad.prefix} exec sh -c '${sway}/bin/swaymsg [app_id="${scratchpad.name}"] scratchpad show || exec ${scratchpad.cmd}'
+  '';
+
+  scratchpads = [
+    {
+      name = "signal";
+      prefix = "s";
+      cmd = "${getExe pkgs.signal-desktop} --enable-features=UseOzonePlatform --ozone-platform=wayland";
+    }
+    rec {
+      name = "ghostty.term";
+      prefix = "t";
+      cmd = "ghostty --class=${name}";
+    }
+    rec {
+      name = "ghostty.notes";
+      prefix = "n";
+      cmd = "ghostty --class=${name} -e 'tmux new-session -As Notes -c ~/Documents/Notes/Contents/ \'direnv exec . nvim\''";
+    }
+    rec {
+      name = "ghostty.music";
+      prefix = "m";
+      cmd = "ghostty --class=${name} -e spotify_player";
+    }
+  ];
+
+  scratchpadCfg =
+    scratchpads
+    |> lib.map mkScratchpad
     |> lib.concatStringsSep "\n";
 
   inherit (lib.cli) toGNUCommandLineShell;
@@ -64,6 +99,8 @@ in
       set $right l
       set $term ${lib.getExe pkgs.configured.ghostty}
       set $menu ${pkgs.configured.bemenu}/bin/bemenu-run
+
+      ${scratchpadCfg}
 
       # Set wallpaper
       output * bg ${../hyprland/wallpaper.png}
@@ -139,7 +176,7 @@ in
       bindsym $mod+v splitv
 
       # Switch the current container between different layout styles
-      bindsym $mod+s layout stacking
+      bindsym $mod+Shift+s layout stacking
       bindsym $mod+w layout tabbed
       bindsym $mod+e layout toggle split
 
@@ -196,7 +233,7 @@ in
       bar {
           swaybar_command ${sway}/bin/swaybar
           position bottom
-          height 20
+          height 18
 
           # When the status_command prints a new line to stdout, swaybar updates.
           # The default just shows the current date and time.
