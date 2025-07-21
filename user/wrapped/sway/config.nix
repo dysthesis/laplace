@@ -5,6 +5,8 @@
   pkgs,
   lib,
   writeTextFile,
+  writeShellScriptBin,
+  jq,
   config,
   ...
 }: let
@@ -56,7 +58,7 @@
       name = "ghostty.notes";
       prefix = "n";
       cmd = let
-        notes-launcher = pkgs.writeShellScriptBin "notes-launcher" ''
+        notes-launcher = writeShellScriptBin "notes-launcher" ''
           exec ${pkgs.configured.ghostty}/bin/ghostty --class=${name} -e ${pkgs.tmux}/bin/tmux new-session -As Notes -c "$HOME/Documents/Notes/Contents" 'direnv exec . nvim'
         '';
       in "${getExe notes-launcher}";
@@ -83,6 +85,19 @@
       L = config.location.longitude;
     };
   in "${pkgs.wlsunset}/bin/wlsunset ${args}";
+
+  focusWs =
+    writeShellScriptBin "focus_ws"
+    /*
+    bash
+    */
+    ''
+      target="$1"
+      focused=$("${sway}/bin/swaymsg -t get_outputs | ${lib.getExe jq} -r '.[] | select(.focused == true) | .name'")
+      ${sway}/bin/swaymsg workspace "$target"
+      ${sway}/bin/swaymsg move workspace to "$focused"
+    ''
+    |> lib.getExe;
 in
   writeTextFile {
     name = "sway-config";
@@ -151,16 +166,15 @@ in
       bindsym $mod+Shift+Right move right
 
       # Switch to workspace
-      bindsym $mod+1 workspace number 1
-      bindsym $mod+2 workspace number 2
-      bindsym $mod+3 workspace number 3
-      bindsym $mod+4 workspace number 4
-      bindsym $mod+5 workspace number 5
-      bindsym $mod+6 workspace number 6
-      bindsym $mod+7 workspace number 7
-      bindsym $mod+8 workspace number 8
-      bindsym $mod+9 workspace number 9
-      bindsym $mod+0 workspace number 10
+      bindsym $mod+1 exec ${focusWs} 1
+      bindsym $mod+2 exec ${focusWs} 2
+      bindsym $mod+3 exec ${focusWs} 3
+      bindsym $mod+4 exec ${focusWs} 4
+      bindsym $mod+5 exec ${focusWs} 5
+      bindsym $mod+6 exec ${focusWs} 6
+      bindsym $mod+7 exec ${focusWs} 7
+      bindsym $mod+8 exec ${focusWs} 8
+      bindsym $mod+9 exec ${focusWs} 9
 
       # Move focused container to workspace
       bindsym $mod+Shift+1 move container to workspace number 1
