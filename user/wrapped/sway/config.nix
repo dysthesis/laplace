@@ -88,16 +88,45 @@
 
   focusWs =
     writeShellScriptBin "focus_ws"
-    /*
-    bash
-    */
     ''
-      target="$1"
-      focused="$(${sway}/bin/swaymsg -t get_outputs | ${lib.getExe jq} -r '.[] | select(.focused == true) | .name')"
-      echo "Currently focused: $focused" >> $HOME/.cache/focus_ws_log
-      echo "Currently focused: $focused" >> $HOME/.cache/focus_ws_log
-      ${sway}/bin/swaymsg workspace "$target"
-      ${sway}/bin/swaymsg move workspace to "$focused"
+      set -eu
+
+      SWAYMSG_CMD="${sway}/bin/swaymsg"
+      JQ_CMD="${jq}/bin/jq"
+
+      if [ -z "''${1:-}" ]; then
+        echo "Usage: $0 <workspace_name_or_number>" >&2
+        exit 1
+      fi
+      TARGET_WS="$1"
+
+      workspaces_json=$($SWAYMSG_CMD -t get_workspaces)
+
+      current_ws_info=$($JQ_CMD -r '.[] | select(.focused == true)' <<< "$workspaces_json")
+      CURRENT_WS=$($JQ_CMD -r '.name' <<< "$current_ws_info")
+      CURRENT_OUTPUT=$($JQ_CMD -r '.output' <<< "$current_ws_info")
+
+      if [ "$CURRENT_WS" = "$TARGET_WS" ]; then
+        exit 0
+      fi
+
+      target_ws_info=$($JQ_CMD -r --arg target "$TARGET_WS" '.[] | select(.name == $target)' <<< "$workspaces_json")
+
+      if [ -z "$target_ws_info" ] || [ "$($JQ_CMD -r '.visible' <<< "$target_ws_info")" != "true" ]; then
+        $SWAYMSG_CMD workspace "$TARGET_WS"
+        exit 0
+      fi
+
+      TARGET_OUTPUT=$($JQ_CMD -r '.output' <<< "$target_ws_info")
+
+      if [ "$CURRENT_OUTPUT" != "$TARGET_OUTPUT" ]; then
+        $SWAYMSG_CMD \
+          "workspace \"$CURRENT_WS\"; move workspace to output \"$TARGET_OUTPUT\"; " \
+          "workspace \"$TARGET_WS\"; move workspace to output \"$CURRENT_OUTPUT\"; " \
+          "workspace \"$TARGET_WS\""
+      else
+        $SWAYMSG_CMD workspace "$TARGET_WS"
+      fi
     ''
     |> lib.getExe;
 in
