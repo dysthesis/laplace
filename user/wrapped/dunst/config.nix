@@ -1,4 +1,9 @@
-{
+{config, ...}: let
+  size =
+    if config.networking.hostName == "phobos"
+    then 5
+    else 8;
+in {
   global = {
     monitor = 1;
     frame_color = "#ffffff";
@@ -6,8 +11,8 @@
     width = 300;
     height = 228;
     offset = "0x15";
-    font = "JBMono Nerd Font 8";
-    corner_radius = 8;
+    font = "JBMono Nerd Font ${toString size}";
+    corner_radius = size;
     origin = "top-center";
     notification_limit = 3;
     idle_threshold = 120;

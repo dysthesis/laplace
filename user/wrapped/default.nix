@@ -51,7 +51,7 @@
       };
       ytfzf = callPackage ./ytfzf {inherit lib pkgs;};
       zathura = callPackage ./zathura {inherit lib pkgs;};
-      dunst = callPackage ./dunst {inherit lib pkgs;};
+      dunst = callPackage ./dunst {inherit lib pkgs config;};
       timewarrior = callPackage ./timewarrior {inherit lib pkgs;};
       xinit = callPackage ./xinit {
         inherit

@@ -27,7 +27,7 @@
     ''-i'' # ignorecase
     ''-p \" \"'' # prompt
     ''--fn \"JBMono Nerd Font ${toString fontSize}\"''
-    ''-H \"20\"''
+    ''-H \"18\"''
     ''--hp \"8\"''
     ''--fb \"#000000\"''
     ''--ff \"#ffffff\"''
