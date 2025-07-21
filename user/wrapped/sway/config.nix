@@ -12,7 +12,8 @@
   monitorToSwayConfig = monitor: let
     fragments = [
       "output ${monitor.name}"
-      "resolution ${toString monitor.width}x${toString monitor.height}@${toString monitor.refreshRate}"
+      "resolution ${toString monitor.width}x${toString monitor.height}"
+      "bg ${../hyprland/wallpaper.png}"
       (lib.optionalString (monitor.pos.x != null && monitor.pos.y != null) "pos ${toString monitor.pos.x} ${toString monitor.pos.y}")
     ];
   in
@@ -140,18 +141,13 @@ in
 
       # Move focus to the parent container
       bindsym $mod+a focus parent
-      #
-      # Scratchpad:
-      #
-          # Sway has a "scratchpad", which is a bag of holding for windows.
-          # You can send windows there and get them back later.
 
-          # Move the currently focused window to the scratchpad
-          bindsym $mod+Shift+minus move scratchpad
+      # Move the currently focused window to the scratchpad
+      bindsym $mod+Shift+minus move scratchpad
 
-          # Show the next scratchpad window or hide the focused scratchpad window.
-          # If there are multiple scratchpad windows, this command cycles through them.
-          bindsym $mod+minus scratchpad show
+      # Show the next scratchpad window or hide the focused scratchpad window.
+      # If there are multiple scratchpad windows, this command cycles through them.
+      bindsym $mod+minus scratchpad show
       #
       # Resizing containers:
       #
@@ -184,10 +180,6 @@ in
       bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
       bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 
-      #
-      # Status Bar:
-      #
-      # Read `man 5 sway-bar` for more information about this section.
       bar {
           position bottom
 
