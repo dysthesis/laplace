@@ -8,6 +8,11 @@
   config,
   ...
 }: let
+  cfg = config.networking.hostName == "phobos";
+  fontSize =
+    if cfg
+    then 5
+    else 8;
   # Generate configurations for a signle monitor
   monitorToSwayConfig = monitor: let
     fragments = [
@@ -49,7 +54,7 @@ in
       titlebar_border_thickness 0
       titlebar_padding 1
 
-      font JBMono Nerd Font 8
+      font JBMono Nerd Font ${toString fontSize}
 
       set $mod Mod4
       # Home row direction keys, like vim
@@ -191,6 +196,7 @@ in
       bar {
           swaybar_command ${sway}/bin/swaybar
           position bottom
+          height 20
 
           # When the status_command prints a new line to stdout, swaybar updates.
           # The default just shows the current date and time.

@@ -35,7 +35,7 @@
         inherit (pkgs) fish;
         inherit pkgs inputs lib;
       };
-      bemenu = callPackage ./bemenu {inherit pkgs lib;};
+      bemenu = callPackage ./bemenu {inherit pkgs config lib;};
       yambar = makeOverridable callPackage ./yambar {
         inherit pkgs lib;
         cacheDir = "/home/demiurge/.cache/dwl_info";
