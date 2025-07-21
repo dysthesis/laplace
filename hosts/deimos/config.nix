@@ -1,11 +1,11 @@
 _: {
   config = {
     laplace = {
-      harden = [ "kernel" ];
-      profiles = [ "desktop" ];
+      harden = ["kernel"];
+      profiles = ["desktop"];
       hardware = {
-        cpu = [ "amd" ];
-        gpu = [ "amd" ];
+        cpu = ["amd"];
+        gpu = ["amd"];
         monitors = [
           {
             name = "HDMI-A-1";
@@ -13,7 +13,7 @@ _: {
             height = 1080;
             refreshRate = 60;
             pos = {
-              x = 0;
+              x = 1920;
               y = 0;
             };
           }
@@ -24,7 +24,7 @@ _: {
             refreshRate = 165.001007;
             primary = true;
             pos = {
-              x = 1920;
+              x = 0;
               y = 0;
             };
           }
@@ -59,8 +59,8 @@ _: {
 
       impermanence.enable = true;
 
-      users = [ "demiurge" ];
-      display.servers = [ "wayland" ];
+      users = ["demiurge"];
+      display.servers = ["wayland"];
 
       services = {
         ollama.enable = true;

@@ -2,8 +2,7 @@
   pkgs,
   lib,
   ...
-}:
-let
+}: let
   bemenu = pkgs.bemenu.overrideAttrs (old: {
     patches = [
       # NOTE: This pull request enables fuzzy finding via the '-z' flag
@@ -21,7 +20,7 @@ let
     ''-i'' # ignorecase
     ''-p \" \"'' # prompt
     ''--fn \"JBMono Nerd Font 9\"''
-    ''-H \"26\"''
+    # ''-H \"26\"''
     ''--hp \"8\"''
     ''--fb \"#000000\"''
     ''--ff \"#ffffff\"''
@@ -35,7 +34,7 @@ let
   ];
   flags' = flags |> map (flag: ''--add-flags "${flag}"'') |> concatStringsSep " ";
 in
-mkWrapper pkgs bemenu
+  mkWrapper pkgs bemenu
   # sh
   ''
     for file in $out/bin/*; do
