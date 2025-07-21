@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   ...
@@ -14,13 +15,19 @@
   });
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) concatStringsSep;
-  flags = [
+  flags = let
+    cfg = config.networking.hostName == "phobos";
+    fontSize =
+      if cfg
+      then 5
+      else 9;
+  in [
     "-b" # bottom
     ''-z'' # fuzzy
     ''-i'' # ignorecase
     ''-p \" \"'' # prompt
-    ''--fn \"JBMono Nerd Font 9\"''
-    # ''-H \"26\"''
+    ''--fn \"JBMono Nerd Font ${toString fontSize}\"''
+    ''-H \"20\"''
     ''--hp \"8\"''
     ''--fb \"#000000\"''
     ''--ff \"#ffffff\"''
