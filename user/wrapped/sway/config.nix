@@ -1,4 +1,5 @@
 {
+  inputs,
   sway,
   swayidle,
   swaylock,
@@ -59,7 +60,7 @@
       prefix = "n";
       cmd = let
         notes-launcher = writeShellScriptBin "notes-launcher" ''
-          exec ${pkgs.configured.ghostty}/bin/ghostty --class=${name} -e ${pkgs.tmux}/bin/tmux new-session -As Notes -c "$HOME/Documents/Notes/Contents" 'direnv exec . nvim'
+          exec ${pkgs.configured.ghostty}/bin/ghostty --class=${name} -e ${lib.getExe inputs.daedalus.packages.${pkgs.system}.default} new-session -As Notes -c "$HOME/Documents/Notes/Contents" 'direnv exec . nvim'
         '';
       in "${getExe notes-launcher}";
     }
