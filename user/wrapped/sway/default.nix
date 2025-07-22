@@ -1,4 +1,5 @@
 {
+  inputs,
   pkgs,
   lib,
   callPackage,
@@ -8,7 +9,7 @@
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
   configFile = callPackage ./config.nix {
-    inherit lib pkgs config;
+    inherit lib pkgs config inputs;
     sway = sway-unwrapped;
   };
 in
