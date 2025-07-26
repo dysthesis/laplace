@@ -12,7 +12,8 @@
       # sh
       ''
         if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-         exec ${lib.getExe pkgs.configured.sway}
+         # exec ${lib.getExe pkgs.configured.sway}
+         exec ${pkgs.configured.xinit}/bin/startx
         fi
       '';
   in
