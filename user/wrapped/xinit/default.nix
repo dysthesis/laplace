@@ -2,6 +2,7 @@
   inputs,
   pkgs,
   lib,
+  xinit,
   ...
 }: let
   inherit (lib) getExe;
@@ -35,8 +36,8 @@
       exec ${xmonad}/bin/xmonad-configured
     '';
 in
-  mkWrapper pkgs pkgs.xorg.xinit ''
+  mkWrapper pkgs xinit ''
     wrapProgram "$out/bin/startx" --set XINITRC ${xinitrc} --prefix PATH ":" "${
-      lib.makeBinPath [inputs.mandelbrot.packages.${pkgs.system}.xmobar]
+      lib.makeBinPath [inputs.mandelbrot.packages.${pkgs.system}.xmobar xinit]
     }";
   ''
