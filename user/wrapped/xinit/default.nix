@@ -31,7 +31,11 @@
       ${getExe udiskie} &
       ${getExe hsetroot} -cover ${./wallpaper.png} &
       ${inputs.mandelbrot.packages.${system}.xmobar} &
+      ${getExe picom} --backend "glx" --blur-method "dual_kawase" --blur-strength 3 &
       ${getExe networkmanagerapplet} &
+      systemctl import-environment --user DISPLAY WAYLAND_DISPLAY XDG_SESSION_TYPE DBUS_SESSION_BUS_ADDRESS \
+        QT_QPA_PLATFORMTHEME PATH XCURSOR_SIZE XCURSOR_THEME
+
 
       exec ${xmonad}/bin/xmonad-configured
     '';
