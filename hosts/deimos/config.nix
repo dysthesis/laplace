@@ -60,7 +60,7 @@ _: {
       impermanence.enable = true;
 
       users = ["demiurge"];
-      display.servers = ["wayland"];
+      display.servers = ["xorg"];
 
       services = {
         ollama.enable = true;
