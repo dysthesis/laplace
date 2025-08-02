@@ -4,20 +4,16 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit lib;
     inherit pkgs;
   };
 in
-mkNixPak {
-  config =
-    { sloth, ... }:
-    let
+  mkNixPak {
+    config = {sloth, ...}: let
       envSuffix = envKey: suffix: sloth.concat' (sloth.env envKey) suffix;
-    in
-    rec {
+    in rec {
       app.package = pkgs.vesktop;
       flatpak.appId = "dev.vencord.Vesktop";
 
@@ -50,7 +46,8 @@ mkNixPak {
         network = true;
         shareIpc = true;
         sockets = {
-          wayland = lib.mkDefault true;
+          wayland = lib.mkDefault (builtins.elem "wayland" config.laplace.display.servers);
+          x11 = lib.mkDefault (builtins.elem "xorg" config.laplace.display.servers);
           pulse = lib.mkDefault true;
         };
         bind = {
@@ -112,4 +109,4 @@ mkNixPak {
         };
       };
     };
-}
+  }

@@ -81,18 +81,36 @@ in {
           })
         ];
 
-        desktop = with pkgs; [
-          brightnessctl
-          wl-clipboard
-          grim
-          slurp
-          swappy
-          yambar
-          bash
-          configured.bibata-hyprcursor
-          configured.bemenu
-          configured.ghostty
-        ];
+        desktop = with pkgs;
+          [
+            brightnessctl
+            bash
+          ]
+          ++ addIf (builtins.elem "wayland" config.laplace.display.servers) [
+            wl-clipboard
+            grim
+            slurp
+            swappy
+            configured.bibata-hyprcursor
+            configured.bemenu
+            configured.ghostty
+          ]
+          ++ addIf (builtins.elem "xorg" config.laplace.display.servers) (
+            with inputs.gungnir.packages.${pkgs.system}; let
+              fontSize =
+                if config.networking.hostName == "phobos"
+                then 15
+                else 12;
+            in [
+              xsecurelock
+              xclip
+              (st {
+                inherit fontSize;
+                borderpx = 20;
+              })
+              (dmenu {inherit fontSize;})
+            ]
+          );
 
         applications = with pkgs; [
           unstable.zotero

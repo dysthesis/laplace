@@ -8,12 +8,14 @@
   inherit (builtins) elem;
   inherit (lib) optionalString;
   configuration = let
+    startWayland = "exec ${lib.getExe pkgs.configured.sway}";
+    startXorg = "exec ${pkgs.configured.xinit}/bin/startx";
     startDisplay =
       # sh
       ''
         if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-         exec ${lib.getExe pkgs.configured.sway}
-         # exec ${pkgs.configured.xinit}/bin/startx
+         ${optionalString (elem "wayland" config.laplace.display.servers) startWayland}
+         ${optionalString (elem "xorg" config.laplace.display.servers) startXorg}
         fi
       '';
   in
