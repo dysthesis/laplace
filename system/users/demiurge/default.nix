@@ -70,6 +70,7 @@ in {
         cli = with pkgs; [
           (uutils-coreutils.override {prefix = "";})
           bat
+          tealdeer
         ];
 
         dev = with pkgs; [
