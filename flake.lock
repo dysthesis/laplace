@@ -438,11 +438,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1754145199,
-        "narHash": "sha256-EqPjms3m7LzsCdYfcA+63fs+mVHFD4cdIREAXV/y5+M=",
+        "lastModified": 1754193024,
+        "narHash": "sha256-KsYLTnxA85pJu1ax66Wgt04KayneUXq3HtFoFSjUxEY=",
         "owner": "dysthesis",
         "repo": "gungnir",
-        "rev": "ed65c5d8feaf46e80f25c7ec6742d4a556c7c0f9",
+        "rev": "330ad18c3790ecd6f8620cd7aa23e9f405728b3c",
         "type": "github"
       },
       "original": {
@@ -591,11 +591,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1753589988,
-        "narHash": "sha256-y1JlcMB2dKFkrr6g+Ucmj8L//IY09BtSKTH/A7OU7mU=",
+        "lastModified": 1754193835,
+        "narHash": "sha256-LwxKT/px0P+V+Uf8UIp0Wq0BCSvAZRoiJ4lZqFQDlBQ=",
         "owner": "nix-community",
         "repo": "nix-index-database",
-        "rev": "f0736b09c43028fd726fb70c3eb3d1f0795454cf",
+        "rev": "b9f618a0b22d2c58a620afb7e2dec93582980057",
         "type": "github"
       },
       "original": {
@@ -659,11 +659,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1754145050,
-        "narHash": "sha256-BwRZ2xn3qp6V7whEM69klXWpjxyEZ7yrj6BHYxArp2g=",
+        "lastModified": 1754189740,
+        "narHash": "sha256-rnh2ROtYGNkyv31PKTj1Pla0/WP6uj4t2Yc1mzuackU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "989a60c635b4dfa6465d88a4aabf840b7fdc3aef",
+        "rev": "0cdc40cf84f7cb893ef32cc619283d71385a812d",
         "type": "github"
       },
       "original": {
@@ -961,11 +961,11 @@
         "treefmt-nix": "treefmt-nix_10"
       },
       "locked": {
-        "lastModified": 1751873904,
-        "narHash": "sha256-X7WPZQZVdUIZbNjXW5lbmwYzj9yoNbEe9PK/e0pR/yQ=",
+        "lastModified": 1754191311,
+        "narHash": "sha256-DOPsY1fxi0J1B7zr4qdu8jcjP1aV5MrLkIOpw7diIOk=",
         "owner": "dysthesis",
         "repo": "status",
-        "rev": "e4df53909268d35a6912e7bf6623b2d0073d9e72",
+        "rev": "0c1b22370bb14b9975deb0d649a5a82a16d484ea",
         "type": "github"
       },
       "original": {
