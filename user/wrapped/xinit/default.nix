@@ -19,7 +19,6 @@
       xset -dpms
       setterm -blank 0 -powerdown 0
 
-      # turn off black Screensaver
       xset s off
 
       dbus-update-activation-environment --systemd --all

@@ -54,6 +54,11 @@ in {
         ];
 
       packages = let
+        addIf = cond: content:
+          if cond
+          then content
+          else [];
+
         basePackages = with pkgs; [
           rsync
           gnupg
@@ -107,8 +112,12 @@ in {
               (st {
                 inherit fontSize;
                 borderpx = 20;
+                shell = lib.getExe pkgs.configured.fish;
               })
-              (dmenu {inherit fontSize;})
+              (dmenu {
+                inherit fontSize;
+                lineHeight = 26;
+              })
             ]
           );
 
@@ -143,18 +152,15 @@ in {
           pass
         ];
 
-        misc = with pkgs.configured; [
-          btop
-          ytfzf
-          ani-cli
-        ];
+        misc = with pkgs.configured;
+          [
+            btop
+            ytfzf
+            ani-cli
+          ]
+          ++ (with pkgs; [yt-dlp]);
 
         desktopPackages = cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;
-
-        addIf = cond: content:
-          if cond
-          then content
-          else [];
       in
         basePackages ++ addIf isDesktop desktopPackages;
     };
