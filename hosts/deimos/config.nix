@@ -37,7 +37,7 @@ _: {
       network = {
         bluetooth.enable = true;
         wifi.enable = true;
-        vpn.enable = true;
+        vpn.enable = false;
         tor = {
           enable = true;
           libera-chat-map.enable = true;
