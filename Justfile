@@ -4,6 +4,11 @@ update FLAKE="":
 rebuild:
   nh os switch
 
+pull:
+  git pull
+
+sync: pull rebuild
+
 upgrade: update rebuild
 
 format HOST:
