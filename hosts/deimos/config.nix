@@ -1,4 +1,8 @@
-_: {
+{inputs, ...}: {
+  imports = [
+    inputs.nixos-hardware.nixosModules.common-cpu-amd # APU logic
+    inputs.nixos-hardware.nixosModules.common-gpu-amd # AMD GPU support
+  ];
   config = {
     laplace = {
       harden = ["kernel"];
