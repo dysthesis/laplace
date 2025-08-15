@@ -52,6 +52,7 @@ in {
       jbcustom-nf
       sf-pro
       georgia-fonts
+      newcomputermodern
       nerd-fonts.jetbrains-mono
     ];
     services = {
