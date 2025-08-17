@@ -6,6 +6,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 
+    # radicle-tui = {
+    #   url = "git+https://seed.radicle.xyz/z39mP9rQAaGmERfUMPULfPUi473tY.git?rev=a2de36ddfb307f77de0d666944f520e5ea51e418";
+    # };
+
     # Formatter for the whole codebase
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";

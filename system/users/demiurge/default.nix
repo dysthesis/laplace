@@ -72,6 +72,7 @@ in {
           bat
           tealdeer
           radicle-node
+          # inputs.radicle-tui.packages.${pkgs.system}.default
         ];
 
         dev = with pkgs; [
@@ -92,6 +93,7 @@ in {
           [
             brightnessctl
             bash
+            calibre
           ]
           ++ addIf (builtins.elem "wayland" config.laplace.display.servers) [
             wl-clipboard
