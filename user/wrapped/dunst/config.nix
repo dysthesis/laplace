@@ -1,7 +1,7 @@
 {config, ...}: let
   size =
     if config.networking.hostName == "phobos"
-    then 5
+    then 8
     else 8;
 in {
   global = {
