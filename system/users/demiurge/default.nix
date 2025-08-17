@@ -71,6 +71,7 @@ in {
           (uutils-coreutils.override {prefix = "";})
           bat
           tealdeer
+          radicle-node
         ];
 
         dev = with pkgs; [
