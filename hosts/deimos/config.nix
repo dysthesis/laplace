@@ -69,6 +69,7 @@
       services = {
         ollama.enable = true;
         searxng.enable = true;
+        # radicle.enable = true;
       };
 
       virtualisation.enable = true;
