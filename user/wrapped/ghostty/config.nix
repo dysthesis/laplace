@@ -7,7 +7,7 @@
   cfg = config.networking.hostName == "phobos";
   fontSize =
     if cfg
-    then 5
+    then 9
     else 9;
   padding = 10;
 in
