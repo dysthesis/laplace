@@ -2,20 +2,23 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkOption
     mkEnableOption
     ;
 
-  inherit (lib.types)
+  inherit
+    (lib.types)
     listOf
     str
     ;
-  addIf = cond: content: if cond then content else [ ];
-in
-{
+  addIf = cond: content:
+    if cond
+    then content
+    else [];
+in {
   options.mnemosyne = {
     enable = mkEnableOption "Whether to enable state persistence for ephemeral root";
     persistDir = mkOption {
@@ -47,10 +50,12 @@ in
           "/var/lib/private/ollama"
           "/var/lib/private/open-webui"
         ]
-        ++ addIf config.laplace.virtualisation.enable [ "/var/lib/libvirt" ]
-        ++ addIf config.laplace.security.secure-boot.enable [ "/var/lib/sbctl" ]
-        ++ addIf config.laplace.virtualisation.enable [ "/var/lib/libvirt" ]
-        ++ addIf config.laplace.security.secure-boot.enable [ "/var/lib/sbctl" ];
+        ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
+        ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
+        ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
+        ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
+        ++ addIf config.laplace.docker.enable [config.laplace.docker.dataDir]
+        ++ addIf config.laplace.services.ollama.enable [config.laplace.services.ollama.dataDir];
     };
     mountOpts = mkOption {
       type = listOf str;

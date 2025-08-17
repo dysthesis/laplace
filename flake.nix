@@ -123,49 +123,7 @@
       "aarch64-darwin"
     ];
 
-    overlay-whisper = final: prev: {
-      # 1. bring in shaderc + SPIR-V-Tools HEAD (after Apr-2025)
-      shaderc = prev.shaderc.overrideAttrs (old: {
-        src = prev.fetchFromGitHub {
-          owner = "google";
-          repo = "shaderc";
-          rev = "c2f2d372ef59f2c2b6e4c1a2f9a51c713602f9b8"; # ≥ 2025-07-15
-          hash = "sha256-…";
-        };
-        # build-time deps stay the same
-      });
-
-      # 2. re-wire whisper-cpp so it uses the new shaderc
-      whisper-cpp = prev.whisper-cpp.override {
-        vulkanSupport = true; # keep Vulkan on
-        shaderc = final.shaderc; # pick the patched one
-      };
-
-      /*
-         -- OPTIONAL ---------------------------------------------------------
-      # 3a. if you prefer to disable BF16 shaders explicitly:
-      whisper-cpp = prev.whisper-cpp.overrideAttrs (old: {
-        cmakeFlags = old.cmakeFlags ++ [ "-DGGML_VULKAN_BFLOAT16_GLSLC_SUPPORT=OFF" ];
-      });
-
-      # 3b. or instead patch vulkan-shaders-gen to drop '-O'
-      */
-    };
-    overlays = [
-      overlay-whisper
-      # (_self: super: {
-      #   ggml = super.ggml.overrideAttrs (old: {
-      #     CMAKE_FLAGS =
-      #       (old.CMAKE_FLAGS or [])
-      #       ++ [
-      #         "-DGGML_HIP=ON"
-      #         "-DGGML_HIP_ARCHITECTURE=gfx1032"
-      #       ];
-      #   });
-      # })
-    ];
-
-    forAllSystems = lib.babel.forAllSystems {inherit systems overlays;};
+    forAllSystems = lib.babel.forAllSystems {inherit systems;};
 
     treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
   in
