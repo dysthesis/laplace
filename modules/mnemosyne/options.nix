@@ -55,7 +55,8 @@ in {
         ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
         ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
         ++ addIf config.laplace.docker.enable [config.laplace.docker.dataDir]
-        ++ addIf config.laplace.services.ollama.enable [config.laplace.services.ollama.dataDir];
+        ++ addIf config.laplace.services.ollama.enable [config.laplace.services.ollama.dataDir]
+        ++ addIf config.laplace.services.radicle.enable [config.laplace.services.radicle.dataDir];
     };
     mountOpts = mkOption {
       type = listOf str;
