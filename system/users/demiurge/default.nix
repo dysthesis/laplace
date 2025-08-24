@@ -73,6 +73,9 @@ in {
           tealdeer
           radicle-node
           # inputs.radicle-tui.packages.${pkgs.system}.default
+          (openai-whisper.override {
+            triton = null;
+          })
         ];
 
         dev = with pkgs; [

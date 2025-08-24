@@ -6,7 +6,6 @@
   ...
 }: let
   inherit (lib.babel.modules) importInDirectory;
-  inherit (lib) getExe;
 in {
   config = {
     environment.sessionVariables = {
@@ -27,7 +26,10 @@ in {
         KbdInteractiveAuthentication = false;
       };
       openFirewall = true;
-      ports = [22];
+      ports = [
+        22
+        8089 # calibre
+      ];
     };
     console = {
       earlySetup = true;
