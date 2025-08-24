@@ -42,6 +42,7 @@
         bluetooth.enable = true;
         wifi.enable = true;
         vpn.enable = false;
+        dnscrypt-proxy.enable = true;
         tor = {
           enable = true;
           libera-chat-map.enable = true;
@@ -87,15 +88,15 @@
       "1.1.1.1"
       "1.0.0.1"
     ];
-    services.resolved = {
-      enable = true;
-      dnssec = "true";
-      fallbackDns = [
-        "8.8.8.8"
-        "8.0.0.8"
-      ];
-      dnsovertls = "true";
-    };
+    # services.resolved = {
+    #   enable = true;
+    #   dnssec = "true";
+    #   fallbackDns = [
+    #     "8.8.8.8"
+    #     "8.0.0.8"
+    #   ];
+    #   dnsovertls = "true";
+    # };
     programs.steam = {
       enable = true;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
