@@ -9,16 +9,20 @@
 in {
   config = mkIf cfg.enable {
     virtualisation = {
-      podman = {
+      docker = {
         enable = true;
         autoPrune = {
           enable = true;
           flags = ["-af"];
         };
+        storageDriver = "btrfs";
+        daemon.settings = {
+          "data-root" = "/var/cache/docker";
+          "log-driver" = "json-file";
+        };
 
         # Extra packages to be installed in the Podman wrapper
         extraPackages = with pkgs; [
-          podman-compose
           gvisor
         ];
       };

@@ -41,7 +41,6 @@
       network = {
         bluetooth.enable = true;
         wifi.enable = true;
-        vpn.enable = false;
         dnscrypt-proxy.enable = true;
         tor = {
           enable = true;

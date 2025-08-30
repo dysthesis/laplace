@@ -133,6 +133,8 @@ in {
           signal-desktop
           prismlauncher
           tor-browser-bundle-bin
+          tigervnc
+          inputs.jormungandr.packages.${pkgs.system}.default
         ];
 
         system = with pkgs; [
