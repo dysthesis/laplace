@@ -486,8 +486,8 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1756510385,
-        "narHash": "sha256-v4Qc1jV1PXPyQvVJq1Dsnmf0ekeK63s2PJf0BmO7uoI=",
+        "lastModified": 1756520657,
+        "narHash": "sha256-cl+jFtDtg25ypFhEMewAJiZO49bSozqoN7cBUeCH8oM=",
         "path": "/home/demiurge/Documents/Projects/jormungandr",
         "type": "path"
       },
@@ -659,11 +659,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1756508865,
-        "narHash": "sha256-h2jpdGWPmkYCWli5EE9T0n3BeIf2d2Mx5CB6w3V//D4=",
+        "lastModified": 1756520556,
+        "narHash": "sha256-nVds5NtG0zfSCmvRYkcPOoVGXqr+RUWxO+7775S9FcE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "95d232e66ade1de5613dc3fcb4095a5389d6ab11",
+        "rev": "4b3047e8152ef320e1306b2afa4f6d8014d9821e",
         "type": "github"
       },
       "original": {
