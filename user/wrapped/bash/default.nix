@@ -39,6 +39,7 @@
         in ''
           ${wlr-randr} ${wlr-randr-args}
         '';
+        emacs = inputs.jormungandr.packages.${pkgs.system}.default;
       in
         pkgs.writeShellScriptBin "startup" ''
           if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
@@ -55,6 +56,7 @@
           ${wlr-randr}
           ${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${lib.getExe pkgs.cliphist} store &
           ${pkgs.wl-clipboard}/bin/wl-paste --type image --watch ${lib.getExe pkgs.cliphist} store &
+          ${emacs}/bin/emacs --daemon
 
           systemctl --user start dwl-session.target
         '';

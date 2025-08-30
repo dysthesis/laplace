@@ -2,16 +2,14 @@
   lib,
   config,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.harden;
-in
-{
+in {
   config = mkIf (elem "malloc" cfg) {
     environment = {
-      memoryAllocator.provider = "scudo";
+      memoryAllocator.provider = "graphene-hardened";
       variables.SCUDO_OPTIONS = "ZeroContents=1";
     };
   };

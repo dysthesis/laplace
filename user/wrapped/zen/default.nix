@@ -82,7 +82,10 @@ in
               "float"
             ];
           };
+          hardenedMalloc = pkgs.graphene-hardened-malloc;
+          hmPath = "${hardenedMalloc}/lib/libhardened_malloc.so";
         in {
+          # LD_PRELOAD = hmPath;
           GTK_USE_PORTAL = "1";
           XDG_DATA_DIRS = lib.makeSearchPath "share" [
             pkgs.shared-mime-info
