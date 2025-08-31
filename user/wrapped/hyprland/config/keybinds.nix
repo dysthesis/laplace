@@ -3,10 +3,12 @@
   hyprland ? pkgs.hyprland,
   pkgs,
   lib,
+  inputs,
   ...
-}:
-let
+}: let
   inherit (lib) mapAttrsToList mapAttrs getExe;
+
+  emacs = inputs.jormungandr.packages.${pkgs.system}.default;
   mod = "Super";
   modShift = "${mod} SHIFT";
   numWorkspaces = 10;
@@ -16,25 +18,22 @@ let
   # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
   workspaces = builtins.concatLists (
     builtins.genList (
-      x:
-      let
-        ws =
-          let
-            c = (x + 1) / 10;
-          in
+      x: let
+        ws = let
+          c = (x + 1) / 10;
+        in
           builtins.toString (x + 1 - (c * 10));
-      in
-      [
+      in [
         "${mod}, ${ws}, focusworkspaceoncurrentmonitor, ${toString (x + 1)}"
         "${mod} SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
       ]
-    ) numWorkspaces
+    )
+    numWorkspaces
   );
 
   exec = pkg: "exec, ${getExe pkg}";
   mkKeys = modKey: mapAttrsToList (key: val: "${modKey}, ${key}, ${val}");
-in
-{
+in {
   bind =
     mkKeys mod (
       {
@@ -42,6 +41,7 @@ in
         "F" = "fullscreen";
         "Return" = exec pkgs.configured.ghostty;
         "R" = "exec, ${pkgs.configured.bemenu}/bin/bemenu-run";
+        "E" = "exec, ${emacs}/bin/emacsclient -c";
         "G" = "togglegroup,";
         "W" = "moveintogroup, u";
         "A" = "moveintogroup, l";

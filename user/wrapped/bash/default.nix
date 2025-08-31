@@ -61,8 +61,7 @@
           systemctl --user start dwl-session.target
         '';
     in ''
-      exec $(${lib.getExe inputs.status.packages.${pkgs.system}.default} |
-        ${lib.getExe dwl} -s ${lib.getExe startup})
+      exec ${lib.getExe pkgs.configured.hyprland}
     '';
     startXorg = "exec ${pkgs.configured.xinit}/bin/startx";
     startDisplay =
