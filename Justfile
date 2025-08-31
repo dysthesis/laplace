@@ -9,7 +9,7 @@ pull:
 
 sync: pull rebuild
 
-upgrade: update rebuild
+upgrade FLAKE="": (update FLAKE) rebuild
 
 format HOST:
   sudo disko \
