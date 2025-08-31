@@ -5,6 +5,7 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }:
 let
@@ -116,6 +117,7 @@ let
         lib
         config
         hyprland
+        inputs
         ;
       hypridle = configuredHyprIdle;
       hyprlock = configuredHyprLock;
