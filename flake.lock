@@ -486,8 +486,8 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1756622403,
-        "narHash": "sha256-LXrdGxTobs8Xz0cPk6j472Cw7aR8rRxWCnOIUju8UqQ=",
+        "lastModified": 1756623194,
+        "narHash": "sha256-Z2E0GdwN+TWg/asDvZ+2vmFQlITS6SmBbvCQ2aFTlag=",
         "path": "/home/demiurge/Documents/Projects/jormungandr",
         "type": "path"
       },
