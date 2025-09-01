@@ -9,7 +9,6 @@
   ...
 }: let
   startup = let
-    emacs = inputs.jormungandr.packages.${pkgs.system}.default;
     inherit (lib) fold;
 
     inherit (lib.cli) toGNUCommandLineShell;
@@ -52,7 +51,6 @@
       ${wlr-randr}
       ${lib.getExe pkgs.configured.waybar}
       ${lib.getExe hypridle}
-      ${emacs}/bin/emacs --daemon
     '';
 in
   {

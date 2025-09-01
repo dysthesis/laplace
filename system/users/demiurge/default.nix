@@ -72,6 +72,7 @@ in {
           bat
           tealdeer
           radicle-node
+          configured.bibiman
           # inputs.radicle-tui.packages.${pkgs.system}.default
           (openai-whisper.override {
             triton = null;
@@ -134,7 +135,6 @@ in {
           prismlauncher
           tor-browser-bundle-bin
           tigervnc
-          inputs.jormungandr.packages.${pkgs.system}.default
         ];
 
         system = with pkgs; [

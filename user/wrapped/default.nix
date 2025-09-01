@@ -27,6 +27,7 @@
       river = callPackage ./river {inherit pkgs lib;};
       waybar = callPackage ./waybar {inherit config pkgs lib;};
       hyprland = callPackage ./hyprland {inherit pkgs lib config inputs;};
+      bibiman = callPackage ./bibiman {inherit pkgs lib inputs;};
       sway = callPackage ./sway {inherit pkgs lib config inputs;};
       bibata-hyprcursor = callPackage ./bibata-hyprcursor {};
       jujutsu = callPackage ./jujutsu {inherit pkgs lib;};

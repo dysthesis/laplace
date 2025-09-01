@@ -40,7 +40,7 @@
     };
 
     jormungandr = {
-      url = "path:/home/demiurge/Documents/Projects/jormungandr";
+      url = "github:dysthesis/jormungandr";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
