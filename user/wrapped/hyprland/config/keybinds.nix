@@ -8,7 +8,6 @@
 }: let
   inherit (lib) mapAttrsToList mapAttrs getExe;
 
-  emacs = inputs.jormungandr.packages.${pkgs.system}.default;
   mod = "Super";
   modShift = "${mod} SHIFT";
   numWorkspaces = 10;
@@ -41,7 +40,6 @@ in {
         "F" = "fullscreen";
         "Return" = exec pkgs.configured.ghostty;
         "R" = "exec, ${pkgs.configured.bemenu}/bin/bemenu-run";
-        "E" = "exec, ${emacs}/bin/emacsclient -c";
         "G" = "togglegroup,";
         "W" = "moveintogroup, u";
         "A" = "moveintogroup, l";
