@@ -19,7 +19,8 @@
     "dm_mod"
     "dm_crypt"
     "cryptd"
-  ] ++ config.boot.initrd.luks.cryptoModules;
+  ]
+  ++ config.boot.initrd.luks.cryptoModules;
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [
     "kvm-amd"

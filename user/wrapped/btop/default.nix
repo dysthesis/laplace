@@ -2,11 +2,12 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib.babel.pkgs) mkWrapper;
-  deps = with pkgs; [rocmPackages.rocm-smi];
+  deps = with pkgs; [ rocmPackages.rocm-smi ];
 in
-  mkWrapper pkgs pkgs.unstable.btop-rocm
+mkWrapper pkgs pkgs.unstable.btop-rocm
   # sh
   ''
     wrapProgram $out/bin/btop \

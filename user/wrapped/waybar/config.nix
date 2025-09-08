@@ -4,6 +4,34 @@
   ...
 }:
 let
+  monitors = config.laplace.hardware.monitors or [ ];
+  defaultMonitor =
+    if monitors == [ ] then
+      {
+        width = 1920;
+        height = 1080;
+      }
+    else
+      builtins.head monitors;
+  primaries = builtins.filter (m: (m.primary or false)) monitors;
+  primaryMonitor = if primaries == [ ] then defaultMonitor else builtins.head primaries;
+
+  clamp =
+    min: max: val:
+    if val < min then
+      min
+    else if val > max then
+      max
+    else
+      val;
+  round = x: builtins.floor (x + 0.5);
+
+  baselineH = 1080.0;
+  rawScale = baselineH / (primaryMonitor.height or baselineH);
+  scale = clamp 0.6 1.2 rawScale;
+
+  baseHeight = if config.networking.hostName == "yaldabaoth" then 28.0 else 34.0;
+  scaledHeight = round (baseHeight * scale);
   weather = pkgs.stdenv.mkDerivation {
     name = "weather";
     buildInputs = [
@@ -20,7 +48,7 @@ let
     layer = "top";
     position = "bottom";
     mod = "dock";
-    height = if config.networking.hostName == "yaldabaoth" then 28 else 34;
+    height = scaledHeight;
     exclusive = true;
     passthrough = false;
     gtk-layer-shell = true;

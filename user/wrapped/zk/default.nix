@@ -3,10 +3,11 @@
   lib,
   zk,
   ...
-}: let
+}:
+let
   inherit (lib.babel.pkgs) mkWrapper;
 in
-  mkWrapper pkgs zk
+mkWrapper pkgs zk
   # bash
   ''
     wrapProgram $out/bin/zk \
