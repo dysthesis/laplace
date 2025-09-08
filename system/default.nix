@@ -28,7 +28,7 @@ in {
       openFirewall = true;
       ports = [
         22
-        8089 # calibre
+        12345 # calibre
       ];
     };
     console = {
