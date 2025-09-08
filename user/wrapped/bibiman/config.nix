@@ -10,7 +10,7 @@
     pdf_opener = "xdg-open";
     url-opener = "xdg-open";
     note_path = "~/Documents/Notes/Contents/Literature/";
-    note_extensions = ["md"];
+    note_extensions = ["md" "txt"];
     file_symbol = " ";
     link_symbol = "󰌹 ";
     note_symbol = "󰧮";
