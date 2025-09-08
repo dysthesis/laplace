@@ -46,7 +46,11 @@
   rSmall = lib.max 5 (calc baseRSmall);
   rTiny = lib.max 4 (calc baseRTiny);
 in
-  pkgs.writeText "style.css" ''
+  pkgs.writeText "style.css"
+  /*
+  css
+  */
+  ''
     * {
         border: none;
         border-radius: 0px;
@@ -122,7 +126,7 @@ in
 
     #taskbar button {
         box-shadow: none;
-    	text-shadow: none;
+    	  text-shadow: none;
         padding: 0px;
         border-radius: ${toString rSmall}px;
         margin-top: ${toString margin}px;
