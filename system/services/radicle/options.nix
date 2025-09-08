@@ -1,6 +1,8 @@
-{lib, ...}: let
+{ lib, ... }:
+let
   inherit (lib) mkEnableOption mkOption types;
-in {
+in
+{
   options.laplace.services.radicle = {
     enable = mkEnableOption "Whether or not to enable Radicle Seed";
 

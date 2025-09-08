@@ -6,17 +6,21 @@
   sway-unwrapped,
   config,
   ...
-}: let
+}:
+let
   inherit (lib.babel.pkgs) mkWrapper;
   configFile = callPackage ./config.nix {
-    inherit lib pkgs config inputs;
+    inherit
+      lib
+      pkgs
+      config
+      inputs
+      ;
     sway = sway-unwrapped;
   };
 in
-  mkWrapper pkgs sway-unwrapped
-  /*
-  bash
-  */
+mkWrapper pkgs sway-unwrapped
+  # bash
   ''
     wrapProgram $out/bin/sway \
       --add-flags "--config ${configFile}"

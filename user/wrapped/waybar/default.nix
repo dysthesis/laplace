@@ -8,7 +8,7 @@ let
   inherit (lib.babel.pkgs) mkWrapper;
   waybarConfig = import ./config.nix { inherit config pkgs; };
   style = import ./style.nix {
-    inherit config pkgs;
+    inherit config pkgs lib;
   };
 in
 mkWrapper pkgs pkgs.waybar

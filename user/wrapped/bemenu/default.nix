@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   bemenu = pkgs.bemenu.overrideAttrs (old: {
     patches = [
       # NOTE: This pull request enables fuzzy finding via the '-z' flag
@@ -15,33 +16,32 @@
   });
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) concatStringsSep;
-  flags = let
-    cfg = config.networking.hostName == "phobos";
-    fontSize =
-      if cfg
-      then 9
-      else 9;
-  in [
-    "-b" # bottom
-    ''-z'' # fuzzy
-    ''-i'' # ignorecase
-    ''-p \" \"'' # prompt
-    ''--fn \"JBMono Nerd Font ${toString fontSize}\"''
-    ''-H \"24\"''
-    ''--hp \"8\"''
-    ''--fb \"#000000\"''
-    ''--ff \"#ffffff\"''
-    ''--nb \"#000000\"''
-    ''--nf \"#ffffff\"''
-    ''--tb \"#7788AA\"''
-    ''--hb \"#080808\"''
-    ''--tf \"#000000\"''
-    ''--hf \"#7788AA\"''
-    ''--ab \"#000000\"''
-  ];
+  flags =
+    let
+      cfg = config.networking.hostName == "phobos";
+      fontSize = if cfg then 9 else 9;
+    in
+    [
+      "-b" # bottom
+      ''-z'' # fuzzy
+      ''-i'' # ignorecase
+      ''-p \" \"'' # prompt
+      ''--fn \"JBMono Nerd Font ${toString fontSize}\"''
+      ''-H \"24\"''
+      ''--hp \"8\"''
+      ''--fb \"#000000\"''
+      ''--ff \"#ffffff\"''
+      ''--nb \"#000000\"''
+      ''--nf \"#ffffff\"''
+      ''--tb \"#7788AA\"''
+      ''--hb \"#080808\"''
+      ''--tf \"#000000\"''
+      ''--hf \"#7788AA\"''
+      ''--ab \"#000000\"''
+    ];
   flags' = flags |> map (flag: ''--add-flags "${flag}"'') |> concatStringsSep " ";
 in
-  mkWrapper pkgs bemenu
+mkWrapper pkgs bemenu
   # sh
   ''
     for file in $out/bin/*; do

@@ -22,7 +22,8 @@
       "cryptd"
       "ccm"
       "ctr"
-    ] ++ config.boot.initrd.luks.cryptoModules;
+    ]
+    ++ config.boot.initrd.luks.cryptoModules;
     initrd.kernelModules = [ ];
     kernelModules = [
       "kvm-amd"

@@ -1,6 +1,8 @@
-{lib, ...}: let
+{ lib, ... }:
+let
   inherit (lib) mkEnableOption mkOption types;
-in {
+in
+{
   options.laplace.docker = {
     enable = mkEnableOption "Whether or not to enable Docker.";
     dataDir = mkOption {
