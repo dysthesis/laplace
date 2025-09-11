@@ -333,11 +333,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1757557312,
-        "narHash": "sha256-lJMmgcONMo3gtJCZrI9F36cBfHzt3DUshmVnlt1TpCY=",
+        "lastModified": 1757559080,
+        "narHash": "sha256-6UckMhibB8iNgra/eOtu9LdOc2m/MuKcETFRIh/KjNY=",
         "owner": "dysthesis",
         "repo": "dwl",
-        "rev": "34b1355c16d70f14d997ef9747736dfff176266c",
+        "rev": "80866c5d29a9867792a8e41735773c2e72b0e02a",
         "type": "github"
       },
       "original": {
