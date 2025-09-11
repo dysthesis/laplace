@@ -42,7 +42,7 @@
       wbgCmd = [(lib.getExe pkgs.wbg) "${./wallpaper.png}"];
       dunstCmd = ["${pkgs.configured.dunst}/bin/dunst"];
       wlrRandrCmd = [(lib.getExe pkgs.wlr-randr)] ++ wlrRandrArgs;
-      yambarCmd = [(lib.getExe pkgs.configured.yambar)];
+      # yambarCmd = [(lib.getExe pkgs.configured.yambar)];
       importEnvCmd = [
         "systemctl"
         "import-environment"
@@ -56,11 +56,11 @@
         "XCURSOR_SIZE"
         "XCURSOR_THEME"
       ];
-    in [importEnvCmd wlsunsetCmd wbgCmd dunstCmd wlrRandrCmd yambarCmd];
+    in [importEnvCmd wlsunsetCmd wbgCmd dunstCmd wlrRandrCmd];
   };
   configuration = let
     startWayland = ''
-      exec ${lib.getExe dwl}
+      exec $(${lib.getExe inputs.status.packages.${pkgs.system}.default} | ${lib.getExe dwl})
     '';
     startXorg = "exec ${pkgs.configured.xinit}/bin/startx";
     startDisplay =
