@@ -36,7 +36,7 @@
     poincare = {
       url = "github:dysthesis/poincare";
       # TODO: enable this again when the fix for neotest makes it to unstable
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     jormungandr = {
@@ -64,7 +64,7 @@
     # tmux flake
     daedalus = {
       url = "github:dysthesis/daedalus";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      # inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Declarative disk management
