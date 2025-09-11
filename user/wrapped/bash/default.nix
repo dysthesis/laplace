@@ -39,7 +39,7 @@
         "-L"
         "${toString config.location.longitude}"
       ];
-      swaybgCmd = [(lib.getExe pkgs.swaybg) "-i" "${./wallpaper.png}"];
+      wbgCmd = [(lib.getExe pkgs.wbg) "${./wallpaper.png}"];
       dunstCmd = ["${pkgs.configured.dunst}/bin/dunst"];
       wlrRandrCmd = [(lib.getExe pkgs.wlr-randr)] ++ wlrRandrArgs;
       yambarCmd = [(lib.getExe pkgs.configured.yambar)];
@@ -56,7 +56,7 @@
         "XCURSOR_SIZE"
         "XCURSOR_THEME"
       ];
-    in [importEnvCmd wlsunsetCmd swaybgCmd dunstCmd wlrRandrCmd yambarCmd];
+    in [importEnvCmd wlsunsetCmd wbgCmd dunstCmd wlrRandrCmd yambarCmd];
   };
   configuration = let
     startWayland = ''
