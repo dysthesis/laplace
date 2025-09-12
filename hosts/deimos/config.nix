@@ -1,16 +1,15 @@
-{ inputs, ... }:
-{
+{inputs, ...}: {
   imports = [
     inputs.nixos-hardware.nixosModules.common-cpu-amd # APU logic
     inputs.nixos-hardware.nixosModules.common-gpu-amd # AMD GPU support
   ];
   config = {
     laplace = {
-      harden = [ "kernel" ];
-      profiles = [ "desktop" ];
+      harden = ["kernel"];
+      profiles = ["desktop"];
       hardware = {
-        cpu = [ "amd" ];
-        gpu = [ "amd" ];
+        cpu = ["amd"];
+        gpu = ["amd"];
         monitors = [
           {
             name = "HDMI-A-1";
@@ -64,11 +63,11 @@
 
       impermanence.enable = true;
 
-      users = [ "demiurge" ];
-      display.servers = [ "wayland" ];
+      users = ["demiurge"];
+      display.servers = ["wayland"];
 
       services = {
-        ollama.enable = true;
+        # ollama.enable = true;
         searxng.enable = true;
         miniflux.enable = true;
         # radicle.enable = true;
