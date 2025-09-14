@@ -29,6 +29,12 @@
     urgency.blocking.coefficient=0
     urgency.blocked.coefficient=0
 
+    report.next.columns=id,priority,project,description,tags,due.relative
+    report.next.labels=ID,Priority,Project,Description,Tags,Due
+
+    report.list.columns=id,priority,project,description,due.relative
+    report.list.labels=ID,Priority,Project,Description,Due
+
     hooks.location=${./hooks}
   '';
   deps = with pkgs; [
