@@ -2,8 +2,7 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (pkgs) writeText;
   inherit (lib.attrsets) mapAttrsToList;
@@ -24,6 +23,12 @@ let
     weekstart=monday
     news.version=2.6.0
     data.location=~/.local/share/task
+
+    # Prevent priority inversion
+    urgency.inherit=1
+    urgency.blocking.coefficient=0
+    urgency.blocked.coefficient=0
+
     hooks.location=${./hooks}
   '';
   deps = with pkgs; [
@@ -31,7 +36,7 @@ let
     python3
   ];
 in
-mkWrapper pkgs pkgs.taskwarrior
+  mkWrapper pkgs pkgs.taskwarrior
   # bash
   ''
     wrapProgram $out/bin/task \
