@@ -138,10 +138,12 @@ in {
           prismlauncher
           tor-browser-bundle-bin
           tigervnc
+          unstable.protonvpn-gui
         ];
 
         system = with pkgs; [
           unstable.sbctl
+          wireguard-tools
         ];
 
         apps = with pkgs.configured; [

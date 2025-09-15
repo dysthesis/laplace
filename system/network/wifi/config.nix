@@ -1,16 +1,16 @@
 {
+  pkgs,
   config,
   lib,
   ...
-}:
-let
+}: let
   cfg = config.laplace.network.wifi;
-  inherit (lib)
+  inherit
+    (lib)
     mkIf
     mkDefault
     ;
-in
-{
+in {
   config = mkIf cfg.enable {
     networking = {
       wireless.enable = mkDefault false;
@@ -18,6 +18,9 @@ in
       enableIPv6 = true;
       networkmanager = {
         enable = mkDefault (!config.networking.wireless.enable);
+        plugins = with pkgs; [
+          networkmanager-openvpn
+        ];
         unmanaged = [
           "docker0"
           "rndis0"
