@@ -41,14 +41,19 @@ in {
     time.timeZone = "Australia/Sydney";
     i18n.defaultLocale = "en_AU.UTF-8";
     hardware.enableRedistributableFirmware = true;
-    programs.nix-ld = {
-      enable = true;
-      libraries = with pkgs; [
-        stdenv.cc.cc.lib
-        glibc
-        zlib
-      ];
+    programs = {
+      nix-ld = {
+        enable = true;
+        libraries = with pkgs; [
+          stdenv.cc.cc.lib
+          glibc
+          zlib
+        ];
+      };
+      ccache.enable = true;
     };
+
+    nix.settings.extra-sandbox-paths = [config.programs.ccache.cacheDir];
   };
   imports = importInDirectory ./.;
 }
