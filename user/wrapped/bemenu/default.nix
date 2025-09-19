@@ -31,13 +31,20 @@ let
   clamp = min: max: val: lib.max min (lib.min max val);
   round = x: builtins.floor (x + 0.5);
 
+  hostName = config.networking.hostName or "";
   baselineH = 1080.0;
   rawScale = baselineH / (primaryMonitor.height or baselineH);
   scale = clamp 0.6 1.2 rawScale;
 
-  baseFont = 9.0;
-  baseLineH = 24.0;
-  baseHP = 8.0;
+  baseFont =
+    if hostName == "phobos" then
+      12.0
+    else
+      9.0;
+  fontLineRatio = 24.0 / 9.0;
+  fontPaddingRatio = 8.0 / 9.0;
+  baseLineH = baseFont * fontLineRatio;
+  baseHP = baseFont * fontPaddingRatio;
 
   fontSize = round (baseFont * scale);
   lineHeight = round (baseLineH * scale);

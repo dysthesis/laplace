@@ -10,6 +10,30 @@
   inherit (lib) optionalString;
   dwl = inputs.dwl.packages.${pkgs.system}.default.override {
     enableXWayland = true;
+    extraKeybinds = let
+      mkShCmd = cmd: {
+        union = "v";
+        argv = [
+          (lib.getExe pkgs.bash)
+          "-c"
+          cmd
+        ];
+      };
+    in [
+      {
+        modifiers = ["MODKEY" "WLR_MODIFIER_SHIFT"];
+        key = "XKB_KEY_N";
+        function = "spawn";
+        argument = let
+          bemenu-zk = pkgs.scripts.bemenu-zk.override {
+            inherit (pkgs.configured) zk ghostty bemenu;
+          };
+        in
+          mkShCmd (lib.getExe bemenu-zk);
+
+        comment = "Launch notes picker";
+      }
+    ];
     autostart = let
       inherit (lib) fold;
       # Build wlr-randr argument list from configured monitors
