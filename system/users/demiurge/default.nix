@@ -100,7 +100,6 @@ in {
             bash
             calibre
             bibata-cursors
-            configured.rofi
           ]
           ++ addIf (builtins.elem "wayland" config.laplace.display.servers) [
             wl-clipboard
