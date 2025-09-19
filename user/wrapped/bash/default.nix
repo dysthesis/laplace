@@ -33,6 +33,17 @@
 
         comment = "Launch notes picker";
       }
+      {
+        modifiers = ["MODKEY"];
+        key = "XKB_KEY_p";
+        function = "spawn";
+        argument = let
+          bemenu-sys = pkgs.scripts.bemenu-sys.override {inherit (pkgs.configured) bemenu;};
+        in
+          mkShCmd (lib.getExe bemenu-sys);
+
+        comment = "Open power menu";
+      }
     ];
     autostart = let
       inherit (lib) fold;
