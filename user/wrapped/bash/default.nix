@@ -44,6 +44,28 @@
 
         comment = "Open power menu";
       }
+      {
+        modifiers = ["MODKEY"];
+        key = "XKB_KEY_l";
+        function = "spawn";
+        argument =
+          mkShCmd (lib.getExe pkgs.unstable.swaylock);
+
+        comment = "Lock screen";
+      }
+      {
+        modifiers = ["MODKEY" "WLR_MODIFIER_SHIFT"];
+        key = "XKB_KEY_B";
+        function = "spawn";
+        argument = let
+          bemenu-bib = pkgs.scripts.bemenu-bib.override {
+            inherit (pkgs.configured) bemenu zk ghostty;
+          };
+        in
+          mkShCmd (lib.getExe bemenu-bib);
+
+        comment = "Open bibliography";
+      }
     ];
     autostart = let
       inherit (lib) fold;

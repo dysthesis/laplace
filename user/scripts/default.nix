@@ -8,6 +8,7 @@
     scripts = {
       bemenu-zk = callPackage ./bemenu-zk {inherit lib pkgs;};
       bemenu-sys = callPackage ./bemenu-sys {inherit lib pkgs;};
+      bemenu-bib = callPackage ./bemenu-bib {inherit lib pkgs;};
     };
   };
 in {
