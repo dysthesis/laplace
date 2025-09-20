@@ -70,6 +70,19 @@
           mkShCmd (lib.getExe zk-capture);
         comment = "Capture note";
       }
+      {
+        modifiers = ["MODKEY" "WLR_MODIFIER_SHIFT"];
+        key = "XKB_KEY_D";
+        function = "spawn";
+        argument = let
+          zk-journal = pkgs.scripts.zk-journal.override {
+            inherit (pkgs.configured) ghostty zk;
+            neovim = inputs.poincare.packages.${pkgs.system}.default;
+          };
+        in
+          mkShCmd (lib.getExe zk-journal);
+        comment = "Capture journal";
+      }
     ];
     autostart = let
       inherit (lib) fold;
