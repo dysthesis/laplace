@@ -1,10 +1,32 @@
 #!/usr/bin/env bash
 
 CAPTURE_FILE="$(mktemp)"
-trap 'rm $TMPFILE' EXIT
+SENTINEL_FILE="$(mktemp)"
+rm -f "$SENTINEL_FILE"
+trap 'rm -f "$CAPTURE_FILE" "$SENTINEL_FILE"' EXIT
+
+export ZK_CAPTURE_SENTINEL="$SENTINEL_FILE"
 
 printf '%% title:\n\n' >"$CAPTURE_FILE"
-ghostty --class=ghostty.capture -e "nvim -c \"call matchadd('Comment', '^%.*$')\" \"$CAPTURE_FILE\""
+
+nvim_command=(
+  "nvim"
+  "-c \"let g:zk_capture_written = 0\""
+  "-c \"augroup ZkCaptureGuard | autocmd! | autocmd BufWritePost <buffer> let g:zk_capture_written = 1 | call writefile(['written'], expand('$ZK_CAPTURE_SENTINEL')) | autocmd VimLeavePre * if !get(g:, 'zk_capture_written', 0) | cquit | endif | augroup END\""
+  "-c \"call matchadd('Comment', '^%.*$')\""
+  "\"$CAPTURE_FILE\""
+)
+
+printf -v nvim_invocation '%s ' "${nvim_command[@]}"
+nvim_invocation="${nvim_invocation% }"
+
+if ! ghostty --class=ghostty.capture -e "$nvim_invocation"; then
+  exit 0
+fi
+
+if [[ ! -f "$SENTINEL_FILE" ]]; then
+  exit 0
+fi
 
 trim() {
   s=$1
