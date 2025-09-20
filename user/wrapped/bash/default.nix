@@ -45,15 +45,6 @@
         comment = "Open power menu";
       }
       {
-        modifiers = ["MODKEY"];
-        key = "XKB_KEY_l";
-        function = "spawn";
-        argument =
-          mkShCmd (lib.getExe pkgs.unstable.swaylock);
-
-        comment = "Lock screen";
-      }
-      {
         modifiers = ["MODKEY" "WLR_MODIFIER_SHIFT"];
         key = "XKB_KEY_B";
         function = "spawn";
@@ -65,6 +56,19 @@
           mkShCmd (lib.getExe bemenu-bib);
 
         comment = "Open bibliography";
+      }
+      {
+        modifiers = ["MODKEY"];
+        key = "XKB_KEY_c";
+        function = "spawn";
+        argument = let
+          zk-capture = pkgs.scripts.zk-capture.override {
+            inherit (pkgs.configured) ghostty zk;
+            neovim = inputs.poincare.packages.${pkgs.system}.default;
+          };
+        in
+          mkShCmd (lib.getExe zk-capture);
+        comment = "Capture note";
       }
     ];
     autostart = let
