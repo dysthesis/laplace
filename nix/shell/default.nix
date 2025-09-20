@@ -10,5 +10,9 @@ pkgs.mkShell {
     npins
     sops
     rsync
+
+    bash-language-server
+    shfmt
+    shellcheck
   ];
 }
