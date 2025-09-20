@@ -974,11 +974,11 @@
         "treefmt-nix": "treefmt-nix_9"
       },
       "locked": {
-        "lastModified": 1758369808,
-        "narHash": "sha256-x+XHgSln0s6uZbuxyhYK47uwFj5YzwriPxLuDIpgfLk=",
+        "lastModified": 1758370017,
+        "narHash": "sha256-CRoCsQ+Stgy3ewt3CsWmdYSMITx5gQV/thl8/T4B0lc=",
         "owner": "dysthesis",
         "repo": "status",
-        "rev": "2efe93504db57cbbc85218c2089d9e01bb5344f6",
+        "rev": "fda5a879fa71e50529fda99e38ae77bd4f20205d",
         "type": "github"
       },
       "original": {
