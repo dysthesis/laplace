@@ -73,6 +73,7 @@ in {
           tealdeer
           radicle-node
           configured.bibiman
+          configured.wikiman
           # inputs.radicle-tui.packages.${pkgs.system}.default
           (openai-whisper.override {
             triton = null;
