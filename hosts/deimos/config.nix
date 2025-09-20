@@ -68,8 +68,8 @@
 
       services = {
         # ollama.enable = true;
-        searxng.enable = true;
-        miniflux.enable = true;
+        # searxng.enable = true;
+        # miniflux.enable = true;
         # radicle.enable = true;
       };
 
