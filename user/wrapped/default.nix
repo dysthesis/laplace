@@ -29,6 +29,8 @@
       todo-txt-cli = callPackage ./todo-txt {};
       river = callPackage ./river {inherit pkgs lib;};
       waybar = callPackage ./waybar {inherit config pkgs lib;};
+      dwl = callPackage ./dwl {inherit config pkgs lib inputs self;};
+      swaylock = callPackage ./swaylock {inherit lib pkgs self;};
       hyprland = callPackage ./hyprland {
         inherit
           pkgs
