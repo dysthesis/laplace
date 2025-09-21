@@ -1,18 +1,41 @@
 {
   lib,
   config,
+  mnemosyneUserPersistenceType ? null,
   ...
 }:
 let
   inherit (lib)
     mkOption
+    mkMerge
     ;
   inherit (lib.types)
     listOf
     enum
     ;
+  inherit (lib.attrsets)
+    setAttrByPath;
   inherit (lib.babel.modules) importInDirectory;
   inherit (lib.babel.path) getDirectories;
+
+  userDirs = getDirectories ./.;
+
+  inlinePersistenceOptions =
+    if mnemosyneUserPersistenceType == null then
+      { }
+    else
+      mkMerge (
+        map
+          (name:
+            setAttrByPath [ "users" "users" name "mnemosyne" ] (
+              mkOption {
+                type = mnemosyneUserPersistenceType name;
+                default = null;
+                description = "Inline mnemosyne persistence configuration for user `${name}`.";
+              }
+            ))
+          userDirs
+      );
 in
 {
   config.users = {
@@ -25,11 +48,15 @@ in
 
   # For each user (represented by a subdirectory in modules/system/core/users), create an option
   # to enable the user in the given system, as well as whether or not home-manager should be used
-  options.laplace.users = mkOption {
-    type = listOf (enum (getDirectories ./.));
-    description = "Which users to enable";
-    default = [ ];
-  };
+  options =
+    {
+      laplace.users = mkOption {
+        type = listOf (enum userDirs);
+        description = "Which users to enable";
+        default = [ ];
+      };
+    }
+    // inlinePersistenceOptions;
 
   # Import all the user configurations
   imports = importInDirectory ./.;

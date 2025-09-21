@@ -53,6 +53,16 @@ in {
           "ollama"
         ];
 
+      mnemosyne = {
+        directories = [
+          "Documents"
+          "Music"
+          "Pictures"
+          "Sync"
+          ".codex"
+        ];
+      };
+
       packages = let
         addIf = cond: content:
           if cond
