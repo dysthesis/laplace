@@ -29,11 +29,18 @@
     urgency.blocking.coefficient=0
     urgency.blocked.coefficient=0
 
-    report.next.columns=id,priority,project,description,tags,due.relative
-    report.next.labels=ID,Priority,Project,Description,Tags,Due
+    report.next.columns=id,priority,project,description,tags,due.relative,urgency
+    report.next.labels=ID,Priority,Project,Description,Tags,Due,Urgency
 
-    report.list.columns=id,priority,project,description,due.relative
-    report.list.labels=ID,Priority,Project,Description,Due
+    report.list.columns=id,priority,project,description,due.relative,urgency
+    report.list.labels=ID,Priority,Project,Description,Due,Urgency
+    alias.submit='modify wait:someday +submitted'
+    alias.resubmit='modify wait: -submitted'
+
+    report.awaiting.description=Submitted, awaiting feedback
+    report.awaiting.columns=id,project,wait,description
+    report.awaiting.sort=due.relative
+    report.awaiting.filter=(wait>now or +submitted)
 
     hooks.location=${./hooks}
   '';
