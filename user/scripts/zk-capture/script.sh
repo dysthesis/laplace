@@ -2,6 +2,7 @@
 
 CAPTURE_FILE="$(mktemp)"
 SENTINEL_FILE="$(mktemp)"
+NOTES_PATH="$HOME/Documents/Notes"
 rm -f "$SENTINEL_FILE"
 trap 'rm -f "$CAPTURE_FILE" "$SENTINEL_FILE"' EXIT
 
@@ -42,3 +43,9 @@ BODY="$(tail -n+2 "$CAPTURE_FILE")"
 BODY="$(trim "$BODY")"
 
 printf "%s" "$BODY" | zk new --interactive --title "$TITLE" --group=inbox Inbox
+
+COMMIT_MESSAGE="Inbox capture at $(date +"%Y-%m-%d %H:%M:%S")"
+git -C "$NOTES_PATH" pull
+git -C "$NOTES_PATH" add "$NOTES_PATH/Contents/Inbox"
+git -C "$NOTES_PATH" commit -am "$COMMIT_MESSAGE"
+git -C "$NOTES_PATH" push -u
