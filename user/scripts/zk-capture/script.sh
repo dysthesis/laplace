@@ -44,7 +44,7 @@ BODY="$(trim "$BODY")"
 
 printf "%s" "$BODY" | zk new --interactive --title "$TITLE" --group=inbox Inbox
 
-COMMIT_MESSAGE="Inbox capture at $(date +"%Y-%m-%d %H:%M:%S")"
+COMMIT_MESSAGE="Inbox capture at $(date +"%Y-%m-%d %H:%M:%S"): $TITLE"
 git -C "$NOTES_PATH" pull
 git -C "$NOTES_PATH" add "$NOTES_PATH/Contents/Inbox"
 git -C "$NOTES_PATH" commit -am "$COMMIT_MESSAGE"

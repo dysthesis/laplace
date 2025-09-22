@@ -22,6 +22,23 @@ in
     in [
       {
         modifiers = ["MODKEY" "WLR_MODIFIER_SHIFT"];
+        key = "XKB_KEY_P";
+        function = "spawn";
+        argument = let
+          screenshot =
+            pkgs.writeShellScriptBin "screenshot"
+            /*
+            sh
+            */
+            ''
+              ${lib.getExe pkgs.slurp} | ${lib.getExe pkgs.grim} -g - - | ${pkgs.wl-clipboard}/bin/wl-copy
+            '';
+        in
+          mkShCmd (lib.getExe screenshot);
+        comment = "Screenshot";
+      }
+      {
+        modifiers = ["MODKEY" "WLR_MODIFIER_SHIFT"];
         key = "XKB_KEY_L";
         function = "spawn";
         argument = mkShCmd (lib.getExe pkgs.configured.swaylock);
