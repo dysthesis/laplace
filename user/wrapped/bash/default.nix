@@ -22,11 +22,24 @@
          ${optionalString (elem "xorg" config.laplace.display.servers) startXorg}
         fi
       '';
+    startFish =
+      # sh
+      ''
+        case "$-" in
+          *i*)
+            if [ -z "$BASH_NO_FISH" ]; then
+              export SHELL='${lib.getExe pkgs.configured.fish}'
+              exec ${lib.getExe pkgs.configured.fish}
+            fi
+            ;;
+        esac
+      '';
   in
     pkgs.writeText "bash.bashrc"
     # sh
     ''
       ${optionalString (elem "desktop" config.laplace.profiles) startDisplay}
+      ${startFish}
     '';
 in
   mkWrapper pkgs pkgs.bash ''
