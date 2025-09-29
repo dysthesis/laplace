@@ -89,6 +89,7 @@ in {
     fonts.packages = with pkgs;
     with inputs.babel.packages.${system}; [
       fast-fonts
+      atkinson-hyperlegible-next
       noto-fonts
       noto-fonts-extra
       noto-fonts-emoji
