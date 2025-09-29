@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     difftastic
   ];
@@ -26,7 +25,15 @@
         autosetupmerge = "true";
         sort = "-committerdate";
       };
-      merge.conflictstyle = "zdiff3";
+      merge = {
+        conflictstyle = "zdiff3";
+        tool = "nvimdiff";
+      };
+      mergetool = {
+        nvimdiff.layout = "LOCAL,BASE,REMOTE / MERGED";
+        prompt = false;
+        keepBackup = false;
+      };
       push = {
         default = "simple";
         autoSetupRemote = true;

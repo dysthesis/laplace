@@ -119,7 +119,7 @@
 in
   pkgs.writeShellApplication {
     name = "wikiman";
-    runtimeInputs = with pkgs; [
+    runtimeInputs = with pkgs.unstable; [
       wikiman
       gawk
       coreutils
