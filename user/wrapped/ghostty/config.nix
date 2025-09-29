@@ -32,7 +32,8 @@ in
     font-size = ${toString fontSize}
     window-padding-x = ${toString padding}
     window-padding-y = ${toString padding}
-    background-opacity = 1
+    # background-opacity = 0.75
+    # background-blur = true
     window-decoration = false
     confirm-close-surface = false
     command = ${lib.getExe pkgs.configured.fish}
