@@ -68,7 +68,7 @@ in {
         ];
 
         cli = with pkgs; [
-          (uutils-coreutils.override {prefix = "";})
+          (unstable.uutils-coreutils.override {prefix = "";})
           bat
           tealdeer
           radicle-node
