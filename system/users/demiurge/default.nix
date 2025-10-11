@@ -79,6 +79,7 @@ in {
             triton = null;
           })
           configured.bmm
+          configured.helix
         ];
 
         dev = with pkgs; [
