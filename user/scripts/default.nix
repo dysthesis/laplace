@@ -26,6 +26,10 @@
         inherit lib pkgs;
         inherit (pkgs.unstable) uutils-coreutils-noprefix;
       };
+      generate-commit = callPackage ./generate-commit {
+        inherit lib pkgs;
+        inherit (pkgs.unstable) uutils-coreutils-noprefix;
+      };
     };
   };
 in {
