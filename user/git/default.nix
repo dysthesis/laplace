@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   environment.systemPackages = with pkgs; [
     difftastic
   ];
@@ -28,6 +32,10 @@
       merge = {
         conflictstyle = "zdiff3";
         tool = "nvimdiff";
+        mergigraf = {
+          name = "mergiraf";
+          driver = "${lib.getExe pkgs.unstable.mergiraf} merge --git %O %A %B -s %S -x %X -y %Y -p %P -l %L";
+        };
       };
       mergetool = {
         nvimdiff.layout = "LOCAL,BASE,REMOTE / MERGED";
