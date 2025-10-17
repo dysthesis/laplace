@@ -1,8 +1,7 @@
-{ pkgs, ... }:
-let
-  tomlFormat = pkgs.formats.toml { };
+{pkgs, ...}: let
+  tomlFormat = pkgs.formats.toml {};
   config = {
-    theme = "kanagawa-dragon";
+    theme = "demiurge";
     editor = {
       line-number = "relative";
       mouse = false;
@@ -15,4 +14,4 @@ let
     };
   };
 in
-tomlFormat.generate "helix-config" config
+  tomlFormat.generate "helix-config" config
