@@ -23,7 +23,10 @@
       };
       neomutt = callPackage ./neomutt {inherit lib pkgs;};
       zk = callPackage ./zk {inherit lib pkgs;};
-      helix = callPackage ./helix {inherit lib pkgs;};
+      helix = callPackage ./helix {
+        inherit lib pkgs;
+        inherit (pkgs.unstable) helix;
+      };
       fzf = callPackage ./fzf {inherit lib pkgs;};
       rofi = callPackage ./rofi {inherit lib pkgs;};
       bmm = callPackage ./bmm {inherit lib pkgs;};

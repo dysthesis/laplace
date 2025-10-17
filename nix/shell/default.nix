@@ -6,6 +6,7 @@ pkgs.mkShell {
     alejandra
     statix
     deadnix
+    nixfmt
     just
     npins
     sops
