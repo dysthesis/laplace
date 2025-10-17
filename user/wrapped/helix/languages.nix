@@ -2,12 +2,10 @@
 let
   tomlFormat = pkgs.formats.toml { };
   config = {
-    language = [{
-      name = "nix";
-      file-types = [ "nix" ];
-      auto-format = true;
-      formatter = [ "nixfmt" ];
+    language = [{ name = "nix";
+      formatter = { command = "nixfmt"; };
       language-servers = [ "nixd" "nil" ];
+      auto-format = true;
     }];
     language-server = { };
   };
