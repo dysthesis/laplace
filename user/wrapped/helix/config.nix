@@ -4,6 +4,13 @@ let
   config = {
     theme = "demiurge";
     editor = {
+      soft-wrap.enable = true;
+      lsp = {
+        display-messages = true;
+        display-inlay-hints = true;
+      };
+      indent-guides.render = true;
+      color-modes = true;
       completion-trigger-len = 1;
       default-yank-register = "+";
       line-number = "relative";
@@ -43,7 +50,21 @@ let
         "$" = "goto_line_end";
         "K" = "hover";
         "A-k" = "keep_selections";
-        space = { "l" = ":reflow"; };
+        "C-h" = "jump_view_left";
+        "C-j" = "jump_view_down";
+        "C-k" = "jump_view_up";
+        "C-l" = "jump_view_right";
+        backspace = {
+          "w" = ":w";
+          "d" = ":bc";
+          "S-d" = ":bca";
+          "c" = "wclose";
+          "q" = ":q";
+          "A-w" = ":w!";
+          "A-q" = ":q!";
+          "A-d" = ":bc!";
+          "A-S-d" = ":bca!";
+        };
       };
       select = {
         "^" = "goto_first_nonwhitespace";

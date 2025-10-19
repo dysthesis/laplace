@@ -107,7 +107,7 @@
     };
     punctuation = "gray6";
     special = "blue";
-    string = "lack";
+    string = "green";
     "string.special" = "green";
     tabstop = "gray4";
     tag = {fg = "gray5";};
@@ -211,7 +211,7 @@
     "ui.text.info" = {fg = "gray8";};
     "ui.virtual.inlay-hint" = "gray4";
     "ui.virtual.inlay-hint.parameter" = "orange";
-    "ui.virtual.inlay-hint.type" = "red";
+    "ui.virtual.inlay-hint.type" = "gray4";
     "ui.virtual.jump-label" = {fg = "blue";};
     "ui.virtual.ruler" = {bg = "#171717";};
     "ui.virtual.wrap" = {fg = "gray4";};
