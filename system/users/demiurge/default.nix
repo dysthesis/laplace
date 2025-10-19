@@ -68,14 +68,13 @@ in {
         ];
 
         cli = with pkgs; [
-          (unstable.uutils-coreutils.override {prefix = "";})
-          bat
-          tealdeer
-          radicle-node
+          unstable.uutils-coreutils-noprefix
+          unstable.bat
+          unstable.tealdeer
+          unstable.gh
           configured.bibiman
           configured.wikiman
-          # inputs.radicle-tui.packages.${pkgs.system}.default
-          (openai-whisper.override {
+          (unstable.openai-whisper.override {
             triton = null;
           })
           configured.bmm
