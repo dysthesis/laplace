@@ -100,7 +100,11 @@ in {
           ]);
 
         applications = with pkgs; [
-          emacs-unstable-pgtk
+          ((pkgs.emacsPackagesFor emacs-unstable-pgtk).emacsWithPackages
+            (p:
+              with p; [
+                vterm
+              ]))
           unstable.emacs-lsp-booster
           unstable.zotero
           signal-desktop
