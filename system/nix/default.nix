@@ -1,4 +1,5 @@
 {
+  inputs,
   pkgs,
   lib,
   config,
@@ -38,6 +39,7 @@ in {
         rocmSupport = true;
       };
       overlays = [
+        inputs.emacs.overlays.default
         (_self: super: {
           ccacheWrapper = super.ccacheWrapper.override {
             extraConfig = ''

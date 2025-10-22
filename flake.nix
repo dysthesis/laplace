@@ -1,14 +1,61 @@
 {
   description = "A pursuit of order.";
+
+  outputs = inputs @ {
+    self,
+    babel,
+    nixpkgs,
+    treefmt-nix,
+    emacs,
+    ...
+  }: let
+    inherit (builtins) mapAttrs;
+    inherit (babel) mkLib;
+    lib = mkLib nixpkgs;
+
+    # Systems to support
+    systems = [
+      "aarch64-linux"
+      "x86_64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
+
+    overlays = [
+      emacs.overlays.default
+    ];
+
+    forAllSystems = lib.babel.forAllSystems {inherit systems overlays;};
+
+    treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
+  in
+    # Budget flake-parts
+    mapAttrs (_: forAllSystems) {
+      devShells = pkgs: {default = import ./nix/shell pkgs;};
+      # for `nix fmt`
+      formatter = pkgs: treefmt.${pkgs.system}.config.build.wrapper;
+      # for `nix flake check`
+      checks = pkgs: {
+        formatting = treefmt.${pkgs.system}.config.build.check self;
+      };
+    }
+    // {
+      nixosConfigurations = import ./hosts {
+        inherit self lib inputs;
+      };
+    };
+
   inputs = {
     # TODO: See if switching to unstable fixes
     # https://github.com/NixOS/nixpkgs/issues/222181
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 
-    # radicle-tui = {
-    #   url = "git+https://seed.radicle.xyz/z39mP9rQAaGmERfUMPULfPUi473tY.git?rev=a2de36ddfb307f77de0d666944f520e5ea51e418";
-    # };
+    emacs = {
+      url = "github:nix-community/emacs-overlay";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs-stable.follows = "nixpkgs";
+    };
 
     # Formatter for the whole codebase
     treefmt-nix = {
@@ -36,19 +83,8 @@
     poincare = {
       url = "github:dysthesis/poincare";
       # TODO: enable this again when the fix for neotest makes it to unstable
-      # inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-
-    jormungandr = {
-      url = "github:dysthesis/jormungandr";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Suckless utilities
-    # gungnir = {
-    #   url = "github:dysthesis/gungnir";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
 
     dwl = {
       url = "github:dysthesis/dwl";
@@ -112,43 +148,4 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
-  outputs = inputs @ {
-    self,
-    babel,
-    nixpkgs,
-    treefmt-nix,
-    ...
-  }: let
-    inherit (builtins) mapAttrs;
-    inherit (babel) mkLib;
-    lib = mkLib nixpkgs;
-
-    # Systems to support
-    systems = [
-      "aarch64-linux"
-      "x86_64-linux"
-      "x86_64-darwin"
-      "aarch64-darwin"
-    ];
-
-    forAllSystems = lib.babel.forAllSystems {inherit systems;};
-
-    treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
-  in
-    # Budget flake-parts
-    mapAttrs (_: forAllSystems) {
-      devShells = pkgs: {default = import ./nix/shell pkgs;};
-      # for `nix fmt`
-      formatter = pkgs: treefmt.${pkgs.system}.config.build.wrapper;
-      # for `nix flake check`
-      checks = pkgs: {
-        formatting = treefmt.${pkgs.system}.config.build.check self;
-      };
-    }
-    // {
-      nixosConfigurations = import ./hosts {
-        inherit self lib inputs;
-      };
-    };
 }
