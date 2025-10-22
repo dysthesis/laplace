@@ -5,16 +5,8 @@
   pkgs,
   ...
 }: let
-  inherit
-    (lib)
-    mkIf
-    ;
-  inherit
-    (builtins)
-    elem
-    filter
-    hasAttr
-    ;
+  inherit (lib) mkIf;
+  inherit (builtins) elem filter hasAttr;
 
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
@@ -36,22 +28,8 @@ in {
 
       hashedPassword = "$y$j9T$WtVEPLB064z6W2eWFUPK81$xT7V9MzUIS.gcoaJzfYjMRY/I5Zi5Hl57XDo9EMwll5";
       extraGroups =
-        [
-          "wheel"
-          "video"
-          "audio"
-          "input"
-          "nix"
-          "networkmanager"
-        ]
-        ++ ifExists [
-          "network"
-          "docker"
-          "podman"
-          "libvirt"
-          "render"
-          "ollama"
-        ];
+        ["wheel" "video" "audio" "input" "nix" "networkmanager"]
+        ++ ifExists ["network" "docker" "podman" "libvirt" "render" "ollama"];
 
       packages = let
         addIf = cond: content:
@@ -74,9 +52,7 @@ in {
           unstable.gh
           configured.bibiman
           configured.wikiman
-          (unstable.openai-whisper.override {
-            triton = null;
-          })
+          (unstable.openai-whisper.override {triton = null;})
           configured.bmm
           configured.helix
         ];
@@ -88,20 +64,12 @@ in {
           inputs.poincare.packages.${pkgs.system}.default
           (inputs.daedalus.packages.${pkgs.system}.default.override {
             shell = "${pkgs.configured.fish}/bin/fish";
-            targets = [
-              "~/Documents/Projects/"
-              "~/Documents/University/"
-            ];
+            targets = ["~/Documents/Projects/" "~/Documents/University/"];
           })
         ];
 
         desktop = with pkgs;
-          [
-            brightnessctl
-            bash
-            calibre
-            bibata-cursors
-          ]
+          [brightnessctl bash calibre bibata-cursors]
           ++ addIf (builtins.elem "wayland" config.laplace.display.servers) [
             wl-clipboard
             grim
@@ -111,28 +79,29 @@ in {
             configured.bemenu
             configured.ghostty
           ]
-          ++ addIf (builtins.elem "xorg" config.laplace.display.servers) (
-            with inputs.gungnir.packages.${pkgs.system}; let
-              fontSize =
-                if config.networking.hostName == "phobos"
-                then 15
-                else 12;
-            in [
-              xsecurelock
-              xclip
-              (st {
-                inherit fontSize;
-                borderpx = 20;
-                shell = lib.getExe pkgs.configured.fish;
-              })
-              (dmenu {
-                inherit fontSize;
-                lineHeight = 26;
-              })
-            ]
-          );
+          ++ addIf (builtins.elem "xorg" config.laplace.display.servers)
+          (with inputs.gungnir.packages.${pkgs.system}; let
+            fontSize =
+              if config.networking.hostName == "phobos"
+              then 15
+              else 12;
+          in [
+            xsecurelock
+            xclip
+            (st {
+              inherit fontSize;
+              borderpx = 20;
+              shell = lib.getExe pkgs.configured.fish;
+            })
+            (dmenu {
+              inherit fontSize;
+              lineHeight = 26;
+            })
+          ]);
 
         applications = with pkgs; [
+          emacs-unstable-pgtk
+          unstable.emacs-lsp-booster
           unstable.zotero
           signal-desktop
           prismlauncher
@@ -141,10 +110,7 @@ in {
           unstable.protonvpn-gui
         ];
 
-        system = with pkgs; [
-          unstable.sbctl
-          wireguard-tools
-        ];
+        system = with pkgs; [unstable.sbctl wireguard-tools];
 
         apps = with pkgs.configured; [
           zathura
@@ -167,14 +133,15 @@ in {
         ];
 
         misc = with pkgs.configured;
-          [
-            btop
-            ytfzf
-            ani-cli
-          ]
-          ++ (with pkgs; [yt-dlp]);
+          [btop ytfzf ani-cli] ++ (with pkgs; [yt-dlp]);
 
-        desktopPackages = cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;
+        desktopPackages =
+          cli
+          ++ dev
+          ++ desktop
+          ++ applications
+          ++ system
+          ++ misc ++ apps ++ productivity;
       in
         basePackages ++ addIf isDesktop desktopPackages;
     };
