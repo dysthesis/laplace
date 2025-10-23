@@ -104,6 +104,7 @@ in {
             (p:
               with p; [
                 vterm
+                treesit-grammars.with-all-grammars
               ]))
           unstable.emacs-lsp-booster
           unstable.zotero
