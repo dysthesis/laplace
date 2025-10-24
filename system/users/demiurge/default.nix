@@ -1,10 +1,5 @@
-{
-  inputs,
-  lib,
-  config,
-  pkgs,
-  ...
-}: let
+{ inputs, lib, config, pkgs, ... }:
+let
   inherit (lib) mkIf;
   inherit (builtins) elem filter hasAttr;
 
@@ -16,9 +11,7 @@ in {
     users.users.demiurge = {
       description = "Demiurge";
       shell =
-        if isDesktop
-        then "${pkgs.configured.bash}/bin/bash"
-        else pkgs.bash;
+        if isDesktop then "${pkgs.configured.bash}/bin/bash" else pkgs.bash;
 
       isNormalUser = true;
       openssh.authorizedKeys.keys = [
@@ -26,16 +19,13 @@ in {
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUPaVrhCJ8fDKDYCcIeICgCv6W+0GdGmMDrngIg1oKg demiurge@deimos"
       ];
 
-      hashedPassword = "$y$j9T$WtVEPLB064z6W2eWFUPK81$xT7V9MzUIS.gcoaJzfYjMRY/I5Zi5Hl57XDo9EMwll5";
-      extraGroups =
-        ["wheel" "video" "audio" "input" "nix" "networkmanager"]
-        ++ ifExists ["network" "docker" "podman" "libvirt" "render" "ollama"];
+      hashedPassword =
+        "$y$j9T$WtVEPLB064z6W2eWFUPK81$xT7V9MzUIS.gcoaJzfYjMRY/I5Zi5Hl57XDo9EMwll5";
+      extraGroups = [ "wheel" "video" "audio" "input" "nix" "networkmanager" ]
+        ++ ifExists [ "network" "docker" "podman" "libvirt" "render" "ollama" ];
 
       packages = let
-        addIf = cond: content:
-          if cond
-          then content
-          else [];
+        addIf = cond: content: if cond then content else [ ];
 
         basePackages = with pkgs; [
           rsync
@@ -52,7 +42,7 @@ in {
           unstable.gh
           configured.bibiman
           configured.wikiman
-          (unstable.openai-whisper.override {triton = null;})
+          (unstable.openai-whisper.override { triton = null; })
           configured.bmm
           configured.helix
         ];
@@ -61,15 +51,16 @@ in {
           git
           direnv
           configured.jujutsu
+          unstable.texliveFull
           inputs.poincare.packages.${pkgs.system}.default
           (inputs.daedalus.packages.${pkgs.system}.default.override {
             shell = "${pkgs.configured.fish}/bin/fish";
-            targets = ["~/Documents/Projects/" "~/Documents/University/"];
+            targets = [ "~/Documents/Projects/" "~/Documents/University/" ];
           })
         ];
 
         desktop = with pkgs;
-          [brightnessctl bash calibre bibata-cursors]
+          [ brightnessctl bash calibre bibata-cursors ]
           ++ addIf (builtins.elem "wayland" config.laplace.display.servers) [
             wl-clipboard
             grim
@@ -78,34 +69,28 @@ in {
             configured.bibata-hyprcursor
             configured.bemenu
             configured.ghostty
-          ]
-          ++ addIf (builtins.elem "xorg" config.laplace.display.servers)
-          (with inputs.gungnir.packages.${pkgs.system}; let
-            fontSize =
-              if config.networking.hostName == "phobos"
-              then 15
-              else 12;
-          in [
-            xsecurelock
-            xclip
-            (st {
-              inherit fontSize;
-              borderpx = 20;
-              shell = lib.getExe pkgs.configured.fish;
-            })
-            (dmenu {
-              inherit fontSize;
-              lineHeight = 26;
-            })
-          ]);
+          ] ++ addIf (builtins.elem "xorg" config.laplace.display.servers)
+          (with inputs.gungnir.packages.${pkgs.system};
+            let
+              fontSize =
+                if config.networking.hostName == "phobos" then 15 else 12;
+            in [
+              xsecurelock
+              xclip
+              (st {
+                inherit fontSize;
+                borderpx = 20;
+                shell = lib.getExe pkgs.configured.fish;
+              })
+              (dmenu {
+                inherit fontSize;
+                lineHeight = 26;
+              })
+            ]);
 
         applications = with pkgs; [
           ((pkgs.emacsPackagesFor emacs-unstable-pgtk).emacsWithPackages
-            (p:
-              with p; [
-                vterm
-                treesit-grammars.with-all-grammars
-              ]))
+            (p: with p; [ vterm treesit-grammars.with-all-grammars ]))
           unstable.emacs-lsp-booster
           unstable.zotero
           signal-desktop
@@ -115,7 +100,7 @@ in {
           unstable.protonvpn-gui
         ];
 
-        system = with pkgs; [unstable.sbctl wireguard-tools];
+        system = with pkgs; [ unstable.sbctl wireguard-tools ];
 
         apps = with pkgs.configured; [
           zathura
@@ -138,17 +123,11 @@ in {
         ];
 
         misc = with pkgs.configured;
-          [btop ytfzf ani-cli] ++ (with pkgs; [yt-dlp]);
+          [ btop ytfzf ani-cli ] ++ (with pkgs; [ yt-dlp ]);
 
-        desktopPackages =
-          cli
-          ++ dev
-          ++ desktop
-          ++ applications
-          ++ system
+        desktopPackages = cli ++ dev ++ desktop ++ applications ++ system
           ++ misc ++ apps ++ productivity;
-      in
-        basePackages ++ addIf isDesktop desktopPackages;
+      in basePackages ++ addIf isDesktop desktopPackages;
     };
   };
 }

@@ -16,19 +16,26 @@ in {
       if (config.nixpkgs.system != "aarch64-linux")
       then ["aarch64-linux"]
       else [];
-    services.openssh = {
-      enable = lib.mkDefault true;
-      settings = {
-        PermitRootLogin = lib.mkForce "no";
-        UseDns = false;
-        X11Forwarding = false;
-        PasswordAuthentication = lib.mkForce false;
-        KbdInteractiveAuthentication = false;
+    environment.systemPackages = with pkgs; [
+      pam_u2f
+    ];
+
+    services = {
+      openssh = {
+        enable = lib.mkDefault true;
+        settings = {
+          PermitRootLogin = lib.mkForce "no";
+          UseDns = false;
+          X11Forwarding = false;
+          PasswordAuthentication = lib.mkForce false;
+          KbdInteractiveAuthentication = false;
+        };
+        openFirewall = true;
+        ports = [
+          22
+        ];
       };
-      openFirewall = true;
-      ports = [
-        22
-      ];
+      pcscd.enable = true;
     };
     console = {
       earlySetup = true;
