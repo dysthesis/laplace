@@ -203,7 +203,7 @@
     "blueprint": {
       "inputs": {
         "nixpkgs": [
-          "nix-ai-tool",
+          "nix-ai-tools",
           "nixpkgs"
         ],
         "systems": "systems"
@@ -557,7 +557,7 @@
         "type": "github"
       }
     },
-    "nix-ai-tool": {
+    "nix-ai-tools": {
       "inputs": {
         "blueprint": "blueprint",
         "nixpkgs": [
@@ -805,7 +805,7 @@
         "lanzaboote": "lanzaboote",
         "mandelbrot": "mandelbrot",
         "nh": "nh",
-        "nix-ai-tool": "nix-ai-tool",
+        "nix-ai-tools": "nix-ai-tools",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
         "nixpak": "nixpak",
@@ -1073,7 +1073,7 @@
     "treefmt-nix_3": {
       "inputs": {
         "nixpkgs": [
-          "nix-ai-tool",
+          "nix-ai-tools",
           "nixpkgs"
         ]
       },
