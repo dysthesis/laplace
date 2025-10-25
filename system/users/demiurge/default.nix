@@ -47,6 +47,8 @@ in {
           configured.helix
         ];
 
+        llm = with inputs.nix-ai-tools.packages.${pkgs.system}; [ codex-acp ];
+
         dev = with pkgs; [
           git
           direnv
@@ -126,7 +128,7 @@ in {
           [ btop ytfzf ani-cli ] ++ (with pkgs; [ yt-dlp ]);
 
         desktopPackages = cli ++ dev ++ desktop ++ applications ++ system
-          ++ misc ++ apps ++ productivity;
+          ++ misc ++ apps ++ productivity ++ llm;
       in basePackages ++ addIf isDesktop desktopPackages;
     };
   };

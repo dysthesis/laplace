@@ -1,48 +1,33 @@
 {
   description = "A pursuit of order.";
 
-  outputs = inputs @ {
-    self,
-    babel,
-    nixpkgs,
-    treefmt-nix,
-    emacs,
-    ...
-  }: let
-    inherit (builtins) mapAttrs;
-    inherit (babel) mkLib;
-    lib = mkLib nixpkgs;
+  outputs = inputs@{ self, babel, nixpkgs, treefmt-nix, emacs, ... }:
+    let
+      inherit (builtins) mapAttrs;
+      inherit (babel) mkLib;
+      lib = mkLib nixpkgs;
 
-    # Systems to support
-    systems = [
-      "aarch64-linux"
-      "x86_64-linux"
-      "x86_64-darwin"
-      "aarch64-darwin"
-    ];
+      # Systems to support
+      systems =
+        [ "aarch64-linux" "x86_64-linux" "x86_64-darwin" "aarch64-darwin" ];
 
-    overlays = [
-      emacs.overlays.default
-    ];
+      overlays = [ emacs.overlays.default ];
 
-    forAllSystems = lib.babel.forAllSystems {inherit systems overlays;};
+      forAllSystems = lib.babel.forAllSystems { inherit systems overlays; };
 
-    treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
-  in
-    # Budget flake-parts
-    mapAttrs (_: forAllSystems) {
-      devShells = pkgs: {default = import ./nix/shell pkgs;};
+      treefmt =
+        forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
+      # Budget flake-parts
+    in mapAttrs (_: forAllSystems) {
+      devShells = pkgs: { default = import ./nix/shell pkgs; };
       # for `nix fmt`
       formatter = pkgs: treefmt.${pkgs.system}.config.build.wrapper;
       # for `nix flake check`
       checks = pkgs: {
         formatting = treefmt.${pkgs.system}.config.build.check self;
       };
-    }
-    // {
-      nixosConfigurations = import ./hosts {
-        inherit self lib inputs;
-      };
+    } // {
+      nixosConfigurations = import ./hosts { inherit self lib inputs; };
     };
 
   inputs = {
@@ -50,6 +35,11 @@
     # https://github.com/NixOS/nixpkgs/issues/222181
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
+
+    nix-ai-tools = {
+      url = "github:numtide/nix-ai-tools";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
 
     emacs = {
       url = "github:nix-community/emacs-overlay";

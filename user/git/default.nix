@@ -1,11 +1,5 @@
-{
-  lib,
-  pkgs,
-  ...
-}: {
-  environment.systemPackages = with pkgs; [
-    difftastic
-  ];
+{ lib, pkgs, ... }: {
+  environment.systemPackages = with pkgs; [ difftastic ];
   programs.git = rec {
     enable = true;
     lfs.enable = true;
@@ -16,8 +10,10 @@
         name = "Dysthesis";
         signingKey = "4F41D2DFD42D5568";
       };
+      github.user = "dysthesis";
       filter.encrypt = {
-        clean = "gpg --batch --yes --encrypt --recipient ${config.user.signingKey}";
+        clean =
+          "gpg --batch --yes --encrypt --recipient ${config.user.signingKey}";
         smudge = "gpg --batch --yes --decrypt";
       };
       commit = {
@@ -34,7 +30,9 @@
         tool = "nvimdiff";
         mergigraf = {
           name = "mergiraf";
-          driver = "${lib.getExe pkgs.unstable.mergiraf} merge --git %O %A %B -s %S -x %X -y %Y -p %P -l %L";
+          driver = "${
+              lib.getExe pkgs.unstable.mergiraf
+            } merge --git %O %A %B -s %S -x %X -y %Y -p %P -l %L";
         };
       };
       mergetool = {
@@ -72,7 +70,8 @@
         autoupdate = true;
       };
       alias = {
-        logg = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'";
+        logg =
+          "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'";
       };
       core.excludesfile = "~/.gitignore";
     };
