@@ -11,6 +11,7 @@
         signingKey = "4F41D2DFD42D5568";
       };
       github.user = "dysthesis";
+      gitlab."nw-syd-gitlab.cseunsw.tech/api/v4".user = "z5437039";
       filter.encrypt = {
         clean =
           "gpg --batch --yes --encrypt --recipient ${config.user.signingKey}";
