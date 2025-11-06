@@ -96,6 +96,7 @@ in {
       noto-fonts-cjk-sans
       terminus_font
       jbcustom-nf
+      literata
       sf-pro
       georgia-fonts
       newcomputermodern
@@ -137,9 +138,9 @@ in {
     };
     environment = {
       sessionVariables = {
-        # PYTORCH_ROCM_ARCH = "gfx1030";
-        # HSA_OVERRIDE_GFX_VERSION = "10.3.0";
-        # HCC_AMDGPU_TARGET = "gfx1030";
+        PYTORCH_ROCM_ARCH = "gfx1030";
+        HSA_OVERRIDE_GFX_VERSION = "10.3.0";
+        HCC_AMDGPU_TARGET = "gfx1030";
         GTK_USE_PORTAL = "1";
       };
       systemPackages = with pkgs; [xdg-utils];
