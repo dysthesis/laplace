@@ -4,18 +4,15 @@
   lib,
   config,
   ...
-}:
-let
+}: let
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit (pkgs) lib;
     inherit pkgs;
   };
 in
-mkNixPak {
-  config =
-    { sloth, ... }:
-    {
-      app.package = inputs.zen-browser.packages.${pkgs.system}.default;
+  mkNixPak {
+    config = {sloth, ...}: {
+      app.package = inputs.zen-browser.packages."${pkgs.system}".default;
       app.extraEntrypoints = [
         "/bin/zen"
         "/bin/zen-beta"
@@ -76,30 +73,28 @@ mkNixPak {
             "/app/etc/firefox"
           ]
         ];
-        env =
-          let
-            cursorPackage = pkgs.bibata-cursors;
-            gtkPackage = pkgs.graphite-gtk-theme.override {
-              tweaks = [
-                "black"
-                "rimless"
-                "float"
-              ];
-            };
-          in
-          {
-            # LD_PRELOAD = hmPath;
-            GTK_USE_PORTAL = "1";
-            XDG_DATA_DIRS = lib.makeSearchPath "share" [
-              pkgs.shared-mime-info
-              cursorPackage
-              gtkPackage
-            ];
-            XCURSOR_PATH = lib.concatStringsSep ":" [
-              "${cursorPackage}/share/icons"
-              "${cursorPackage}/share/pixmaps"
+        env = let
+          cursorPackage = pkgs.bibata-cursors;
+          gtkPackage = pkgs.graphite-gtk-theme.override {
+            tweaks = [
+              "black"
+              "rimless"
+              "float"
             ];
           };
+        in {
+          # LD_PRELOAD = hmPath;
+          GTK_USE_PORTAL = "1";
+          XDG_DATA_DIRS = lib.makeSearchPath "share" [
+            pkgs.shared-mime-info
+            cursorPackage
+            gtkPackage
+          ];
+          XCURSOR_PATH = lib.concatStringsSep ":" [
+            "${cursorPackage}/share/icons"
+            "${cursorPackage}/share/pixmaps"
+          ];
+        };
       };
     };
-}
+  }
