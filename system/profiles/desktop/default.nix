@@ -96,6 +96,7 @@ in {
       noto-fonts-cjk-sans
       terminus_font
       jbcustom-nf
+      literata
       sf-pro
       georgia-fonts
       newcomputermodern
