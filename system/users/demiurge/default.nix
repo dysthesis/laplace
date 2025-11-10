@@ -117,7 +117,7 @@ in {
           unstable.zotero
           signal-desktop
           prismlauncher
-          tor-browser-bundle-bin
+          unstable.tor-browser
           tigervnc
           unstable.protonvpn-gui
         ];

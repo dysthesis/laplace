@@ -10,6 +10,7 @@
     erebus = "aarch64-linux"; # Raspberry Pi
     phobos = "x86_64-linux"; # Laptop
     deimos = "x86_64-linux"; # PC
+    installer = "x86_64-linux"; # Installer ISO
   };
   defaultImports = [
     ../system
