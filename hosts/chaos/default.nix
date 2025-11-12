@@ -13,19 +13,9 @@
     "root"
     "nixos"
   ];
-  niriLoginShell = pkgs.writeShellScriptBin "niri-login-shell" ''
-    set -u
-
-    if [ -z "''${WAYLAND_DISPLAY:-}" ] && [ -z "''${DISPLAY:-}" ] && [ "''${XDG_VTNR:-}" = "1" ] && [ -z "''${NIRI_SESSION_STARTED:-}" ]; then
-      export NIRI_SESSION_STARTED=1
-      ${lib.getExe pkgs.configured.hyprland}|| true
-    fi
-
-    exec ${pkgs.bashInteractive}/bin/bash
-  '';
 in {
   imports = [
-    "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
+    "${modulesPath}/installer/cd-dvd/installation-cd-graphical-calamares-gnome.nix"
   ];
 
   config =
@@ -36,6 +26,9 @@ in {
         harden = ["kernel"];
       };
       environment.systemPackages = with pkgs; [
+        (configured.ghostty.override {
+          withDecorations = true;
+        })
         configured.wikiman
         configured.helix
         configured.fish
