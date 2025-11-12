@@ -7,10 +7,9 @@
 }:
 let
   inherit (lib.babel.pkgs) mkWrapper;
-  configPath =
-    import ./config {
-      inherit pkgs lib config;
-    };
+  configPath = import ./config {
+    inherit pkgs lib config;
+  };
 in
 mkWrapper pkgs niri ''
   wrapProgram $out/bin/niri \

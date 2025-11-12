@@ -118,7 +118,7 @@
         set -gx direnv_config_dir ${direnvConfig}
         ${lib.getExe direnv} hook fish | source
         dbus-update-activation-environment --systemd --all
-        ${lib.getExe pkgs.taskwarrior} next due.before:today+7d
+        ${lib.getExe pkgs.configured.taskwarrior} next due.before:today+7d
       end
 
       function cpfile

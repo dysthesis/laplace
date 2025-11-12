@@ -1,23 +1,43 @@
+vcs := `if command -v jj >/dev/null 2>&1 \
+           && jj root --ignore-working-copy --quiet >/dev/null 2>&1; then \
+            printf 'jj'; \
+          else \
+            printf 'git'; \
+          fi`
+
 update FLAKE="":
-  nix flake update --commit-lock-file {{FLAKE}} && git push
+  #!/usr/bin/env sh
+  nix flake update --commit-lock-file {{FLAKE}}
+  if [ "{{vcs}}" = "jj" ]; then
+    jj git push
+  else
+    git push
+  fi
 
 rebuild:
   nh os switch
 
 pull:
-  git pull
+  #!/usr/bin/env sh
+  if [ "{{vcs}}" = "jj" ]; then
+    jj git fetch
+  else
+    git pull
+  fi
 
 sync: pull rebuild
 
 upgrade FLAKE="": pull (update FLAKE) rebuild
 
 format HOST:
+  #!/usr/bin/env sh
   sudo disko \
     --mode destroy,format,mount \
     --yes-wipe-all-disks \
     ./hosts/{{HOST}}/disks.nix
 
 install HOST: (format HOST)
+  #!/usr/bin/env sh
   sudo nixos-install \
     --impure \
     --flake .#{{HOST}} \
@@ -48,9 +68,6 @@ image DISK PROFILE="chaos":
     echo "Unsupported image profile: {{PROFILE}} (expected erebus or installer)" >&2
     exit 1
   fi
-
-sync-server:
-  rsync -av -e ssh $(pwd) demiurge@192.168.1.185:Documents/Projects/laplace
 
 clean:
   fd "core|result|out|test" --no-ignore-vcs -x rm
