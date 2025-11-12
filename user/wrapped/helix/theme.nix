@@ -1,14 +1,17 @@
-{pkgs, ...}: let
-  tomlFormat = pkgs.formats.toml {};
+{ pkgs, ... }:
+let
+  tomlFormat = pkgs.formats.toml { };
   # Customised lackluster theme
   config = {
     comment = "comment";
     constant = "gray7";
     "constant.builtin" = "gray6";
-    diagnostic = {fg = "gray4";};
+    diagnostic = {
+      fg = "gray4";
+    };
     "diagnostic.deprecated" = {
       fg = "gray4";
-      modifiers = ["crossed_out"];
+      modifiers = [ "crossed_out" ];
     };
     "diagnostic.error" = {
       fg = "gray4";
@@ -19,7 +22,7 @@
     };
     "diagnostic.unnecessary" = {
       fg = "gray4";
-      modifiers = ["dim"];
+      modifiers = [ "dim" ];
     };
     "diagnostic.warning" = {
       fg = "gray4";
@@ -28,27 +31,45 @@
         style = "curl";
       };
     };
-    diff = {fg = "gray3";};
-    "diff.delta" = {fg = "blue";};
-    "diff.delta.conflict" = {fg = "yellow";};
+    diff = {
+      fg = "gray3";
+    };
+    "diff.delta" = {
+      fg = "blue";
+    };
+    "diff.delta.conflict" = {
+      fg = "yellow";
+    };
     "diff.delta.gutter" = {
       fg = "gray4";
-      modifiers = ["dim"];
+      modifiers = [ "dim" ];
     };
-    "diff.minus" = {fg = "red";};
+    "diff.minus" = {
+      fg = "red";
+    };
     "diff.minus.gutter" = {
       fg = "red";
-      modifiers = ["dim"];
+      modifiers = [ "dim" ];
     };
-    "diff.plus" = {fg = "green";};
-    "diff.plus.gutter" = {fg = "gray4";};
-    error = {fg = "red";};
-    function = {fg = "gray6b";};
+    "diff.plus" = {
+      fg = "green";
+    };
+    "diff.plus.gutter" = {
+      fg = "gray4";
+    };
+    error = {
+      fg = "red";
+    };
+    function = {
+      fg = "gray6b";
+    };
     "function.builtin" = {
       fg = "gray5";
-      modifiers = ["bold"];
+      modifiers = [ "bold" ];
     };
-    "function.method" = {fg = "gray6";};
+    "function.method" = {
+      fg = "gray6";
+    };
     hint = "gray4";
     info = "gray4";
     keyword = "special_keyword";
@@ -56,24 +77,36 @@
     "keyword.control.return" = "green";
     "keyword.operator" = "punctuation";
     "markup.bold" = {
-      modifiers = ["bold"];
+      modifiers = [ "bold" ];
     };
-    "markup.heading" = {fg = "gray5";};
-    "markup.heading.1" = {fg = "gray6";};
+    "markup.heading" = {
+      fg = "gray5";
+    };
+    "markup.heading.1" = {
+      fg = "gray6";
+    };
     "markup.italic" = {
-      modifiers = ["italic"];
+      modifiers = [ "italic" ];
     };
     "markup.link" = "blue";
-    "markup.link.url" = {fg = "green";};
-    "markup.list" = {fg = "gray4";};
-    "markup.quote" = {fg = "gray5";};
-    "markup.raw" = {fg = "lack";};
+    "markup.link.url" = {
+      fg = "green";
+    };
+    "markup.list" = {
+      fg = "gray4";
+    };
+    "markup.quote" = {
+      fg = "gray5";
+    };
+    "markup.raw" = {
+      fg = "lack";
+    };
     "markup.raw.block" = {
       fg = "lack";
-      modifiers = ["bold"];
+      modifiers = [ "bold" ];
     };
     "markup.strikethrough" = {
-      modifiers = ["crossed_out"];
+      modifiers = [ "crossed_out" ];
     };
     operator = "gray6";
     palette = {
@@ -110,8 +143,12 @@
     string = "green";
     "string.special" = "green";
     tabstop = "gray4";
-    tag = {fg = "gray5";};
-    type = {fg = "gray7";};
+    tag = {
+      fg = "gray5";
+    };
+    type = {
+      fg = "gray7";
+    };
     "type.enum" = "special_keyword";
     "ui.background" = {
       bg = "background";
@@ -157,17 +194,31 @@
       bg = "gray6";
       fg = "black";
     };
-    "ui.cursorcolumn.primary" = {bg = "#171717";};
-    "ui.cursorcolumn.secondary" = {bg = "#171717";};
-    "ui.cursorline.primary" = {bg = "#171717";};
-    "ui.cursorline.secondary" = {bg = "#171717";};
-    "ui.debug.active" = {fg = "green";};
-    "ui.debug.breakpoint" = {fg = "blue";};
+    "ui.cursorcolumn.primary" = {
+      bg = "#171717";
+    };
+    "ui.cursorcolumn.secondary" = {
+      bg = "#171717";
+    };
+    "ui.cursorline.primary" = {
+      bg = "#171717";
+    };
+    "ui.cursorline.secondary" = {
+      bg = "#171717";
+    };
+    "ui.debug.active" = {
+      fg = "green";
+    };
+    "ui.debug.breakpoint" = {
+      fg = "blue";
+    };
     "ui.help" = {
       bg = "popup_background";
       fg = "gray6";
     };
-    "ui.highlight" = {bg = "gray3";};
+    "ui.highlight" = {
+      bg = "gray3";
+    };
     "ui.linenr" = "gray4";
     "ui.linenr.selected" = "gray7";
     "ui.menu" = {
@@ -182,13 +233,19 @@
       bg = "gray8";
       fg = "black";
     };
-    "ui.picker.header" = {fg = "gray4";};
+    "ui.picker.header" = {
+      fg = "gray4";
+    };
     "ui.popup" = {
       bg = "popup_background";
       fg = "gray6";
     };
-    "ui.selection" = {bg = "#252525";};
-    "ui.selection.primary" = {bg = "#252525";};
+    "ui.selection" = {
+      bg = "#252525";
+    };
+    "ui.selection.primary" = {
+      bg = "#252525";
+    };
     "ui.statusline" = {
       bg = "statusline";
       fg = "gray7";
@@ -205,21 +262,41 @@
       bg = "gray9";
       fg = "black";
     };
-    "ui.text" = {fg = "gray8";};
-    "ui.text.directory" = {fg = "gray6";};
-    "ui.text.focus" = {bg = "gray3";};
-    "ui.text.info" = {fg = "gray8";};
+    "ui.text" = {
+      fg = "gray8";
+    };
+    "ui.text.directory" = {
+      fg = "gray6";
+    };
+    "ui.text.focus" = {
+      bg = "gray3";
+    };
+    "ui.text.info" = {
+      fg = "gray8";
+    };
     "ui.virtual.inlay-hint" = "gray4";
     "ui.virtual.inlay-hint.parameter" = "orange";
     "ui.virtual.inlay-hint.type" = "gray4";
-    "ui.virtual.jump-label" = {fg = "blue";};
-    "ui.virtual.ruler" = {bg = "#171717";};
-    "ui.virtual.wrap" = {fg = "gray4";};
-    "ui.window" = {fg = "gray6";};
-    variable = {fg = "gray8";};
-    "variable.other.memeber" = {fg = "gray7";};
+    "ui.virtual.jump-label" = {
+      fg = "blue";
+    };
+    "ui.virtual.ruler" = {
+      bg = "#171717";
+    };
+    "ui.virtual.wrap" = {
+      fg = "gray4";
+    };
+    "ui.window" = {
+      fg = "gray6";
+    };
+    variable = {
+      fg = "gray8";
+    };
+    "variable.other.memeber" = {
+      fg = "gray7";
+    };
     "variable.parameter" = "param";
     warning = "orange";
   };
 in
-  tomlFormat.generate "demiurge.toml" config
+tomlFormat.generate "demiurge.toml" config

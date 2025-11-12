@@ -4,7 +4,8 @@
   self,
   swaylock-effects,
   ...
-}: let
+}:
+let
   inherit (builtins) concatStringsSep;
   wallpaper = "${self}/user/wallpaper.png";
 
@@ -72,15 +73,16 @@
     "00000000"
   ];
 
-  mkParam = s:
-    if lib.hasInfix " " s
-    then ''--add-flag ${lib.escapeShellArg s}''
-    else ''--add-flags ${lib.escapeShellArg s}'';
+  mkParam =
+    s:
+    if lib.hasInfix " " s then
+      ''--add-flag ${lib.escapeShellArg s}''
+    else
+      ''--add-flags ${lib.escapeShellArg s}'';
 
-  formatted =
-    concatStringsSep " \\\n      " (map mkParam tokens);
+  formatted = concatStringsSep " \\\n      " (map mkParam tokens);
 in
-  lib.babel.pkgs.mkWrapper pkgs swaylock-effects ''
-    wrapProgram "$out/bin/swaylock" \
-      ${formatted}
-  ''
+lib.babel.pkgs.mkWrapper pkgs swaylock-effects ''
+  wrapProgram "$out/bin/swaylock" \
+    ${formatted}
+''

@@ -17,9 +17,9 @@ let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) concatStringsSep;
   # Adaptive sizing based on primary monitor, similar to waybar/style.nix
-  monitors = config.laplace.hardware.monitors or [];
+  monitors = config.laplace.hardware.monitors or [ ];
   defaultMonitor =
-    if monitors == [] then
+    if monitors == [ ] then
       {
         width = 1920;
         height = 1080;
@@ -28,7 +28,9 @@ let
       builtins.head monitors;
   primaryMonitor = lib.findFirst (m: (m.primary or false)) defaultMonitor monitors;
 
-  clamp = min: max: val: lib.max min (lib.min max val);
+  clamp =
+    min: max: val:
+    lib.max min (lib.min max val);
   round = x: builtins.floor (x + 0.5);
 
   hostName = config.networking.hostName or "";
@@ -36,11 +38,7 @@ let
   rawScale = baselineH / (primaryMonitor.height or baselineH);
   scale = clamp 0.6 1.2 rawScale;
 
-  baseFont =
-    if hostName == "phobos" then
-      12.0
-    else
-      9.0;
+  baseFont = if hostName == "phobos" then 12.0 else 9.0;
   fontLineRatio = 24.0 / 9.0;
   fontPaddingRatio = 8.0 / 9.0;
   baseLineH = baseFont * fontLineRatio;

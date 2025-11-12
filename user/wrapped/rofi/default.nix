@@ -3,10 +3,11 @@
   pkgs,
   rofi-wayland,
   ...
-}: let
+}:
+let
   inherit (lib.babel.pkgs) mkWrapper;
 in
-  mkWrapper pkgs rofi-wayland
+mkWrapper pkgs rofi-wayland
   # sh
   ''
     wrapProgram $out/bin/rofi

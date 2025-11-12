@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  withDecorations ? false,
   ...
 }: let
   cfg = config.networking.hostName == "phobos";
@@ -34,7 +35,7 @@ in
     window-padding-y = ${toString padding}
     # background-opacity = 0.75
     # background-blur = true
-    window-decoration = false
+    window-decoration = ${toString withDecorations}
     confirm-close-surface = false
     command = ${lib.getExe pkgs.configured.fish}
 

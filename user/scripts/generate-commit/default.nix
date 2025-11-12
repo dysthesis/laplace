@@ -5,9 +5,9 @@
   gnused,
   fzf,
   ...
-}: let
-  inherit
-    (pkgs)
+}:
+let
+  inherit (pkgs)
     symlinkJoin
     runCommandLocal
     ;
@@ -18,17 +18,17 @@
     fzf
   ];
   name = "generate-commit";
-  script = runCommandLocal "script" {} ''
+  script = runCommandLocal "script" { } ''
     mkdir -pv $out/bin
     cp ${./generate-commit.sh} $out/bin/${name}
     patchShebangs $out/bin/${name}
     chmod +x  $out/bin/${name}
   '';
 in
-  symlinkJoin rec {
-    inherit name;
-    paths = [script] ++ deps;
-    buildInputs = [pkgs.makeWrapper];
-    postBuild = "wrapProgram $out/bin/${name} --prefix PATH : $out/bin";
-    meta.mainProgram = name;
-  }
+symlinkJoin rec {
+  inherit name;
+  paths = [ script ] ++ deps;
+  buildInputs = [ pkgs.makeWrapper ];
+  postBuild = "wrapProgram $out/bin/${name} --prefix PATH : $out/bin";
+  meta.mainProgram = name;
+}

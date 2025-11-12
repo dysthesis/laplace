@@ -69,8 +69,11 @@ let
       select = {
         "^" = "goto_first_nonwhitespace";
         "$" = "goto_line_end";
-        "g" = { "e" = "goto_file_end"; };
+        "g" = {
+          "e" = "goto_file_end";
+        };
       };
     };
   };
-in tomlFormat.generate "helix-config" config
+in
+tomlFormat.generate "helix-config" config
