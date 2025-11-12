@@ -60,7 +60,6 @@ _: {
 
       users = ["demiurge"];
       virtualisation.enable = true;
-      docker.enable = true;
       nh = {
         enable = true;
         flakePath = "/home/demiurge/Documents/Projects/laplace";
