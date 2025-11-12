@@ -13,63 +13,55 @@
     "root"
     "nixos"
   ];
-in
-  {
-    imports = [
-      "${modulesPath}/installer/cd-dvd/installation-cd-graphical-base.nix"
-    ];
+  niriLoginShell = pkgs.writeShellScriptBin "niri-login-shell" ''
+    set -u
 
-    laplace = {
-      profiles = [ "desktop" ];
-      harden = [ "kernel" ];
-      display.servers = [ "wayland" ];
-    };
+    if [ -z "''${WAYLAND_DISPLAY:-}" ] && [ -z "''${DISPLAY:-}" ] && [ "''${XDG_VTNR:-}" = "1" ] && [ -z "''${NIRI_SESSION_STARTED:-}" ]; then
+      export NIRI_SESSION_STARTED=1
+      ${lib.getExe pkgs.configured.hyprland}|| true
+    fi
 
-    programs.niri = {
-      enable = true;
-      package = pkgs.configured.niri;
-    };
+    exec ${pkgs.bashInteractive}/bin/bash
+  '';
+in {
+  imports = [
+    "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
+  ];
 
-    services.displayManager = {
-      defaultSession = "niri";
-      gdm = {
-        enable = true;
-        autoSuspend = false;
+  config =
+    {
+      isoImage.edition = "chaos";
+      laplace = {
+        profiles = ["desktop"];
+        harden = ["kernel"];
       };
-      autoLogin = {
-        enable = true;
-        user = "nixos";
-        session = "niri";
-      };
-    };
+      environment.systemPackages = with pkgs; [
+        configured.wikiman
+        configured.helix
+        configured.fish
 
-    environment.systemPackages = with pkgs; [
-      (configured.ghostty.override {
-        withDecorations = true;
-      })
-      configured.wikiman
-      configured.helix
-      configured.fish
+        unstable.uutils-coreutils-noprefix
+        unstable.tor-browser
+        unstable.protonvpn-gui
+        unstable.sbctl
+        unstable.w3m
+        unstable.chawan
 
-      unstable.uutils-coreutils-noprefix
-      unstable.tor-browser
-      unstable.protonvpn-gui
-      unstable.sbctl
-
-      inputs.zen-browser.packages.${pkgs.system}.default
-      inputs.poincare.packages.${pkgs.system}.default
-      (inputs.daedalus.packages.${pkgs.system}.default.override {
-        shell = "${pkgs.configured.fish}/bin/fish";
-        targets = [
-          "~/Documents/Projects/"
-          "~/Documents/University/"
-        ];
-      })
-    ];
-  }
-  // lib.fold
-  (curr: acc:
-    acc
-    // {users.users.${curr}.openssh.authorizedKeys.keys = keys;})
-  {}
-  users
+        inputs.zen-browser.packages.${pkgs.system}.default
+        inputs.poincare.packages.${pkgs.system}.default
+        (inputs.daedalus.packages.${pkgs.system}.default.override {
+          shell = "${pkgs.configured.fish}/bin/fish";
+          targets = [
+            "~/Documents/Projects/"
+            "~/Documents/University/"
+          ];
+        })
+      ];
+    }
+    // lib.fold
+    (curr: acc:
+      acc
+      // {users.users.${curr}.openssh.authorizedKeys.keys = keys;})
+    {}
+    users;
+}
