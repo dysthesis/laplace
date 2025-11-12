@@ -28,14 +28,14 @@ install HOST: (format HOST)
 remote HOST ADDR:
   nix run ."#install-{{HOST}}" -- --target-host root@{{ADDR}}
 
-image DISK PROFILE="installer":
+image DISK PROFILE="chaos":
   #!/usr/bin/env sh
   set -euo pipefail
   if [ "{{PROFILE}}" = "erebus" ]; then
     nix build ".#nixosConfigurations.{{PROFILE}}.config.system.build.sdImage"
     sudo wipefs -a {{DISK}}
     zstdcat result/sd-image/nixos-image-sd-card-*-linux.img.zst | sudo dd of={{DISK}} status=progress
-  elif [ "{{PROFILE}}" = "installer" ]; then
+  elif [ "{{PROFILE}}" = "chaos" ]; then
     nix build ".#nixosConfigurations.{{PROFILE}}.config.system.build.isoImage"
     sudo wipefs -a {{DISK}}
     ISO_PATH="$(find result/iso -maxdepth 1 -name '*.iso' -print -quit)"

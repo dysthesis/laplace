@@ -16,12 +16,31 @@
 in
   {
     imports = [
-      "${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"
+      "${modulesPath}/installer/cd-dvd/installation-cd-graphical-base.nix"
     ];
 
     laplace = {
-      profiles = ["desktop"];
-      harden = ["kernel"];
+      profiles = [ "desktop" ];
+      harden = [ "kernel" ];
+      display.servers = [ "wayland" ];
+    };
+
+    programs.niri = {
+      enable = true;
+      package = pkgs.configured.niri;
+    };
+
+    services.displayManager = {
+      defaultSession = "niri";
+      gdm = {
+        enable = true;
+        autoSuspend = false;
+      };
+      autoLogin = {
+        enable = true;
+        user = "nixos";
+        session = "niri";
+      };
     };
 
     environment.systemPackages = with pkgs; [
@@ -35,6 +54,7 @@ in
       unstable.uutils-coreutils-noprefix
       unstable.tor-browser
       unstable.protonvpn-gui
+      unstable.sbctl
 
       inputs.zen-browser.packages.${pkgs.system}.default
       inputs.poincare.packages.${pkgs.system}.default
