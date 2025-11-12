@@ -58,6 +58,14 @@ let
             inputs
             ;
         };
+        niri = callPackage ./niri {
+          inherit
+            pkgs
+            lib
+            config
+            inputs
+            ;
+        };
         bibiman = callPackage ./bibiman { inherit pkgs lib inputs; };
         sway = callPackage ./sway {
           inherit
