@@ -79,6 +79,8 @@ mkNixPak {
 
             # Application-specific config and cache
             (sloth.concat' sloth.xdgConfigHome "/vesktop")
+            # Electron profile still lives under the legacy VencordDesktop name
+            (sloth.concat' sloth.xdgConfigHome "/VencordDesktop")
             (sloth.concat' sloth.xdgCacheHome "/mesa_shader_cache")
             [
               (envSuffix "HOME" "/.var/app/${flatpak.appId}/cache")
