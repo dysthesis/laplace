@@ -33,7 +33,7 @@
       mkAnywhereApps =
         pkgs:
         let
-          anywherePkg = lib.attrByPath [ pkgs.system ] null inputs.nixos-anywhere.packages;
+          anywherePkg = lib.attrByPath [ pkgs.system "nixos-anywhere" ] null inputs.nixos-anywhere.packages;
         in
         if anywherePkg == null then
           { }
@@ -44,10 +44,40 @@
               let
                 script = pkgs.writeShellApplication {
                   name = "install-${hostname}";
+                  runtimeInputs = [
+                    pkgs.coreutils
+                    pkgs.gum
+                  ];
                   text = ''
                     set -euo pipefail
+
+                    tmp="$(mktemp -d)"
+                    cleanup() {
+                      rm -rf "$tmp"
+                    }
+                    trap cleanup EXIT
+
+                    umask 077
+                    password_file="$tmp/luks.key"
+
+                    if [ -n "''${LUKS_PASSWORD_FILE:-}" ]; then
+                      cp "''${LUKS_PASSWORD_FILE}" "$password_file"
+                      chmod 600 "$password_file"
+                    else
+                      echo "Enter the disk encryption password for ${hostname} (input hidden):" >&2
+                      passphrase="$(${pkgs.gum}/bin/gum input --password --prompt "LUKS passphrase: ")"
+                      if [ -z "$passphrase" ]; then
+                        echo "ERROR: disk encryption password cannot be empty." >&2
+                        exit 1
+                      fi
+                      printf '%s' "$passphrase" >"$password_file"
+                      chmod 600 "$password_file"
+                      unset passphrase
+                    fi
+
                     FLAKE_REF="''${FLAKE_REF:-${self.outPath}}"
                     exec ${anywherePkg}/bin/nixos-anywhere \
+                      --disk-encryption-keys /tmp/luks.key "$password_file" \
                       --flake "''${FLAKE_REF}#${hostname}" "$@"
                   '';
                 };

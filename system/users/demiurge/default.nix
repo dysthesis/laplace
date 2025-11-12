@@ -4,21 +4,19 @@
   config,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   inherit (builtins) elem filter hasAttr;
-  inherit (lib.babel.pkgs) mkWrapper;
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
   isDesktop = elem "desktop" config.laplace.profiles;
-in {
+in
+{
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
-      shell =
-        if isDesktop
-        then "${pkgs.configured.bash}/bin/bash"
-        else pkgs.bash;
+      shell = if isDesktop then "${pkgs.configured.bash}/bin/bash" else pkgs.bash;
 
       isNormalUser = true;
       openssh.authorizedKeys.keys = [
@@ -27,134 +25,162 @@ in {
       ];
 
       hashedPassword = "$y$j9T$WtVEPLB064z6W2eWFUPK81$xT7V9MzUIS.gcoaJzfYjMRY/I5Zi5Hl57XDo9EMwll5";
-      extraGroups =
-        ["wheel" "video" "audio" "input" "nix" "networkmanager"]
-        ++ ifExists ["network" "docker" "podman" "libvirt" "render" "ollama"];
+      extraGroups = [
+        "wheel"
+        "video"
+        "audio"
+        "input"
+        "nix"
+        "networkmanager"
+      ]
+      ++ ifExists [
+        "network"
+        "docker"
+        "podman"
+        "libvirt"
+        "render"
+        "ollama"
+      ];
 
-      packages = let
-        addIf = cond: content:
-          if cond
-          then content
-          else [];
+      packages =
+        let
+          addIf = cond: content: if cond then content else [ ];
 
-        basePackages = with pkgs; [
-          rsync
-          gnupg
-          inputs.poincare.packages.${pkgs.system}.default
-          age
-          sops
-        ];
+          basePackages = with pkgs; [
+            rsync
+            gnupg
+            inputs.poincare.packages.${pkgs.system}.default
+            age
+            sops
+          ];
 
-        cli = with pkgs; [
-          unstable.uutils-coreutils-noprefix
-          unstable.bat
-          unstable.tealdeer
-          unstable.gh
-          configured.bibiman
-          configured.wikiman
-          (unstable.openai-whisper.override {triton = null;})
-          # (mkWrapper pkgs (unstable.openai-whisper.override {triton = null;})
-          #   #sh
-          #   ''
-          #     wrapProgram "$out/bin/whisper" \
-          #       --set PYTORCH_ROCM_ARCH  "gfx1030" \
-          #       --set HSA_OVERRIDE_GFX_VERSION "10.3.0" \
-          #       --set HCC_AMDGPU_TARGET "gfx1030"
-          #   '')
-          configured.bmm
-          configured.helix
-        ];
+          cli = with pkgs; [
+            unstable.uutils-coreutils-noprefix
+            unstable.bat
+            unstable.tealdeer
+            unstable.gh
+            configured.bibiman
+            configured.wikiman
+            (unstable.openai-whisper.override { triton = null; })
+            # (mkWrapper pkgs (unstable.openai-whisper.override {triton = null;})
+            #   #sh
+            #   ''
+            #     wrapProgram "$out/bin/whisper" \
+            #       --set PYTORCH_ROCM_ARCH  "gfx1030" \
+            #       --set HSA_OVERRIDE_GFX_VERSION "10.3.0" \
+            #       --set HCC_AMDGPU_TARGET "gfx1030"
+            #   '')
+            configured.bmm
+            configured.helix
+          ];
 
-        llm = with inputs.nix-ai-tools.packages.${pkgs.system}; [codex-acp];
+          llm = with inputs.nix-ai-tools.packages.${pkgs.system}; [ codex-acp ];
 
-        dev = with pkgs; [
-          git
-          direnv
-          configured.jujutsu
-          unstable.texliveFull
-          inputs.poincare.packages.${pkgs.system}.default
-          (inputs.daedalus.packages.${pkgs.system}.default.override {
-            shell = "${pkgs.configured.fish}/bin/fish";
-            targets = ["~/Documents/Projects/" "~/Documents/University/"];
-          })
-        ];
-
-        desktop = with pkgs;
-          [brightnessctl bash calibre bibata-cursors]
-          ++ addIf (builtins.elem "wayland" config.laplace.display.servers) [
-            wl-clipboard
-            grim
-            slurp
-            swappy
-            configured.bibata-hyprcursor
-            configured.bemenu
-            configured.ghostty
-          ]
-          ++ addIf (builtins.elem "xorg" config.laplace.display.servers)
-          (with inputs.gungnir.packages.${pkgs.system}; let
-            fontSize =
-              if config.networking.hostName == "phobos"
-              then 15
-              else 12;
-          in [
-            xsecurelock
-            xclip
-            (st {
-              inherit fontSize;
-              borderpx = 20;
-              shell = lib.getExe pkgs.configured.fish;
+          dev = with pkgs; [
+            git
+            direnv
+            configured.jujutsu
+            unstable.texliveFull
+            inputs.poincare.packages.${pkgs.system}.default
+            (inputs.daedalus.packages.${pkgs.system}.default.override {
+              shell = "${pkgs.configured.fish}/bin/fish";
+              targets = [
+                "~/Documents/Projects/"
+                "~/Documents/University/"
+              ];
             })
-            (dmenu {
-              inherit fontSize;
-              lineHeight = 26;
-            })
-          ]);
+          ];
 
-        applications = with pkgs; [
-          ((pkgs.emacsPackagesFor emacs-unstable-pgtk).emacsWithPackages
-            (p: with p; [vterm treesit-grammars.with-all-grammars]))
-          unstable.emacs-lsp-booster
-          unstable.zotero
-          signal-desktop
-          prismlauncher
-          unstable.tor-browser
-          tigervnc
-          unstable.protonvpn-gui
-        ];
+          desktop =
+            with pkgs;
+            [
+              brightnessctl
+              bash
+              calibre
+              bibata-cursors
+            ]
+            ++ addIf (builtins.elem "wayland" config.laplace.display.servers) [
+              wl-clipboard
+              grim
+              slurp
+              swappy
+              configured.bibata-hyprcursor
+              configured.bemenu
+              configured.ghostty
+            ]
+            ++ addIf (builtins.elem "xorg" config.laplace.display.servers) (
+              with inputs.gungnir.packages.${pkgs.system};
+              let
+                fontSize = if config.networking.hostName == "phobos" then 15 else 12;
+              in
+              [
+                xsecurelock
+                xclip
+                (st {
+                  inherit fontSize;
+                  borderpx = 20;
+                  shell = lib.getExe pkgs.configured.fish;
+                })
+                (dmenu {
+                  inherit fontSize;
+                  lineHeight = 26;
+                })
+              ]
+            );
 
-        system = with pkgs; [unstable.sbctl wireguard-tools];
+          applications = with pkgs; [
+            ((pkgs.emacsPackagesFor emacs-unstable-pgtk).emacsWithPackages (
+              p: with p; [
+                vterm
+                treesit-grammars.with-all-grammars
+              ]
+            ))
+            unstable.emacs-lsp-booster
+            unstable.zotero
+            signal-desktop
+            prismlauncher
+            unstable.tor-browser
+            tigervnc
+            unstable.protonvpn-gui
+          ];
 
-        apps = with pkgs.configured; [
-          zathura
-          spotify-player
-          zen
-          vesktop
-          irssi
-          mpv
-          neomutt
-        ];
+          system = with pkgs; [
+            unstable.sbctl
+            wireguard-tools
+          ];
 
-        productivity = with pkgs.configured; [
-          read
-          newsraft
-          taskwarrior
-          timewarrior
-          taskwarrior-tui
-          zk
-          pass
-        ];
+          apps = with pkgs.configured; [
+            zathura
+            spotify-player
+            zen
+            vesktop
+            irssi
+            mpv
+            neomutt
+          ];
 
-        misc = with pkgs.configured;
-          [btop ytfzf ani-cli] ++ (with pkgs; [yt-dlp]);
+          productivity = with pkgs.configured; [
+            read
+            newsraft
+            taskwarrior
+            timewarrior
+            taskwarrior-tui
+            zk
+            pass
+          ];
 
-        desktopPackages =
-          cli
-          ++ dev
-          ++ desktop
-          ++ applications
-          ++ system
-          ++ misc ++ apps ++ productivity ++ llm;
-      in
+          misc =
+            with pkgs.configured;
+            [
+              btop
+              ytfzf
+              ani-cli
+            ]
+            ++ (with pkgs; [ yt-dlp ]);
+
+          desktopPackages =
+            cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity ++ llm;
+        in
         basePackages ++ addIf isDesktop desktopPackages;
     };
   };

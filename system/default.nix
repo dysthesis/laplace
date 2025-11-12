@@ -4,18 +4,18 @@
   lib,
   config,
   ...
-}: let
+}:
+let
   inherit (lib.babel.modules) importInDirectory;
-in {
+in
+{
   config = {
     environment.sessionVariables = {
       BROWSER = lib.getExe pkgs.configured.zen;
       EDITOR = lib.getExe inputs.poincare.packages.${pkgs.system}.default;
     };
     boot.binfmt.emulatedSystems =
-      if (config.nixpkgs.system != "aarch64-linux")
-      then ["aarch64-linux"]
-      else [];
+      if (config.nixpkgs.system != "aarch64-linux") then [ "aarch64-linux" ] else [ ];
     environment.systemPackages = with pkgs; [
       pam_u2f
     ];
@@ -59,7 +59,7 @@ in {
       ccache.enable = true;
     };
 
-    nix.settings.extra-sandbox-paths = [config.programs.ccache.cacheDir];
+    nix.settings.extra-sandbox-paths = [ config.programs.ccache.cacheDir ];
   };
   imports = importInDirectory ./.;
 }

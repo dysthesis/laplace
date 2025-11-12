@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (pkgs) callPackage;
   overlay = _final: _prev: {
     scripts = {
@@ -32,6 +33,7 @@
       };
     };
   };
-in {
-  nixpkgs.overlays = [overlay];
+in
+{
+  nixpkgs.overlays = [ overlay ];
 }

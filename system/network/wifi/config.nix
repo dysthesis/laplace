@@ -3,14 +3,15 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.laplace.network.wifi;
-  inherit
-    (lib)
+  inherit (lib)
     mkIf
     mkDefault
     ;
-in {
+in
+{
   config = mkIf cfg.enable {
     networking = {
       wireless.enable = mkDefault false;
