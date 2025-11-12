@@ -2,6 +2,18 @@
 
 A NixOS flake. It is a work-in-progress rewrite of my old configurations.
 
+## Remote installs
+
+To provision a new machine over SSH, ensure it can PXE-boot or run a live ISO with root access, then run:
+
+```bash
+nix run .#install-<hostname> -- --target-host root@<ip-or-hostname>
+```
+
+The wrapper delegates to [`nixos-anywhere`](https://github.com/nix-community/nixos-anywhere), so every option supported there (like `--disk-encryption`, `--copy-keys`) can be passed after the `--`. You may set `FLAKE_REF=github:dysthesis/laplace` to install from a published revision instead of the local checkout.
+
+Each wrapper launches a [`gum`](https://github.com/charmbracelet/gum) prompt _before_ contacting the remote host so you can supply the LUKS password safely. The passphrase is stored in a `mktemp` directory with mode `600`, uploaded via `--disk-encryption-keys /tmp/luks.key …`, and deleted on exit. To reuse an existing file instead of typing, set `LUKS_PASSWORD_FILE=/path/to/key` when invoking `nix run`.
+
 ## Design
 
 ### Wrappers as configurations
