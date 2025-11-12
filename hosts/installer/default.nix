@@ -19,7 +19,10 @@ in
       "${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"
     ];
 
-    laplace.profiles = ["desktop"];
+    laplace = {
+      profiles = ["desktop"];
+      harden = ["kernel"];
+    };
 
     environment.systemPackages = with pkgs; [
       (configured.ghostty.override {
