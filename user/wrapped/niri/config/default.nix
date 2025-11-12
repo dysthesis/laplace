@@ -2,7 +2,6 @@
   pkgs,
   lib,
   config,
-  inputs ? { },
   ...
 }:
 let
@@ -21,53 +20,61 @@ let
   launcherCmd = "${pkgs.configured.bemenu}/bin/bemenu-run";
   lockerCmd = lib.getExe pkgs.configured.swaylock;
 
-  spawnCommand =
-    executable: args:
-    [ executable ] ++ args;
+  spawnCommand = executable: args: [ executable ] ++ args;
 
   spawnAtStartup =
-    map (
-      cmdArgs:
-      KDL.statement {
-        name = "spawn-at-startup";
-        args = cmdArgs;
-      }
-    ) (
-      [
-        (spawnCommand (lib.getExe pkgs.configured.dunst) [ ])
-        (spawnCommand (lib.getExe pkgs.configured.waybar) [ ])
-        (spawnCommand (lib.getExe pkgs.swaybg) [
-          "-i"
-          wallpaper
-          "-m"
-          "fill"
-        ])
-      ]
-      ++ lib.optionals ((location.latitude != 0) || (location.longitude != 0)) [
-        (spawnCommand (lib.getExe pkgs.wlsunset) [
-          "-t"
-          "3700"
-          "-T"
-          "6200"
-          "-g"
-          "1.0"
-          "-l"
-          (toString location.latitude)
-          "-L"
-          (toString location.longitude)
-        ])
-      ]
-    );
+    map
+      (
+        cmdArgs:
+        KDL.statement {
+          name = "spawn-at-startup";
+          args = cmdArgs;
+        }
+      )
+      (
+        [
+          (spawnCommand (lib.getExe pkgs.configured.dunst) [ ])
+          (spawnCommand (lib.getExe pkgs.configured.waybar) [ ])
+          (spawnCommand (lib.getExe pkgs.swaybg) [
+            "-i"
+            wallpaper
+            "-m"
+            "fill"
+          ])
+        ]
+        ++ lib.optionals ((location.latitude != 0) || (location.longitude != 0)) [
+          (spawnCommand (lib.getExe pkgs.wlsunset) [
+            "-t"
+            "3700"
+            "-T"
+            "6200"
+            "-g"
+            "1.0"
+            "-l"
+            (toString location.latitude)
+            "-L"
+            (toString location.longitude)
+          ])
+        ]
+      );
 
   mkInlineAction =
-    { name, args ? [ ], assign ? { } }:
+    {
+      name,
+      args ? [ ],
+      assign ? { },
+    }:
     {
       inherit name args assign;
       inline = true;
     };
 
   mkSpawn =
-    { command, extraArgs ? [ ], assign ? { } }:
+    {
+      command,
+      extraArgs ? [ ],
+      assign ? { },
+    }:
     mkInlineAction {
       name = "spawn";
       args = [ command ] ++ extraArgs;
@@ -82,7 +89,12 @@ let
     };
 
   mkBind =
-    { combo, actions, assign ? { }, comment ? null }:
+    {
+      combo,
+      actions,
+      assign ? { },
+      comment ? null,
+    }:
     {
       name = combo;
       inline = false;
@@ -130,7 +142,9 @@ let
       actions = [
         (mkInlineAction {
           name = "quit";
-          assign = { "skip-confirmation" = true; };
+          assign = {
+            "skip-confirmation" = true;
+          };
         })
       ];
     })
@@ -184,22 +198,30 @@ let
     })
     (mkBind {
       combo = "XF86AudioRaiseVolume";
-      assign = { "allow-when-locked" = true; };
+      assign = {
+        "allow-when-locked" = true;
+      };
       actions = [ (mkSpawnSh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+") ];
     })
     (mkBind {
       combo = "XF86AudioLowerVolume";
-      assign = { "allow-when-locked" = true; };
+      assign = {
+        "allow-when-locked" = true;
+      };
       actions = [ (mkSpawnSh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-") ];
     })
     (mkBind {
       combo = "XF86AudioMute";
-      assign = { "allow-when-locked" = true; };
+      assign = {
+        "allow-when-locked" = true;
+      };
       actions = [ (mkSpawnSh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") ];
     })
     (mkBind {
       combo = "XF86MonBrightnessUp";
-      assign = { "allow-when-locked" = true; };
+      assign = {
+        "allow-when-locked" = true;
+      };
       actions = [
         (mkSpawn {
           command = lib.getExe pkgs.brightnessctl;
@@ -213,7 +235,9 @@ let
     })
     (mkBind {
       combo = "XF86MonBrightnessDown";
-      assign = { "allow-when-locked" = true; };
+      assign = {
+        "allow-when-locked" = true;
+      };
       actions = [
         (mkSpawn {
           command = lib.getExe pkgs.brightnessctl;
@@ -255,34 +279,36 @@ let
           monitor.connector
         else
           "eDP-1";
-      body =
-        {
-          mode = formatMode monitor;
-        }
-        // lib.optionalAttrs (monitor ? scale) {
-          scale = monitor.scale;
-        }
-        // lib.optionalAttrs (
-          monitor ? pos
-          && monitor.pos ? x
-          && monitor.pos.x != null
-          && monitor.pos ? y
-          && monitor.pos.y != null
-        ) {
-          position = {
-            inline = true;
-            assign = {
-              x = monitor.pos.x;
-              y = monitor.pos.y;
+      body = {
+        mode = formatMode monitor;
+      }
+      // lib.optionalAttrs (monitor ? scale) {
+        scale = monitor.scale;
+      }
+      //
+        lib.optionalAttrs
+          (
+            monitor ? pos
+            && monitor.pos ? x
+            && monitor.pos.x != null
+            && monitor.pos ? y
+            && monitor.pos.y != null
+          )
+          {
+            position = {
+              inline = true;
+              assign = {
+                x = monitor.pos.x;
+                y = monitor.pos.y;
+              };
             };
-          };
-        }
-        // lib.optionalAttrs (monitor ? variableRefreshRate && monitor.variableRefreshRate) {
-          "variable-refresh-rate" = true;
-        }
-        // lib.optionalAttrs (monitor ? primary && monitor.primary) {
-          "focus-at-startup" = true;
-        };
+          }
+      // lib.optionalAttrs (monitor ? variableRefreshRate && monitor.variableRefreshRate) {
+        "variable-refresh-rate" = true;
+      }
+      // lib.optionalAttrs (monitor ? primary && monitor.primary) {
+        "focus-at-startup" = true;
+      };
     in
     {
       name = "output";
@@ -292,89 +318,89 @@ let
 
   outputs = map mkOutput monitors;
 
-  configTree =
-    [
-      (KDL.block {
-        name = "environment";
-        body = {
-          "XDG_CURRENT_DESKTOP" = "niri";
-          "XDG_SESSION_TYPE" = "wayland";
-          "QT_QPA_PLATFORM" = "wayland";
-          "GTK_USE_PORTAL" = "1";
-          "NIXOS_OZONE_WL" = "1";
-          "CLUTTER_BACKEND" = "wayland";
+  configTree = [
+    (KDL.block {
+      name = "environment";
+      body = {
+        "XDG_CURRENT_DESKTOP" = "niri";
+        "XDG_SESSION_TYPE" = "wayland";
+        "QT_QPA_PLATFORM" = "wayland";
+        "GTK_USE_PORTAL" = "1";
+        "NIXOS_OZONE_WL" = "1";
+        "CLUTTER_BACKEND" = "wayland";
+      };
+    })
+    (KDL.block {
+      name = "cursor";
+      body = {
+        "xcursor-theme" = "Bibata-Modern-Classic";
+        "xcursor-size" = 28;
+        "hide-after-inactive-ms" = 1250;
+      };
+    })
+    (KDL.block {
+      name = "input";
+      body = {
+        keyboard = {
+          numlock = true;
         };
-      })
-      (KDL.block {
-        name = "cursor";
-        body = {
-          "xcursor-theme" = "Bibata-Modern-Classic";
-          "xcursor-size" = 28;
-          "hide-after-inactive-ms" = 1250;
-        };
-      })
-      (KDL.block {
-        name = "input";
-        body = {
-          keyboard = {
-            numlock = true;
-          };
-          touchpad = {
-            tap = true;
-            "natural-scroll" = true;
-            "click-method" = {
-              inline = true;
-              args = [ "clickfinger" ];
-            };
+        touchpad = {
+          tap = true;
+          "natural-scroll" = true;
+          "click-method" = {
+            inline = true;
+            args = [ "clickfinger" ];
           };
         };
-      })
-      (KDL.statement {
-        name = "screenshot-path";
-        args = [ "~/Pictures/Screenshots/%Y-%m-%d-%H%M%S.png" ];
-      })
-      (KDL.block {
-        name = "layout";
-        body =
-          {
-            gaps = 12;
-            "center-focused-column" = "on-overflow";
-            "always-center-single-column" = true;
-            "preset-column-widths" = {
-              body = {
-                proportion = [
-                  0.33333
-                  0.5
-                  0.66667
-                ];
-              };
-            };
-            "default-column-width" = {
-              body = { proportion = 0.5; };
-            };
-            "focus-ring" = {
-              body = {
-                width = 4;
-                "active-color" = "#7fc8ff";
-                "inactive-color" = "#4c566a";
-              };
-            };
+      };
+    })
+    (KDL.statement {
+      name = "screenshot-path";
+      args = [ "~/Pictures/Screenshots/%Y-%m-%d-%H%M%S.png" ];
+    })
+    (KDL.block {
+      name = "layout";
+      body = {
+        gaps = 12;
+        "center-focused-column" = "on-overflow";
+        "always-center-single-column" = true;
+        "preset-column-widths" = {
+          body = {
+            proportion = [
+              0.33333
+              0.5
+              0.66667
+            ];
           };
-      })
-      (KDL.statement { name = "prefer-no-csd"; })
-      (KDL.block {
-        name = "xwayland-satellite";
-        body = {
-          path = lib.getExe pkgs.xwayland-satellite;
         };
-      })
-      (KDL.block {
-        name = "binds";
-        children = bindActions;
-      })
-    ]
-    ++ outputs
-    ++ spawnAtStartup;
+        "default-column-width" = {
+          body = {
+            proportion = 0.5;
+          };
+        };
+        "focus-ring" = {
+          body = {
+            width = 4;
+            "active-color" = "#7fc8ff";
+            "inactive-color" = "#4c566a";
+          };
+        };
+      };
+    })
+    (KDL.statement { name = "prefer-no-csd"; })
+    (KDL.block {
+      name = "xwayland-satellite";
+      body = {
+        path = lib.getExe pkgs.xwayland-satellite;
+      };
+    })
+    (KDL.block {
+      name = "binds";
+      children = bindActions;
+    })
+  ]
+  ++ outputs
+  ++ spawnAtStartup;
 
   serialized = KDL.render configTree;
 in

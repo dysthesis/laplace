@@ -146,7 +146,6 @@ in {
           prismlauncher
           unstable.tor-browser
           tigervnc
-          unstable.protonvpn-gui
         ];
 
         system = with pkgs; [
@@ -154,15 +153,18 @@ in {
           wireguard-tools
         ];
 
-        apps = with pkgs.configured; [
-          zathura
-          spotify-player
-          zen
-          vesktop
-          irssi
-          mpv
-          neomutt
-        ];
+        apps = with pkgs.configured;
+          [
+            zathura
+            spotify-player
+            irssi
+            mpv
+            neomutt
+          ]
+          ++ (with pkgs.unstable; [
+            vesktop
+            zen
+          ]);
 
         productivity = with pkgs.configured; [
           read

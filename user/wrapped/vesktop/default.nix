@@ -4,21 +4,17 @@
   pkgs,
   inputs,
   ...
-}:
-let
+}: let
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit lib;
     inherit pkgs;
   };
 in
-mkNixPak {
-  config =
-    { sloth, ... }:
-    let
+  mkNixPak {
+    config = {sloth, ...}: let
       envSuffix = envKey: suffix: sloth.concat' (sloth.env envKey) suffix;
-    in
-    rec {
-      app.package = pkgs.vesktop;
+    in rec {
+      app.package = pkgs.unstable.vesktop;
       flatpak.appId = "dev.vencord.Vesktop";
 
       dbus.enable = true;
@@ -45,6 +41,13 @@ mkNixPak {
       };
 
       locale.enable = true;
+      etc.sslCertificates.enable = true;
+
+      timeZone = {
+        enable = true;
+        provider = "bundle";
+        zone = "Australia/Sydney";
+      };
 
       bubblewrap = {
         network = true;
@@ -71,6 +74,8 @@ mkNixPak {
             # Runtime paths for various services
             (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/pipewire-0")
             (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/speech-dispatcher")
+            (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/gnupg")
+            (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/pcscd")
             (envSuffix "XDG_RUNTIME_DIR" "/at-spi/bus")
             (envSuffix "XDG_RUNTIME_DIR" "/gvfsd")
 
@@ -94,10 +99,7 @@ mkNixPak {
               (sloth.envOr "WAYLAND_DISPLAY" "wayland-0")
             ])
           ];
-          dev = [
-            "/dev/dri" # For GPU acceleration
-            "/dev/video0" # For webcam
-          ];
+          dev = ["/dev"];
         };
 
         env = {
@@ -115,4 +117,4 @@ mkNixPak {
         };
       };
     };
-}
+  }
