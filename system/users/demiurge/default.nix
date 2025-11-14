@@ -163,7 +163,7 @@ in {
           ]
           ++ (with pkgs.unstable; [
             vesktop
-            zen
+            inputs.zen-browser.packages."${pkgs.system}".default
           ]);
 
         productivity = with pkgs.configured; [
