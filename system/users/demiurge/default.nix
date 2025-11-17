@@ -110,6 +110,7 @@ in {
             configured.bibata-hyprcursor
             configured.bemenu
             configured.ghostty
+            configured.wezterm
           ]
           ++ addIf (builtins.elem "xorg" config.laplace.display.servers) (
             with inputs.gungnir.packages.${pkgs.system}; let
