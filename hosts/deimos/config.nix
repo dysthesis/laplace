@@ -1,16 +1,15 @@
-{ inputs, ... }:
-{
+{inputs, ...}: {
   imports = [
     inputs.nixos-hardware.nixosModules.common-cpu-amd # APU logic
     inputs.nixos-hardware.nixosModules.common-gpu-amd # AMD GPU support
   ];
   config = {
     laplace = {
-      harden = [ "kernel" ];
-      profiles = [ "desktop" ];
+      harden = ["kernel"];
+      profiles = ["desktop"];
       hardware = {
-        cpu = [ "amd" ];
-        gpu = [ "amd" ];
+        cpu = ["amd"];
+        gpu = ["amd"];
         monitors = [
           {
             name = "HDMI-A-1";
@@ -57,6 +56,21 @@
         firewall.enable = true;
       };
 
+      services.llm = {
+        enable = true;
+        search = {
+          enable = true;
+          settings.customOpenAI = {
+            apiUrl = "http://host.containers.internal:8080";
+            apiKey = "llama-cpp";
+            modelName = "gpt-oss-20b";
+          };
+        };
+      };
+
+      # Expose llama-cpp on the Podman bridge so Perplexica can reach it.
+      # services.llama-cpp.host = "0.0.0.0";
+
       sound = {
         enable = true;
         server = "pipewire";
@@ -65,8 +79,8 @@
       impermanence.enable = true;
       zram.enable = true;
 
-      users = [ "demiurge" ];
-      display.servers = [ "wayland" ];
+      users = ["demiurge"];
+      display.servers = ["wayland"];
 
       virtualisation.enable = true;
       nh = {

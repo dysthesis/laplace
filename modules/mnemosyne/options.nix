@@ -2,20 +2,23 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkOption
     mkEnableOption
     ;
 
-  inherit (lib.types)
+  inherit
+    (lib.types)
     listOf
     str
     ;
-  addIf = cond: content: if cond then content else [ ];
-in
-{
+  addIf = cond: content:
+    if cond
+    then content
+    else [];
+in {
   options.mnemosyne = {
     enable = mkEnableOption "Whether to enable state persistence for ephemeral root";
     persistDir = mkOption {
@@ -26,36 +29,37 @@ in
     dirs = mkOption {
       type = listOf str;
       description = "List of directories to persist";
-      default = [
-        "/etc/nixos"
-        "/etc/NetworkManager/system-connections"
-        "/etc/ssh"
-        "/var/lib/bluetooth"
-        "/var/lib/pipewire"
-        "/etc/secrets"
-      ]
-      ++ addIf config.laplace.services.miniflux.enable [
-        "/var/lib/private/miniflux"
-        "/var/lib/postgresql"
-      ]
-      ++ addIf config.laplace.network.vpn.enable [
-        "/etc/mullvad-vpn"
-        "/var/cache/mullvad-vpn"
-      ]
-      ++ addIf config.laplace.services.ollama.enable [
-        "/var/lib/private/ollama"
-        "/var/lib/private/open-webui"
-      ]
-      ++ addIf config.laplace.virtualisation.enable [ "/var/lib/libvirt" ]
-      ++ addIf config.laplace.security.secure-boot.enable [ "/var/lib/sbctl" ]
-      ++ addIf config.laplace.virtualisation.enable [ "/var/lib/libvirt" ]
-      ++ addIf config.laplace.security.secure-boot.enable [ "/var/lib/sbctl" ]
-      ++ addIf config.laplace.docker.enable [
-        config.laplace.docker.dataDir
-        config.virtualisation.docker.daemon.settings."data-root"
-      ]
-      ++ addIf config.laplace.services.ollama.enable [ config.laplace.services.ollama.dataDir ]
-      ++ addIf config.laplace.services.radicle.enable [ config.laplace.services.radicle.dataDir ];
+      default =
+        [
+          "/etc/nixos"
+          "/etc/NetworkManager/system-connections"
+          "/etc/ssh"
+          "/var/lib/bluetooth"
+          "/var/lib/pipewire"
+          "/etc/secrets"
+        ]
+        ++ addIf config.laplace.services.miniflux.enable [
+          "/var/lib/private/miniflux"
+          "/var/lib/postgresql"
+        ]
+        ++ addIf config.laplace.network.vpn.enable [
+          "/etc/mullvad-vpn"
+          "/var/cache/mullvad-vpn"
+        ]
+        ++ addIf config.laplace.services.llm.enable [
+          "/var/lib/private/ollama"
+          "/var/lib/private/open-webui"
+        ]
+        ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
+        ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
+        ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
+        ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
+        ++ addIf config.laplace.docker.enable [
+          config.laplace.docker.dataDir
+          config.virtualisation.docker.daemon.settings."data-root"
+        ]
+        ++ addIf config.laplace.services.llm.enable [config.laplace.services.llm.dataDir]
+        ++ addIf config.laplace.services.radicle.enable [config.laplace.services.radicle.dataDir];
     };
     mountOpts = mkOption {
       type = listOf str;
