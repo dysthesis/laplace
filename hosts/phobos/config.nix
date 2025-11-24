@@ -57,7 +57,7 @@ _: {
         servers = ["wayland"];
         hidpi = true;
       };
-      services.ollama.enable = true;
+      # services.llm.enable = true;
 
       users = ["demiurge"];
       virtualisation.enable = true;

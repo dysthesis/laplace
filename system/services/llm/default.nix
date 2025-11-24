@@ -1,6 +1,7 @@
 {
   imports = [
     ./options.nix
-    ./config.nix
+    ./llama-cpp.nix
+    ./perplexica.nix
   ];
 }
