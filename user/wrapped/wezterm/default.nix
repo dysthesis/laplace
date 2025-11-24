@@ -3,10 +3,11 @@
   lib,
   wezterm,
   ...
-}: let
+}:
+let
   inherit (lib.babel.pkgs) mkWrapper;
 in
-  mkWrapper pkgs wezterm
+mkWrapper pkgs wezterm
   # sh
   ''
     wrapProgram $out/bin/wezterm \

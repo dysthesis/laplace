@@ -4,16 +4,20 @@
   pkgs,
   inputs,
   ...
-}: let
+}:
+let
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit lib;
     inherit pkgs;
   };
 in
-  mkNixPak {
-    config = {sloth, ...}: let
+mkNixPak {
+  config =
+    { sloth, ... }:
+    let
       envSuffix = envKey: suffix: sloth.concat' (sloth.env envKey) suffix;
-    in rec {
+    in
+    rec {
       app.package = pkgs.unstable.vesktop;
       flatpak.appId = "dev.vencord.Vesktop";
 
@@ -99,7 +103,7 @@ in
               (sloth.envOr "WAYLAND_DISPLAY" "wayland-0")
             ])
           ];
-          dev = ["/dev"];
+          dev = [ "/dev" ];
         };
 
         env = {
@@ -117,4 +121,4 @@ in
         };
       };
     };
-  }
+}
