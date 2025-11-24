@@ -58,6 +58,7 @@
 
       services.llm = {
         enable = true;
+        contextSize = 8129;
         search = {
           enable = true;
           settings.customOpenAI = {

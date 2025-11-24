@@ -27,6 +27,11 @@ in {
       default = 8080;
       description = "Port exposed by the llama-cpp";
     };
+    contextSize = mkOption {
+      type = types.int;
+      default = 4096;
+      description = "Context size of llama-cpp";
+    };
 
     search = {
       enable =

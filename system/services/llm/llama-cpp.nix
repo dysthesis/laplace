@@ -88,6 +88,8 @@ in {
         extraFlags = [
           "--alias"
           "gpt-oss-20b"
+          "--ctx-size"
+          (toString cfg.contextSize)
         ];
       };
     };
