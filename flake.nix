@@ -1,100 +1,95 @@
 {
   description = "A pursuit of order.";
 
-  outputs =
-    inputs@{
-      self,
-      babel,
-      nixpkgs,
-      treefmt-nix,
-      emacs,
-      ...
-    }:
-    let
-      inherit (builtins) mapAttrs;
-      inherit (babel) mkLib;
-      lib = mkLib nixpkgs;
+  outputs = inputs @ {
+    self,
+    babel,
+    nixpkgs,
+    treefmt-nix,
+    emacs,
+    ...
+  }: let
+    inherit (builtins) mapAttrs;
+    inherit (babel) mkLib;
+    lib = mkLib nixpkgs;
 
-      # Systems to support
-      systems = [
-        "aarch64-linux"
-        "x86_64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
+    # Systems to support
+    systems = [
+      "aarch64-linux"
+      "x86_64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
 
-      overlays = [ emacs.overlays.default ];
+    overlays = [emacs.overlays.default];
 
-      forAllSystems = lib.babel.forAllSystems { inherit systems overlays; };
+    forAllSystems = lib.babel.forAllSystems {inherit systems overlays;};
 
-      treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
-      nixosConfigurations = import ./hosts { inherit self lib inputs; };
-      hostnames = builtins.attrNames nixosConfigurations;
-      mkAnywhereApps =
-        pkgs:
-        let
-          anywherePkg = lib.attrByPath [ pkgs.system "nixos-anywhere" ] null inputs.nixos-anywhere.packages;
-        in
-        if anywherePkg == null then
-          { }
-        else
-          builtins.listToAttrs (
-            map (
-              hostname:
-              let
-                script = pkgs.writeShellApplication {
-                  name = "install-${hostname}";
-                  runtimeInputs = [
-                    pkgs.coreutils
-                    pkgs.gum
-                  ];
-                  text = ''
-                    set -euo pipefail
-
-                    tmp="$(mktemp -d)"
-                    cleanup() {
-                      rm -rf "$tmp"
-                    }
-                    trap cleanup EXIT
-
-                    umask 077
-                    password_file="$tmp/luks.key"
-
-                    if [ -n "''${LUKS_PASSWORD_FILE:-}" ]; then
-                      cp "''${LUKS_PASSWORD_FILE}" "$password_file"
-                      chmod 600 "$password_file"
-                    else
-                      echo "Enter the disk encryption password for ${hostname} (input hidden):" >&2
-                      passphrase="$(${pkgs.gum}/bin/gum input --password --prompt "LUKS passphrase: ")"
-                      if [ -z "$passphrase" ]; then
-                        echo "ERROR: disk encryption password cannot be empty." >&2
-                        exit 1
-                      fi
-                      printf '%s' "$passphrase" >"$password_file"
-                      chmod 600 "$password_file"
-                      unset passphrase
-                    fi
-
-                    FLAKE_REF="''${FLAKE_REF:-${self.outPath}}"
-                    exec ${anywherePkg}/bin/nixos-anywhere \
-                      --disk-encryption-keys /tmp/luks.key "$password_file" \
-                      --flake "''${FLAKE_REF}#${hostname}" "$@"
-                  '';
-                };
-              in
-              {
-                name = "install-${hostname}";
-                value = {
-                  type = "app";
-                  program = "${script}/bin/install-${hostname}";
-                };
-              }
-            ) hostnames
-          );
-      # Budget flake-parts
+    treefmt = forAllSystems (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
+    nixosConfigurations = import ./hosts {inherit self lib inputs;};
+    hostnames = builtins.attrNames nixosConfigurations;
+    mkAnywhereApps = pkgs: let
+      anywherePkg = lib.attrByPath [pkgs.system "nixos-anywhere"] null inputs.nixos-anywhere.packages;
     in
+      if anywherePkg == null
+      then {}
+      else
+        builtins.listToAttrs (
+          map (
+            hostname: let
+              script = pkgs.writeShellApplication {
+                name = "install-${hostname}";
+                runtimeInputs = [
+                  pkgs.coreutils
+                  pkgs.gum
+                ];
+                text = ''
+                  set -euo pipefail
+
+                  tmp="$(mktemp -d)"
+                  cleanup() {
+                    rm -rf "$tmp"
+                  }
+                  trap cleanup EXIT
+
+                  umask 077
+                  password_file="$tmp/luks.key"
+
+                  if [ -n "''${LUKS_PASSWORD_FILE:-}" ]; then
+                    cp "''${LUKS_PASSWORD_FILE}" "$password_file"
+                    chmod 600 "$password_file"
+                  else
+                    echo "Enter the disk encryption password for ${hostname} (input hidden):" >&2
+                    passphrase="$(${pkgs.gum}/bin/gum input --password --prompt "LUKS passphrase: ")"
+                    if [ -z "$passphrase" ]; then
+                      echo "ERROR: disk encryption password cannot be empty." >&2
+                      exit 1
+                    fi
+                    printf '%s' "$passphrase" >"$password_file"
+                    chmod 600 "$password_file"
+                    unset passphrase
+                  fi
+
+                  FLAKE_REF="''${FLAKE_REF:-${self.outPath}}"
+                  exec ${anywherePkg}/bin/nixos-anywhere \
+                    --disk-encryption-keys /tmp/luks.key "$password_file" \
+                    --flake "''${FLAKE_REF}#${hostname}" "$@"
+                '';
+              };
+            in {
+              name = "install-${hostname}";
+              value = {
+                type = "app";
+                program = "${script}/bin/install-${hostname}";
+              };
+            }
+          )
+          hostnames
+        );
+    # Budget flake-parts
+  in
     mapAttrs (_: forAllSystems) {
-      devShells = pkgs: { default = import ./nix/shell pkgs; };
+      devShells = pkgs: {default = import ./nix/shell pkgs;};
       # for `nix fmt`
       formatter = pkgs: treefmt.${pkgs.system}.config.build.wrapper;
       # for `nix flake check`
@@ -110,7 +105,7 @@
   inputs = {
     # TODO: See if switching to unstable fixes
     # https://github.com/NixOS/nixpkgs/issues/222181
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 
     nix-ai-tools = {
