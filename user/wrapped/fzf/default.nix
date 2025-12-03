@@ -3,11 +3,10 @@
   pkgs,
   fzf,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
 in
-mkWrapper pkgs fzf
+  mkWrapper pkgs fzf
   # sh
   ''
     wrapProgram $out/bin/fzf \

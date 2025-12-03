@@ -2,13 +2,12 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
-  deps = with pkgs; [ python3 ];
+  deps = with pkgs; [python3];
 in
-mkWrapper pkgs pkgs.timewarrior ''
-  wrapProgram $out/bin/timew \
-   --set TIMEWARRIORDB /home/demiurge/.local/share/timewarrior \
-   --prefix PATH ":" "${lib.makeBinPath deps}"
-''
+  mkWrapper pkgs pkgs.timewarrior ''
+    wrapProgram $out/bin/timew \
+     --set TIMEWARRIORDB /home/demiurge/.local/share/timewarrior \
+     --prefix PATH ":" "${lib.makeBinPath deps}"
+  ''

@@ -2,18 +2,16 @@
   lib,
   config,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf mkForce;
   cfg = config.laplace.security.privesc;
-in
-{
+in {
   config = mkIf (cfg == "doas") {
     security.doas = {
       enable = mkForce true;
       extraRules = [
         {
-          groups = [ "wheel" ];
+          groups = ["wheel"];
           persist = true;
           keepEnv = true;
         }

@@ -1,7 +1,5 @@
-{ lib, ... }:
-let
+{lib, ...}: let
   inherit (lib) mkEnableOption;
-in
-{
+in {
   options.laplace.security.fail2ban.enable = mkEnableOption "Whether or not to enable fail2ban";
 }

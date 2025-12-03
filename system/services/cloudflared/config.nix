@@ -2,15 +2,13 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.laplace.services.cloudflared;
-in
-{
+in {
   config = mkIf cfg.enable {
     sops.secrets = mkIf (config.networking.hostName == "erebus") {
-      "cloudflared/erebus" = { };
+      "cloudflared/erebus" = {};
     };
     services.cloudflared = {
       inherit (cfg) enable;

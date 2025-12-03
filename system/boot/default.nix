@@ -2,20 +2,20 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkDefault
     mkOption
     ;
-  inherit (lib.types)
+  inherit
+    (lib.types)
     enum
     ;
   inherit (lib.babel.path) getDirectories;
   inherit (lib.babel.modules) importInDirectory;
-  options = (getDirectories ./.) ++ [ "none" ];
-in
-{
+  options = (getDirectories ./.) ++ ["none"];
+in {
   config.boot = {
     initrd.verbose = mkDefault false;
     tmp = {

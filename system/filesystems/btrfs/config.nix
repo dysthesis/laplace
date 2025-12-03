@@ -2,13 +2,11 @@
   lib,
   config,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.filesystems;
-in
-{
+in {
   config = mkIf (elem "btrfs" cfg) {
     services.btrfs.autoScrub = {
       enable = true;

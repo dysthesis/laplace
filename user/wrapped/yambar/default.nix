@@ -3,12 +3,11 @@
   lib,
   cacheDir,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
-  config = import ./config.nix { inherit pkgs cacheDir; };
+  config = import ./config.nix {inherit pkgs cacheDir;};
 in
-mkWrapper pkgs pkgs.yambar
+  mkWrapper pkgs pkgs.yambar
   # sh
   ''
     wrapProgram $out/bin/yambar \

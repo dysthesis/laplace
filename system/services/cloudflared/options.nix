@@ -1,7 +1,5 @@
-{ lib, ... }:
-let
+{lib, ...}: let
   inherit (lib) mkEnableOption;
-in
-{
+in {
   options.laplace.services.cloudflared.enable = mkEnableOption "Whether or not to enable cloudflared";
 }

@@ -2,15 +2,14 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkIf
     mkDefault
     ;
   cfg = config.laplace.bootloader;
-in
-{
+in {
   config = mkIf (cfg == "systemd-boot") {
     boot = {
       initrd.systemd.enable = true;

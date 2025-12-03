@@ -1,6 +1,9 @@
-{ lib, pkgs, ... }:
 {
-  environment.systemPackages = with pkgs; [ difftastic ];
+  lib,
+  pkgs,
+  ...
+}: {
+  environment.systemPackages = with pkgs; [difftastic];
   programs.git = rec {
     enable = true;
     lfs.enable = true;

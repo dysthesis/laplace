@@ -3,12 +3,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.laplace.network.tor;
-in
-{
+in {
   config = mkIf cfg.enable {
     services.tor = {
       client = {

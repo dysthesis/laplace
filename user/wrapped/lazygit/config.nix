@@ -2,8 +2,7 @@
   lib,
   generate-commit,
   ...
-}:
-{
+}: {
   customCommands = [
     {
       key = "A";

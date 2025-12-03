@@ -1,7 +1,5 @@
-{ lib, ... }:
-let
+{lib, ...}: let
   inherit (lib) mkEnableOption;
-in
-{
+in {
   options.laplace.security.polkit.enable = mkEnableOption "Whether or not to enable Polkit";
 }
