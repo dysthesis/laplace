@@ -1,8 +1,6 @@
-{ lib, ... }:
-let
+{lib, ...}: let
   inherit (lib) mkEnableOption;
-in
-{
+in {
   options.laplace.security.secure-boot.enable =
     mkEnableOption "Whether or not to enable secure boot.";
 }

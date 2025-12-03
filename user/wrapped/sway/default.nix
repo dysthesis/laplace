@@ -6,8 +6,7 @@
   sway-unwrapped,
   config,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
   configFile = callPackage ./config.nix {
     inherit
@@ -19,7 +18,7 @@ let
     sway = sway-unwrapped;
   };
 in
-mkWrapper pkgs sway-unwrapped
+  mkWrapper pkgs sway-unwrapped
   # bash
   ''
     wrapProgram $out/bin/sway \

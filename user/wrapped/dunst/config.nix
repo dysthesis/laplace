@@ -1,8 +1,9 @@
-{ config, ... }:
-let
-  size = if config.networking.hostName == "phobos" then 8 else 8;
-in
-{
+{config, ...}: let
+  size =
+    if config.networking.hostName == "phobos"
+    then 8
+    else 8;
+in {
   global = {
     monitor = 1;
     frame_color = "#ffffff";

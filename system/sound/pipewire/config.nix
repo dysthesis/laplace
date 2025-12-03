@@ -2,12 +2,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.laplace.sound.enable && config.laplace.sound.server == "pipewire";
-in
-{
+in {
   config = mkIf cfg {
     security.rtkit.enable = true;
     services.pipewire = {

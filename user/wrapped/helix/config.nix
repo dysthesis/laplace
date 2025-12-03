@@ -1,6 +1,5 @@
-{ pkgs, ... }:
-let
-  tomlFormat = pkgs.formats.toml { };
+{pkgs, ...}: let
+  tomlFormat = pkgs.formats.toml {};
   config = {
     theme = "demiurge";
     editor = {
@@ -30,7 +29,7 @@ let
           "total-line-numbers"
           "file-encoding"
         ];
-        center = [ ];
+        center = [];
         right = [
           "selections"
           "primary-selection-length"
@@ -76,4 +75,4 @@ let
     };
   };
 in
-tomlFormat.generate "helix-config" config
+  tomlFormat.generate "helix-config" config

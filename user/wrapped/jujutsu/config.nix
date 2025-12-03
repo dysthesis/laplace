@@ -47,7 +47,7 @@ in
       ];
     };
     ui = {
-      diff.tool = [
+      diff-formatter = [
         "${getExe difftastic}"
         "--color=always"
         "$left"

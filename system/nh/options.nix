@@ -1,9 +1,7 @@
-{ lib, ... }:
-let
+{lib, ...}: let
   inherit (lib) mkOption mkEnableOption;
   inherit (lib.types) str;
-in
-{
+in {
   options.laplace.nh = {
     enable = mkEnableOption "Whether or not to enable nh";
     flakePath = mkOption {

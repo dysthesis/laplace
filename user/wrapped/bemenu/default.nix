@@ -3,9 +3,8 @@
   pkgs,
   lib,
   ...
-}:
-let
-  bemenu = pkgs.bemenu.overrideAttrs (old: {
+}: let
+  bemenu = pkgs.bemenu.overrideAttrs (_old: {
     patches = [
       # NOTE: This pull request enables fuzzy finding via the '-z' flag
       (pkgs.fetchpatch {
@@ -17,19 +16,17 @@ let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) concatStringsSep;
   # Adaptive sizing based on primary monitor, similar to waybar/style.nix
-  monitors = config.laplace.hardware.monitors or [ ];
+  monitors = config.laplace.hardware.monitors or [];
   defaultMonitor =
-    if monitors == [ ] then
-      {
-        width = 1920;
-        height = 1080;
-      }
-    else
-      builtins.head monitors;
+    if monitors == []
+    then {
+      width = 1920;
+      height = 1080;
+    }
+    else builtins.head monitors;
   primaryMonitor = lib.findFirst (m: (m.primary or false)) defaultMonitor monitors;
 
-  clamp =
-    min: max: val:
+  clamp = min: max: val:
     lib.max min (lib.min max val);
   round = x: builtins.floor (x + 0.5);
 
@@ -38,7 +35,10 @@ let
   rawScale = baselineH / (primaryMonitor.height or baselineH);
   scale = clamp 0.6 1.2 rawScale;
 
-  baseFont = if hostName == "phobos" then 12.0 else 9.0;
+  baseFont =
+    if hostName == "phobos"
+    then 12.0
+    else 9.0;
   fontLineRatio = 24.0 / 9.0;
   fontPaddingRatio = 8.0 / 9.0;
   baseLineH = baseFont * fontLineRatio;
@@ -68,7 +68,7 @@ let
   ];
   flags' = flags |> map (flag: ''--add-flags "${flag}"'') |> concatStringsSep " ";
 in
-mkWrapper pkgs bemenu
+  mkWrapper pkgs bemenu
   # sh
   ''
     for file in $out/bin/*; do

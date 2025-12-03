@@ -1,16 +1,17 @@
-{ lib, ... }:
-let
-  inherit (lib)
+{lib, ...}: let
+  inherit
+    (lib)
     mapAttrsToList
     mapAttrs
     map
     foldl
     ;
-  inherit (builtins)
+  inherit
+    (builtins)
     concatLists
     ;
   rules = {
-    title = foldl (acc: curr: acc // { ${curr} = "float"; }) { } [
+    title = foldl (acc: curr: acc // {${curr} = "float";}) {} [
       "Open As"
       "Open File"
       "Open Folder"
@@ -22,11 +23,10 @@ let
     ];
   };
   mkSingleConfig = key: value: ''"${key}" ${value}'';
-  mkRules =
-    rules:
+  mkRules = rules:
     rules
     |> mapAttrs (_key: value: mapAttrsToList mkSingleConfig value)
     |> mapAttrsToList (key: value: map (val: "-${key} ${val}") value)
     |> concatLists;
 in
-mkRules rules
+  mkRules rules

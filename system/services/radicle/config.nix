@@ -2,12 +2,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.laplace.services.radicle;
-in
-{
+in {
   config = mkIf cfg.enable {
     services.radicle = {
       enable = true;

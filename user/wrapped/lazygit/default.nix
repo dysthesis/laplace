@@ -3,12 +3,11 @@
   pkgs,
   lazygit,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
-  cfg = pkgs.writers.writeYAML (import ./config.nix { });
+  cfg = pkgs.writers.writeYAML (import ./config.nix {});
 in
-mkWrapper pkgs lazygit
+  mkWrapper pkgs lazygit
   # sh
   ''
     wrapProgram $out/bin/lazygit \

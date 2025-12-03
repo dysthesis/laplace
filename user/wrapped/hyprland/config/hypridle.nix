@@ -2,11 +2,9 @@
   hyprlock,
   lib,
   ...
-}:
-let
+}: let
   timeout = 300;
-in
-{
+in {
   general.lock_cmd = "${lib.getExe hyprlock}";
 
   listener = [

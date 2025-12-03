@@ -1,6 +1,5 @@
-{ pkgs, ... }:
-let
-  tomlFormat = pkgs.formats.toml { };
+{pkgs, ...}: let
+  tomlFormat = pkgs.formats.toml {};
   # Customised lackluster theme
   config = {
     comment = "comment";
@@ -11,7 +10,7 @@ let
     };
     "diagnostic.deprecated" = {
       fg = "gray4";
-      modifiers = [ "crossed_out" ];
+      modifiers = ["crossed_out"];
     };
     "diagnostic.error" = {
       fg = "gray4";
@@ -22,7 +21,7 @@ let
     };
     "diagnostic.unnecessary" = {
       fg = "gray4";
-      modifiers = [ "dim" ];
+      modifiers = ["dim"];
     };
     "diagnostic.warning" = {
       fg = "gray4";
@@ -42,14 +41,14 @@ let
     };
     "diff.delta.gutter" = {
       fg = "gray4";
-      modifiers = [ "dim" ];
+      modifiers = ["dim"];
     };
     "diff.minus" = {
       fg = "red";
     };
     "diff.minus.gutter" = {
       fg = "red";
-      modifiers = [ "dim" ];
+      modifiers = ["dim"];
     };
     "diff.plus" = {
       fg = "green";
@@ -65,7 +64,7 @@ let
     };
     "function.builtin" = {
       fg = "gray5";
-      modifiers = [ "bold" ];
+      modifiers = ["bold"];
     };
     "function.method" = {
       fg = "gray6";
@@ -77,7 +76,7 @@ let
     "keyword.control.return" = "green";
     "keyword.operator" = "punctuation";
     "markup.bold" = {
-      modifiers = [ "bold" ];
+      modifiers = ["bold"];
     };
     "markup.heading" = {
       fg = "gray5";
@@ -86,7 +85,7 @@ let
       fg = "gray6";
     };
     "markup.italic" = {
-      modifiers = [ "italic" ];
+      modifiers = ["italic"];
     };
     "markup.link" = "blue";
     "markup.link.url" = {
@@ -103,10 +102,10 @@ let
     };
     "markup.raw.block" = {
       fg = "lack";
-      modifiers = [ "bold" ];
+      modifiers = ["bold"];
     };
     "markup.strikethrough" = {
-      modifiers = [ "crossed_out" ];
+      modifiers = ["crossed_out"];
     };
     operator = "gray6";
     palette = {
@@ -299,4 +298,4 @@ let
     warning = "orange";
   };
 in
-tomlFormat.generate "demiurge.toml" config
+  tomlFormat.generate "demiurge.toml" config

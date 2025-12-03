@@ -1,20 +1,20 @@
-{ lib, ... }:
-let
+{lib, ...}: let
   inherit (lib) mkOption;
-  inherit (lib.types)
+  inherit
+    (lib.types)
     listOf
     enum
     ;
-  inherit (lib.babel.path)
+  inherit
+    (lib.babel.path)
     getDirectories
     ;
   options = getDirectories ./.;
   inherit (lib.babel.modules) importInDirectory;
-in
-{
+in {
   options.laplace.profiles = mkOption {
     type = listOf (enum options);
-    default = [ ];
+    default = [];
   };
 
   imports = importInDirectory ./.;

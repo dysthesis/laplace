@@ -6,8 +6,7 @@
   writeShellScriptBin,
   config,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
 
   irssiConfig = writeTextFile {
@@ -173,12 +172,12 @@ let
   };
   wrappedIrssi =
     mkWrapper pkgs irssi
-      # sh
-      ''
-        wrapProgram $out/bin/irssi \
-          --add-flags "--config=${irssiConfig}"
-      '';
+    # sh
+    ''
+      wrapProgram $out/bin/irssi \
+        --add-flags "--config=${irssiConfig}"
+    '';
 in
-writeShellScriptBin "irssi" ''
-  ${config.programs.proxychains.package}/bin/proxychains4 ${wrappedIrssi}/bin/irssi
-''
+  writeShellScriptBin "irssi" ''
+    ${config.programs.proxychains.package}/bin/proxychains4 ${wrappedIrssi}/bin/irssi
+  ''

@@ -2,15 +2,14 @@
   config,
   lib,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkIf
     mkForce
     ;
   cfg = config.laplace.bootloader;
-in
-{
+in {
   config = mkIf (cfg == "grub") {
     boot = {
       loader = {

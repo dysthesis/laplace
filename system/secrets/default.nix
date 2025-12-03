@@ -3,13 +3,11 @@
   lib,
   config,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf elem;
   hasDemiurge = elem "demiurge" config.laplace.users;
-in
-{
-  imports = [ inputs.sops-nix.nixosModules.sops ];
+in {
+  imports = [inputs.sops-nix.nixosModules.sops];
   sops = {
     secrets = mkIf hasDemiurge {
       libera.owner = "demiurge";

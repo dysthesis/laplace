@@ -1,15 +1,15 @@
-{ lib, ... }:
-let
-  inherit (lib)
+{lib, ...}: let
+  inherit
+    (lib)
     mapAttrsToList
     mapAttrs
     map
     ;
-  inherit (builtins)
+  inherit
+    (builtins)
     typeOf
     toString
     concatLists
-    concatStringsSep
     ;
   inputConfigs = {
     "pointer-1739-52619-SYNA8004:00_06CB:CD8B_Touchpad" = {
@@ -30,19 +30,21 @@ let
       natural-scroll = true;
     };
   };
-  mkSingleConfig =
-    opt: value:
-    let
-      value' = if typeOf value == "bool" then if value then "enabled" else "disabled" else toString value;
-    in
-    "${opt} ${value'}";
+  mkSingleConfig = opt: value: let
+    value' =
+      if typeOf value == "bool"
+      then
+        if value
+        then "enabled"
+        else "disabled"
+      else toString value;
+  in "${opt} ${value'}";
 
-  mkInputConfig =
-    config:
+  mkInputConfig = config:
     config
     # The value of each key (device) is now a list of strings specifying the option and value
     |> mapAttrs (_key: value: mapAttrsToList mkSingleConfig value)
     |> mapAttrsToList (key: value: map (val: "${key} ${val}") value)
     |> concatLists;
 in
-mkInputConfig inputConfigs
+  mkInputConfig inputConfigs

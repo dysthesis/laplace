@@ -4,9 +4,9 @@
   lib,
   pkgs,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkOption
     mkEnableOption
     types
@@ -17,11 +17,10 @@ let
     ;
 
   inherit (builtins) map listToAttrs attrNames;
-in
-{
+in {
   options = {
     homix = mkOption {
-      default = { };
+      default = {};
       type = types.attrsOf (
         types.submodule (
           {
@@ -29,8 +28,7 @@ in
             config,
             options,
             ...
-          }:
-          {
+          }: {
             options = {
               path = mkOption {
                 type = types.str;
@@ -53,9 +51,9 @@ in
               path = lib.mkDefault name;
               source = mkIf (config.text != null) (
                 let
-                  name' = "homix-" + lib.replaceStrings [ "/" ] [ "-" ] name;
+                  name' = "homix-" + lib.replaceStrings ["/"] ["-"] name;
                 in
-                mkDerivedConfig options.text (pkgs.writeText name')
+                  mkDerivedConfig options.text (pkgs.writeText name')
               );
             };
           }
@@ -71,44 +69,41 @@ in
     };
   };
 
-  config =
-    let
-      # list of users managed by homix
-      users = attrNames (filterAttrs (_name: user: user.homix) config.users.users);
+  config = let
+    # list of users managed by homix
+    users = attrNames (filterAttrs (_name: user: user.homix) config.users.users);
 
-      homix-link =
-        let
-          files = map (f: ''
-            FILE=$HOME/${f.path}
-            mkdir -p $(dirname $FILE)
-            ln -sf ${f.source} $FILE
-          '') (attrValues config.homix);
-        in
-        pkgs.writeShellScript "homix-link" ''
-          #!/bin/sh
-          ${builtins.concatStringsSep "\n" files}
-        '';
+    homix-link = let
+      files = map (f: ''
+        FILE=$HOME/${f.path}
+        mkdir -p $(dirname $FILE)
+        ln -sf ${f.source} $FILE
+      '') (attrValues config.homix);
+    in
+      pkgs.writeShellScript "homix-link" ''
+        #!/bin/sh
+        ${builtins.concatStringsSep "\n" files}
+      '';
 
-      mkService = user: {
-        name = "homix-${user}";
-        value = {
-          wantedBy = [ "multi-user.target" ];
-          description = "Setup homix environment for ${user}.";
-          serviceConfig = {
-            Type = "oneshot";
-            User = "${user}";
-            ExecStart = "${homix-link}";
-          };
-          environment = {
-            # epic systemd momento
-            HOME = config.users.users.${user}.home;
-          };
+    mkService = user: {
+      name = "homix-${user}";
+      value = {
+        wantedBy = ["multi-user.target"];
+        description = "Setup homix environment for ${user}.";
+        serviceConfig = {
+          Type = "oneshot";
+          User = "${user}";
+          ExecStart = "${homix-link}";
+        };
+        environment = {
+          # epic systemd momento
+          HOME = config.users.users.${user}.home;
         };
       };
-
-      services = listToAttrs (map mkService users);
-    in
-    {
-      systemd.services = services;
     };
+
+    services = listToAttrs (map mkService users);
+  in {
+    systemd.services = services;
+  };
 }

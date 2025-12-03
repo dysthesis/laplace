@@ -78,8 +78,6 @@ in {
           configured.helix
         ];
 
-        llm = with inputs.nix-ai-tools.packages.${pkgs.system}; [codex-acp];
-
         dev = with pkgs; [
           git
           direnv

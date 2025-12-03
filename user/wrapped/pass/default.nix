@@ -3,8 +3,7 @@
   lib,
   pass,
   ...
-}:
-let
+}: let
   passBuild = pass.override {
     waylandSupport = true;
     x11Support = false;
@@ -12,7 +11,7 @@ let
   };
   inherit (lib.babel.pkgs) mkWrapper;
 in
-mkWrapper pkgs passBuild
+  mkWrapper pkgs passBuild
   # bash
   ''
     wrapProgram $out/bin/pass \

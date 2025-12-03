@@ -1,7 +1,7 @@
 _: {
   projectRootFile = "flake.nix";
   programs = {
-    nixfmt.enable = true;
+    alejandra.enable = true;
     deadnix.enable = true;
     prettier.enable = true;
     toml-sort.enable = true;

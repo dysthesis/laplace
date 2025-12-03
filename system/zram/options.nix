@@ -1,15 +1,15 @@
-{ lib, ... }:
-let
-  inherit (lib)
+{lib, ...}: let
+  inherit
+    (lib)
     mkOption
     mkEnableOption
     ;
-  inherit (lib.types)
+  inherit
+    (lib.types)
     int
     str
     ;
-in
-{
+in {
   options.laplace.zram = {
     enable = mkEnableOption "Whether or not to enable zram swap";
     memoryPercent = mkOption {
