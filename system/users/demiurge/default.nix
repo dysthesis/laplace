@@ -168,7 +168,7 @@ in {
           ]);
 
         productivity = with pkgs.configured; [
-          read
+          # read
           newsraft
           taskwarrior
           timewarrior
@@ -186,7 +186,7 @@ in {
           ++ (with pkgs; [yt-dlp]);
 
         desktopPackages =
-          cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity ++ llm;
+          cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;
       in
         basePackages ++ addIf isDesktop desktopPackages;
     };
