@@ -4,21 +4,20 @@
   config,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.profiles;
 
-  browser = [ "zen" ];
+  browser = ["zen"];
 
-  xdgAssociations =
-    type: program: list:
+  xdgAssociations = type: program: list:
     builtins.listToAttrs (
       map (e: {
         name = "${type}/${e}";
         value = program;
-      }) list
+      })
+      list
     );
 
   browserTypes =
@@ -43,19 +42,18 @@ let
   # XDG MIME types
   associations = builtins.mapAttrs (_: v: (map (e: "${e}.desktop") v)) (
     {
-      "application/pdf" = [ "org.pwmt.zathura-pdf-mupdf" ];
+      "application/pdf" = ["org.pwmt.zathura-pdf-mupdf"];
       "text/html" = browser;
-      "text/plain" = [ "Helix" ];
-      "inode/directory" = [ "yazi" ];
-      "x-scheme-handler/magnet" = [ "transmission-gtk" ];
+      "text/plain" = ["Helix"];
+      "inode/directory" = ["yazi"];
+      "x-scheme-handler/magnet" = ["transmission-gtk"];
       # Full entry is org.telegram.desktop.desktop
-      "x-scheme-handler/tg" = [ "org.telegram.desktop" ];
-      "x-scheme-handler/tonsite" = [ "org.telegram.desktop" ];
+      "x-scheme-handler/tg" = ["org.telegram.desktop"];
+      "x-scheme-handler/tonsite" = ["org.telegram.desktop"];
     }
     // browserTypes
   );
-in
-{
+in {
   config = mkIf (elem "desktop" cfg) {
     systemd = {
       services.seatd = {
@@ -67,13 +65,13 @@ in
           Restart = "always";
           RestartSec = "1";
         };
-        wantedBy = [ "mult-user.target" ];
+        wantedBy = ["mult-user.target"];
       };
       user.services = {
         syncthing = {
           enable = true;
           description = "Syncthing";
-          unitConfig.partOf = [ "default.target" ];
+          unitConfig.partOf = ["default.target"];
 
           script =
             # bash
@@ -84,37 +82,34 @@ in
                 -logflags=0
             '';
 
-          wantedBy = [ "default.target" ];
+          wantedBy = ["default.target"];
         };
       };
     };
-    fonts.packages =
-      with pkgs;
-      with inputs.babel.packages.${system};
-      [
-        fast-fonts
-        atkinson-hyperlegible-next
-        noto-fonts
-        noto-fonts-extra
-        noto-fonts-emoji
-        noto-fonts-cjk-sans
-        terminus_font
-        jbcustom-nf
-        literata
-        sf-pro
-        georgia-fonts
-        newcomputermodern
-        nerd-fonts.jetbrains-mono
-      ];
+    fonts.packages = with pkgs;
+    with inputs.babel.packages.${system}; [
+      fast-fonts
+      atkinson-hyperlegible-next
+      noto-fonts
+      noto-fonts-color-emoji
+      noto-fonts-cjk-sans
+      terminus_font
+      jbcustom-nf
+      literata
+      sf-pro
+      georgia-fonts
+      newcomputermodern
+      nerd-fonts.jetbrains-mono
+    ];
     services = {
       logind = {
         lidSwitch = "suspend";
         lidSwitchExternalPower = "hibernate";
-        extraConfig = ''
-           HandlePowerKey=poweroff
-          HibernateDelaySec=600
-          SuspendState=mem
-        '';
+        settings.Login = {
+          HandlePowerKey = "poweroff";
+          HibernateDelaySec = 600;
+          SuspendState = "mem";
+        };
       };
       libinput = {
         enable = true;
@@ -147,7 +142,7 @@ in
         HCC_AMDGPU_TARGET = "gfx1030";
         GTK_USE_PORTAL = "1";
       };
-      systemPackages = with pkgs; [ xdg-utils ];
+      systemPackages = with pkgs; [xdg-utils];
     };
     security = {
       # For electron stuff
@@ -172,7 +167,7 @@ in
       sounds.enable = true;
       portal = {
         enable = true;
-        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+        extraPortals = [pkgs.xdg-desktop-portal-gtk];
       };
     };
   };

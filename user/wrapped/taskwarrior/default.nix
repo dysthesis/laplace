@@ -2,8 +2,7 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (pkgs) writeText;
   inherit (lib.attrsets) mapAttrsToList;
@@ -131,7 +130,7 @@ let
     python3
   ];
 in
-mkWrapper pkgs pkgs.taskwarrior
+  mkWrapper pkgs pkgs.taskwarrior2
   # bash
   ''
     wrapProgram $out/bin/task \

@@ -3,12 +3,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.laplace.virtualisation;
-in
-{
+in {
   config = mkIf cfg.enable {
     virtualisation = {
       spiceUSBRedirection.enable = true;
@@ -23,10 +21,10 @@ in
           runAsRoot = true; # TODO figure out how to make it work when this is set to false.
           swtpm.enable = true;
 
-          ovmf = {
-            enable = true;
-            packages = [ pkgs.OVMFFull.fd ];
-          };
+          # ovmf = {
+          #   enable = true;
+          #   packages = [ pkgs.OVMFFull.fd ];
+          # };
         };
 
         onBoot = "ignore";
