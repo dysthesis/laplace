@@ -96,7 +96,8 @@
       checks = pkgs: {
         formatting = treefmt.${pkgs.system}.config.build.check self;
       };
-      apps = pkgs: mkAnywhereApps pkgs;
+      # WARN: Very WIP
+      apps = mkAnywhereApps;
     }
     // {
       inherit nixosConfigurations;
@@ -107,6 +108,9 @@
     # https://github.com/NixOS/nixpkgs/issues/222181
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
+
+    # Supposedly faster Nix.
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
     nix-ai-tools = {
       url = "github:numtide/nix-ai-tools";

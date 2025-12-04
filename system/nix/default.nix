@@ -1,6 +1,5 @@
 {
   inputs,
-  pkgs,
   lib,
   config,
   ...
@@ -9,7 +8,6 @@
 in {
   config = {
     nix = {
-      package = pkgs.nixVersions.stable;
       settings = {
         extra-platforms = ["aarch64-linux"];
         experimental-features = [
@@ -18,10 +16,12 @@ in {
           "pipe-operators"
         ];
         substituters = [
+          "https://install.determinate.systems"
           "https://nix-community.cachix.org"
         ];
 
         trusted-public-keys = [
+          "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         ];
         auto-optimise-store = true;
