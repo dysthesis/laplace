@@ -25,6 +25,17 @@ in {
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         ];
         auto-optimise-store = true;
+
+        # NOTE: These options are only available with Determinate Nix.
+        # Distributes evaluation work across multiple threads. 0 means "use as
+        # many cores as there are available".
+        # See:
+        # https://docs.determinate.systems/determinate-nix/#parallel-evaluation
+        eval-cores = 0;
+        # Scopes file copying to what the specific expression demands.
+        # See:
+        # https://docs.determinate.systems/determinate-nix/#lazy-trees
+        lazy-trees = true;
       };
     };
 
