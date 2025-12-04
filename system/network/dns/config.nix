@@ -29,7 +29,7 @@ in {
     # https://github.com/NixOS/nixpkgs/issues/341092
     systemd.services.dhcpcd.enable = false;
 
-    services.dnscrypt-proxy2 = {
+    services.dnscrypt-proxy = {
       enable = true;
       settings = {
         ipv6_servers = true;

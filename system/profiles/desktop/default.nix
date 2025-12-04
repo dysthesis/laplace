@@ -103,9 +103,9 @@ in {
     ];
     services = {
       logind = {
-        lidSwitch = "suspend";
-        lidSwitchExternalPower = "hibernate";
         settings.Login = {
+          HandleLidSwitch = "suspend";
+          HandleLidSwitchExternalPower = "hibernate";
           HandlePowerKey = "poweroff";
           HibernateDelaySec = 600;
           SuspendState = "mem";
