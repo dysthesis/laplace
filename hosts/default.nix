@@ -19,6 +19,7 @@
     inputs.disko.nixosModules.disko
     inputs.nix-index-database.darwinModules.nix-index
   ];
+  extraModules = [inputs.determinate.nixosModules.default];
 in
   mapAttrs (
     hostname: system:
@@ -28,6 +29,7 @@ in
           hostname
           self
           inputs
+          extraModules
           ;
         # BUG: For some reason, wifi is fucked if I import the hardened.nix profile,
         # but not if I add all of the options myself manually. This is so fucking weird.
