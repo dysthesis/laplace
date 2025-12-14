@@ -3,7 +3,12 @@
   lib,
   ...
 }: let
-  inherit (lib) mkEnableOption types mkOption;
+  inherit
+    (lib)
+    mkEnableOption
+    types
+    mkOption
+    ;
 in {
   options.laplace.services.llm = {
     enable =
@@ -27,6 +32,44 @@ in {
       default = 8080;
       description = "Port exposed by the llama-cpp";
     };
+
+    modelRegistry = mkOption {
+      type =
+        types.attrsOf
+        (types.submodule ({name, ...}: {
+          options = {
+            url = mkOption {
+              type = types.str;
+              description = "Source URL for the ${name} model artifact";
+            };
+
+            sha256 = mkOption {
+              type = types.str;
+              description = "SRI or base32 SHA-256 hash of the ${name} model";
+            };
+          };
+        }));
+
+      default = {
+        qwen3 = {
+          url = "https://huggingface.co/unsloth/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf";
+          sha256 = "sha256-EgMHulKeskOdbEMNlBBNq9V4SXvHv+fjIrXZkztEm9Q=";
+        };
+      };
+
+      description = "List of models to pull";
+    };
+
+    model = mkOption {
+      type =
+        types.enum
+        (builtins.attrNames config.laplace.services.llm.modelRegistry);
+
+      default = "qwen3";
+
+      description = "Which model to choose";
+    };
+
     contextSize = mkOption {
       type = types.int;
       default = 4096;
@@ -103,7 +146,7 @@ in {
 
               modelName = mkOption {
                 type = types.str;
-                default = "gpt-4o-mini";
+                default = config.laplace.services.llm.model;
                 description = "Model name advertised by the custom endpoint";
               };
             };

@@ -56,18 +56,17 @@
         firewall.enable = true;
       };
 
-      # services.llm = {
-      #   enable = true;
-      #   contextSize = 8129;
-      #   search = {
-      #     enable = true;
-      #     settings.customOpenAI = {
-      #       apiUrl = "http://host.containers.internal:8080";
-      #       apiKey = "llama-cpp";
-      #       modelName = "gpt-oss-20b";
-      #     };
-      #   };
-      # };
+      services.llm = {
+        enable = true;
+        contextSize = 8129;
+        search = {
+          enable = true;
+          settings.customOpenAI = {
+            apiUrl = "http://host.containers.internal:8080";
+            apiKey = "llama-cpp";
+          };
+        };
+      };
 
       # Expose llama-cpp on the Podman bridge so Perplexica can reach it.
       # services.llama-cpp.host = "0.0.0.0";
