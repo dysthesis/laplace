@@ -748,11 +748,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1766678672,
-        "narHash": "sha256-Q9iEHmlExVFAz7MaNBxWpDq3WJeeWOW9tU4JHqC6AR0=",
+        "lastModified": 1766700551,
+        "narHash": "sha256-poSQusLUVfhPDB8l9xGPpj+H6uTXW8MAbCEYQyGnkZ8=",
         "owner": "numtide",
         "repo": "nix-ai-tools",
-        "rev": "b3d40c8367b12ff98598d65d4bbed82e3449f1d7",
+        "rev": "378d3c2a851254671a82c573ec3e1424e1e52684",
         "type": "github"
       },
       "original": {
@@ -971,11 +971,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1766697864,
-        "narHash": "sha256-AOYgWXZUuT4uMNxGCkYS1zGjEWm8EaQAy7rgScXkzMs=",
+        "lastModified": 1766701086,
+        "narHash": "sha256-Oz3CgtQcnWiBGlJTAP7DyK5Q48TEJ3xIw+L7RipYmmY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7a19d64075960204611c88bca0048036937d2901",
+        "rev": "35454d48264ea0110f37636c315b92240be3939c",
         "type": "github"
       },
       "original": {
@@ -1037,11 +1037,11 @@
         "treefmt-nix": "treefmt-nix_5"
       },
       "locked": {
-        "lastModified": 1765609339,
-        "narHash": "sha256-CIsYVKyEbxaqCX71/nmhH3k8ytSVxHwoyVggoNmQQB4=",
+        "lastModified": 1766703053,
+        "narHash": "sha256-8uz9Xy4Jziu6w/DHMV+nNFgKNaKN2A6uxg5bzT4zq9s=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "875eaafd67df92397030c429fd29cfd4be9135c5",
+        "rev": "8e645eaaf58310359b50463c3ff5f9bbf9030e3e",
         "type": "github"
       },
       "original": {
