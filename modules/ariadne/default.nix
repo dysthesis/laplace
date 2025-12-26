@@ -19,7 +19,7 @@
   inherit (builtins) map listToAttrs attrNames;
 in {
   options = {
-    homix = mkOption {
+    ariadne = mkOption {
       default = {};
       type = types.attrsOf (
         types.submodule (
@@ -51,7 +51,7 @@ in {
               path = lib.mkDefault name;
               source = mkIf (config.text != null) (
                 let
-                  name' = "homix-" + lib.replaceStrings ["/"] ["-"] name;
+                  name' = "ariadne-" + lib.replaceStrings ["/"] ["-"] name;
                 in
                   mkDerivedConfig options.text (pkgs.writeText name')
               );
@@ -63,37 +63,37 @@ in {
     users.users = mkOption {
       type = types.attrsOf (
         types.submodule {
-          options.homix = mkEnableOption "Enable homix for selected user";
+          options.ariadne = mkEnableOption "Enable ariadne for selected user";
         }
       );
     };
   };
 
   config = let
-    # list of users managed by homix
-    users = attrNames (filterAttrs (_name: user: user.homix) config.users.users);
+    # list of users managed by ariadne
+    users = attrNames (filterAttrs (_name: user: user.ariadne) config.users.users);
 
-    homix-link = let
+    ariadne-link = let
       files = map (f: ''
         FILE=$HOME/${f.path}
         mkdir -p $(dirname $FILE)
         ln -sf ${f.source} $FILE
-      '') (attrValues config.homix);
+      '') (attrValues config.ariadne);
     in
-      pkgs.writeShellScript "homix-link" ''
+      pkgs.writeShellScript "ariadne-link" ''
         #!/bin/sh
         ${builtins.concatStringsSep "\n" files}
       '';
 
     mkService = user: {
-      name = "homix-${user}";
+      name = "ariadne-${user}";
       value = {
         wantedBy = ["multi-user.target"];
-        description = "Setup homix environment for ${user}.";
+        description = "Setup ariadne environment for ${user}.";
         serviceConfig = {
           Type = "oneshot";
           User = "${user}";
-          ExecStart = "${homix-link}";
+          ExecStart = "${ariadne-link}";
         };
         environment = {
           # epic systemd momento
