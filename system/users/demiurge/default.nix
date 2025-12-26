@@ -14,6 +14,7 @@ in {
   config = mkIf cfg {
     users.users.demiurge = {
       description = "Demiurge";
+      ariadne = isDesktop;
       shell =
         if isDesktop
         then "${pkgs.configured.bash}/bin/bash"
