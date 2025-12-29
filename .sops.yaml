@@ -1,6 +1,6 @@
 keys:
   - &deimos age1as3g9vmk34s6w4dw3rlua3wdwgxfzr2f9jm6282eqjncnwagwu4snycmx9
-  - &phobos age1c0vyvpklhylqldt7c42ru2c0jg5rl7wppz4suhywq5tv36lcagaqvj82em
+  - &phobos age1h9ecmz8zzh9eecx74m4ehge988z77kg2kme7hq2w6v8hcf8kv36qaq3d2h
   - &erebus age153c0rty0sfplkul8u3amvfew3tcwnjtv8cq06az5ynvrkeg7npdszh5ca4
 creation_rules:
   - path_regex: system/secrets/[^/]+\.(yaml|json|env|ini)$
