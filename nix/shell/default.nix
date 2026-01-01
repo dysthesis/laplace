@@ -15,5 +15,6 @@ pkgs.mkShell {
     bash-language-server
     shfmt
     shellcheck
+    mergiraf
   ];
 }
