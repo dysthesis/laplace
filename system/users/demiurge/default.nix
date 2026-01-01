@@ -176,13 +176,37 @@ in {
           pass
         ];
 
-        misc = with pkgs.configured;
+        misc = let
+          hindsight = pkgs.rustPlatform.buildRustPackage  rec {
+            pname = "hindsight";
+            version = "efbabf48603fd4f9cbff44e4057a2eb648c71094";
+            src = pkgs.fetchFromGitHub {
+              owner = "chaosprint";
+              repo = "hindsight";
+              rev = version;
+              sha256 = "sha256-8KfiPfrWf9ioA2+6gF1PSQi6ED0Grh+H5jZGTEg4m5c=";
+            };
+            cargoHash = "sha256-lLN+QswPrdY19yW4w9jPA+6ebqvcOa80bY3B1nuxdIw=";
+
+            nativeBuildInputs = with pkgs; [
+              pkg-config
+              openssl
+            ];
+            buildInputs = with pkgs; [
+              cacert
+              pkg-config
+              openssl
+            ];
+          };
+  
+        in with pkgs.configured;
           [
             btop
             ytfzf
             ani-cli
+            hindsight
           ]
-          ++ (with pkgs; [yt-dlp]);
+          ++ (with pkgs.unstable; [yt-dlp]);
 
         desktopPackages =
           cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;
