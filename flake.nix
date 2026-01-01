@@ -148,7 +148,6 @@
     # Neovim flake
     poincare = {
       url = "github:dysthesis/poincare";
-      # TODO: enable this again when the fix for neotest makes it to unstable
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
