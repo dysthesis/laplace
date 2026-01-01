@@ -4,7 +4,9 @@
   ...
 }: let
   cfg = config.laplace.services.miniflux.enable;
-  inherit (lib) mkIf;
+  inherit (lib)
+    mkIf
+    ;
 in {
   config = mkIf cfg {
     # Tell sops-nix that this should be found in the default sops file.
@@ -18,6 +20,14 @@ in {
       };
       adminCredentialsFile = config.sops.secrets.miniflux_admin.path;
     };
+
+    virtualisation.oci-containers.containers."full-text-rss" = {
+      autoStart = true;
+      image = "heussd/fivefilters-full-text-rss:latest";
+      ports = ["7756:80"];
+    };
+
+    laplace.docker.enable = true;
 
     users = {
       groups.miniflux = {};

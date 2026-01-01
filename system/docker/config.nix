@@ -4,21 +4,20 @@
   lib,
   ...
 }: let
-  inherit (lib) mkIf;
+  inherit (lib) 
+    mkIf
+    mkDefault
+    ;
   cfg = config.laplace.docker;
 in {
   config = mkIf cfg.enable {
     virtualisation = {
-      docker = {
+      oci-containers.backend = mkDefault "podman";
+      podman = {
         enable = true;
         autoPrune = {
           enable = true;
           flags = ["-af"];
-        };
-        storageDriver = "btrfs";
-        daemon.settings = {
-          "data-root" = "/var/cache/docker";
-          "log-driver" = "json-file";
         };
 
         # Extra packages to be installed in the Podman wrapper
