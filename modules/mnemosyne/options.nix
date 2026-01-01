@@ -56,7 +56,6 @@ in {
         ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
         ++ addIf config.laplace.docker.enable [
           config.laplace.docker.dataDir
-          config.virtualisation.docker.daemon.settings."data-root"
         ]
         ++ addIf config.laplace.services.llm.enable [config.laplace.services.llm.dataDir]
         ++ addIf config.laplace.services.radicle.enable [config.laplace.services.radicle.dataDir];
