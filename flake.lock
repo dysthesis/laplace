@@ -47,28 +47,6 @@
     "babel_3": {
       "inputs": {
         "nixpkgs": [
-          "poincare",
-          "nixpkgs"
-        ],
-        "treefmt": "treefmt_4"
-      },
-      "locked": {
-        "lastModified": 1757636754,
-        "narHash": "sha256-+gFrjnTgkWVlg/sI+DjztGnxO8yDT5014XVQs/iw20U=",
-        "owner": "dysthesis",
-        "repo": "babel",
-        "rev": "a9f9203e033da3743e95efbb25494172f540dc6a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dysthesis",
-        "repo": "babel",
-        "type": "github"
-      }
-    },
-    "babel_4": {
-      "inputs": {
-        "nixpkgs": [
           "read",
           "nixpkgs"
         ],
@@ -88,7 +66,7 @@
         "type": "github"
       }
     },
-    "babel_5": {
+    "babel_4": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -111,7 +89,7 @@
         "type": "github"
       }
     },
-    "babel_6": {
+    "babel_5": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -134,7 +112,7 @@
         "type": "github"
       }
     },
-    "babel_7": {
+    "babel_6": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -157,7 +135,7 @@
         "type": "github"
       }
     },
-    "babel_8": {
+    "babel_7": {
       "inputs": {
         "nixpkgs": [
           "status",
@@ -203,7 +181,7 @@
     },
     "clean": {
       "inputs": {
-        "babel": "babel_5",
+        "babel": "babel_4",
         "nixpkgs": [
           "read",
           "nixpkgs"
@@ -391,11 +369,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1768581023,
-        "narHash": "sha256-Gk4uVlcMv7fP4Ul+MWLmDYuv2HErbVd43u5cxdiffcU=",
+        "lastModified": 1768616209,
+        "narHash": "sha256-X5A9sNji2KkCKTHWScqxSbePKuw02G1uRiYTgAmY4ZY=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "f611fb328063a9ac822f2f6734fb96078bf4f1c4",
+        "rev": "9105cf487aead6b5960a08153610c87936c88e36",
         "type": "github"
       },
       "original": {
@@ -767,11 +745,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1768593066,
-        "narHash": "sha256-NIBwXHcZqeeUqFtGvyjeTtlsCoLPODc/b57tH8WRETI=",
+        "lastModified": 1768620317,
+        "narHash": "sha256-KMk3ftg4zCSvVQMipbdH2r4Pmr6gEgG0+o+UjAejtu4=",
         "owner": "numtide",
         "repo": "nix-ai-tools",
-        "rev": "cfbd35e2c595e0a3b5bd872c34317cc3184e2b18",
+        "rev": "f779abc9c9ff63a2fb2b82037857f8878eb5b116",
         "type": "github"
       },
       "original": {
@@ -1006,11 +984,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1768601936,
-        "narHash": "sha256-ewCaH90NiK3dQ6gSotyAwmZPG009qIySXOvnvNKW+g0=",
+        "lastModified": 1768619390,
+        "narHash": "sha256-VgQhP6whyLXRbSpqhs9YV3dCfV7N3ccSiTbuzZeZ+Jo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b8cf7a601aa6f9e9c1b79e26c1096d7885739483",
+        "rev": "47cbf58ba8082dfb1a5faf5d3650b552ef41307e",
         "type": "github"
       },
       "original": {
@@ -1100,20 +1078,42 @@
         "type": "github"
       }
     },
+    "nixpressions_2": {
+      "inputs": {
+        "nixpkgs": [
+          "poincare",
+          "nixpkgs"
+        ],
+        "treefmt": "treefmt_4"
+      },
+      "locked": {
+        "lastModified": 1764825587,
+        "narHash": "sha256-lJXQsUsKhlkZ4SH1ovKr39A6YCOnwchqPZeRXBKytLo=",
+        "owner": "dysthesis",
+        "repo": "nixpressions",
+        "rev": "82418c95524c5a77ba6578b037bf3ece31b4e8e6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dysthesis",
+        "repo": "nixpressions",
+        "type": "github"
+      }
+    },
     "poincare": {
       "inputs": {
-        "babel": "babel_3",
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
+        "nixpressions": "nixpressions_2",
         "treefmt-nix": "treefmt-nix_5"
       },
       "locked": {
-        "lastModified": 1768603632,
-        "narHash": "sha256-AvOfzH3YGRXgGhPYBYpvCLMDTh54pCu1r8oCt1HKbhk=",
+        "lastModified": 1768621552,
+        "narHash": "sha256-/Uu1HuyDZ5vF2Gor4OMQsoQOoQ7+iskgF7lj3m6mkqM=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "96d808938f5dafddf9bfaabc9bb961a89888038e",
+        "rev": "66c95e1fe7bcbb664c724b98d273f844cfc49954",
         "type": "github"
       },
       "original": {
@@ -1147,7 +1147,7 @@
     },
     "r": {
       "inputs": {
-        "babel": "babel_6",
+        "babel": "babel_5",
         "nixpkgs": [
           "read",
           "nixpkgs"
@@ -1171,7 +1171,7 @@
     },
     "read": {
       "inputs": {
-        "babel": "babel_4",
+        "babel": "babel_3",
         "clean": "clean",
         "nixpkgs": [
           "nixpkgs"
@@ -1310,7 +1310,7 @@
     },
     "sim": {
       "inputs": {
-        "babel": "babel_7",
+        "babel": "babel_6",
         "nixpkgs": [
           "read",
           "nixpkgs"
@@ -1354,7 +1354,7 @@
     },
     "status": {
       "inputs": {
-        "babel": "babel_8",
+        "babel": "babel_7",
         "nixpkgs": [
           "nixpkgs"
         ],
@@ -1691,7 +1691,7 @@
       "inputs": {
         "nixpkgs": [
           "poincare",
-          "babel",
+          "nixpressions",
           "nixpkgs"
         ]
       },
@@ -1830,11 +1830,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1768379550,
-        "narHash": "sha256-z94S29l5V86h11LZbPIMbHTJyksDG63aqISsZkTTuJY=",
+        "lastModified": 1768620209,
+        "narHash": "sha256-08+iYinKGC6XvJbctMF76EhUvuyysvFQwOLj9vb3t5c=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "06f61b4e4f4f6ba8027c96a5611c63dc0db12b90",
+        "rev": "ec7eefdd4006c9da3437148f952989926261e649",
         "type": "github"
       },
       "original": {
