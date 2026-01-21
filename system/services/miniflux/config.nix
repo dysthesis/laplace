@@ -5,7 +5,8 @@
   ...
 }: let
   cfg = config.laplace.services.miniflux.enable;
-  inherit (lib)
+  inherit
+    (lib)
     mkIf
     ;
 
@@ -202,48 +203,48 @@
 
   bootstrapMarker = "/var/lib/miniflux/.assets-bootstrap-done";
   assetsBootstrap = pkgs.writeShellScript "miniflux-assets-bootstrap" ''
-    set -euo pipefail
+        set -euo pipefail
 
-    if [ -e "${bootstrapMarker}" ]; then
-      exit 0
-    fi
+        if [ -e "${bootstrapMarker}" ]; then
+          exit 0
+        fi
 
-    # Skip quietly if the database hasn't been created yet.
-    if ! ${config.services.postgresql.package}/bin/psql -Atqc "select 1" miniflux >/dev/null 2>&1; then
-      echo "miniflux database not ready; skipping assets bootstrap for now" >&2
-      exit 0
-    fi
+        # Skip quietly if the database hasn't been created yet.
+        if ! ${config.services.postgresql.package}/bin/psql -Atqc "select 1" miniflux >/dev/null 2>&1; then
+          echo "miniflux database not ready; skipping assets bootstrap for now" >&2
+          exit 0
+        fi
 
-    # Ensure the users table exists before attempting to mutate preferences.
-    if ! ${config.services.postgresql.package}/bin/psql -Atqc "select to_regclass('public.users')" miniflux | grep -q users; then
-      echo "miniflux users table not ready; skipping assets bootstrap for now" >&2
-      exit 0
-    fi
+        # Ensure the users table exists before attempting to mutate preferences.
+        if ! ${config.services.postgresql.package}/bin/psql -Atqc "select to_regclass('public.users')" miniflux | grep -q users; then
+          echo "miniflux users table not ready; skipping assets bootstrap for now" >&2
+          exit 0
+        fi
 
-    ${config.services.postgresql.package}/bin/psql -v ON_ERROR_STOP=1 miniflux <<'SQL'
-WITH desired AS (
-  SELECT
-    $$(function(){var s=document.createElement('script');s.src='/katex/miniflux-init.js';document.head.appendChild(s);var h=document.createElement('script');h.src='/highlight/miniflux-init.js';document.head.appendChild(h);})();$$ AS js,
-    $$'self'$$ AS fonts,
-    $$ $$ AS empty
-)
-UPDATE users AS u
-SET
-  external_font_hosts = CASE
-    WHEN COALESCE(NULLIF(u.external_font_hosts, desired.empty), desired.empty) = desired.empty THEN desired.fonts
-    ELSE u.external_font_hosts
-  END,
-  custom_js = CASE
-    WHEN COALESCE(NULLIF(u.custom_js, desired.empty), desired.empty) = desired.empty THEN desired.js
-    ELSE u.custom_js
-  END
-FROM desired
-WHERE COALESCE(NULLIF(u.external_font_hosts, desired.empty), desired.empty) = desired.empty
-   OR COALESCE(NULLIF(u.custom_js, desired.empty), desired.empty) = desired.empty;
-SQL
+        ${config.services.postgresql.package}/bin/psql -v ON_ERROR_STOP=1 miniflux <<'SQL'
+    WITH desired AS (
+      SELECT
+        $$(function(){var s=document.createElement('script');s.src='/katex/miniflux-init.js';document.head.appendChild(s);var h=document.createElement('script');h.src='/highlight/miniflux-init.js';document.head.appendChild(h);})();$$ AS js,
+        $$'self'$$ AS fonts,
+        $$ $$ AS empty
+    )
+    UPDATE users AS u
+    SET
+      external_font_hosts = CASE
+        WHEN COALESCE(NULLIF(u.external_font_hosts, desired.empty), desired.empty) = desired.empty THEN desired.fonts
+        ELSE u.external_font_hosts
+      END,
+      custom_js = CASE
+        WHEN COALESCE(NULLIF(u.custom_js, desired.empty), desired.empty) = desired.empty THEN desired.js
+        ELSE u.custom_js
+      END
+    FROM desired
+    WHERE COALESCE(NULLIF(u.external_font_hosts, desired.empty), desired.empty) = desired.empty
+       OR COALESCE(NULLIF(u.custom_js, desired.empty), desired.empty) = desired.empty;
+    SQL
 
-    mkdir -p "$(dirname "${bootstrapMarker}")"
-    touch "${bootstrapMarker}"
+        mkdir -p "$(dirname "${bootstrapMarker}")"
+        touch "${bootstrapMarker}"
   '';
 in {
   config = mkIf cfg {

@@ -114,7 +114,7 @@
         function starship_transient_prompt_func
           ${lib.getExe starship} module character
         end
-        set -gx DIRENV_LOG_FORMAT ""
+        set -gx DIRENV_LOG_FORMAT "\033[2mdirenv: %s\033[0m"
         set -gx direnv_config_dir ${direnvConfig}
         ${lib.getExe direnv} hook fish | source
         dbus-update-activation-environment --systemd --all
