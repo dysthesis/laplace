@@ -16,6 +16,6 @@
       ;
   };
 in
-  mkWrapper pkgs inputs.babel.packages.${pkgs.system}.ghostty-hardened ''
+  mkWrapper pkgs inputs.nixpressions.packages.${pkgs.system}.ghostty-hardened ''
     wrapProgram $out/bin/ghostty --add-flags "--config-file=${cfg}"
   ''

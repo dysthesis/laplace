@@ -4,7 +4,8 @@
   lib,
   ...
 }: let
-  inherit (lib) 
+  inherit
+    (lib)
     mkIf
     mkDefault
     ;

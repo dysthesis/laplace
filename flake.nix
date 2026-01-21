@@ -3,14 +3,14 @@
 
   outputs = inputs @ {
     self,
-    babel,
+    nixpressions,
     nixpkgs,
     treefmt-nix,
     emacs,
     ...
   }: let
     inherit (builtins) mapAttrs;
-    inherit (babel) mkLib;
+    inherit (nixpressions) mkLib;
     lib = mkLib nixpkgs;
 
     # Systems to support
@@ -135,8 +135,8 @@
     };
 
     # Personal library
-    babel = {
-      url = "github:dysthesis/babel";
+    nixpressions = {
+      url = "github:dysthesis/nixpressions";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -205,6 +205,12 @@
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Personal Nix flake
+    jormungandr = {
+      url = "github:dysthesis/jormungandr";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Secrets management

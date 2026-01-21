@@ -65,7 +65,7 @@ in {
           unstable.tealdeer
           unstable.gh
           configured.bibiman
-          configured.wikiman
+          # configured.wikiman
           (unstable.openai-whisper.override {triton = null;})
           # (mkWrapper pkgs (unstable.openai-whisper.override {triton = null;})
           #   #sh
@@ -133,19 +133,13 @@ in {
           );
 
         applications = with pkgs; [
-          ((pkgs.emacsPackagesFor emacs-unstable-pgtk).emacsWithPackages (
-            p:
-              with p; [
-                vterm
-                treesit-grammars.with-all-grammars
-              ]
-          ))
-          unstable.emacs-lsp-booster
+          inputs.jormungandr.packages.${pkgs.system}.default
           unstable.zotero
           signal-desktop
           prismlauncher
           unstable.tor-browser
           tigervnc
+          obsidian
         ];
 
         system = with pkgs; [
@@ -177,7 +171,7 @@ in {
         ];
 
         misc = let
-          hindsight = pkgs.rustPlatform.buildRustPackage  rec {
+          hindsight = pkgs.rustPlatform.buildRustPackage rec {
             pname = "hindsight";
             version = "efbabf48603fd4f9cbff44e4057a2eb648c71094";
             src = pkgs.fetchFromGitHub {
@@ -198,15 +192,15 @@ in {
               openssl
             ];
           };
-  
-        in with pkgs.configured;
-          [
-            btop
-            ytfzf
-            ani-cli
-            hindsight
-          ]
-          ++ (with pkgs.unstable; [yt-dlp]);
+        in
+          with pkgs.configured;
+            [
+              btop
+              ytfzf
+              ani-cli
+              hindsight
+            ]
+            ++ (with pkgs.unstable; [yt-dlp]);
 
         desktopPackages =
           cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;

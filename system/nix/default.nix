@@ -46,6 +46,7 @@ in {
             "open-webui"
             "steam"
             "steam-unwrapped"
+            "obsidian"
           ];
         rocmSupport = true;
       };
