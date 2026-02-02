@@ -12,6 +12,10 @@
     guiPackage = package: package.config.env;
   in {
     configured = {
+      jjui = callPackage ./jjui {
+        inherit lib pkgs;
+        inherit (pkgs.unstable) jjui;
+      };
       wezterm = callPackage ./wezterm {
         inherit lib pkgs;
         inherit (pkgs.unstable) wezterm;
