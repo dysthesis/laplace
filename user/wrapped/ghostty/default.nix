@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   pkgs,
   config,
@@ -19,7 +18,7 @@
     configured.tmux
   ];
 in
-  mkWrapper pkgs inputs.nixpressions.packages.${pkgs.system}.ghostty-hardened ''
+  mkWrapper pkgs pkgs.unstable.ghostty ''
     wrapProgram $out/bin/ghostty \
       --add-flags "--config-file=${cfg}" \
       --prefix PATH ":" "${lib.makeBinPath deps}"
