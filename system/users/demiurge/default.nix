@@ -65,16 +65,7 @@ in {
           unstable.tealdeer
           unstable.gh
           configured.bibiman
-          # configured.wikiman
           (unstable.openai-whisper.override {triton = null;})
-          # (mkWrapper pkgs (unstable.openai-whisper.override {triton = null;})
-          #   #sh
-          #   ''
-          #     wrapProgram "$out/bin/whisper" \
-          #       --set PYTORCH_ROCM_ARCH  "gfx1030" \
-          #       --set HSA_OVERRIDE_GFX_VERSION "10.3.0" \
-          #       --set HCC_AMDGPU_TARGET "gfx1030"
-          #   '')
           configured.bmm
           configured.helix
         ];
@@ -83,9 +74,14 @@ in {
           git
           direnv
           configured.jujutsu
+          configured.jjui
           unstable.texliveFull
           inputs.poincare.packages.${pkgs.system}.default
           (inputs.daedalus.packages.${pkgs.system}.default.override {
+            inherit
+              (pkgs.configured)
+              jjui
+              ;
             shell = "${pkgs.configured.fish}/bin/fish";
             targets = [
               "~/Documents/Projects/"
