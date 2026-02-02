@@ -10,6 +10,7 @@ in
       name = "Dysthesis";
       email = "antheoraviel@protonmail.com";
     };
+    template-aliases."format_timestamp(timestamp)" = "timestamp.ago()";
     git.sign-on-push = true;
     signing = {
       behaviour = "own";
@@ -30,31 +31,6 @@ in
       ];
     };
     merge-tool-edits-conflict-markers = true;
-    template-aliases = {
-      "format_short_signature(signature)" = "signature.email().local()";
-      "format_timestamp(timestamp)" = "timestamp.ago()";
-    };
-    templates = {
-      log_node = ''
-        coalesce(
-          if(!self, label("elided", "~")),
-          label(
-            separate(" ",
-              if(current_working_copy, "working_copy"),
-              if(immutable, "immutable"),
-              if(conflict, "conflict"),
-            ),
-            coalesce(
-              if(current_working_copy, "@"),
-              if(immutable, "◆"),
-              if(conflict, "×"),
-              if(self.contained_in("private()"), "◌"),
-              "○",
-            )
-          )
-        )'';
-    };
-    git.private-commits = "private()";
     revset-aliases = {
       "HEAD" = ''coalesce(@ ~ description(exact:""), @-)'';
       "desc(x)" = "description(x)";
@@ -70,15 +46,6 @@ in
       '';
     };
     aliases = {
-      l = [
-        "log"
-        "-r"
-        "(trunk()..@):: | (trunk()..@)-"
-      ];
-      dlog = [
-        "log"
-        "-r"
-      ];
       tug = [
         "bookmark"
         "move"
