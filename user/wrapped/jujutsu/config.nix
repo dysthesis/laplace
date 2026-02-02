@@ -5,7 +5,7 @@
 }: let
   inherit (lib) getExe;
 in
-  with pkgs; {
+  with pkgs; rec {
     user = {
       name = "Dysthesis";
       email = "antheoraviel@protonmail.com";
@@ -34,7 +34,7 @@ in
     revset-aliases = {
       "HEAD" = ''coalesce(@ ~ description(exact:""), @-)'';
       "desc(x)" = "description(x)";
-      "user()" = ''user("bigras.bruno@gmail.com")'';
+      "user()" = ''user("${user.email}")'';
       "user(x)" = "author(x) | committer(x)";
       "closest_bookmark(to)" = "heads(::to & bookmarks())";
       "closest_pushable(to)" = ''heads(::to & mutable() & ~description(exact:"") & (~empty() | merges()))'';
