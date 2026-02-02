@@ -21,9 +21,6 @@ in {
     environment.systemPackages = with pkgs; [
       rocmPackages.rocm-smi
     ];
-
-    nixpkgs.config.rocm.amdgpuGfx = ["gfx1030"];
-
     hardware.graphics = {
       enable = true;
       enable32Bit = true;

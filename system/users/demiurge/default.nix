@@ -135,6 +135,7 @@ in {
         applications = with pkgs; [
           inputs.jormungandr.packages.${pkgs.system}.default
           unstable.zotero
+          unstable.obsidian
           signal-desktop
           prismlauncher
           unstable.tor-browser

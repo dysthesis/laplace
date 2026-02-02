@@ -11,76 +11,78 @@
     ;
 
   # KaTeX assets and bootstrap script that stay in the Nix store.
-  katexInit = pkgs.writeText "miniflux-katex-init.js" ''
-    try {
-      const nonce = document.currentScript?.nonce || "";
-      const base = window.location.origin + "/katex";
+  katexInit =
+    pkgs.writeText "miniflux-katex-init.js"
+    # js
+    ''
+      try {
+        const nonce = document.currentScript?.nonce || "";
+        const base = window.location.origin + "/katex";
 
-      const ensureCss = () => {
-        if (document.querySelector('link[data-katex-css="1"]')) return;
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = base + "/katex.min.css";
-        link.setAttribute("data-katex-css", "1");
-        if (nonce) link.nonce = nonce;
-        document.head.append(link);
-      };
+        const ensureCss = () => {
+          if (document.querySelector('link[data-katex-css="1"]')) return;
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = base + "/katex.min.css";
+          link.setAttribute("data-katex-css", "1");
+          if (nonce) link.nonce = nonce;
+          document.head.append(link);
+        };
 
-      let rendererPromise;
-      const getRenderer = () => {
-        if (!rendererPromise) {
-          rendererPromise = import(base + "/contrib/auto-render.mjs").then((mod) => mod.default);
-        }
-        return rendererPromise;
-      };
+        let rendererPromise;
+        const getRenderer = () => {
+          if (!rendererPromise) {
+            rendererPromise = import(base + "/contrib/auto-render.mjs").then((mod) => mod.default);
+          }
+          return rendererPromise;
+        };
 
-      const renderElement = async (el) => {
-        if (!el || el.dataset.katexRendered === "1") return;
-        el.dataset.katexRendered = "1";
-        ensureCss();
-        const renderMathInElement = await getRenderer();
-        renderMathInElement(el, {
-          delimiters: [
-            { left: "$$", right: "$$", display: true },
-            { left: "$", right: "$", display: false },
-            { left: "\\[", right: "\\]", display: true },
-            { left: "\\(", right: "\\)", display: false }
-          ],
-          throwOnError: false
+        const renderElement = async (el) => {
+          if (!el || el.dataset.katexRendered === "1") return;
+          el.dataset.katexRendered = "1";
+          ensureCss();
+          const renderMathInElement = await getRenderer();
+          renderMathInElement(el, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false },
+              { left: "\\[", right: "\\]", display: true },
+              { left: "\\(", right: "\\)", display: false }
+            ],
+            throwOnError: false
+          });
+          el.querySelectorAll(".katex-mathml").forEach((n) => {
+            n.setAttribute("aria-hidden", "true");
+            n.style.position = "absolute";
+            n.style.width = "1px";
+            n.style.height = "1px";
+            n.style.overflow = "hidden";
+            n.style.clip = "rect(1px, 1px, 1px, 1px)";
+            n.style.whiteSpace = "nowrap";
+          });
+        };
+
+        const handleNode = (node) => {
+          if (node?.nodeType !== Node.ELEMENT_NODE) return;
+          if (node.classList.contains("entry-content")) {
+            void renderElement(node);
+          } else {
+            node.querySelectorAll?.(".entry-content").forEach((el) => void renderElement(el));
+          }
+        };
+
+        document.querySelectorAll(".entry-content").forEach(handleNode);
+
+        const observer = new MutationObserver((mutations) => {
+          for (const mutation of mutations) {
+            mutation.addedNodes.forEach(handleNode);
+          }
         });
-        // Belt-and-braces: hide MathML fallback explicitly in case site CSS overrides KaTeX styles.
-        el.querySelectorAll(".katex-mathml").forEach((n) => {
-          n.setAttribute("aria-hidden", "true");
-          n.style.position = "absolute";
-          n.style.width = "1px";
-          n.style.height = "1px";
-          n.style.overflow = "hidden";
-          n.style.clip = "rect(1px, 1px, 1px, 1px)";
-          n.style.whiteSpace = "nowrap";
-        });
-      };
-
-      const handleNode = (node) => {
-        if (node?.nodeType !== Node.ELEMENT_NODE) return;
-        if (node.classList.contains("entry-content")) {
-          void renderElement(node);
-        } else {
-          node.querySelectorAll?.(".entry-content").forEach((el) => void renderElement(el));
-        }
-      };
-
-      document.querySelectorAll(".entry-content").forEach(handleNode);
-
-      const observer = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          mutation.addedNodes.forEach(handleNode);
-        }
-      });
-      observer.observe(document.body, { subtree: true, childList: true });
-    } catch (err) {
-      console.error("KaTeX bootstrap failed", err);
-    }
-  '';
+        observer.observe(document.body, { subtree: true, childList: true });
+      } catch (err) {
+        console.error("KaTeX bootstrap failed", err);
+      }
+    '';
 
   # Highlight.js assets and bootstrap script that stay in the Nix store.
   highlightInit = pkgs.writeText "miniflux-highlight-init.js" ''
