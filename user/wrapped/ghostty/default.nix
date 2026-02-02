@@ -15,7 +15,12 @@
       withDecorations
       ;
   };
+  deps = with pkgs; [
+    configured.tmux
+  ];
 in
   mkWrapper pkgs inputs.nixpressions.packages.${pkgs.system}.ghostty-hardened ''
-    wrapProgram $out/bin/ghostty --add-flags "--config-file=${cfg}"
+    wrapProgram $out/bin/ghostty \
+      --add-flags "--config-file=${cfg}" \
+      --prefix PATH ":" "${lib.makeBinPath deps}"
   ''
