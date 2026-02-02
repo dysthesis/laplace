@@ -39,10 +39,8 @@ in
     confirm-close-surface = false
     command = ${lib.getExe pkgs.configured.fish}
 
-
     ## Lackluster
     # https://github.com/slugbyte/lackluster.nvim/blob/662fba7e6719b7afc155076385c00d79290bc347/extra/ghostty/lackluster
-
     palette = 0=#080808
     palette = 1=#d70000
     palette = 2=#789978
