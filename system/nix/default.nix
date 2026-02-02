@@ -14,6 +14,7 @@ in {
           "nix-command"
           "flakes"
           "pipe-operators"
+          "parallel-eval"
         ];
         substituters = [
           "https://install.determinate.systems"
@@ -43,10 +44,10 @@ in {
       config = {
         allowUnfreePredicate = pkg:
           builtins.elem (lib.getName pkg) [
+            "obsidian"
             "open-webui"
             "steam"
             "steam-unwrapped"
-            "obsidian"
           ];
         rocmSupport = true;
       };
