@@ -1,6 +1,5 @@
 _: {
   suggest.exec.mode = "fuzzy";
-  revisions.template = "builtin_log_compact";
   custom_commands = {
     tug = {
       key = ["T"];
