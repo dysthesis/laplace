@@ -12,6 +12,7 @@
     guiPackage = package: package.config.env;
   in {
     configured = {
+      tmux = callPackage ./tmux {inherit inputs pkgs;};
       jjui = callPackage ./jjui {
         inherit lib pkgs;
         inherit (pkgs.unstable) jjui;

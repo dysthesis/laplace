@@ -75,19 +75,9 @@ in {
           direnv
           configured.jujutsu
           configured.jjui
+          configured.tmux
           unstable.texliveFull
           inputs.poincare.packages.${pkgs.system}.default
-          (inputs.daedalus.packages.${pkgs.system}.default.override {
-            inherit
-              (pkgs.configured)
-              jjui
-              ;
-            shell = "${pkgs.configured.fish}/bin/fish";
-            targets = [
-              "~/Documents/Projects/"
-              "~/Documents/University/"
-            ];
-          })
         ];
 
         desktop = with pkgs;

@@ -32,6 +32,7 @@ in {
         configured.wikiman
         configured.helix
         configured.fish
+        configured.tmux
 
         unstable.uutils-coreutils-noprefix
         unstable.tor-browser
@@ -42,13 +43,6 @@ in {
 
         inputs.zen-browser.packages.${pkgs.system}.default
         inputs.poincare.packages.${pkgs.system}.default
-        (inputs.daedalus.packages.${pkgs.system}.default.override {
-          shell = "${pkgs.configured.fish}/bin/fish";
-          targets = [
-            "~/Documents/Projects/"
-            "~/Documents/University/"
-          ];
-        })
       ];
     }
     // lib.fold (
