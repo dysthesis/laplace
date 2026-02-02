@@ -5,7 +5,7 @@
 }: let
   inherit (lib) getExe;
 in
-  with pkgs; rec {
+  with pkgs; {
     user = {
       name = "Dysthesis";
       email = "antheoraviel@protonmail.com";
@@ -32,18 +32,8 @@ in
     };
     merge-tool-edits-conflict-markers = true;
     revset-aliases = {
-      "HEAD" = ''coalesce(@ ~ description(exact:""), @-)'';
-      "desc(x)" = "description(x)";
-      "user()" = ''user("${user.email}")'';
-      "user(x)" = "author(x) | committer(x)";
       "closest_bookmark(to)" = "heads(::to & bookmarks())";
       "closest_pushable(to)" = ''heads(::to & mutable() & ~description(exact:"") & (~empty() | merges()))'';
-      "pending()" = ".. ~ ::tags() ~ ::remote_bookmarks() ~ @ ~ private()";
-      "private()" = ''
-        description(glob:'wip:*') | description(glob:'private:*') |
-        description(glob:'WIP:*') | description(glob:'PRIVATE:*') |
-            conflicts() | (empty() ~ merges()) | description('substring-i:"DO NOT MAIL"')
-      '';
     };
     aliases = {
       tug = [

@@ -105,7 +105,7 @@
     # tmux flake
     daedalus = {
       url = "github:dysthesis/daedalus";
-      # inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Declarative disk management

@@ -15,7 +15,7 @@
       tmux = callPackage ./tmux {inherit inputs pkgs;};
       jjui = callPackage ./jjui {
         inherit lib pkgs;
-        inherit (pkgs.unstable) jjui;
+        inherit (pkgs) jjui;
       };
       wezterm = callPackage ./wezterm {
         inherit lib pkgs;

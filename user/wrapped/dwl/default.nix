@@ -10,6 +10,11 @@
 in
   inputs.dwl.packages.${pkgs.system}.default.override {
     enableXWayland = true;
+    extraPathPackages = with pkgs; [
+      configured.tmux
+      configured.zk
+      inputs.poincare.packages.${pkgs.system}.default
+    ];
     extraKeybinds = let
       mkShCmd = cmd: {
         union = "v";
