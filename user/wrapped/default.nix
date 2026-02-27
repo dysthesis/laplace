@@ -122,6 +122,9 @@
           config
           ;
       };
+      foot = callPackage ./foot {
+        inherit lib pkgs config;
+      };
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
       spotify-player = callPackage ./spotify_player {inherit lib pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
