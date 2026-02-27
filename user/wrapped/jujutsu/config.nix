@@ -15,7 +15,7 @@ in
     signing = {
       behaviour = "own";
       backend = "gpg";
-      key = "4F41D2DFD42D5568";
+      key = "6008B52F296392B0";
     };
     merge-tools.diffconflicts = {
       program = "nvim";
