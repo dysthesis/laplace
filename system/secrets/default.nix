@@ -6,9 +6,10 @@
 }: let
   inherit (lib) mkIf elem;
   hasDemiurge = elem "demiurge" config.laplace.users;
+  hostName = config.networking.hostName or "";
 in {
   imports = [inputs.sops-nix.nixosModules.sops];
-  sops = {
+  sops = mkIf (hostName != "phobos") {
     secrets = mkIf hasDemiurge {
       libera.owner = "demiurge";
     };

@@ -6,6 +6,7 @@
   ...
 }: let
   inherit (lib) mkIf;
+  inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) elem filter hasAttr;
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
@@ -60,7 +61,6 @@ in {
         ];
 
         cli = with pkgs; [
-          unstable.uutils-coreutils-noprefix
           unstable.bat
           unstable.tealdeer
           unstable.gh
@@ -70,7 +70,18 @@ in {
           configured.helix
         ];
 
-        dev = with pkgs; [
+        dev = with pkgs; let
+          emacsDeps = with pkgs.unstable; [
+            ripgrep
+            fd
+          ];
+        in [
+          (mkWrapper pkgs emacs-unstable-pgtk
+            # sh
+            ''
+              wrapProgram $out/bin/emacs \
+                --prefix PATH ":" "${lib.makeBinPath emacsDeps}"
+            '')
           git
           direnv
           configured.jujutsu
@@ -136,7 +147,6 @@ in {
           [
             zathura
             spotify-player
-            irssi
             mpv
             neomutt
           ]

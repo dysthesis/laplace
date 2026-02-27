@@ -7,7 +7,7 @@
   inherit (pkgs.writers) writeTOML;
   config = writeTOML "jujutsu-config" (import ./config.nix {inherit pkgs lib;});
 in
-  mkWrapper pkgs pkgs.jujutsu ''
+  mkWrapper pkgs pkgs.unstable.jujutsu ''
     wrapProgram $out/bin/jj \
       --set JJ_CONFIG ${config}
   ''
