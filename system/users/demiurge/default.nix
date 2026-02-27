@@ -107,6 +107,7 @@ in {
             configured.bemenu
             configured.ghostty
             configured.wezterm
+            configured.foot
           ]
           ++ addIf (builtins.elem "xorg" config.laplace.display.servers) (
             with inputs.gungnir.packages.${pkgs.system}; let
