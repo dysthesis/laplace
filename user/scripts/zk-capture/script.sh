@@ -21,7 +21,7 @@ nvim_command=(
 printf -v nvim_invocation '%s ' "${nvim_command[@]}"
 nvim_invocation="${nvim_invocation% }"
 
-if ! ghostty --class=ghostty.capture -e "$nvim_invocation"; then
+if ! foot --app-id=foot.capture -e "$nvim_invocation"; then
     exit 0
 fi
 

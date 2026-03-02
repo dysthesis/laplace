@@ -4,7 +4,7 @@
   rivercarro = getExe pkgs.rivercarro;
   binds-normal = [
     # note that we call footclient from vanilla unwrapped foot package
-    "Super Return spawn ${pkgs.configured.ghostty}/bin/ghostty"
+    "Super Return spawn ${pkgs.configured.foot}/bin/foot"
     "Super R spawn ${pkgs.configured.bemenu}/bin/bemenu-run"
     "Super+Shift S spawn '${getExe pkgs.slurp} | ${getExe pkgs.grim} -g - - | ${pkgs.wl-clipboard}/bin/wl-copy'"
 

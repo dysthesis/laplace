@@ -105,7 +105,6 @@ in {
             swappy
             configured.bibata-hyprcursor
             configured.bemenu
-            configured.ghostty
             configured.wezterm
             configured.foot
           ]

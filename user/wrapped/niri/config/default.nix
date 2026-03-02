@@ -15,7 +15,7 @@
 
   wallpaper = ../hyprland/config/wallpaper.png;
 
-  terminalCmd = lib.getExe pkgs.configured.ghostty;
+  terminalCmd = lib.getExe pkgs.configured.foot;
   launcherCmd = "${pkgs.configured.bemenu}/bin/bemenu-run";
   lockerCmd = lib.getExe pkgs.configured.swaylock;
 

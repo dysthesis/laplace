@@ -110,7 +110,7 @@ in
 
       # window swallowing
       enable_swallow = true; # hide windows that spawn other windows
-      swallow_regex = "com.mitchellh.ghostty";
+      swallow_regex = "foot";
 
       # dpms
       mouse_move_enables_dpms = true; # enable dpms on mouse/touchpad action

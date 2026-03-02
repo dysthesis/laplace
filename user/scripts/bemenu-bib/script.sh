@@ -220,8 +220,8 @@ while IFS= read -r id; do
     fi
 
     if [[ -n $note_path ]]; then
-        if command -v ghostty >/dev/null 2>&1; then
-            nohup ghostty -e zk edit "$note_path" >/dev/null 2>&1 &
+        if command -v foot >/dev/null 2>&1; then
+            nohup foot -e zk edit "$note_path" >/dev/null 2>&1 &
         else
             zk edit "$note_path"
         fi

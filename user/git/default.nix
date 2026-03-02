@@ -12,7 +12,7 @@
       user = {
         email = "antheoraviel@protonmail.com";
         name = "Dysthesis";
-        signingKey = "4F41D2DFD42D5568";
+        signingKey = "6008B52F296392B0";
       };
       github.user = "dysthesis";
       gitlab."nw-syd-gitlab.cseunsw.tech/api/v4".user = "z5437039";
