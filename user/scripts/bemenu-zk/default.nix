@@ -3,7 +3,7 @@
   gawk,
   zk,
   uutils-coreutils-noprefix,
-  ghostty,
+  foot,
   bemenu,
   ...
 }: let
@@ -16,7 +16,7 @@
     gawk
     zk
     uutils-coreutils-noprefix
-    ghostty
+    foot
     bemenu
   ];
   name = "bemenu-zk";

@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 export ZK_NOTEBOOK_DIR="$HOME/Documents/Notes/Contents"
 journal_dir="${ZK_JOURNAL_DIR:-"$ZK_NOTEBOOK_DIR/Journal"}"
-ghostty_class="${GHOSTTY_JOURNAL_CLASS:-ghostty.journal}"
+app_id="${FOOT_JOURNAL_APP_ID:-${GHOSTTY_JOURNAL_CLASS:-foot.journal}}"
 
 CAPTURE_FILE="$(mktemp)"
 mv -f "$CAPTURE_FILE" "${CAPTURE_FILE}.md"
@@ -27,7 +27,7 @@ nvim_command=(
 printf -v nvim_invocation '%s ' "${nvim_command[@]}"
 nvim_invocation="${nvim_invocation% }"
 
-if ! ghostty --class="$ghostty_class" -e "$nvim_invocation"; then
+if ! foot --app-id="$app_id" -e "$nvim_invocation"; then
     exit 0
 fi
 

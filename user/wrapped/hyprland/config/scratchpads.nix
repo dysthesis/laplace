@@ -19,25 +19,25 @@
       cmd = "${getExe pkgs.signal-desktop} --enable-features=UseOzonePlatform --ozone-platform=wayland";
     }
     rec {
-      name = "ghostty.term";
+      name = "foot.term";
       prefix = "t";
-      cmd = "ghostty --class=${name}";
+      cmd = "${getExe pkgs.configured.foot} --app-id=${name}";
     }
     rec {
-      name = "ghostty.notes";
+      name = "foot.notes";
       prefix = "n";
-      cmd = "ghostty --class=${name} -e 'tmux new-session -As Notes -c ~/Documents/Notes/Contents/ \'direnv exec . nvim\''";
+      cmd = "${getExe pkgs.configured.foot} --app-id=${name} -e 'tmux new-session -As Notes -c ~/Documents/Notes/Contents/ \"direnv exec . nvim\"'";
     }
     rec {
-      name = "ghostty.music";
+      name = "foot.music";
       prefix = "m";
-      cmd = "ghostty --class=${name} -e spotify_player";
+      cmd = "${getExe pkgs.configured.foot} --app-id=${name} -e spotify_player";
     }
 
     rec {
-      name = "ghostty.btop";
+      name = "foot.btop";
       prefix = "b";
-      cmd = "ghostty --class=${name} -e ${getExe pkgs.configured.btop}";
+      cmd = "${getExe pkgs.configured.foot} --app-id=${name} -e ${getExe pkgs.configured.btop}";
     }
   ];
 

@@ -3,7 +3,7 @@
   gawk,
   zk,
   uutils-coreutils-noprefix,
-  ghostty,
+  foot,
   gnused,
   neovim,
   ...
@@ -18,7 +18,7 @@
     zk
     uutils-coreutils-noprefix
     gnused
-    ghostty
+    foot
     neovim
   ];
   name = "zk-capture";

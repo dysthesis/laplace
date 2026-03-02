@@ -3,7 +3,7 @@
   bemenu,
   fd,
   gawk,
-  ghostty,
+  foot,
   jq,
   pandoc,
   uutils-coreutils-noprefix,
@@ -19,7 +19,7 @@
     bemenu
     fd
     gawk
-    ghostty
+    foot
     jq
     pandoc
     uutils-coreutils-noprefix

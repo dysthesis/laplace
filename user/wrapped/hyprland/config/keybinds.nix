@@ -37,7 +37,7 @@ in {
       {
         "Q" = "killactive";
         "F" = "fullscreen";
-        "Return" = exec pkgs.configured.ghostty;
+        "Return" = exec pkgs.configured.foot;
         "R" = "exec, ${pkgs.configured.bemenu}/bin/bemenu-run";
         "G" = "togglegroup,";
         "W" = "moveintogroup, u";

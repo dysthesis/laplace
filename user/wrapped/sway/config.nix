@@ -53,25 +53,25 @@
       cmd = "${getExe pkgs.signal-desktop} --enable-features=UseOzonePlatform --ozone-platform=wayland";
     }
     rec {
-      name = "ghostty.term";
+      name = "foot.term";
       prefix = "t";
-      cmd = "${pkgs.configured.ghostty}/bin/ghostty --class=${name}";
+      cmd = "${pkgs.configured.foot}/bin/foot --app-id=${name}";
     }
     rec {
-      name = "ghostty.notes";
+      name = "foot.notes";
       prefix = "n";
       cmd = let
         notes-launcher = writeShellScriptBin "notes-launcher" ''
-          exec ${pkgs.configured.ghostty}/bin/ghostty --class=${name} -e ${
+          exec ${pkgs.configured.foot}/bin/foot --app-id=${name} -e ${
             lib.getExe inputs.daedalus.packages.${pkgs.system}.default
           } new-session -As Notes -c "$HOME/Documents/Notes/Contents" 'direnv exec . nvim'
         '';
       in "${getExe notes-launcher}";
     }
     rec {
-      name = "ghostty.music";
+      name = "foot.music";
       prefix = "m";
-      cmd = "${pkgs.configured.ghostty}/bin/ghostty --class=${name} -e spotify_player";
+      cmd = "${pkgs.configured.foot}/bin/foot --app-id=${name} -e spotify_player";
     }
   ];
 
@@ -149,7 +149,7 @@ in
       set $down j
       set $up k
       set $right l
-      set $term ${lib.getExe pkgs.configured.ghostty}
+      set $term ${lib.getExe pkgs.configured.foot}
       set $menu ${pkgs.configured.bemenu}/bin/bemenu-run
 
       ${scratchpadCfg}

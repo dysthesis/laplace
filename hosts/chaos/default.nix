@@ -26,9 +26,7 @@ in {
         harden = ["kernel"];
       };
       environment.systemPackages = with pkgs; [
-        (configured.ghostty.override {
-          withDecorations = true;
-        })
+        configured.foot
         configured.wikiman
         configured.helix
         configured.fish
