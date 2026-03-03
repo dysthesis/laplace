@@ -7,7 +7,7 @@
   host = config.networking.hostName or "";
   fontSize =
     if host == "phobos"
-    then 5
+    then 5.5
     else 9;
   lineHeight = fontSize * 1.5;
   padding = 10;
