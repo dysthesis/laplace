@@ -24,6 +24,7 @@
       (pkgs.configured)
       mpv
       ;
+    fzf = pkgs.unstable.skim;
   };
 in
   mkWrapper pkgs ytfzf ''
