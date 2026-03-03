@@ -7,7 +7,7 @@ pkgs.writeTextFile {
   name = "neomutt-mailcap";
   text = ''
     text/html; ${lib.getExe pkgs.w3m} -I %{charset} -T text/html; copiousoutput;
-    application/pdf; ${lib.getExe pkgs.configured.zathura} %s;
+    application/pdf; ${lib.getExe' pkgs.configured.zathura "zathura"} %s;
     text/plain; cat %s; copiousoutput
   '';
 }

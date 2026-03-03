@@ -12,6 +12,7 @@
   ...
 }: let
   inherit (lib) getExe;
+  system = pkgs.stdenv.hostPlatform.system;
   cfg = config.networking.hostName == "phobos";
   fontSize =
     if cfg
@@ -60,10 +61,10 @@
     rec {
       name = "foot.notes";
       prefix = "n";
-      cmd = let
-        notes-launcher = writeShellScriptBin "notes-launcher" ''
+          cmd = let
+            notes-launcher = writeShellScriptBin "notes-launcher" ''
           exec ${pkgs.configured.foot}/bin/foot --app-id=${name} -e ${
-            lib.getExe inputs.daedalus.packages.${pkgs.system}.default
+            lib.getExe inputs.daedalus.packages.${system}.default
           } new-session -As Notes -c "$HOME/Documents/Notes/Contents" 'direnv exec . nvim'
         '';
       in "${getExe notes-launcher}";

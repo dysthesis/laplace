@@ -7,12 +7,13 @@
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) elem;
-  inherit (lib) optionalString;
+  inherit (lib) optionalString getExe';
+  system = pkgs.stdenv.hostPlatform.system;
 
   configuration = let
     startWayland = ''
       exec $(${
-        lib.getExe inputs.status.packages.${pkgs.system}.default
+        getExe' inputs.status.packages.${system}.default "status"
       } | ${lib.getExe pkgs.configured.dwl})
     '';
     startXorg = "exec ${pkgs.configured.xinit}/bin/startx";

@@ -3,7 +3,7 @@
   pkgs,
   ...
 }:
-inputs.daedalus.packages.${pkgs.system}.default.override {
+inputs.daedalus.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
   inherit (pkgs.configured) jjui;
   inherit (pkgs.unstable) fzf;
   shell = "${pkgs.configured.fish}/bin/fish";

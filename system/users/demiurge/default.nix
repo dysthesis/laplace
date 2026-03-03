@@ -11,6 +11,7 @@
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
   isDesktop = elem "desktop" config.laplace.profiles;
+  hostSystem = pkgs.stdenv.hostPlatform.system;
 in {
   config = mkIf cfg {
     users.users.demiurge = {
@@ -55,7 +56,7 @@ in {
         basePackages = with pkgs; [
           rsync
           gnupg
-          inputs.poincare.packages.${pkgs.system}.default
+          inputs.poincare.packages.${hostSystem}.default
           age
           sops
         ];
@@ -88,7 +89,7 @@ in {
           configured.jjui
           configured.tmux
           unstable.texliveFull
-          inputs.poincare.packages.${pkgs.system}.default
+          inputs.poincare.packages.${hostSystem}.default
         ];
 
         desktop = with pkgs;
@@ -109,7 +110,7 @@ in {
             configured.foot
           ]
           ++ addIf (builtins.elem "xorg" config.laplace.display.servers) (
-            with inputs.gungnir.packages.${pkgs.system}; let
+            with inputs.gungnir.packages.${hostSystem}; let
               fontSize =
                 if config.networking.hostName == "phobos"
                 then 15
@@ -152,7 +153,7 @@ in {
           ]
           ++ (with pkgs.unstable; [
             vesktop
-            inputs.zen-browser.packages."${pkgs.system}".default
+            inputs.zen-browser.packages."${hostSystem}".default
           ]);
 
         productivity = with pkgs.configured; [

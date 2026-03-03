@@ -33,10 +33,10 @@
     mapAttrs (_: forAllSystems) {
       devShells = pkgs: {default = import ./nix/shell pkgs;};
       # for `nix fmt`
-      formatter = pkgs: treefmt.${pkgs.system}.config.build.wrapper;
+      formatter = pkgs: treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.wrapper;
       # for `nix flake check`
       checks = pkgs: {
-        formatting = treefmt.${pkgs.system}.config.build.check self;
+        formatting = treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
       };
     }
     // {
