@@ -1,5 +1,14 @@
 _: {
   config = {
+    # reduce bootloader menu delay and tighten LUKS retry and timeout
+    boot = {
+      loader.timeout = 0;
+      initrd.luks.devices."cryptroot" = {
+        device = "/dev/disk/by-partlabel/disk-main-luks";
+        crypttabExtraOpts = ["tries=1" "timeout=30"];
+      };
+    };
+
     laplace = {
       harden = [
         "kernel"
