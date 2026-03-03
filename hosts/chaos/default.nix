@@ -5,6 +5,7 @@
   lib,
   ...
 }: let
+  system = pkgs.stdenv.hostPlatform.system;
   keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF4Rfg1TJZb861LSAJZn1xKNO1PXf7Oz2Mucq//9Dr9s demiurge@phobos"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUPaVrhCJ8fDKDYCcIeICgCv6W+0GdGmMDrngIg1oKg demiurge@deimos"
@@ -39,8 +40,8 @@ in {
         unstable.w3m
         unstable.chawan
 
-        inputs.zen-browser.packages.${pkgs.system}.default
-        inputs.poincare.packages.${pkgs.system}.default
+        inputs.zen-browser.packages.${system}.default
+        inputs.poincare.packages.${system}.default
       ];
     }
     // lib.fold (

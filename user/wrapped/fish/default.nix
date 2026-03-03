@@ -23,6 +23,7 @@
     mapAttrs'
     ;
   inherit (lib.babel.pkgs) mkWrapper;
+  system = pkgs.stdenv.hostPlatform.system;
   vendorConf = "share/fish/vendor_conf.d";
   loadPlugin =
     pkgs.writeTextDir "${vendorConf}/load_plugin.fish"
@@ -69,7 +70,7 @@
     {
       "t" = "${getExe pkgs.configured.taskwarrior}";
       ":q" = "exit";
-      "v" = "${getExe inputs.poincare.packages.${pkgs.system}.default}";
+      "v" = "${getExe inputs.poincare.packages.${system}.default}";
       sudo = "doas";
       cat = "${getExe bat}";
       notes = "${

@@ -11,6 +11,7 @@
   ...
 }: let
   wallpaper = "${self}/user/wallpaper.png";
+  system = pkgs.stdenv.hostPlatform.system;
   baseSpec = import "${inputs.dwl}/nix/config/spec.nix";
   configSpec =
     baseSpec
@@ -208,7 +209,7 @@
           argument = let
             zk-capture = pkgs.scripts.zk-capture.override {
               inherit (pkgs.configured) foot zk;
-              neovim = inputs.poincare.packages.${pkgs.system}.default;
+              neovim = inputs.poincare.packages.${system}.default;
             };
           in
             mkShCmd (lib.getExe zk-capture);
@@ -224,7 +225,7 @@
           argument = let
             zk-journal = pkgs.scripts.zk-journal.override {
               inherit (pkgs.configured) foot zk;
-              neovim = inputs.poincare.packages.${pkgs.system}.default;
+              neovim = inputs.poincare.packages.${system}.default;
             };
           in
             mkShCmd (lib.getExe zk-journal);
@@ -237,17 +238,31 @@
           argument = mkShCmd (lib.getExe terminal.package);
           comment = "Terminal";
         }
+        {
+          modifiers = ["MODKEY"];
+          key = "XKB_KEY_i";
+          function = "incnmaster";
+          argument = {union = "i"; value = "+1";};
+          comment = "Increase number of master clients";
+        }
+        {
+          modifiers = ["MODKEY"];
+          key = "XKB_KEY_d";
+          function = "incnmaster";
+          argument = {union = "i"; value = "-1";};
+          comment = "Decrease number of master clients";
+        }
       ];
     };
 in
-  inputs.dwl.packages.${pkgs.system}.default.override {
+  inputs.dwl.packages.${system}.default.override {
     enableXWayland = true;
     extraPathPackages = with pkgs; [
       configured.tmux
       configured.zk
       configured.foot
       terminal.package
-      inputs.poincare.packages.${pkgs.system}.default
+      inputs.poincare.packages.${system}.default
     ];
     inherit configSpec;
     autostart = let

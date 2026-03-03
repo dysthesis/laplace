@@ -6,11 +6,12 @@
   ...
 }: let
   inherit (lib.babel.modules) importInDirectory;
+  system = pkgs.stdenv.hostPlatform.system;
 in {
   config = {
     environment.sessionVariables = {
       BROWSER = lib.getExe pkgs.configured.zen;
-      EDITOR = lib.getExe inputs.poincare.packages.${pkgs.system}.default;
+      EDITOR = lib.getExe inputs.poincare.packages.${system}.default;
     };
     boot.binfmt.emulatedSystems =
       if (config.nixpkgs.system != "aarch64-linux")

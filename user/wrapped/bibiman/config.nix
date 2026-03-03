@@ -6,7 +6,7 @@
 }: {
   general = {
     bibfiles = ["~/Library/Library.bib"];
-    editor = "${lib.getExe inputs.poincare.packages.${pkgs.system}.default}";
+    editor = "${lib.getExe inputs.poincare.packages.${pkgs.stdenv.hostPlatform.system}.default}";
     pdf_opener = "xdg-open";
     url-opener = "xdg-open";
     note_path = "~/Documents/Notes/Contents/Literature/";

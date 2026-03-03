@@ -7,9 +7,9 @@
 }: let
   inherit (lib) getExe;
   inherit (lib.babel.pkgs) mkWrapper;
-  inherit (pkgs) system;
+  system = pkgs.stdenv.hostPlatform.system;
 
-  inherit (inputs.mandelbrot.packages.${pkgs.system}) xmonad;
+  inherit (inputs.mandelbrot.packages.${system}) xmonad;
 
   xinitrc = with pkgs;
     writeText ".xinitrc"
@@ -42,7 +42,7 @@ in
   mkWrapper pkgs xinit ''
     wrapProgram "$out/bin/startx" --set XINITRC ${xinitrc} --prefix PATH ":" "${
       lib.makeBinPath [
-        inputs.mandelbrot.packages.${pkgs.system}.xmobar
+        inputs.mandelbrot.packages.${system}.xmobar
         xinit
       ]
     }";

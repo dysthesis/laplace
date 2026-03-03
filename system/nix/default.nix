@@ -2,20 +2,28 @@
   inputs,
   lib,
   config,
+  pkgs,
   ...
 }: let
   inherit (lib.babel.modules) importInDirectory;
+  inherit (lib) optionalAttrs optionals;
+  # Determinate-only settings (eval-cores, lazy-trees, parallel-eval) cause
+  # warnings on upstream Nix, so gate them on the Determinate package.
+  isDeterminateNix = (config.nix.package.pname or "") == "determinate-nix";
 in {
   config = {
     nix = {
+      # Ensure we actually use Determinate Nix so the guarded settings take effect.
+      package = lib.mkDefault inputs.determinate.inputs.nix.packages.${pkgs.stdenv.system}.default;
       settings = {
         extra-platforms = ["aarch64-linux"];
-        experimental-features = [
-          "nix-command"
-          "flakes"
-          "pipe-operators"
-          "parallel-eval"
-        ];
+        experimental-features =
+          [
+            "nix-command"
+            "flakes"
+            "pipe-operators"
+          ]
+          ++ optionals isDeterminateNix ["parallel-eval"];
         substituters = [
           "https://install.determinate.systems"
           "https://nix-community.cachix.org"
@@ -27,15 +35,13 @@ in {
         ];
         auto-optimise-store = true;
 
-        # NOTE: These options are only available with Determinate Nix.
-        # Distributes evaluation work across multiple threads. 0 means "use as
-        # many cores as there are available".
-        # See:
-        # https://docs.determinate.systems/determinate-nix/#parallel-evaluation
+      }
+      # Determinate-only settings are added here so they are only present when
+      # the Determinate fork of Nix is used, avoiding warnings on upstream Nix.
+      // optionalAttrs isDeterminateNix {
+        # Distributes evaluation work across multiple threads. 0 = all cores.
         eval-cores = 0;
-        # Scopes file copying to what the specific expression demands.
-        # See:
-        # https://docs.determinate.systems/determinate-nix/#lazy-trees
+        # Scopes file copying to only what's demanded by the evaluation tree.
         lazy-trees = true;
       };
     };

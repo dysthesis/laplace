@@ -42,7 +42,23 @@ in
           # by using `pkgs.unstable`
           nixpkgs.overlays = [
             (final: _prev: {
-              unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
+              # Provide a non-aliased `system` attribute to avoid deprecation warnings.
+              system = final.stdenv.hostPlatform.system;
+            })
+            (final: _prev: {
+              unstable = inputs.nixpkgs-unstable.legacyPackages.${final.stdenv.hostPlatform.system};
+            })
+            # Silence the deprecated `pkgs.system` alias warning without hiding other warnings.
+            (final: prev: let
+              prevLib = prev.lib;
+              suppressMsg = msg:
+                let s = toString msg;
+                in builtins.match ".*has been renamed to/replaced by 'stdenv\\.hostPlatform\\.system'.*" s != null;
+            in {
+              lib = prevLib // {
+                warn = msg: val:
+                  if suppressMsg msg then val else prevLib.warn msg val;
+              };
             })
           ];
           imports =

@@ -8,6 +8,7 @@
 }: let
   inherit (pkgs) callPackage;
   inherit (lib) makeOverridable;
+  system = pkgs.stdenv.hostPlatform.system;
   overlay = _final: _prev: let
     guiPackage = package: package.config.env;
   in {
@@ -23,7 +24,7 @@
       };
       read = callPackage ./read {
         inherit lib pkgs;
-        inherit (inputs.read.packages.${pkgs.system}) read;
+        inherit (inputs.read.packages.${system}) read;
       };
       pass = callPackage ./pass {inherit lib pkgs;};
       lazygit = callPackage ./lazygit {

@@ -5,6 +5,7 @@
   config,
   ...
 }: let
+  system = pkgs.stdenv.hostPlatform.system;
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit (pkgs) lib;
     inherit pkgs;
@@ -12,7 +13,7 @@
 in
   mkNixPak {
     config = {sloth, ...}: {
-      app.package = inputs.zen-browser.packages."${pkgs.system}".default;
+      app.package = inputs.zen-browser.packages."${system}".default;
       app.extraEntrypoints = [
         "/bin/zen"
         "/bin/zen-beta"
@@ -78,7 +79,7 @@ in
             (sloth.concat' sloth.xdgConfigHome "/gtk-4.0")
             (sloth.concat' sloth.xdgConfigHome "/dconf")
             [
-              "${inputs.zen-browser.packages.${pkgs.system}.default}/lib/firefox"
+              "${inputs.zen-browser.packages.${system}.default}/lib/firefox"
               "/app/etc/firefox"
             ]
           ];
