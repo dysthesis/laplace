@@ -8,7 +8,6 @@
 
   rev = "c291194a4e593bbbb91420e81fa0111508084448";
   srcHash = "sha256-LipZljhxpMFOEce+KNNcjJVWKsxDJnhgJm9UWJ4sWJI=";
-  patchHash = "sha256-d9Dj/e5ejc6mbsjKdS2AfPQqTKNyKyNMwVE6QPkOSpE=";
 
   fcftPatched = pkgs.fcft.overrideAttrs (old: {
     patches =
@@ -16,7 +15,7 @@
       ++ [
         (pkgs.fetchpatch {
           url = "https://codeberg.org/dnkl/fcft/pulls/116.patch";
-          hash = "sha256-juOQETratMOGMQBFM7d4aIl+1fU6FZUb/NFw/QTlw0k=";
+          hash = "sha256-a0blLvi/slFMH4M3R3XAI3bnJrRN9Zh3HvvjXKyqWa4=";
         })
       ];
   });
@@ -35,7 +34,7 @@
       ++ [
         (pkgs.fetchpatch {
           url = "https://codeberg.org/dnkl/foot/pulls/2278.patch";
-          hash = patchHash;
+          hash = "sha256-7M3wI4hu1pWF2DcR4/V1e10i8RI6G1vGcvCvJf4MG9E=";
         })
       ];
     passthru = (old.passthru or {}) // {inherit rev;};

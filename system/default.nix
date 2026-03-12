@@ -45,7 +45,7 @@ in {
 
     system.stateVersion = "24.11";
 
-    time.timeZone = "Australia/Sydney";
+    time.timeZone = "Asia/Jakarta";
     i18n.defaultLocale = "en_AU.UTF-8";
     hardware.enableRedistributableFirmware = true;
     programs = {

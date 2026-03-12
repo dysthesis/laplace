@@ -42,7 +42,7 @@ in
       timeZone = {
         enable = true;
         provider = "bundle";
-        zone = "Australia/Sydney";
+        zone = config.time.timeZone;
       };
       bubblewrap = {
         network = true;
