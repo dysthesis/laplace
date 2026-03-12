@@ -1,4 +1,4 @@
-_: {
+{lib, ...}: {
   config = {
     # reduce bootloader menu delay and tighten LUKS retry and timeout
     boot = {
@@ -66,7 +66,6 @@ _: {
         servers = ["wayland"];
         hidpi = true;
       };
-      # services.llm.enable = true;
 
       users = ["demiurge"];
       virtualisation.enable = true;

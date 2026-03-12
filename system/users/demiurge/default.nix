@@ -71,18 +71,7 @@ in {
           configured.helix
         ];
 
-        dev = with pkgs; let
-          emacsDeps = with pkgs.unstable; [
-            ripgrep
-            fd
-          ];
-        in [
-          (mkWrapper pkgs emacs-unstable-pgtk
-            # sh
-            ''
-              wrapProgram $out/bin/emacs \
-                --prefix PATH ":" "${lib.makeBinPath emacsDeps}"
-            '')
+        dev = with pkgs; [
           git
           direnv
           configured.jujutsu
