@@ -12,7 +12,11 @@
   overlay = _final: _prev: let
     guiPackage = package: package.config.env;
   in {
-    configured = {
+    configured = rec {
+      direnv = callPackage ./direnv {
+        inherit pkgs lib;
+        inherit (pkgs.unstable) direnv;
+      };
       tmux = callPackage ./tmux {inherit inputs pkgs;};
       jjui = callPackage ./jjui {
         inherit lib pkgs;
@@ -86,7 +90,7 @@
       newsraft = callPackage ./newsraft {inherit pkgs lib;};
       fish = callPackage ./fish {
         inherit (pkgs) fish;
-        inherit pkgs inputs lib;
+        inherit pkgs inputs lib direnv;
       };
       bemenu = callPackage ./bemenu {inherit pkgs config lib;};
       yambar = makeOverridable callPackage ./yambar {

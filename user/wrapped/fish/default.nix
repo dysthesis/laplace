@@ -23,7 +23,7 @@
     mapAttrs'
     ;
   inherit (lib.babel.pkgs) mkWrapper;
-  system = pkgs.stdenv.hostPlatform.system;
+  inherit (pkgs.stdenv.hostPlatform) system;
   vendorConf = "share/fish/vendor_conf.d";
   loadPlugin =
     pkgs.writeTextDir "${vendorConf}/load_plugin.fish"
@@ -115,7 +115,7 @@
         function starship_transient_prompt_func
           ${lib.getExe starship} module character
         end
-        set -gx DIRENV_LOG_FORMAT "\033[2mdirenv: %s\033[0m"
+        set -gx DIRENV_LOG_FORMAT ""
         set -gx direnv_config_dir ${direnvConfig}
         ${lib.getExe direnv} hook fish | source
         dbus-update-activation-environment --systemd --all
