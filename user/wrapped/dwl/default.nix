@@ -22,12 +22,30 @@
       };
       swallowTerminals = [terminal.appId];
       rules = [
-        {id = terminal.appId; isterm = true;}
-        {id = "zen"; tags = [0];}
-        {id = "vesktop"; tags = [2];}
-        {id = "mpv"; tags = [3];}
-        {id = "${terminal.appId}.capture"; isfloating = true;}
-        {id = "${terminal.appId}.journal"; isfloating = true;}
+        {
+          id = terminal.appId;
+          isterm = true;
+        }
+        {
+          id = "zen";
+          tags = [0];
+        }
+        {
+          id = "vesktop";
+          tags = [2];
+        }
+        {
+          id = "mpv";
+          tags = [3];
+        }
+        {
+          id = "${terminal.appId}.capture";
+          isfloating = true;
+        }
+        {
+          id = "${terminal.appId}.journal";
+          isfloating = true;
+        }
       ];
       scratchpads = let
         termExe = lib.getExe terminal.package;
@@ -242,14 +260,20 @@
           modifiers = ["MODKEY"];
           key = "XKB_KEY_i";
           function = "incnmaster";
-          argument = {union = "i"; value = "+1";};
+          argument = {
+            union = "i";
+            value = "+1";
+          };
           comment = "Increase number of master clients";
         }
         {
           modifiers = ["MODKEY"];
           key = "XKB_KEY_d";
           function = "incnmaster";
-          argument = {union = "i"; value = "-1";};
+          argument = {
+            union = "i";
+            value = "-1";
+          };
           comment = "Decrease number of master clients";
         }
       ];

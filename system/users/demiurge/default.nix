@@ -6,7 +6,6 @@
   ...
 }: let
   inherit (lib) mkIf;
-  inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) elem filter hasAttr;
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
@@ -66,7 +65,7 @@ in {
           unstable.tealdeer
           unstable.gh
           configured.bibiman
-          (unstable.openai-whisper.override {triton = null;})
+          # (unstable.openai-whisper.override {triton = null;})
           configured.bmm
           configured.helix
         ];
@@ -155,37 +154,13 @@ in {
           pass
         ];
 
-        misc = let
-          hindsight = pkgs.rustPlatform.buildRustPackage rec {
-            pname = "hindsight";
-            version = "efbabf48603fd4f9cbff44e4057a2eb648c71094";
-            src = pkgs.fetchFromGitHub {
-              owner = "chaosprint";
-              repo = "hindsight";
-              rev = version;
-              sha256 = "sha256-8KfiPfrWf9ioA2+6gF1PSQi6ED0Grh+H5jZGTEg4m5c=";
-            };
-            cargoHash = "sha256-lLN+QswPrdY19yW4w9jPA+6ebqvcOa80bY3B1nuxdIw=";
-
-            nativeBuildInputs = with pkgs; [
-              pkg-config
-              openssl
-            ];
-            buildInputs = with pkgs; [
-              cacert
-              pkg-config
-              openssl
-            ];
-          };
-        in
-          with pkgs.configured;
-            [
-              btop
-              ytfzf
-              ani-cli
-              hindsight
-            ]
-            ++ (with pkgs.unstable; [yt-dlp]);
+        misc = with pkgs.configured;
+          [
+            btop
+            ytfzf
+            ani-cli
+          ]
+          ++ (with pkgs.unstable; [yt-dlp]);
 
         desktopPackages =
           cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;
