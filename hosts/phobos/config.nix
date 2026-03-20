@@ -1,4 +1,4 @@
-{lib, ...}: {
+{ ...}: {
   config = {
     # reduce bootloader menu delay and tighten LUKS retry and timeout
     boot = {

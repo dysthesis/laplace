@@ -61,8 +61,8 @@
     rec {
       name = "foot.notes";
       prefix = "n";
-          cmd = let
-            notes-launcher = writeShellScriptBin "notes-launcher" ''
+      cmd = let
+        notes-launcher = writeShellScriptBin "notes-launcher" ''
           exec ${pkgs.configured.foot}/bin/foot --app-id=${name} -e ${
             lib.getExe inputs.daedalus.packages.${system}.default
           } new-session -As Notes -c "$HOME/Documents/Notes/Contents" 'direnv exec . nvim'
