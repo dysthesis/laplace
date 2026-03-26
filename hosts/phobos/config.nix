@@ -1,4 +1,4 @@
-{ ...}: {
+{
   config = {
     # reduce bootloader menu delay and tighten LUKS retry and timeout
     boot = {
@@ -12,8 +12,10 @@
     laplace = {
       harden = [
         "kernel"
-        # TODO: malloc hardening breaks Firefox and its derivatives.
-        # Figure out if it's possible to work around that.
+        # Keep malloc hardening enabled here. Zen already ships with
+        # --enable-replace-malloc, but on this AMD laptop it still needs the
+        # wrapper-side Zink workaround in user/wrapped/zen.
+        "malloc"
       ];
       profiles = ["desktop"];
       hardware = {

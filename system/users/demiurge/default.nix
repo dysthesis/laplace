@@ -141,7 +141,7 @@ in {
           ]
           ++ (with pkgs.unstable; [
             vesktop
-            inputs.zen-browser.packages."${hostSystem}".default
+            pkgs.configured.zen
           ]);
 
         productivity = with pkgs.configured; [
