@@ -5,17 +5,23 @@
   config,
   ...
 }: let
-  system = pkgs.stdenv.hostPlatform.system;
+  inherit (builtins) elem;
+  inherit (pkgs.stdenv.hostPlatform) system;
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit (pkgs) lib;
     inherit pkgs;
   };
+  # Zen already enables --enable-replace-malloc upstream, but with
+  # system-wide hardened_malloc on AMD it still crashes in
+  # radeonsi/libgallium/libLLVM. Route GL through Zink/RADV instead.
+  useZinkForHardenedMalloc =
+    elem "malloc" config.laplace.harden
+    && elem "amd" config.laplace.hardware.gpu;
 in
   mkNixPak {
     config = {sloth, ...}: {
-      app.package = inputs.zen-browser.packages."${system}".default;
+      app.package = inputs.zen-browser.packages.${system}.default;
       app.extraEntrypoints = [
-        "/bin/zen"
         "/bin/zen-beta"
       ];
       flatpak.appId = "app.zen_browser.zen";
@@ -65,6 +71,7 @@ in
             (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/gnupg")
             (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/pcscd")
 
+            (sloth.concat' sloth.xdgConfigHome "/zen")
             (sloth.concat' sloth.homeDir "/.zen")
             (sloth.concat' sloth.homeDir "/Downloads")
             (sloth.concat' sloth.runtimeDir "/bus")
@@ -94,19 +101,22 @@ in
               "float"
             ];
           };
-        in {
-          # LD_PRELOAD = hmPath;
-          GTK_USE_PORTAL = "1";
-          XDG_DATA_DIRS = lib.makeSearchPath "share" [
-            pkgs.shared-mime-info
-            cursorPackage
-            gtkPackage
-          ];
-          XCURSOR_PATH = lib.concatStringsSep ":" [
-            "${cursorPackage}/share/icons"
-            "${cursorPackage}/share/pixmaps"
-          ];
-        };
+        in
+          {
+            GTK_USE_PORTAL = "1";
+            XDG_DATA_DIRS = lib.makeSearchPath "share" [
+              pkgs.shared-mime-info
+              cursorPackage
+              gtkPackage
+            ];
+            XCURSOR_PATH = lib.concatStringsSep ":" [
+              "${cursorPackage}/share/icons"
+              "${cursorPackage}/share/pixmaps"
+            ];
+          }
+          // lib.optionalAttrs useZinkForHardenedMalloc {
+            MESA_LOADER_DRIVER_OVERRIDE = "zink";
+          };
       };
     };
   }
