@@ -100,6 +100,7 @@ in {
       georgia-fonts
       newcomputermodern
       nerd-fonts.jetbrains-mono
+      nerd-fonts.iosevka
     ];
     services = {
       logind = {

@@ -26,7 +26,7 @@
       domain = "codeberg.org";
       owner = "dnkl";
       repo = "foot";
-      rev = rev;
+      inherit rev;
       hash = srcHash;
     };
     patches =
