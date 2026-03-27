@@ -45,7 +45,6 @@ in
   mkWrapper pkgs mpv ''
     wrapProgram $out/bin/mpv \
      --add-flags '--config-dir=${config}' \
-     --add-flags '--hwdec=vaapi-copy' \
      --prefix PATH ":" ${
       lib.makeBinPath [
         pkgs.ffmpeg
