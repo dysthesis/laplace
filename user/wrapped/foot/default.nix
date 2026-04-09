@@ -34,7 +34,7 @@
       ++ [
         (pkgs.fetchpatch {
           url = "https://codeberg.org/dnkl/foot/pulls/2278.patch";
-          hash = "sha256-7M3wI4hu1pWF2DcR4/V1e10i8RI6G1vGcvCvJf4MG9E=";
+          hash = "sha256-I04wNuujkDJWfTz2jCBRDH7iDXGtPtwfr6l/OyxS2bo=";
         })
       ];
     passthru = (old.passthru or {}) // {inherit rev;};
