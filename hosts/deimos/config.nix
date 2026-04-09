@@ -1,6 +1,7 @@
 {
   pkgs,
   inputs,
+  lib,
   ...
 }: {
   imports = [
@@ -60,24 +61,25 @@
         firewall.enable = true;
       };
 
-      # services.llm = {
-      #   enable = true;
-      #   contextSize = 8129;
-      #   modelRegistry = {
-      #     qwen3 = {
-      #       url = "https://huggingface.co/unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF/resolve/main/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf";
-      #       sha256 = lib.fakeHash;
-      #     };
-      #   };
-      #   model = "qwen3";
-      #   # search = {
-      #   #   enable = true;
-      #   #   settings.customOpenAI = {
-      #   #     apiUrl = "http://host.containers.internal:8080";
-      #   #     apiKey = "llama-cpp";
-      #   #   };
-      #   # };
-      # };
+      services.llm = {
+        enable = true;
+        modelRegistry = {
+          "qwen3.5" = {
+            url = "https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF/resolve/main/Qwen3.5-35B-A3B-Q4_K_M.gguf";
+            sha256 = "sha256-O0bRBmvJHMLWE+O8Is5pHdd+bw0zyQYGkNJM5t5JQ3U=";
+          };
+        };
+        contextSize = 8192;
+        model = "qwen3.5";
+        webui.enable = true;
+        search = {
+          enable = true;
+          settings.customOpenAI = {
+            apiUrl = "http://host.containers.internal:8080";
+            apiKey = "llama-cpp";
+          };
+        };
+      };
 
       services.miniflux.enable = true;
 

@@ -194,5 +194,81 @@ in {
         };
       };
     };
+
+    webui = {
+      enable =
+        mkEnableOption
+        "Whether or not to enable Open WebUI for the local llama-cpp service";
+
+      stateDir = mkOption {
+        type = types.path;
+        default = "/var/lib/open-webui";
+        description = "State directory used by Open WebUI";
+      };
+
+      host = mkOption {
+        type = types.str;
+        default = "127.0.0.1";
+        description = "Address on which Open WebUI should listen";
+      };
+
+      port = mkOption {
+        type = types.port;
+        default = 8081;
+        description = "Port exposed by the Open WebUI web service";
+      };
+
+      openFirewall = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Whether to open the firewall for the Open WebUI port";
+      };
+
+      apiUrl = mkOption {
+        type = types.str;
+        default = let
+          host = config.laplace.services.llm.host;
+          resolvedHost =
+            if host == "0.0.0.0"
+            then "127.0.0.1"
+            else if builtins.elem host ["::" "[::]"]
+            then "[::1]"
+            else if lib.hasInfix ":" host && !(lib.hasPrefix "[" host)
+            then "[${host}]"
+            else host;
+        in "http://${resolvedHost}:${toString config.laplace.services.llm.port}/v1";
+        description = "OpenAI-compatible URL Open WebUI should use for llama-cpp (include `/v1`)";
+      };
+
+      apiKey = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Optional API key passed to the OpenAI-compatible llama-cpp endpoint";
+      };
+
+      enableOllama = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Whether to keep the built-in Ollama provider enabled in Open WebUI";
+      };
+
+      modelListTimeout = mkOption {
+        type = types.nullOr types.int;
+        default = 30;
+        description = "Timeout in seconds for fetching provider model lists in Open WebUI";
+      };
+
+      environment = mkOption {
+        type = types.attrsOf types.str;
+        default = {};
+        description = "Additional environment variables passed to Open WebUI";
+      };
+
+      environmentFile = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = "Optional environment file with extra Open WebUI settings or secrets";
+      };
+    };
   };
 }
