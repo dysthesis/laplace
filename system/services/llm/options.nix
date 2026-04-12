@@ -76,6 +76,52 @@ in {
       description = "Context size of llama-cpp";
     };
 
+    embedding = {
+      enable =
+        mkEnableOption
+        "Whether or not to run a dedicated llama-cpp embedding server";
+
+      model = mkOption {
+        type =
+          types.enum
+          (builtins.attrNames config.laplace.services.llm.modelRegistry);
+
+        default = config.laplace.services.llm.model;
+
+        description = "Which model to use for embeddings";
+      };
+
+      host = mkOption {
+        type = types.str;
+        default = config.laplace.services.llm.host;
+        description = "Address on which the embedding llama-cpp server should listen";
+      };
+
+      port = mkOption {
+        type = types.port;
+        default = 8082;
+        description = "Port exposed by the embedding llama-cpp server";
+      };
+
+      openFirewall = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Whether to open the firewall for the embedding llama-cpp port";
+      };
+
+      extraFlags = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        example = [
+          "--pooling"
+          "cls"
+          "--ubatch-size"
+          "8192"
+        ];
+        description = "Additional flags passed to the embedding llama-cpp server";
+      };
+    };
+
     search = {
       enable =
         mkEnableOption
