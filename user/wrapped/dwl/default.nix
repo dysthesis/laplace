@@ -290,21 +290,31 @@ in
     ];
     inherit configSpec;
     autostart = let
-      inherit (lib) fold;
-      # Build wlr-randr argument list from configured monitors
-      wlrRandrArgs =
-        fold (
-          curr: acc:
-            acc
-            ++ [
+      # Build wlr-randr argument list from configured monitors.
+      # Preserve source order and forward explicit positions so wlroots doesn't
+      # fall back to auto-layout.
+      wlrRandrArgs = builtins.concatLists (
+        map (
+          curr:
+            [
               "--output"
               curr.name
+            ]
+            ++ lib.optionals curr.enabled [
+              "--on"
               "--mode"
               "${toString curr.width}x${toString curr.height}@${toString
                 curr.refreshRate}Hz"
             ]
-        ) []
-        config.laplace.hardware.monitors;
+            ++ lib.optionals (
+              curr.enabled && curr.pos.x != null && curr.pos.y != null
+            ) [
+              "--pos"
+              "${toString curr.pos.x},${toString curr.pos.y}"
+            ]
+            ++ lib.optionals (!curr.enabled) ["--off"]
+        ) config.laplace.hardware.monitors
+      );
       # Command vectors (argv)
       wlsunsetCmd = [
         "${pkgs.wlsunset}/bin/wlsunset"
