@@ -12,6 +12,8 @@ in {
     environment.sessionVariables = {
       BROWSER = lib.getExe pkgs.configured.zen;
       EDITOR = lib.getExe inputs.poincare.packages.${system}.default;
+      GH_TELEMETRY = "false";
+      DO_NOT_TRACK = "true";
     };
     boot.binfmt.emulatedSystems =
       if (config.nixpkgs.system != "aarch64-linux")
