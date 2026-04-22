@@ -65,7 +65,6 @@ in {
           unstable.tealdeer
           unstable.gh
           configured.bibiman
-          # (unstable.openai-whisper.override {triton = null;})
           configured.bmm
           configured.helix
         ];
@@ -121,7 +120,9 @@ in {
         applications = with pkgs; [
           unstable.zotero
           signal-desktop
-          prismlauncher
+          (unstable.prismlauncher.override {
+            jdks = with pkgs; [zulu25 jdk21 jdk17 jdk8];
+          })
           unstable.tor-browser
           tigervnc
           obsidian
@@ -138,10 +139,11 @@ in {
             spotify-player
             mpv
             neomutt
+            inputs.helium.packages.${pkgs.system}.default
           ]
           ++ (with pkgs.unstable; [
             vesktop
-            pkgs.configured.zen
+            zen
           ]);
 
         productivity = with pkgs.configured; [

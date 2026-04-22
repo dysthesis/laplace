@@ -55,7 +55,8 @@ in {
             "steam"
             "steam-unwrapped"
           ];
-        rocmSupport = true;
+
+        rocmSupport = builtins.elem "amd" config.laplace.hardware.gpu;
       };
       overlays = [
         inputs.emacs.overlays.default

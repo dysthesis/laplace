@@ -15,7 +15,7 @@
         # Keep malloc hardening enabled here. Zen already ships with
         # --enable-replace-malloc, but on this AMD laptop it still needs the
         # wrapper-side Zink workaround in user/wrapped/zen.
-        "malloc"
+        # "malloc"
       ];
       profiles = ["desktop"];
       hardware = {
