@@ -42,8 +42,8 @@
         dnscrypt-proxy.enable = true;
         wifi.enable = true;
         tor = {
-          enable = true;
-          libera-chat-map.enable = true;
+          enable = false;
+          libera-chat-map.enable = false;
         };
       };
 
