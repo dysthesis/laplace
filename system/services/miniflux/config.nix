@@ -259,6 +259,7 @@ in {
         LISTEN_ADDR = "127.0.0.1:8087";
         BASE_URL = "http://localhost:8085";
         CLEANUP_FREQUENCY = "168";
+        FETCHER_ALLOW_PRIVATE_NETWORKS = "1";
       };
       adminCredentialsFile = config.sops.secrets.miniflux_admin.path;
     };
@@ -266,7 +267,7 @@ in {
     virtualisation.oci-containers.containers."full-text-rss" = {
       autoStart = true;
       image = "heussd/fivefilters-full-text-rss:latest";
-      ports = ["7756:80"];
+      ports = ["127.0.0.1:7756:80"];
     };
 
     laplace.docker.enable = true;
@@ -283,6 +284,7 @@ in {
         proxy_set_header X-Forwarded-Host $host;
         proxy_set_header Connection "";
       '';
+
       virtualHosts."localhost" = {
         listen = [
           {
