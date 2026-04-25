@@ -145,6 +145,16 @@
             ;
         }
       );
+      zotero = guiPackage (
+        callPackage ./zotero {
+          inherit
+            lib
+            pkgs
+            config
+            inputs
+            ;
+        }
+      );
       vesktop = guiPackage (
         callPackage ./vesktop {
           inherit
