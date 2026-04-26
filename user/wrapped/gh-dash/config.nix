@@ -1,4 +1,8 @@
-_: {
+{
+  lib,
+  delta,
+  ...
+}: {
   confirmQuit = false;
   defaults = {
     issuesLimit = 20;
@@ -12,10 +16,7 @@ _: {
       };
     };
     notificationsLimit = 20;
-    preview = {
-      open = true;
-      width = 0.45;
-    };
+    preview.open = true;
     prsLimit = 20;
     refetchIntervalMinutes = 5;
     view = "prs";
@@ -28,7 +29,7 @@ _: {
     }
     {
       filters = "is:open assignee:@me";
-      title = "Assigned";
+      title = "Assigned to Me";
     }
     {
       filters = "is:open involves:@me -author:@me";
@@ -60,13 +61,6 @@ _: {
         key = "O";
       }
     ];
-    universal = [
-      {
-        command = "cd {{.RepoPath}} && lazygit";
-        key = "g";
-        name = "lazygit";
-      }
-    ];
   };
   notificationsSections = [
     {
@@ -90,7 +84,7 @@ _: {
       title = "Assigned";
     }
   ];
-  pager = {diff = "less";};
+  pager.diff = "${lib.getExe delta}";
   prSections = [
     {
       filters = "is:open author:@me sort:updated-desc";

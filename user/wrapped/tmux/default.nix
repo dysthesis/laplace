@@ -4,7 +4,12 @@
   ...
 }:
 inputs.daedalus.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
-  inherit (pkgs.configured) jjui gh-dash;
+  inherit
+    (pkgs.configured)
+    jjui
+    gh-dash
+    ;
+
   inherit (pkgs.unstable) fzf;
   shell = "${pkgs.configured.fish}/bin/fish";
   targets = [
