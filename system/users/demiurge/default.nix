@@ -154,6 +154,7 @@ in {
           taskwarrior-tui
           zk
           pass
+          gh-dash
         ];
 
         misc = with pkgs.configured;
