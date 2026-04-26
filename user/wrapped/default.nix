@@ -13,7 +13,8 @@
     guiPackage = package: package.config.env;
   in {
     configured = rec {
-      gh-dash = callPackage ./gh-dash {inherit pkgs lib;};
+      delta = callPackage ./delta {inherit pkgs lib;};
+      gh-dash = callPackage ./gh-dash {inherit pkgs lib delta;};
       direnv = callPackage ./direnv {
         inherit pkgs lib;
         inherit (pkgs.unstable) direnv;
