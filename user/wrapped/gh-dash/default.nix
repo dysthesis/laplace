@@ -2,10 +2,11 @@
   pkgs,
   lib,
   gh-dash,
+  delta,
   ...
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
-  config = import ./config.nix {};
+  config = import ./config.nix {inherit lib delta;};
   configFile = pkgs.writers.writeYAML "config.yml" config;
 in
   mkWrapper pkgs gh-dash

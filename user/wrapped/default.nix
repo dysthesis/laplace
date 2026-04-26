@@ -6,7 +6,7 @@
   config,
   ...
 }: let
-  inherit (pkgs) callPackage;
+  inherit (pkgs.unstable) callPackage;
   inherit (lib) makeOverridable;
   system = pkgs.stdenv.hostPlatform.system;
   overlay = _final: _prev: let
