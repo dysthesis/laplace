@@ -59,7 +59,6 @@ in {
         rocmSupport = builtins.elem "amd" config.laplace.hardware.gpu;
       };
       overlays = [
-        inputs.emacs.overlays.default
         (_self: super: {
           ccacheWrapper = super.ccacheWrapper.override {
             extraConfig = ''
