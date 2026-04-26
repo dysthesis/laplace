@@ -1,6 +1,7 @@
 {
   lib,
   delta,
+  gh,
   ...
 }: {
   confirmQuit = false;
@@ -59,6 +60,18 @@
       {
         builtin = "checkout";
         key = "O";
+      }
+      {
+        command = "${lib.getExe gh} pr create --editor";
+        key = "C";
+        name = "Create a new PR";
+      }
+    ];
+    issues = [
+      {
+        command = "${lib.getExe gh} issue create --editor";
+        key = "C";
+        name = "Create a new issue";
       }
     ];
   };
