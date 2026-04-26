@@ -313,7 +313,8 @@ in
               "${toString curr.pos.x},${toString curr.pos.y}"
             ]
             ++ lib.optionals (!curr.enabled) ["--off"]
-        ) config.laplace.hardware.monitors
+        )
+        config.laplace.hardware.monitors
       );
       # Command vectors (argv)
       wlsunsetCmd = [

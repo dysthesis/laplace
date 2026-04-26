@@ -10,6 +10,26 @@
     mkIf
     ;
 
+  minifluxPackage = pkgs.miniflux.overrideAttrs (old: {
+    postPatch =
+      (old.postPatch or "")
+      + ''
+        substituteInPlace internal/template/functions.go \
+          --replace-fail $'"require-trusted-types-for": "\'script\'",' "" \
+          --replace-fail $'"style-src":                 "\'nonce-" + nonce + "\'",' $'"style-src":                 "\'self\' \'nonce-" + nonce + "\'",' \
+          --replace-fail '"trusted-types":             "html url",' $'"style-src-attr":            "\'unsafe-inline\'",\n\t\t"font-src":                  "\'self\'",\n\t\t"trusted-types":             "html url miniflux-enhancements",' \
+          --replace-fail 'if user != nil {' $'if user == nil || user.CustomJS == "" {\n\t\tpolicies["require-trusted-types-for"] = "\'script\'"\n\t}\n\n\tif user != nil {' \
+          --replace-fail 'policies["font-src"] = user.ExternalFontHosts' 'policies["font-src"] += " " + user.ExternalFontHosts'
+
+        substituteInPlace internal/template/functions_test.go \
+          --replace-fail $'`style-src \'nonce-1234\';`' $'`style-src \'self\' \'nonce-1234\';`' \
+          --replace-fail $'`style-src \'nonce-1234\' test.com;`' $'`style-src \'self\' \'nonce-1234\' test.com;`' \
+          --replace-fail '`trusted-types html url;`' '`trusted-types html url miniflux-enhancements;`' \
+          --replace-fail $'\t\t`require-trusted-types-for \'script\';`,\n' "" \
+          --replace-fail '`font-src test.com;`' $'`font-src \'self\' test.com;`'
+      '';
+  });
+
   # KaTeX assets and bootstrap script that stay in the Nix store.
   katexInit =
     pkgs.writeText "miniflux-katex-init.js"
@@ -202,52 +222,6 @@
     cp ${highlightJsCss} "$out/styles/default.min.css"
     cp ${highlightInit} "$out"/miniflux-init.js
   '';
-
-  bootstrapMarker = "/var/lib/miniflux/.assets-bootstrap-done";
-  assetsBootstrap = pkgs.writeShellScript "miniflux-assets-bootstrap" ''
-        set -euo pipefail
-
-        if [ -e "${bootstrapMarker}" ]; then
-          exit 0
-        fi
-
-        # Skip quietly if the database hasn't been created yet.
-        if ! ${config.services.postgresql.package}/bin/psql -Atqc "select 1" miniflux >/dev/null 2>&1; then
-          echo "miniflux database not ready; skipping assets bootstrap for now" >&2
-          exit 0
-        fi
-
-        # Ensure the users table exists before attempting to mutate preferences.
-        if ! ${config.services.postgresql.package}/bin/psql -Atqc "select to_regclass('public.users')" miniflux | grep -q users; then
-          echo "miniflux users table not ready; skipping assets bootstrap for now" >&2
-          exit 0
-        fi
-
-        ${config.services.postgresql.package}/bin/psql -v ON_ERROR_STOP=1 miniflux <<'SQL'
-    WITH desired AS (
-      SELECT
-        $$(function(){var s=document.createElement('script');s.src='/katex/miniflux-init.js';document.head.appendChild(s);var h=document.createElement('script');h.src='/highlight/miniflux-init.js';document.head.appendChild(h);})();$$ AS js,
-        $$'self'$$ AS fonts,
-        $$ $$ AS empty
-    )
-    UPDATE users AS u
-    SET
-      external_font_hosts = CASE
-        WHEN COALESCE(NULLIF(u.external_font_hosts, desired.empty), desired.empty) = desired.empty THEN desired.fonts
-        ELSE u.external_font_hosts
-      END,
-      custom_js = CASE
-        WHEN COALESCE(NULLIF(u.custom_js, desired.empty), desired.empty) = desired.empty THEN desired.js
-        ELSE u.custom_js
-      END
-    FROM desired
-    WHERE COALESCE(NULLIF(u.external_font_hosts, desired.empty), desired.empty) = desired.empty
-       OR COALESCE(NULLIF(u.custom_js, desired.empty), desired.empty) = desired.empty;
-    SQL
-
-        mkdir -p "$(dirname "${bootstrapMarker}")"
-        touch "${bootstrapMarker}"
-  '';
 in {
   config = mkIf cfg {
     # Tell sops-nix that this should be found in the default sops file.
@@ -255,6 +229,7 @@ in {
 
     services.miniflux = {
       enable = true;
+      package = minifluxPackage;
       config = {
         LISTEN_ADDR = "127.0.0.1:8087";
         BASE_URL = "http://localhost:8085";
@@ -312,22 +287,6 @@ in {
             '';
           };
         };
-      };
-    };
-
-    systemd.services.miniflux-assets-bootstrap = {
-      description = "Seed Miniflux users with KaTeX and Highlight.js custom JS and font CSP";
-      after = [
-        "miniflux.service"
-        "postgresql.service"
-      ];
-      requires = ["postgresql.service"];
-      wantedBy = ["multi-user.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = assetsBootstrap;
-        User = "postgres";
-        Group = "postgres";
       };
     };
 
