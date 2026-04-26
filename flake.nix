@@ -6,7 +6,6 @@
     nixpressions,
     nixpkgs,
     treefmt-nix,
-    emacs,
     ...
   }: let
     inherit (builtins) mapAttrs;
@@ -21,9 +20,7 @@
       "aarch64-darwin"
     ];
 
-    overlays = [emacs.overlays.default];
-
-    forAllSystems = lib.babel.forAllSystems {inherit systems overlays;};
+    forAllSystems = lib.babel.forAllSystems {inherit systems;};
 
     treefmt =
       forAllSystems
@@ -55,12 +52,6 @@
     nix-ai-tools = {
       url = "github:numtide/nix-ai-tools";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    emacs = {
-      url = "github:nix-community/emacs-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-      inputs.nixpkgs-stable.follows = "nixpkgs";
     };
 
     # Formatter for the whole codebase
@@ -145,12 +136,6 @@
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Personal Nix flake
-    jormungandr = {
-      url = "github:dysthesis/jormungandr";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Secrets management
