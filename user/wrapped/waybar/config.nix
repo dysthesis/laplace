@@ -62,8 +62,8 @@
       "disk"
       "custom/r_end"
       "custom/l_end"
-      "hyprland/workspaces"
-      "hyprland/window"
+      "niri/workspaces"
+      "niri/window"
       "custom/r_end"
       ""
       "custom/padd"
@@ -90,7 +90,7 @@
       "custom/r_end"
       "custom/padd"
     ];
-    "hyprland/window" = {
+    "niri/window" = {
       format = "{}";
       rewrite = {
         "(.*) - Mozilla Thunderbird" = " $1";

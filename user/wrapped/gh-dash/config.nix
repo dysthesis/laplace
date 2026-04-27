@@ -2,6 +2,7 @@
   lib,
   delta,
   gh,
+  writeShellScript,
   ...
 }: {
   confirmQuit = false;
@@ -45,7 +46,21 @@
       title = "Unlabelled";
     }
   ];
-  keybindings = {
+  keybindings = let
+    create-issue =
+      writeShellScript "create-issue"
+      # sh
+      ''
+        ${lib.getExe gh} issue create --editor
+      '';
+
+    create-pr =
+      writeShellScript "create-pr"
+      # sh
+      ''
+        ${lib.getExe gh} pr create --editor
+      '';
+  in {
     notifications = [
       {
         builtin = "markAsDone";
@@ -62,19 +77,20 @@
         key = "O";
       }
       {
-        command = "${lib.getExe gh} pr create --editor";
-        key = "C";
+        command = "${create-pr}";
+        key = "n";
         name = "Create a new PR";
       }
     ];
     issues = [
       {
-        command = "${lib.getExe gh} issue create --editor";
-        key = "C";
+        command = "${create-issue}";
+        key = "n";
         name = "Create a new issue";
       }
     ];
   };
+
   notificationsSections = [
     {
       filters = "is:unread";
