@@ -13,7 +13,7 @@
 
   monitors = lib.attrByPath ["laplace" "hardware" "monitors"] [] config;
 
-  wallpaper = ../hyprland/config/wallpaper.png;
+  wallpaper = "${../../hyprland/config/wallpaper.png}";
 
   terminalCmd = lib.getExe pkgs.configured.foot;
   launcherCmd = "${pkgs.configured.bemenu}/bin/bemenu-run";
@@ -92,41 +92,29 @@
     name = combo;
     inline = false;
     children = actions;
-    assign = assign;
-    inherit comment;
+    inherit assign comment;
   };
 
   bindActions = [
     (mkBind {
       combo = "Mod+Return";
+      assign = {
+        "hotkey-overlay-title" = "Open a terminal";
+      };
       actions = [
         (mkSpawn {
           command = terminalCmd;
-          assign = {
-            "hotkey-overlay-title" = "Open a terminal";
-          };
         })
       ];
     })
     (mkBind {
-      combo = "Mod+D";
+      combo = "Mod+R";
+      assign = {
+        "hotkey-overlay-title" = "Launch an application";
+      };
       actions = [
         (mkSpawn {
           command = launcherCmd;
-          assign = {
-            "hotkey-overlay-title" = "Launch an application";
-          };
-        })
-      ];
-    })
-    (mkBind {
-      combo = "Super+Alt+L";
-      actions = [
-        (mkSpawn {
-          command = lockerCmd;
-          assign = {
-            "hotkey-overlay-title" = "Lock the screen";
-          };
         })
       ];
     })
@@ -176,6 +164,54 @@
       actions = [
         (mkInlineAction {name = "focus-window-up";})
       ];
+    })
+    (mkBind {
+      combo = "Mod+A";
+      actions = [
+        (mkInlineAction {name = "consume-window-into-column";})
+      ];
+    })
+    (mkBind {
+      combo = "Mod+D";
+      actions = [
+        (mkInlineAction {name = "expel-window-from-column";})
+      ];
+    })
+    (mkBind {
+      combo = "Mod+Shift+H";
+      actions = [(mkInlineAction {name = "move-column-left";})];
+    })
+    (mkBind {
+      combo = "Mod+Shift+L";
+      actions = [(mkInlineAction {name = "move-column-right";})];
+    })
+    (mkBind {
+      combo = "Mod+Shift+J";
+      actions = [(mkInlineAction {name = "move-window-down";})];
+    })
+    (mkBind {
+      combo = "Mod+Shift+K";
+      actions = [(mkInlineAction {name = "move-window-up";})];
+    })
+    (mkBind {
+      combo = "Mod+Comma";
+      actions = [(mkInlineAction {name = "focus-monitor-left";})];
+    })
+    (mkBind {
+      combo = "Mod+Period";
+      actions = [(mkInlineAction {name = "focus-monitor-right";})];
+    })
+    (mkBind {
+      combo = "Mod+W";
+      actions = [(mkInlineAction {name = "toggle-column-tabbed-display";})];
+    })
+    (mkBind {
+      combo = "Mod+F";
+      actions = [(mkInlineAction {name = "maximize-column;";})];
+    })
+    (mkBind {
+      combo = "Mod+Shift+F";
+      actions = [(mkInlineAction {name = "fullscreen-window";})];
     })
     (mkBind {
       combo = "Mod+Page_Down";
@@ -271,7 +307,7 @@
         mode = formatMode monitor;
       }
       // lib.optionalAttrs (monitor ? scale) {
-        scale = monitor.scale;
+        inherit (monitor) scale;
       }
       // lib.optionalAttrs
       (
@@ -299,7 +335,7 @@
   in {
     name = "output";
     args = [name];
-    body = body;
+    inherit body;
   };
 
   outputs = map mkOutput monitors;
@@ -321,15 +357,21 @@
         name = "cursor";
         body = {
           "xcursor-theme" = "Bibata-Modern-Classic";
-          "xcursor-size" = 28;
+          "xcursor-size" = 18;
           "hide-after-inactive-ms" = 1250;
         };
       })
       (KDL.block {
         name = "input";
         body = {
+          "focus-follows-mouse" = true;
           keyboard = {
             numlock = true;
+          };
+          mouse = {
+            "natural-scroll" = true;
+            "accel-speed" = 0.2;
+            "accel-profile" = "flat";
           };
           touchpad = {
             tap = true;
@@ -348,7 +390,7 @@
       (KDL.block {
         name = "layout";
         body = {
-          gaps = 12;
+          gaps = 8;
           "center-focused-column" = "on-overflow";
           "always-center-single-column" = true;
           "preset-column-widths" = {
@@ -367,9 +409,9 @@
           };
           "focus-ring" = {
             body = {
-              width = 4;
-              "active-color" = "#7fc8ff";
-              "inactive-color" = "#4c566a";
+              width = 1.5;
+              "active-color" = "#ffffff";
+              "inactive-color" = "#0f0f0f";
             };
           };
         };
@@ -389,6 +431,6 @@
     ++ outputs
     ++ spawnAtStartup;
 
-  serialized = KDL.render configTree;
+  serialised = KDL.render configTree;
 in
-  pkgs.writeText "niri-config.kdl" serialized
+  pkgs.writeText "niri-config.kdl" serialised

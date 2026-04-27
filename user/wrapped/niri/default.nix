@@ -12,8 +12,7 @@
 in
   mkWrapper pkgs niri ''
     wrapProgram $out/bin/niri \
-      --set NIRI_CONFIG ${configPath} \
-      --add-flags "--config ${configPath}"
+      --set NIRI_CONFIG ${configPath}
     if [ -x "$out/bin/niri-session" ]; then
       wrapProgram $out/bin/niri-session \
         --set NIRI_CONFIG ${configPath}

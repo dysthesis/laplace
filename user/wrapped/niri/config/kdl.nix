@@ -11,17 +11,10 @@
 
   indentUnit = "  ";
 
-  escapeString = str: let
-    replacements = {
-      "\"" = "\\\"";
-      "\\" = "\\\\";
-      "\n" = "\\n";
-      "\r" = "\\r";
-      "\t" = "\\t";
-    };
-    chars = lib.stringToCharacters str;
-  in
-    lib.concatMapStrings (c: lib.attrByPath [c] c replacements) chars;
+  escapeString =
+    builtins.replaceStrings
+    ["\\" "\"" "\n" "\r" "\t"]
+    ["\\\\" "\\\"" "\\n" "\\r" "\\t"];
 
   renderValue = value:
     if builtins.isBool value
@@ -97,11 +90,14 @@
       spec =
         value
         // {
-          name = lib.attrByPath ["__name"] (lib.attrByPath ["name"] name value) value;
+          name =
+            lib.attrByPath
+            ["__name"]
+            (lib.attrByPath ["name"] name value)
+            value;
         };
     in [
-      normaliseNode
-      spec
+      (normaliseNode spec)
     ]
     else if builtins.isBool value
     then
@@ -138,15 +134,35 @@
         then spec.__name
         else throw "KDL node is missing a name";
 
-      inline = lib.attrByPath ["inline"] (lib.attrByPath ["__inline"] false spec) spec;
+      inline =
+        lib.attrByPath
+        ["inline"]
+        (lib.attrByPath ["__inline"] false spec)
+        spec;
 
       args = lib.attrByPath ["args"] (lib.attrByPath ["__args"] [] spec) spec;
-      assignments = lib.attrByPath ["assign"] (lib.attrByPath ["__assign"] {} spec) spec;
-      userBody = lib.attrByPath ["body"] (lib.attrByPath ["__body"] {} spec) spec;
-      comment = lib.attrByPath ["comment"] (lib.attrByPath ["__comment"] null spec) spec;
+      assignments =
+        lib.attrByPath
+        ["assign"]
+        (lib.attrByPath ["__assign"] {} spec)
+        spec;
+      userBody =
+        lib.attrByPath
+        ["body"]
+        (lib.attrByPath ["__body"] {} spec)
+        spec;
+      comment =
+        lib.attrByPath
+        ["comment"]
+        (lib.attrByPath ["__comment"] null spec)
+        spec;
       extraBody = builtins.removeAttrs spec specialKeys;
       childrenFromBody = bodyToNodes (userBody // extraBody);
-      rawChildren = lib.attrByPath ["children"] (lib.attrByPath ["__children"] [] spec) spec;
+      rawChildren =
+        lib.attrByPath
+        ["children"]
+        (lib.attrByPath ["__children"] [] spec)
+        spec;
       childNodes = childrenFromBody ++ map normaliseNode rawChildren;
     in {
       inherit
@@ -195,6 +211,9 @@ in {
     __body = body;
     __children = children;
   };
-  render = nodes: nodes |> normaliseNodes |> concatMapStringsSep "" (renderNode 0);
+  render = nodes:
+    nodes
+    |> normaliseNodes
+    |> concatMapStringsSep "" (renderNode 0);
   inherit renderNode;
 }

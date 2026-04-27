@@ -30,5 +30,6 @@ pkgs.mkShell {
     shfmt
     shellcheck
     mergiraf
+    defuddle-cli
   ];
 }

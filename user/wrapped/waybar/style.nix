@@ -22,7 +22,7 @@
   rawScale = baselineH / (primaryMonitor.height or baselineH);
   scale = clamp 0.6 1.2 rawScale;
 
-  baseSize = 9.0;
+  baseSize = 10.0;
   baseMargin = 3.0;
   basePadS = 3.0;
   basePadM = 4.0;
@@ -104,7 +104,8 @@ in
         transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
     }
 
-    #workspaces button.active {
+    #workspaces button.active,
+    #workspaces button.focused {
         background: @wb-act-bg;
         color: @wb-act-color;
         margin-left: ${toString margin}px;

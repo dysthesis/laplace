@@ -2,19 +2,15 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
   inherit (builtins) elem;
-  inherit (lib) optionalString getExe';
-  system = pkgs.stdenv.hostPlatform.system;
+  inherit (lib) getExe' optionalString;
 
   configuration = let
     startWayland = ''
-      exec $(${
-        getExe' inputs.status.packages.${system}.default "status"
-      } | ${lib.getExe pkgs.configured.dwl})
+      exec ${getExe' pkgs.configured.niri "niri-session"}
     '';
     startXorg = "exec ${pkgs.configured.xinit}/bin/startx";
     startDisplay =
