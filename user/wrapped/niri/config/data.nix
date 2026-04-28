@@ -72,9 +72,22 @@
 
   preferNoCsd = true;
 
+  blur = {
+    passes = 3;
+    offset = 3.0;
+    noise = 0.02;
+    saturation = 1.5;
+  };
+
   hotkeyOverlay.hideNotBound = true;
 
   windowRules = [
+    {
+      matches = [
+        {appId = "^foot$";}
+      ];
+      backgroundEffect.blur = true;
+    }
     {
       matches = [
         {title = "^Picture-in-Picture$";}
@@ -100,7 +113,7 @@
         {isFloating = true;}
       ];
       drawBorderWithBackground = false;
-      geometryCornerRadius = 12;
+      geometryCornerRadius = 8;
       clipToGeometry = true;
     }
     {
@@ -320,6 +333,24 @@
         {
           type = "action";
           name = "focus-monitor-right";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+Comma";
+      actions = [
+        {
+          type = "action";
+          name = "move-window-to-monitor-left";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+Period";
+      actions = [
+        {
+          type = "action";
+          name = "move-window-to-monitor-right";
         }
       ];
     }

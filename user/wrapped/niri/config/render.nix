@@ -156,6 +156,45 @@
       };
     };
 
+  renderBlur = blur:
+    KDL.block {
+      name = "blur";
+      children =
+        optionals (blur.off or false) [
+          (KDL.statement {name = "off";})
+        ]
+        ++ optionals (blur ? passes) [
+          (renderArgProperty "passes" blur.passes)
+        ]
+        ++ optionals (blur ? offset) [
+          (renderArgProperty "offset" blur.offset)
+        ]
+        ++ optionals (blur ? noise) [
+          (renderArgProperty "noise" blur.noise)
+        ]
+        ++ optionals (blur ? saturation) [
+          (renderArgProperty "saturation" blur.saturation)
+        ];
+    };
+
+  renderBackgroundEffect = effect:
+    KDL.block {
+      name = "background-effect";
+      children =
+        optionals (effect ? xray) [
+          (renderBoolProperty "xray" effect.xray)
+        ]
+        ++ optionals (effect ? blur) [
+          (renderBoolProperty "blur" effect.blur)
+        ]
+        ++ optionals (effect ? noise) [
+          (renderArgProperty "noise" effect.noise)
+        ]
+        ++ optionals (effect ? saturation) [
+          (renderArgProperty "saturation" effect.saturation)
+        ];
+    };
+
   renderMatcher = nodeName: matcher:
     KDL.statement {
       name = nodeName;
@@ -278,6 +317,9 @@
         ]
         ++ optionals (rule ? tiledState) [
           (renderBoolProperty "tiled-state" rule.tiledState)
+        ]
+        ++ optionals (rule ? backgroundEffect) [
+          (renderBackgroundEffect rule.backgroundEffect)
         ];
     };
 
@@ -312,6 +354,9 @@
     ]
     ++ optionals (model ? hotkeyOverlay) [
       (renderHotkeyOverlay model.hotkeyOverlay)
+    ]
+    ++ optionals (model ? blur) [
+      (renderBlur model.blur)
     ]
     ++ optionals model.preferNoCsd [
       (KDL.statement {name = "prefer-no-csd";})

@@ -31,6 +31,7 @@ in
     tweak.ligatures = "yes";
     colors-dark = {
       background = "000000";
+      alpha = "0.75";
       foreground = "ffffff";
       regular0 = "080808";
       regular1 = "d70000";
