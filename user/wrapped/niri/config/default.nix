@@ -21,6 +21,7 @@
       swaybg = lib.getExe pkgs.swaybg;
       wlsunset = lib.getExe pkgs.wlsunset;
       brightnessctl = lib.getExe pkgs.brightnessctl;
+      locker = lib.getExe pkgs.configured.swaylock;
       xwaylandSatellite = lib.getExe pkgs.xwayland-satellite;
       wallpaper = "${../../hyprland/config/wallpaper.png}";
     };

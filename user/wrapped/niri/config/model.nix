@@ -23,6 +23,8 @@ in {
         screenshotPath
         layout
         preferNoCsd
+        hotkeyOverlay
+        windowRules
         ;
       xwaylandSatellite = context.deps.xwaylandSatellite;
     };

@@ -1,5 +1,5 @@
 {lib, ...}: let
-  inherit (lib) concatStringsSep optionalAttrs optionals unique;
+  inherit (lib) attrByPath concatStringsSep optionalAttrs optionals unique;
 
   lookup = attrs: name:
     if builtins.hasAttr name attrs
@@ -49,8 +49,8 @@ in rec {
     then {
       type = "action";
       inherit (action) name;
-      args = action.args or [];
-      options = action.options or {};
+      args = attrByPath ["args"] [] action;
+      options = attrByPath ["options"] {} action;
     }
     else throw "Unsupported Niri action type: ${action.type}";
 
@@ -115,11 +115,7 @@ in rec {
     base + suffix;
 
   monitorName = monitor:
-    if monitor ? name
-    then monitor.name
-    else if monitor ? connector
-    then monitor.connector
-    else "eDP-1";
+    monitor.name or (monitor.connector or "eDP-1");
 
   monitorPosition = monitor:
     if
@@ -135,14 +131,11 @@ in rec {
 
   monitorToOutput = monitor: {
     name = monitorName monitor;
-    enabled = monitor.enabled or true;
+    enabled = attrByPath ["enabled"] true monitor;
     mode = formatMode monitor;
     position = monitorPosition monitor;
-    scale =
-      if monitor ? scale
-      then monitor.scale
-      else null;
-    variableRefreshRate = monitor.variableRefreshRate or false;
+    scale = attrByPath ["scale"] null monitor;
+    variableRefreshRate = attrByPath ["variableRefreshRate"] false monitor;
     focusAtStartup = monitor.primary or false;
   };
 

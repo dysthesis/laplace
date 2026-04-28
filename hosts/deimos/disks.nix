@@ -44,7 +44,7 @@ in {
                     "autodefrag"
                   ];
                 in
-                  mapAttrs (_name: value: value // {mountOptions = mountOptions ++ [];}) {
+                  mapAttrs (_name: value: value // {inherit mountOptions;}) {
                     "@persist".mountpoint = "/nix/persist";
                     "@home".mountpoint = "/home";
                   }

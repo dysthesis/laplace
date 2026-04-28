@@ -3,14 +3,27 @@
 
   KDL = import ./kdl.nix {inherit lib;};
 
-  renderCursor = cursor: {
-    "xcursor-theme" = cursor.xcursorTheme;
-    "xcursor-size" = cursor.xcursorSize;
-    "hide-after-inactive-ms" = cursor.hideAfterInactiveMs;
-  };
+  renderFlagOrAssign = flag:
+    if builtins.isAttrs flag
+    then {
+      inline = true;
+      assign = flag;
+    }
+    else flag;
+
+  renderCursor = cursor:
+    {
+      "xcursor-theme" = cursor.xcursorTheme;
+      "xcursor-size" = cursor.xcursorSize;
+      "hide-after-inactive-ms" = cursor.hideAfterInactiveMs;
+    }
+    // optionalAttrs (cursor.hideWhenTyping or false) {
+      "hide-when-typing" = true;
+    };
 
   renderInput = input: {
-    "focus-follows-mouse" = input.focusFollowsMouse;
+    "focus-follows-mouse" = renderFlagOrAssign input.focusFollowsMouse;
+    "workspace-auto-back-and-forth" = input.workspaceAutoBackAndForth or false;
     keyboard = {
       numlock = input.keyboard.numlock;
     };
@@ -21,7 +34,9 @@
     };
     touchpad = {
       tap = input.touchpad.tap;
+      dwt = input.touchpad.dwt or false;
       "natural-scroll" = input.touchpad.naturalScroll;
+      "disabled-on-external-mouse" = input.touchpad.disabledOnExternalMouse or false;
       "click-method" = {
         inline = true;
         args = [input.touchpad.clickMethod];
@@ -29,24 +44,51 @@
     };
   };
 
-  renderLayout = layout: {
-    gaps = layout.gaps;
-    "center-focused-column" = layout.centerFocusedColumn;
-    "always-center-single-column" = layout.alwaysCenterSingleColumn;
-    "preset-column-widths" = {
-      body.proportion = layout.presetColumnWidths.proportions;
-    };
-    "default-column-width" = {
-      body.proportion = layout.defaultColumnWidth.proportion;
-    };
-    "focus-ring" = {
-      body = {
-        width = layout.focusRing.width;
-        "active-color" = layout.focusRing.activeColor;
-        "inactive-color" = layout.focusRing.inactiveColor;
+  renderLayout = layout:
+    {
+      inherit (layout) gaps;
+      "center-focused-column" = layout.centerFocusedColumn;
+      "always-center-single-column" = layout.alwaysCenterSingleColumn;
+      "empty-workspace-above-first" = layout.emptyWorkspaceAboveFirst or false;
+      "preset-column-widths" = {
+        body.proportion = layout.presetColumnWidths.proportions;
+      };
+      "default-column-width" = {
+        body.proportion = layout.defaultColumnWidth.proportion;
+      };
+      "focus-ring" = {
+        body = {
+          width = layout.focusRing.width;
+          "active-color" = layout.focusRing.activeColor;
+          "inactive-color" = layout.focusRing.inactiveColor;
+        };
+      };
+    }
+    // optionalAttrs (layout ? presetWindowHeights) {
+      "preset-window-heights" = {
+        body.proportion = layout.presetWindowHeights.proportions;
+      };
+    }
+    // optionalAttrs (layout ? tabIndicator) {
+      "tab-indicator" = {
+        body = {
+          "hide-when-single-tab" = layout.tabIndicator.hideWhenSingleTab or false;
+          "place-within-column" = layout.tabIndicator.placeWithinColumn or false;
+          gap = layout.tabIndicator.gap;
+          width = layout.tabIndicator.width;
+          length = {
+            inline = true;
+            assign."total-proportion" = layout.tabIndicator.lengthTotalProportion;
+          };
+          position = layout.tabIndicator.position;
+          "gaps-between-tabs" = layout.tabIndicator.gapsBetweenTabs;
+          "corner-radius" = layout.tabIndicator.cornerRadius;
+          "active-color" = layout.tabIndicator.activeColor;
+          "inactive-color" = layout.tabIndicator.inactiveColor;
+          "urgent-color" = layout.tabIndicator.urgentColor;
+        };
       };
     };
-  };
 
   renderAction = action:
     if action.type == "spawn"
@@ -65,7 +107,7 @@
     then
       KDL.statement {
         inherit (action) name;
-        args = action.args;
+        inherit (action) args;
         assign = action.options;
       }
     else throw "Unsupported resolved Niri action type: ${action.type}";
@@ -86,7 +128,7 @@
         then {off = true;}
         else
           {
-            mode = output.mode;
+            inherit (output) mode;
           }
           // optionalAttrs (output.scale != null) {
             inherit (output) scale;
@@ -103,6 +145,140 @@
           // optionalAttrs output.focusAtStartup {
             "focus-at-startup" = true;
           };
+    };
+
+  renderHotkeyOverlay = hotkeyOverlay:
+    KDL.block {
+      name = "hotkey-overlay";
+      body = {
+        "skip-at-startup" = hotkeyOverlay.skipAtStartup or false;
+        "hide-not-bound" = hotkeyOverlay.hideNotBound or false;
+      };
+    };
+
+  renderMatcher = nodeName: matcher:
+    KDL.statement {
+      name = nodeName;
+      assign =
+        optionalAttrs (matcher ? title) {inherit (matcher) title;}
+        // optionalAttrs (matcher ? appId) {
+          "app-id" = matcher.appId;
+        }
+        // optionalAttrs (matcher ? isActive) {
+          "is-active" = matcher.isActive;
+        }
+        // optionalAttrs (matcher ? isFocused) {
+          "is-focused" = matcher.isFocused;
+        }
+        // optionalAttrs (matcher ? isActiveInColumn) {
+          "is-active-in-column" = matcher.isActiveInColumn;
+        }
+        // optionalAttrs (matcher ? isFloating) {
+          "is-floating" = matcher.isFloating;
+        }
+        // optionalAttrs (matcher ? isWindowCastTarget) {
+          "is-window-cast-target" = matcher.isWindowCastTarget;
+        }
+        // optionalAttrs (matcher ? isUrgent) {
+          "is-urgent" = matcher.isUrgent;
+        }
+        // optionalAttrs (matcher ? atStartup) {
+          "at-startup" = matcher.atStartup;
+        };
+    };
+
+  renderDimension = name: dimension:
+    KDL.block {
+      inherit name;
+      body =
+        optionalAttrs (dimension ? fixed) {inherit (dimension) fixed;}
+        // optionalAttrs (dimension ? proportion) {inherit (dimension) proportion;};
+    };
+
+  renderBoolProperty = name: value:
+    KDL.statement {
+      inherit name;
+      args = [value];
+    };
+
+  renderArgProperty = name: value:
+    KDL.statement {
+      inherit name;
+      args = [value];
+    };
+
+  renderPosition = name: position:
+    KDL.statement {
+      inherit name;
+      assign =
+        {
+          inherit (position) x y;
+        }
+        // optionalAttrs (position ? relativeTo) {
+          "relative-to" = position.relativeTo;
+        };
+    };
+
+  renderWindowRule = rule:
+    KDL.block {
+      name = "window-rule";
+      children =
+        map (renderMatcher "match") (rule.matches or [{}])
+        ++ map (renderMatcher "exclude") (rule.excludes or [])
+        ++ optionals (rule ? defaultColumnWidth) [
+          (renderDimension "default-column-width" rule.defaultColumnWidth)
+        ]
+        ++ optionals (rule ? defaultWindowHeight) [
+          (renderDimension "default-window-height" rule.defaultWindowHeight)
+        ]
+        ++ optionals (rule ? defaultFloatingPosition) [
+          (renderPosition "default-floating-position" rule.defaultFloatingPosition)
+        ]
+        ++ optionals (rule ? openOnOutput) [
+          (renderArgProperty "open-on-output" rule.openOnOutput)
+        ]
+        ++ optionals (rule ? openOnWorkspace) [
+          (renderArgProperty "open-on-workspace" rule.openOnWorkspace)
+        ]
+        ++ optionals (rule ? openMaximized) [
+          (renderBoolProperty "open-maximized" rule.openMaximized)
+        ]
+        ++ optionals (rule ? openMaximizedToEdges) [
+          (renderBoolProperty "open-maximized-to-edges" rule.openMaximizedToEdges)
+        ]
+        ++ optionals (rule ? openFullscreen) [
+          (renderBoolProperty "open-fullscreen" rule.openFullscreen)
+        ]
+        ++ optionals (rule ? openFloating) [
+          (renderBoolProperty "open-floating" rule.openFloating)
+        ]
+        ++ optionals (rule ? openFocused) [
+          (renderBoolProperty "open-focused" rule.openFocused)
+        ]
+        ++ optionals (rule ? blockOutFrom) [
+          (renderArgProperty "block-out-from" rule.blockOutFrom)
+        ]
+        ++ optionals (rule ? variableRefreshRate) [
+          (renderBoolProperty "variable-refresh-rate" rule.variableRefreshRate)
+        ]
+        ++ optionals (rule ? defaultColumnDisplay) [
+          (renderArgProperty "default-column-display" rule.defaultColumnDisplay)
+        ]
+        ++ optionals (rule ? scrollFactor) [
+          (renderArgProperty "scroll-factor" rule.scrollFactor)
+        ]
+        ++ optionals (rule ? drawBorderWithBackground) [
+          (renderBoolProperty "draw-border-with-background" rule.drawBorderWithBackground)
+        ]
+        ++ optionals (rule ? geometryCornerRadius) [
+          (renderArgProperty "geometry-corner-radius" rule.geometryCornerRadius)
+        ]
+        ++ optionals (rule ? clipToGeometry) [
+          (renderBoolProperty "clip-to-geometry" rule.clipToGeometry)
+        ]
+        ++ optionals (rule ? tiledState) [
+          (renderBoolProperty "tiled-state" rule.tiledState)
+        ];
     };
 
   renderStartup = command:
@@ -134,6 +310,9 @@
         body = renderLayout model.layout;
       })
     ]
+    ++ optionals (model ? hotkeyOverlay) [
+      (renderHotkeyOverlay model.hotkeyOverlay)
+    ]
     ++ optionals model.preferNoCsd [
       (KDL.statement {name = "prefer-no-csd";})
     ]
@@ -147,6 +326,7 @@
         children = map renderBind model.binds;
       })
     ]
+    ++ map renderWindowRule (model.windowRules or [])
     ++ map renderOutput model.outputs
     ++ map renderStartup model.startup;
 in {

@@ -9,7 +9,7 @@
   };
 in
   mkNixPak {
-    config = {...}: rec {
+    config = {...}: {
       imports = [./sandboxing-modules/gui-base.nix];
       app.package = pkgs.obsidian;
       flatpak.appId = "md.obsidian.Obsidian";
