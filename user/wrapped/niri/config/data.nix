@@ -12,10 +12,12 @@
     xcursorTheme = "Bibata-Modern-Classic";
     xcursorSize = 18;
     hideAfterInactiveMs = 1250;
+    hideWhenTyping = true;
   };
 
   input = {
-    focusFollowsMouse = true;
+    focusFollowsMouse."max-scroll-amount" = "10%";
+    workspaceAutoBackAndForth = true;
     keyboard.numlock = true;
     mouse = {
       naturalScroll = true;
@@ -24,7 +26,9 @@
     };
     touchpad = {
       tap = true;
+      dwt = true;
       naturalScroll = true;
+      disabledOnExternalMouse = true;
       clickMethod = "clickfinger";
     };
   };
@@ -40,7 +44,25 @@
       0.5
       0.66667
     ];
+    presetWindowHeights.proportions = [
+      0.33333
+      0.5
+      0.66667
+    ];
     defaultColumnWidth.proportion = 0.5;
+    tabIndicator = {
+      hideWhenSingleTab = true;
+      placeWithinColumn = true;
+      gap = 5;
+      width = 4;
+      lengthTotalProportion = 1.0;
+      position = "right";
+      gapsBetweenTabs = 2;
+      cornerRadius = 4;
+      activeColor = "#ffffff";
+      inactiveColor = "#5c5c5c";
+      urgentColor = "#d70000";
+    };
     focusRing = {
       width = 1.5;
       activeColor = "#ffffff";
@@ -49,6 +71,48 @@
   };
 
   preferNoCsd = true;
+
+  hotkeyOverlay.hideNotBound = true;
+
+  windowRules = [
+    {
+      matches = [
+        {title = "^Picture-in-Picture$";}
+      ];
+      openFloating = true;
+      defaultColumnWidth.fixed = 480;
+      defaultWindowHeight.fixed = 270;
+      defaultFloatingPosition = {
+        x = 32;
+        y = 32;
+        relativeTo = "bottom-right";
+      };
+    }
+    {
+      matches = [
+        {appId = "^org\\.keepassxc\\.KeePassXC$";}
+        {appId = "^org\\.gnome\\.World\\.Secrets$";}
+      ];
+      blockOutFrom = "screen-capture";
+    }
+    {
+      matches = [
+        {isFloating = true;}
+      ];
+      drawBorderWithBackground = false;
+      geometryCornerRadius = 12;
+      clipToGeometry = true;
+    }
+    {
+      matches = [
+        {appId = "^mpv$";}
+      ];
+      openFloating = true;
+      defaultColumnWidth.proportion = 0.8;
+      defaultWindowHeight.proportion = 0.8;
+      variableRefreshRate = true;
+    }
+  ];
 
   startup = [
     {command = "dunst";}
@@ -86,6 +150,26 @@
       ];
     }
     {
+      combo = "Mod+Shift+Slash";
+      title = "Show hotkey overlay";
+      actions = [
+        {
+          type = "action";
+          name = "show-hotkey-overlay";
+        }
+      ];
+    }
+    {
+      combo = "Super+Alt+L";
+      title = "Lock the screen";
+      actions = [
+        {
+          type = "spawn";
+          command = "locker";
+        }
+      ];
+    }
+    {
       combo = "Mod+Shift+E";
       actions = [
         {
@@ -118,7 +202,7 @@
       actions = [
         {
           type = "action";
-          name = "focus-column-left";
+          name = "focus-column-or-monitor-left";
         }
       ];
     }
@@ -127,7 +211,7 @@
       actions = [
         {
           type = "action";
-          name = "focus-column-right";
+          name = "focus-column-or-monitor-right";
         }
       ];
     }
@@ -136,7 +220,7 @@
       actions = [
         {
           type = "action";
-          name = "focus-window-down";
+          name = "focus-window-or-workspace-down";
         }
       ];
     }
@@ -145,7 +229,7 @@
       actions = [
         {
           type = "action";
-          name = "focus-window-up";
+          name = "focus-window-or-workspace-up";
         }
       ];
     }
@@ -154,12 +238,30 @@
       actions = [
         {
           type = "action";
-          name = "consume-window-into-column";
+          name = "consume-or-expel-window-left";
         }
       ];
     }
     {
       combo = "Mod+D";
+      actions = [
+        {
+          type = "action";
+          name = "consume-or-expel-window-right";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+A";
+      actions = [
+        {
+          type = "action";
+          name = "consume-window-into-column";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+D";
       actions = [
         {
           type = "action";
@@ -172,7 +274,7 @@
       actions = [
         {
           type = "action";
-          name = "move-column-left";
+          name = "move-column-left-or-to-monitor-left";
         }
       ];
     }
@@ -181,7 +283,7 @@
       actions = [
         {
           type = "action";
-          name = "move-column-right";
+          name = "move-column-right-or-to-monitor-right";
         }
       ];
     }
@@ -190,7 +292,7 @@
       actions = [
         {
           type = "action";
-          name = "move-window-down";
+          name = "move-window-down-or-to-workspace-down";
         }
       ];
     }
@@ -199,7 +301,7 @@
       actions = [
         {
           type = "action";
-          name = "move-window-up";
+          name = "move-window-up-or-to-workspace-up";
         }
       ];
     }
@@ -231,11 +333,152 @@
       ];
     }
     {
+      combo = "Mod+Ctrl+W";
+      actions = [
+        {
+          type = "action";
+          name = "set-column-display";
+          args = ["tabbed"];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+Shift+W";
+      actions = [
+        {
+          type = "action";
+          name = "set-column-display";
+          args = ["normal"];
+        }
+      ];
+    }
+    {
+      combo = "Mod+S";
+      actions = [
+        {
+          type = "action";
+          name = "switch-preset-column-width";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+S";
+      actions = [
+        {
+          type = "action";
+          name = "switch-preset-column-width-back";
+        }
+      ];
+    }
+    {
       combo = "Mod+F";
       actions = [
         {
           type = "action";
           name = "maximize-column";
+        }
+      ];
+    }
+    {
+      combo = "Mod+M";
+      actions = [
+        {
+          type = "action";
+          name = "maximize-window-to-edges";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+F";
+      actions = [
+        {
+          type = "action";
+          name = "expand-column-to-available-width";
+        }
+      ];
+    }
+    {
+      combo = "Mod+C";
+      actions = [
+        {
+          type = "action";
+          name = "center-column";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+C";
+      actions = [
+        {
+          type = "action";
+          name = "center-visible-columns";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Minus";
+      actions = [
+        {
+          type = "action";
+          name = "set-column-width";
+          args = ["-10%"];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Equal";
+      actions = [
+        {
+          type = "action";
+          name = "set-column-width";
+          args = ["+10%"];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+Minus";
+      actions = [
+        {
+          type = "action";
+          name = "set-window-height";
+          args = ["-10%"];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+Equal";
+      actions = [
+        {
+          type = "action";
+          name = "set-window-height";
+          args = ["+10%"];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+R";
+      actions = [
+        {
+          type = "action";
+          name = "reset-window-height";
+        }
+      ];
+    }
+    {
+      combo = "Mod+V";
+      actions = [
+        {
+          type = "action";
+          name = "toggle-window-floating";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+V";
+      actions = [
+        {
+          type = "action";
+          name = "switch-focus-between-floating-and-tiling";
         }
       ];
     }
@@ -263,6 +506,317 @@
         {
           type = "action";
           name = "focus-workspace-up";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+Page_Down";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace-down";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+Page_Up";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace-up";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Alt+Page_Down";
+      actions = [
+        {
+          type = "action";
+          name = "move-window-to-workspace-down";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Alt+Page_Up";
+      actions = [
+        {
+          type = "action";
+          name = "move-window-to-workspace-up";
+        }
+      ];
+    }
+    {
+      combo = "Mod+1";
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace";
+          args = [1];
+        }
+      ];
+    }
+    {
+      combo = "Mod+2";
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace";
+          args = [2];
+        }
+      ];
+    }
+    {
+      combo = "Mod+3";
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace";
+          args = [3];
+        }
+      ];
+    }
+    {
+      combo = "Mod+4";
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace";
+          args = [4];
+        }
+      ];
+    }
+    {
+      combo = "Mod+5";
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace";
+          args = [5];
+        }
+      ];
+    }
+    {
+      combo = "Mod+6";
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace";
+          args = [6];
+        }
+      ];
+    }
+    {
+      combo = "Mod+7";
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace";
+          args = [7];
+        }
+      ];
+    }
+    {
+      combo = "Mod+8";
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace";
+          args = [8];
+        }
+      ];
+    }
+    {
+      combo = "Mod+9";
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace";
+          args = [9];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+1";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace";
+          args = [1];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+2";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace";
+          args = [2];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+3";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace";
+          args = [3];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+4";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace";
+          args = [4];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+5";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace";
+          args = [5];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+6";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace";
+          args = [6];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+7";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace";
+          args = [7];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+8";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace";
+          args = [8];
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+9";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace";
+          args = [9];
+        }
+      ];
+    }
+    {
+      combo = "Mod+WheelScrollDown";
+      cooldownMs = 150;
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace-down";
+        }
+      ];
+    }
+    {
+      combo = "Mod+WheelScrollUp";
+      cooldownMs = 150;
+      actions = [
+        {
+          type = "action";
+          name = "focus-workspace-up";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+WheelScrollDown";
+      cooldownMs = 150;
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace-down";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+WheelScrollUp";
+      cooldownMs = 150;
+      actions = [
+        {
+          type = "action";
+          name = "move-column-to-workspace-up";
+        }
+      ];
+    }
+    {
+      combo = "Mod+WheelScrollRight";
+      actions = [
+        {
+          type = "action";
+          name = "focus-column-right";
+        }
+      ];
+    }
+    {
+      combo = "Mod+WheelScrollLeft";
+      actions = [
+        {
+          type = "action";
+          name = "focus-column-left";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+WheelScrollRight";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-right";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Ctrl+WheelScrollLeft";
+      actions = [
+        {
+          type = "action";
+          name = "move-column-left";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Escape";
+      allowInhibiting = false;
+      actions = [
+        {
+          type = "action";
+          name = "toggle-keyboard-shortcuts-inhibit";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+P";
+      actions = [
+        {
+          type = "action";
+          name = "power-off-monitors";
         }
       ];
     }
@@ -332,6 +886,24 @@
         {
           type = "action";
           name = "screenshot";
+        }
+      ];
+    }
+    {
+      combo = "Ctrl+Print";
+      actions = [
+        {
+          type = "action";
+          name = "screenshot-screen";
+        }
+      ];
+    }
+    {
+      combo = "Alt+Print";
+      actions = [
+        {
+          type = "action";
+          name = "screenshot-window";
         }
       ];
     }

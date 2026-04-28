@@ -130,11 +130,7 @@
     if builtins.isAttrs spec
     then let
       nodeName =
-        if spec ? name
-        then spec.name
-        else if spec ? __name
-        then spec.__name
-        else throw "KDL node is missing a name";
+        spec.name or (spec.__name or (throw "KDL node is missing a name"));
 
       inline =
         lib.attrByPath
