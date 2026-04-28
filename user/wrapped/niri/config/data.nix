@@ -24,6 +24,7 @@
       accelSpeed = 0.2;
       accelProfile = "flat";
     };
+    trackball.naturalScroll = true;
     touchpad = {
       tap = true;
       dwt = true;

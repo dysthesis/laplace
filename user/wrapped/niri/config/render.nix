@@ -32,6 +32,9 @@
       "accel-speed" = input.mouse.accelSpeed;
       "accel-profile" = input.mouse.accelProfile;
     };
+    trackball = {
+      "natural-scroll" = input.trackball.naturalScroll;
+    };
     touchpad = {
       tap = input.touchpad.tap;
       dwt = input.touchpad.dwt or false;
