@@ -46,6 +46,21 @@ in {
           default = 60;
         };
 
+        scale = mkOption {
+          type = nullOr (oneOf [
+            int
+            float
+          ]);
+          default = null;
+          description = "Output scale used by compositors that support per-monitor scaling.";
+        };
+
+        variableRefreshRate = mkOption {
+          type = bool;
+          default = false;
+          description = "Whether compositors should enable variable refresh rate for this monitor.";
+        };
+
         pos = {
           x = mkOption {
             type = nullOr int;

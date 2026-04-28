@@ -26,6 +26,8 @@
     then toString value
     else if builtins.isString value
     then "\"${escapeString value}\""
+    else if value == null
+    then "null"
     else throw "Unsupported KDL value type: ${builtins.typeOf value}";
 
   renderArgs = args:
