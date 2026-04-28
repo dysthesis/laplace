@@ -23,6 +23,7 @@ in {
         screenshotPath
         layout
         preferNoCsd
+        blur
         hotkeyOverlay
         windowRules
         ;
