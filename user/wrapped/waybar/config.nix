@@ -1,119 +1,109 @@
 {
+  lib,
   config,
-  pkgs,
   ...
-}: let
-  monitors = config.laplace.hardware.monitors or [];
-  defaultMonitor =
-    if monitors == []
-    then {
-      width = 1920;
-      height = 1080;
-    }
-    else builtins.head monitors;
-  primaries = builtins.filter (m: (m.primary or false)) monitors;
-  primaryMonitor =
-    if primaries == []
-    then defaultMonitor
-    else builtins.head primaries;
-
-  clamp = min: max: val:
-    if val < min
-    then min
-    else if val > max
-    then max
-    else val;
-  round = x: builtins.floor (x + 0.5);
-
-  baselineH = 1080.0;
-  rawScale = baselineH / (primaryMonitor.height or baselineH);
-  scale = clamp 0.6 1.2 rawScale;
-
-  baseHeight =
-    if config.networking.hostName == "yaldabaoth"
-    then 28.0
-    else 34.0;
-  scaledHeight = round (baseHeight * scale);
-  weather = pkgs.stdenv.mkDerivation {
-    name = "weather";
-    buildInputs = [
-      (pkgs.python311.withPackages (pythonPackages: with pythonPackages; [ftputil]))
-    ];
-    unpackPhase = "true";
-    installPhase = ''
-      mkdir -p $out/bin
-      cp ${./weather.py} $out/bin/weather
-      chmod +x $out/bin/weather
-    '';
-  };
-  waybarConf = {
+}: {
+  bar = {
     layer = "top";
     position = "bottom";
-    mod = "dock";
-    height = scaledHeight;
+    mode = "dock";
     exclusive = true;
     passthrough = false;
-    gtk-layer-shell = true;
-    modules-left = [
-      "custom/padd"
-      "custom/l_end"
-      "cpu"
-      "memory"
-      "disk"
-      "custom/r_end"
-      "custom/l_end"
-      "niri/workspaces"
-      "niri/window"
-      "custom/r_end"
-      ""
-      "custom/padd"
+    gtkLayerShell = true;
+    baseHeight = {
+      default = 34.0;
+      yaldabaoth = 28.0;
+    };
+  };
+
+  scale = {
+    baselineHeight = 1080.0;
+    min = 0.6;
+    max = 1.2;
+  };
+
+  hardware = {
+    battery = "BAT1";
+    backlight = "amdgpu_bl0";
+  };
+
+  weather = {
+    enable = true;
+    productId = "IDN10064";
+    interval = 30;
+  };
+
+  layout = {
+    padding = "custom/padd";
+    cap = {
+      left = "custom/l_end";
+      right = "custom/r_end";
+    };
+
+    left = {
+      groups = [
+        [
+          "cpu"
+          "memory"
+          "disk"
+        ]
+        [
+          "niri/workspaces"
+          "niri/window"
+        ]
+      ];
+      after = [""];
+    };
+
+    center = [
+      [
+        "custom/weather"
+        "custom/events"
+        "clock"
+      ]
     ];
-    modules-center = [
-      "custom/padd"
-      "custom/l_end"
-      "custom/weather"
-      "custom/events"
-      "clock"
-      "custom/r_end"
-      "custom/padd"
+
+    right = [
+      ["tray"]
+      [
+        "battery"
+        "backlight"
+        "wireplumber"
+        "network"
+      ]
     ];
-    modules-right = [
-      "custom/padd"
-      "custom/l_end"
-      "tray"
-      "custom/r_end"
-      "custom/l_end"
-      "battery"
-      "backlight"
-      "wireplumber"
-      "network"
-      "custom/r_end"
-      "custom/padd"
-    ];
+  };
+
+  modules = {
     "niri/window" = {
       format = "{}";
       rewrite = {
         "(.*) - Mozilla Thunderbird" = " $1";
         "(.*) — Mozilla Firefox" = " $1";
+        "(.*) — Zen Browser" = "󰖟  $1";
         "(.*) — Brave" = "󰖟 $1";
         "(.*) — Tor Browser" = " $1";
         "Tor Browser" = " Tor Browser";
         "(.*) - mpv" = "󰗃 $1";
         "(.*) – Doom Emacs" = " $1";
-        "(.*) Discord \\| (.*)" = "  $2";
+        "(.*) Discord \\| (.*)" = "  $2";
         "class<org.wezfurlong.wezterm>" = "";
+        "class<foot>" = "";
       };
     };
+
     memory = {
       format = "󰍛 {}% ";
       format-alt = "󰍛 {used}/{total} GiB";
       interval = 5;
     };
+
     cpu = {
       format = "󰻠 {usage}% ";
       format-alt = "󰻠 {avg_frequency} GHz";
       interval = 5;
     };
+
     disk = {
       format = "󰋊 {}%";
       format-alt = "󰋊 {used}/{total} GiB";
@@ -122,7 +112,6 @@
     };
 
     battery = {
-      bat = "BAT1";
       interval = 60;
       states = {
         warning = 30;
@@ -140,7 +129,6 @@
     };
 
     backlight = {
-      device = "amdgpu_bl0";
       format = "{icon} {percent}%";
       format-icons = [
         ""
@@ -162,7 +150,6 @@
     clock = {
       rotate = 0;
       format = " {:%H:%M}";
-      # format-alt = "{:%R 󰃭 %d·%m·%y}";
       tooltip-format = "<tt><big>{calendar}</big></tt>";
       calendar = {
         mode = "month";
@@ -176,10 +163,12 @@
         };
       };
     };
+
     tray = {
       icon-size = 18;
       spacing = 5;
     };
+
     network = {
       format-wifi = " {bandwidthUpBytes}  {bandwidthDownBytes} ";
       format-ethernet = "󱘖 Wired";
@@ -189,6 +178,7 @@
       format-alt = "󰤨 {signalStrength}%";
       interval = 5;
     };
+
     bluetooth = {
       format = "";
       format-disabled = "";
@@ -198,48 +188,139 @@
       tooltip-format-enumerate-connected = " {device_alias}";
     };
 
-    "custom/weather" = {
-      tooltip = true;
-      format = "{} ";
-      interval = 30;
-      exec = "${weather}/bin/weather waybar IDN10064";
-      return-type = "json";
-    };
-    "custom/l_end" = {
-      format = " ";
-      interval = "once";
-      tooltip = false;
-    };
-    "custom/r_end" = {
-      format = " ";
-      interval = "once";
-      tooltip = false;
-    };
-    "custom/sl_end" = {
-      format = " ";
-      interval = "once";
-      tooltip = false;
-    };
-    "custom/sr_end" = {
-      format = " ";
-      interval = "once";
-      tooltip = false;
-    };
-    "custom/rl_end" = {
-      format = " ";
-      interval = "once";
-      tooltip = false;
-    };
-    "custom/rr_end" = {
-      format = " ";
-      interval = "once";
-      tooltip = false;
-    };
-    "custom/padd" = {
-      format = "  ";
+    "custom/events" = {
+      format = "";
       interval = "once";
       tooltip = false;
     };
   };
-in
-  pkgs.writeText "waybar-config.json" (builtins.toJSON waybarConf)
+
+  theme = {
+    font = let
+      hostName = config.networking.hostName or "";
+      baseFont =
+        if hostName == "phobos"
+        then 12.0
+        else 9.0;
+
+      clamp = min: max: val:
+        lib.max min (lib.min max val);
+      monitors = config.laplace.hardware.monitors or [];
+      defaultMonitor =
+        if monitors == []
+        then {
+          width = 1920;
+          height = 1080;
+        }
+        else builtins.head monitors;
+
+      primaryMonitor =
+        lib.findFirst
+        (m: (m.primary or false))
+        defaultMonitor
+        monitors;
+      baselineH = 1080.0;
+      rawScale = baselineH / (primaryMonitor.height or baselineH);
+      round = x: builtins.floor (x + 0.5);
+      scale = clamp 0.6 1.2 rawScale;
+      baseSize = round (baseFont * scale);
+    in {
+      family = "JBMono Nerd Font";
+      weight = "bold";
+      inherit baseSize;
+    };
+
+    metrics = {
+      size = {
+        base = 10.0;
+        min = 0;
+      };
+      margin = {
+        base = 3.0;
+        min = 1;
+      };
+      padS = {
+        base = 3.0;
+        min = 1;
+      };
+      padM = {
+        base = 4.0;
+        min = 1;
+      };
+      padActive = {
+        base = 12.0;
+        min = 6;
+      };
+      modVMargin = {
+        base = 4.0;
+        min = 2;
+      };
+      rLarge = {
+        base = 21.0;
+        min = 8;
+      };
+      rMed = {
+        base = 16.0;
+        min = 6;
+      };
+      rSmall = {
+        base = 9.0;
+        min = 5;
+      };
+      rTiny = {
+        base = 7.0;
+        min = 4;
+      };
+    };
+
+    colors = {
+      "bar-bg" = "rgba(0, 0, 0, 0.1)";
+      "main-color" = "#ffffff";
+      "main-bg" = "#000000";
+      "tool-bg" = "#1e1e2e";
+      "tool-color" = "#7788AA";
+      "tool-border" = "#000000";
+      "wb-color" = "#7788AA";
+      "wb-act-bg" = "#a6adc8";
+      "wb-act-color" = "#313244";
+      "wb-hvr-bg" = "#f5c2e7";
+      "wb-hvr-color" = "#313244";
+    };
+
+    selectors.modules = [
+      "cpu"
+      "memory"
+      "battery"
+      "wireplumber"
+      "disk"
+      "clock"
+      "workspaces"
+      "window"
+      "taskbar"
+      "network"
+      "bluetooth"
+      "pulseaudio"
+      "mpris"
+      "backlight"
+      "custom-updates"
+      "custom-wallchange"
+      "custom-mode"
+      "custom-cliphist"
+      "custom-power"
+      "custom-wbar"
+      "custom-l_end"
+      "custom-r_end"
+      "custom-sl_end"
+      "custom-sr_end"
+      "custom-rl_end"
+      "custom-rr_end"
+      "custom-weather"
+      "custom-events"
+      "tray"
+    ];
+
+    extraCss = "";
+  };
+
+  rawSettings = {};
+}
