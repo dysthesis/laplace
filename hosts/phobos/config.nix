@@ -33,6 +33,8 @@
             };
           }
         ];
+        battery.name = "BAT1";
+        backlight.device = "amdgpu_bl0";
       };
 
       bootloader = "systemd-boot";

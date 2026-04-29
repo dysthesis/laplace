@@ -6,7 +6,7 @@
 }: let
   inherit (lib.babel.pkgs) mkWrapper;
   nixosConfig = config;
-  settings = import ./config.nix {inherit lib config;};
+  settings = import ./config.nix {inherit pkgs lib config;};
   weather = import ./weather.nix {inherit pkgs;};
   generated = import ./generator.nix {
     inherit
