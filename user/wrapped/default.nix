@@ -99,14 +99,14 @@
         hostName = config.networking.hostName or "";
         fontSize =
           if hostName == "phobos"
-          then 12
-          else 10;
+          then 13
+          else 11;
         configFile =
           {
             main = {
               terminal = lib.getExe foot;
               font = "JBMono Nerd Font:size=${toString fontSize}";
-              prompt = " ";
+              prompt = "    ";
               layer = "overlay";
               lines = 12;
               width = 60;
