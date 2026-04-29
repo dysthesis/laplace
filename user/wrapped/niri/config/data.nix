@@ -2,7 +2,7 @@
   environment = {
     XDG_CURRENT_DESKTOP = "niri";
     XDG_SESSION_TYPE = "wayland";
-    QT_QPA_PLATFORM = "wayland";
+    QT_QPA_PLATFORM = "wayland;xcb";
     GTK_USE_PORTAL = "1";
     NIXOS_OZONE_WL = "1";
     CLUTTER_BACKEND = "wayland";
@@ -128,19 +128,7 @@
     }
   ];
 
-  startup = [
-    {command = "dunst";}
-    {command = "waybar";}
-    {
-      command = "swaybg";
-      args = [
-        "-i"
-        {ref = "wallpaper";}
-        "-m"
-        "fill"
-      ];
-    }
-  ];
+  startup = [];
 
   binds = [
     {
@@ -189,7 +177,6 @@
         {
           type = "action";
           name = "quit";
-          options."skip-confirmation" = true;
         }
       ];
     }
@@ -857,8 +844,13 @@
       allowWhenLocked = true;
       actions = [
         {
-          type = "spawn-sh";
-          script = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+";
+          type = "spawn";
+          command = "wpctl";
+          args = [
+            "set-volume"
+            "@DEFAULT_AUDIO_SINK@"
+            "0.05+"
+          ];
         }
       ];
     }
@@ -867,8 +859,13 @@
       allowWhenLocked = true;
       actions = [
         {
-          type = "spawn-sh";
-          script = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-";
+          type = "spawn";
+          command = "wpctl";
+          args = [
+            "set-volume"
+            "@DEFAULT_AUDIO_SINK@"
+            "0.05-"
+          ];
         }
       ];
     }
@@ -877,8 +874,13 @@
       allowWhenLocked = true;
       actions = [
         {
-          type = "spawn-sh";
-          script = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          type = "spawn";
+          command = "wpctl";
+          args = [
+            "set-mute"
+            "@DEFAULT_AUDIO_SINK@"
+            "toggle"
+          ];
         }
       ];
     }
