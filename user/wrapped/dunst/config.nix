@@ -5,12 +5,12 @@
     else 8;
 in {
   global = {
-    monitor = 1;
+    follow = "keyboard";
     frame_color = "#ffffff";
     separator_color = "#ffffff";
     width = 300;
-    height = 228;
-    offset = "0x15";
+    height = "(0, 228)";
+    offset = "(0, 15)";
     font = "JBMono Nerd Font ${toString size}";
     corner_radius = size;
     origin = "top-center";

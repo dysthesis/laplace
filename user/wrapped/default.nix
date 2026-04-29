@@ -8,6 +8,7 @@
 }: let
   inherit (pkgs.unstable) callPackage;
   inherit (lib) makeOverridable;
+  inherit (lib.babel.pkgs) mkWrapper;
   system = pkgs.stdenv.hostPlatform.system;
   overlay = _final: _prev: let
     guiPackage = package: package.config.env;
@@ -94,6 +95,48 @@
         inherit (pkgs) fish;
         inherit pkgs inputs lib direnv;
       };
+      fuzzel = let
+        hostName = config.networking.hostName or "";
+        fontSize =
+          if hostName == "phobos"
+          then 12
+          else 10;
+        configFile =
+          {
+            main = {
+              terminal = lib.getExe foot;
+              font = "JBMono Nerd Font:size=${toString fontSize}";
+              prompt = " ";
+              layer = "overlay";
+              lines = 12;
+              width = 60;
+              "horizontal-pad" = 10;
+              "vertical-pad" = 8;
+              "inner-pad" = 4;
+            };
+
+            colors = {
+              background = "000000ee";
+              text = "ffffffff";
+              match = "7788aaff";
+              selection = "080808ff";
+              "selection-text" = "ffffffff";
+              "selection-match" = "ffcc66ff";
+              border = "ffffffff";
+            };
+
+            border = {
+              width = 1;
+              radius = 8;
+            };
+          }
+          |> lib.generators.toINI {}
+          |> pkgs.writeText "fuzzel.ini";
+      in
+        mkWrapper pkgs pkgs.fuzzel ''
+          wrapProgram $out/bin/fuzzel \
+            --add-flags "--config=${configFile}"
+        '';
       bemenu = callPackage ./bemenu {inherit pkgs config lib;};
       yambar = makeOverridable callPackage ./yambar {
         inherit pkgs lib;

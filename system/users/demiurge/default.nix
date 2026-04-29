@@ -85,6 +85,7 @@ in {
             bash
             calibre
             bibata-cursors
+            pwvucontrol
           ]
           ++ addIf (builtins.elem "wayland" config.laplace.display.servers) [
             wl-clipboard
@@ -92,7 +93,7 @@ in {
             slurp
             swappy
             configured.bibata-hyprcursor
-            configured.bemenu
+            configured.fuzzel
             configured.wezterm
             configured.foot
           ]

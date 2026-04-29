@@ -4,9 +4,7 @@
 in {
   mkModel = context: let
     binds = map (transforms.resolveBind context.deps) data.binds;
-    startup =
-      map (transforms.resolveStartup context.deps) data.startup
-      ++ transforms.locationToStartup context;
+    startup = map (transforms.resolveStartup context.deps) data.startup;
     outputs = map transforms.monitorToOutput context.monitors;
   in
     transforms.validateModel {
