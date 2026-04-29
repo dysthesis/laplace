@@ -32,9 +32,27 @@
       # for `nix fmt`
       formatter = pkgs: treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.wrapper;
       # for `nix flake check`
-      checks = pkgs: {
-        formatting = treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
-      };
+      checks = pkgs:
+        {
+          formatting = treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
+        }
+        // lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
+          desktop-stack = let
+            validateHost = name: host: ''
+                echo "validating ${name} niri"
+                ${host.config.programs.niri.package}/bin/niri validate
+              test -x ${host.pkgs.configured.waybar}/bin/waybar
+              test -x ${host.pkgs.configured.fuzzel}/bin/fuzzel
+              test -x ${host.pkgs.configured.dunst}/bin/dunst
+              test -x ${host.pkgs.configured.foot}/bin/foot
+            '';
+          in
+            pkgs.runCommand "desktop-configs" {} ''
+              ${validateHost "deimos" nixosConfigurations.deimos}
+              ${validateHost "phobos" nixosConfigurations.phobos}
+              touch $out
+            '';
+        };
     }
     // {
       inherit nixosConfigurations;
