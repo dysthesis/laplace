@@ -1,5 +1,5 @@
 {pkgs, ...}: let
-  python = pkgs.python311.withPackages (pythonPackages: with pythonPackages; [ftputil]);
+  python = pkgs.python311;
 in
   pkgs.writeShellApplication {
     name = "weather";
