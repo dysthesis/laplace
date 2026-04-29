@@ -9,11 +9,14 @@
   inherit
     (lib)
     concatStringsSep
+    elem
     findFirst
     hasPrefix
     mapAttrsToList
     max
     min
+    optionalAttrs
+    optionals
     ;
 
   concatMap = f: values: builtins.concatLists (map f values);
@@ -33,11 +36,14 @@
 
   round = value: builtins.floor (value + 0.5);
 
-  monitorHeight = primaryMonitor.height or settings.scale.baselineHeight;
+  outputScale =
+    if primaryMonitor ? scale && primaryMonitor.scale != null
+    then primaryMonitor.scale
+    else 1.0;
   rawScale =
-    if monitorHeight > 0
-    then settings.scale.baselineHeight / monitorHeight
-    else throw "Waybar primary monitor height must be positive";
+    if outputScale > 0
+    then outputScale
+    else throw "Waybar primary monitor scale must be positive";
   scale = clamp settings.scale.min settings.scale.max rawScale;
 
   scaleMetric = metric: let
@@ -60,7 +66,7 @@
       exclusive
       passthrough
       ;
-    mod = settings.bar.mode;
+    mode = settings.bar.mode;
     height = round (baseHeight * scale);
     gtk-layer-shell = settings.bar.gtkLayerShell;
   };
@@ -94,27 +100,42 @@
     }
     else {};
 
-  configuredModules = generatedModules // weatherModules // settings.modules;
+  disabledModules =
+    optionals (settings.hardware.battery == null) ["battery"]
+    ++ optionals (settings.hardware.backlight == null) ["backlight"];
+
+  moduleEnabled = name: name != "" && !(elem name disabledModules);
+  stripDisabled = builtins.filter moduleEnabled;
+
+  configuredModules = builtins.removeAttrs (generatedModules // weatherModules // settings.modules) disabledModules;
 
   modules =
     configuredModules
-    // {
+    // optionalAttrs (settings.hardware.battery != null) {
       battery = (configuredModules.battery or {}) // {bat = settings.hardware.battery;};
+    }
+    // optionalAttrs (settings.hardware.backlight != null) {
       backlight = (configuredModules.backlight or {}) // {device = settings.hardware.backlight;};
     };
 
-  normaliseSection = section:
-    if builtins.isList section
-    then {
-      groups = section;
-      before = [];
-      after = [];
-    }
-    else {
-      groups = section.groups or [];
-      before = section.before or [];
-      after = section.after or [];
-    };
+  normaliseSection = section: let
+    raw =
+      if builtins.isList section
+      then {
+        groups = section;
+        before = [];
+        after = [];
+      }
+      else {
+        groups = section.groups or [];
+        before = section.before or [];
+        after = section.after or [];
+      };
+  in {
+    groups = builtins.filter (group: group != []) (map stripDisabled raw.groups);
+    before = stripDisabled raw.before;
+    after = stripDisabled raw.after;
+  };
 
   mkPill = group: [settings.layout.cap.left] ++ group ++ [settings.layout.cap.right];
 
@@ -164,6 +185,8 @@
     then throw "Waybar bar.baseHeight must be positive"
     else if !validWeatherProductId
     then throw "Waybar weather.productId must match IDNxxxxx"
+    else if settings.weather.enable && settings.weather.interval < 900
+    then throw "Waybar weather.interval must be at least 900 seconds"
     else if missingCustomModules != []
     then throw "Waybar layout references missing custom modules: ${concatStringsSep ", " missingCustomModules}"
     else {
@@ -210,7 +233,7 @@
                 border-radius: 0px;
                 font-family: "${font.family}";
                 font-weight: ${font.weight};
-                font-size: ${toString m.size}px;
+                font-size: ${toString font.baseSize}px;
                 min-height: ${toString m.size}px;
             }
 

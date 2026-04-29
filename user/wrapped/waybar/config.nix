@@ -1,6 +1,7 @@
 {
-  lib,
   config,
+  lib,
+  pkgs,
   ...
 }: {
   bar = {
@@ -23,14 +24,14 @@
   };
 
   hardware = {
-    battery = "BAT1";
-    backlight = "amdgpu_bl0";
+    battery = config.laplace.hardware.battery.name or null;
+    backlight = config.laplace.hardware.backlight.device or null;
   };
 
   weather = {
     enable = true;
     productId = "IDN10064";
-    interval = 30;
+    interval = 900;
   };
 
   layout = {
@@ -52,7 +53,7 @@
           "niri/window"
         ]
       ];
-      after = [""];
+      after = [];
     };
 
     center = [
@@ -139,7 +140,7 @@
     wireplumber = {
       format = "{icon} {volume}%";
       format-muted = "";
-      on-click = "helvum";
+      on-click = lib.getExe pkgs.pwvucontrol;
       format-icons = [
         ""
         ""
@@ -198,32 +199,10 @@
   theme = {
     font = let
       hostName = config.networking.hostName or "";
-      baseFont =
+      baseSize =
         if hostName == "phobos"
-        then 12.0
-        else 9.0;
-
-      clamp = min: max: val:
-        lib.max min (lib.min max val);
-      monitors = config.laplace.hardware.monitors or [];
-      defaultMonitor =
-        if monitors == []
-        then {
-          width = 1920;
-          height = 1080;
-        }
-        else builtins.head monitors;
-
-      primaryMonitor =
-        lib.findFirst
-        (m: (m.primary or false))
-        defaultMonitor
-        monitors;
-      baselineH = 1080.0;
-      rawScale = baselineH / (primaryMonitor.height or baselineH);
-      round = x: builtins.floor (x + 0.5);
-      scale = clamp 0.6 1.2 rawScale;
-      baseSize = round (baseFont * scale);
+        then 12
+        else 10;
     in {
       family = "JBMono Nerd Font";
       weight = "bold";
