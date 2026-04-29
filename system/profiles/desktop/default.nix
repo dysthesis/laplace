@@ -56,17 +56,6 @@
 in {
   config = mkIf (elem "desktop" cfg) {
     systemd = {
-      services.seatd = {
-        enable = true;
-        description = "Seat management daemon";
-        script = "${lib.getExe pkgs.seatd} -g wheel";
-        serviceConfig = {
-          Type = "simple";
-          Restart = "always";
-          RestartSec = "1";
-        };
-        wantedBy = ["mult-user.target"];
-      };
       user.services = {
         syncthing = {
           enable = true;
@@ -103,6 +92,10 @@ in {
       nerd-fonts.iosevka
     ];
     services = {
+      seatd = {
+        enable = true;
+        group = "wheel";
+      };
       logind = {
         settings.Login = {
           HandleLidSwitch = "suspend";
