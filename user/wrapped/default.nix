@@ -106,13 +106,13 @@
             main = {
               terminal = lib.getExe foot;
               font = "JBMono Nerd Font:size=${toString fontSize}";
-              prompt = "    ";
+              prompt = " ";
               layer = "overlay";
               lines = 12;
-              width = 60;
+              width = 80;
               "horizontal-pad" = 10;
               "vertical-pad" = 8;
-              "inner-pad" = 4;
+              "inner-pad" = 8;
             };
 
             colors = {
