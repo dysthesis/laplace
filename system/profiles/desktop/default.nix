@@ -60,18 +60,14 @@ in {
         syncthing = {
           enable = true;
           description = "Syncthing";
-          unitConfig.partOf = ["default.target"];
-
-          script =
-            # bash
-            ''
-              ${lib.getExe pkgs.syncthing} \
-                -no-browser \
-                -no-restart \
-                -logflags=0
-            '';
-
           wantedBy = ["default.target"];
+          unitConfig.PartOf = ["default.target"];
+
+          script = ''
+            ${lib.getExe pkgs.syncthing} serve \
+              --no-browser \
+              --no-restart
+          '';
         };
       };
     };
