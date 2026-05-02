@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   inputs,
   ...
 }: {
@@ -67,17 +68,15 @@
             url = "https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF/resolve/main/Qwen3.5-35B-A3B-Q4_K_M.gguf";
             sha256 = "sha256-O0bRBmvJHMLWE+O8Is5pHdd+bw0zyQYGkNJM5t5JQ3U=";
           };
+          # "qwen3.6" = {
+          #   url = "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf";
+          #   sha256 = "sha256-rA4sEYngVfqjbv82FYDnnFvW+Odr/7TOVH8WfVPjGmE=";
+          # };
         };
-        contextSize = 8192;
+        contextSize = 15250;
         model = "qwen3.5";
+        search.enable = true;
         webui.enable = true;
-        search = {
-          enable = true;
-          settings.customOpenAI = {
-            apiUrl = "http://host.containers.internal:8080";
-            apiKey = "llama-cpp";
-          };
-        };
       };
 
       services.miniflux.enable = true;

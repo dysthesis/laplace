@@ -94,7 +94,6 @@ in {
             swappy
             configured.bibata-hyprcursor
             configured.fuzzel
-            configured.wezterm
             configured.foot
           ]
           ++ addIf (builtins.elem "xorg" config.laplace.display.servers) (
@@ -140,11 +139,11 @@ in {
             spotify-player
             mpv
             neomutt
-            inputs.helium.packages.${pkgs.system}.default
           ]
           ++ (with pkgs.unstable; [
             vesktop
             zen
+            # todoist-electron
           ]);
 
         productivity = with pkgs.configured; [
