@@ -6,7 +6,7 @@ lib: let
     mapAttrsToList
     ;
 
-  opacity = "1";
+  opacity = "0.75";
 
   options = {
     recolor = true;
