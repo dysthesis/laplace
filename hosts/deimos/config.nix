@@ -62,7 +62,7 @@
       };
 
       services.llm = {
-        enable = true;
+        enable = false;
         modelRegistry = {
           "qwen3.5" = {
             url = "https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF/resolve/main/Qwen3.5-35B-A3B-Q4_K_M.gguf";
