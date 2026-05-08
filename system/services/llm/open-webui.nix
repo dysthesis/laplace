@@ -12,6 +12,11 @@
   root = config.laplace.services.llm;
   cfg = root.webui;
 
+  backendService =
+    if root.backend == "vllm"
+    then "vllm.service"
+    else "llama-cpp.service";
+
   environment =
     {
       SCARF_NO_ANALYTICS = "True";
@@ -47,8 +52,8 @@ in {
     };
 
     systemd.services.open-webui = mkIf root.enable {
-      wants = ["llama-cpp.service"];
-      after = ["llama-cpp.service"];
+      wants = [backendService];
+      after = [backendService];
     };
   };
 }
