@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   inherit
@@ -9,11 +10,52 @@
     types
     mkOption
     ;
+
+  resolveOpenAIHost = host:
+    if host == "0.0.0.0"
+    then "127.0.0.1"
+    else if builtins.elem host ["::" "[::]"]
+    then "[::1]"
+    else if lib.hasInfix ":" host && !(lib.hasPrefix "[" host)
+    then "[${host}]"
+    else host;
+
+  activeOpenAIEndpoint = let
+    root = config.laplace.services.llm;
+    backend =
+      if root.backend == "vllm"
+      then root.vllm
+      else root;
+  in "http://${resolveOpenAIHost backend.host}:${toString backend.port}/v1";
+
+  activeModelName = let
+    root = config.laplace.services.llm;
+  in
+    if root.backend == "vllm"
+    then root.vllm.servedModelName
+    else root.model;
+
+  defaultEmbeddingModel = let
+    registry = config.laplace.services.llm.modelRegistry;
+  in
+    if builtins.hasAttr "nomic-embed-text" registry
+    then "nomic-embed-text"
+    else config.laplace.services.llm.model;
 in {
   options.laplace.services.llm = {
     enable =
       mkEnableOption
-      "Whether or not to enable local LLM hosting via llama-cpp";
+      "Whether or not to enable local LLM hosting";
+
+    backend = mkOption {
+      type = types.enum ["llama-cpp" "vllm"];
+      default = "llama-cpp";
+      description = "Local LLM backend to run";
+    };
+
+    turboquant.enable =
+      mkEnableOption
+      "Whether or not to enable TurboQuant support.";
 
     dataDir = mkOption {
       default = "/var/cache/llm";
@@ -24,13 +66,13 @@ in {
     host = mkOption {
       type = types.str;
       default = "0.0.0.0";
-      description = "Address on which llama-cpp should listen";
+      description = "Address on which the default local LLM backend should listen";
     };
 
     port = mkOption {
       type = types.port;
       default = 8080;
-      description = "Port exposed by the llama-cpp";
+      description = "Port exposed by the default local LLM backend";
     };
 
     modelRegistry = mkOption {
@@ -55,9 +97,13 @@ in {
           url = "https://huggingface.co/unsloth/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf";
           sha256 = "sha256-EgMHulKeskOdbEMNlBBNq9V4SXvHv+fjIrXZkztEm9Q=";
         };
+        "nomic-embed-text" = {
+          url = "https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF/resolve/main/nomic-embed-text-v1.5.Q4_K_M.gguf";
+          sha256 = "sha256-1OOIiU4JzzgW6LCJbYHSZbVeep//mrA/6L9O9eESlaw=";
+        };
       };
 
-      description = "List of models to pull";
+      description = "List of llama.cpp GGUF models to pull";
     };
 
     model = mkOption {
@@ -67,13 +113,175 @@ in {
 
       default = "qwen3";
 
-      description = "Which model to choose";
+      description = "Which llama.cpp GGUF model to choose";
     };
 
     contextSize = mkOption {
       type = types.int;
       default = 4096;
       description = "Context size of llama-cpp";
+    };
+
+    vllm = {
+      package = mkOption {
+        type = types.package;
+        default = pkgs.unstable.vllm;
+        description = "vLLM package to run; defaults to unstable for current ROCm packaging fixes";
+      };
+
+      model = mkOption {
+        type = types.str;
+        default = "google/gemma-4-26B-A4B-it";
+        description = "Hugging Face model ID used when modelSource is unset, and default advertised model name";
+      };
+
+      modelSource = mkOption {
+        type = types.nullOr (types.enum (builtins.attrNames config.laplace.services.llm.vllm.modelRegistry));
+        default = null;
+        description = "Optional vLLM modelRegistry key to fetch into the Nix store and serve instead of downloading at runtime";
+      };
+
+      modelRegistry = mkOption {
+        type = types.attrsOf (types.submodule ({name, ...}: {
+          options = {
+            url = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Git repository URL for the ${name} HF-format model";
+            };
+
+            rev = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Pinned Git revision for the ${name} model repository";
+            };
+
+            hash = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Recursive Nix hash for the ${name} model repository";
+            };
+
+            fetchLFS = mkOption {
+              type = types.bool;
+              default = true;
+              description = "Whether to fetch Git LFS files for the ${name} model repository";
+            };
+
+            files = mkOption {
+              type = types.attrsOf (types.submodule ({name, ...}: {
+                options = {
+                  url = mkOption {
+                    type = types.str;
+                    description = "Source URL for the ${name} model file";
+                  };
+
+                  hash = mkOption {
+                    type = types.str;
+                    description = "Flat Nix hash for the ${name} model file";
+                  };
+                };
+              }));
+              default = {};
+              description = "Files to assemble into an HF-format model directory in the Nix store";
+            };
+          };
+        }));
+        default = {};
+        description = "HF-format vLLM models fetched by Nix instead of vLLM at runtime";
+      };
+
+      offline = mkOption {
+        type = types.bool;
+        default = config.laplace.services.llm.vllm.modelSource != null;
+        description = "Whether to force Hugging Face and Transformers offline mode for vLLM";
+      };
+
+      servedModelName = mkOption {
+        type = types.str;
+        default = config.laplace.services.llm.vllm.model;
+        description = "Model name advertised by the vLLM OpenAI-compatible API";
+      };
+
+      host = mkOption {
+        type = types.str;
+        default = config.laplace.services.llm.host;
+        description = "Address on which vLLM should listen";
+      };
+
+      port = mkOption {
+        type = types.port;
+        default = config.laplace.services.llm.port;
+        description = "Port exposed by vLLM";
+      };
+
+      openFirewall = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Whether to open the firewall for the vLLM port";
+      };
+
+      maxModelLen = mkOption {
+        type = types.int;
+        default = 4096;
+        description = "Maximum context length served by vLLM";
+      };
+
+      gpuMemoryUtilization = mkOption {
+        type = types.float;
+        default = 0.85;
+        description = "Fraction of GPU memory vLLM may use";
+      };
+
+      dtype = mkOption {
+        type = types.str;
+        default = "auto";
+        description = "Data type passed to vLLM via --dtype";
+      };
+
+      trustRemoteCode = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Whether to pass --trust-remote-code to vLLM";
+      };
+
+      rocm = {
+        enableCompat = mkOption {
+          type = types.bool;
+          default = true;
+          description = "Whether to set ROCm compatibility variables for consumer AMD GPUs";
+        };
+
+        hsaOverrideGfxVersion = mkOption {
+          type = types.str;
+          default = "10.3.0";
+          description = "ROCm GFX version exposed through HSA_OVERRIDE_GFX_VERSION";
+        };
+
+        pytorchRocmArch = mkOption {
+          type = types.str;
+          default = "gfx1030";
+          description = "ROCm architecture exposed through PYTORCH_ROCM_ARCH";
+        };
+      };
+
+      environment = mkOption {
+        type = types.attrsOf types.str;
+        default = {};
+        description = "Additional environment variables passed to vLLM";
+      };
+
+      environmentFile = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = "Optional environment file with extra vLLM settings or secrets";
+      };
+
+      extraArgs = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = "Additional arguments passed to vLLM serve";
+      };
     };
 
     embedding = {
@@ -86,9 +294,18 @@ in {
           types.enum
           (builtins.attrNames config.laplace.services.llm.modelRegistry);
 
-        default = config.laplace.services.llm.model;
+        default = defaultEmbeddingModel;
 
         description = "Which model to use for embeddings";
+      };
+
+      contextSize = mkOption {
+        type = types.int;
+        default =
+          if config.laplace.services.llm.embedding.model == "nomic-embed-text"
+          then 8192
+          else config.laplace.services.llm.contextSize;
+        description = "Context size of the embedding llama-cpp server";
       };
 
       host = mkOption {
@@ -111,7 +328,15 @@ in {
 
       extraFlags = mkOption {
         type = types.listOf types.str;
-        default = [];
+        default =
+          if config.laplace.services.llm.embedding.model == "nomic-embed-text"
+          then [
+            "--rope-scaling"
+            "yarn"
+            "--rope-freq-scale"
+            ".75"
+          ]
+          else [];
         example = [
           "--pooling"
           "cls"
@@ -181,7 +406,7 @@ in {
             options = {
               apiUrl = mkOption {
                 type = types.str;
-                description = "OpenAI-compatible endpoint (e.g., llama-cpp server)";
+                description = "OpenAI-compatible endpoint (e.g., the active local backend)";
               };
 
               apiKey = mkOption {
@@ -192,7 +417,7 @@ in {
 
               modelName = mkOption {
                 type = types.str;
-                default = config.laplace.services.llm.model;
+                default = activeModelName;
                 description = "Model name advertised by the custom endpoint";
               };
             };
@@ -244,7 +469,7 @@ in {
     webui = {
       enable =
         mkEnableOption
-        "Whether or not to enable Open WebUI for the local llama-cpp service";
+        "Whether or not to enable Open WebUI for the local LLM service";
 
       stateDir = mkOption {
         type = types.path;
@@ -272,24 +497,14 @@ in {
 
       apiUrl = mkOption {
         type = types.str;
-        default = let
-          host = config.laplace.services.llm.host;
-          resolvedHost =
-            if host == "0.0.0.0"
-            then "127.0.0.1"
-            else if builtins.elem host ["::" "[::]"]
-            then "[::1]"
-            else if lib.hasInfix ":" host && !(lib.hasPrefix "[" host)
-            then "[${host}]"
-            else host;
-        in "http://${resolvedHost}:${toString config.laplace.services.llm.port}/v1";
-        description = "OpenAI-compatible URL Open WebUI should use for llama-cpp (include `/v1`)";
+        default = activeOpenAIEndpoint;
+        description = "OpenAI-compatible URL Open WebUI should use for the active backend (include `/v1`)";
       };
 
       apiKey = mkOption {
         type = types.nullOr types.str;
         default = null;
-        description = "Optional API key passed to the OpenAI-compatible llama-cpp endpoint";
+        description = "Optional API key passed to the OpenAI-compatible backend endpoint";
       };
 
       enableOllama = mkOption {
