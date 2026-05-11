@@ -172,6 +172,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    euler = {
+      url = "github:dysthesis/euler";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     opencode.url = "github:anomalyco/opencode";
   };
 }

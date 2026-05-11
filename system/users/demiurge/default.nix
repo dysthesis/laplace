@@ -77,7 +77,7 @@ in {
           configured.tmux
           unstable.texliveFull
           inputs.poincare.packages.${hostSystem}.default
-        ];
+          inputs.eul
 
         desktop = with pkgs;
           [
