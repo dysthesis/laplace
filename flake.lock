@@ -386,11 +386,11 @@
         "treefmt": "treefmt_2"
       },
       "locked": {
-        "lastModified": 1778652640,
-        "narHash": "sha256-Oq5BaMhGNbBcDzMF5EpR4cIRX1TmKRd+5xwORBr+nds=",
+        "lastModified": 1778659214,
+        "narHash": "sha256-bBqv44fbMeFxEUF6z0Zurp5IrRL8oSCfy2IcA92smnw=",
         "owner": "dysthesis",
         "repo": "euler",
-        "rev": "e88546e78c52d634e843292f8fdfd9ca0afd23be",
+        "rev": "9e241b070322106294dae200f0af5693dedb669c",
         "type": "github"
       },
       "original": {
