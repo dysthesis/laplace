@@ -83,6 +83,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    euler = {
+      url = "github:dysthesis/euler";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Personal library
     nixpressions = {
       url = "github:dysthesis/nixpressions";
