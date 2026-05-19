@@ -83,6 +83,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    euler = {
+      url = "github:dysthesis/euler";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     # Personal library
     nixpressions = {
       url = "github:dysthesis/nixpressions";
@@ -169,11 +174,6 @@
 
     helium = {
       url = "github:schembriaiden/helium-browser-nix-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    euler = {
-      url = "github:dysthesis/euler";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
