@@ -64,7 +64,7 @@ in {
       };
 
       services.llm = {
-        enable = true;
+				enable = false;
         # backend = "vllm";
         modelRegistry = {
           "qwen3.6-27b" = {
