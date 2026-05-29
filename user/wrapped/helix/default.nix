@@ -2,15 +2,20 @@
   pkgs,
   lib,
   helix,
+  helixUnwrapped,
   callPackage,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
-  inherit (lib) concatMapAttrsStringSep;
+  inherit (lib) concatMapAttrsStringSep makeBinPath;
   inherit (pkgs) runCommandLocal;
 
   config = callPackage ./config.nix {inherit pkgs;};
   languagesConfig = callPackage ./languages.nix {inherit pkgs;};
+  runtimeInputs = with pkgs.unstable; [
+    alejandra
+    nil
+    nixd
+  ];
 
   customThemes = {
     demiurge = callPackage ./theme.nix {inherit pkgs;};
@@ -24,16 +29,29 @@
       "cp ${theme} $out/${name}.toml")
     customThemes}
   '';
-  runtime = pkgs.runCommandLocal "hx-runtime" {} ''
+  configDir = runCommandLocal "helix-config-dir" {} ''
+    mkdir -pv $out/helix
+    ln -sv ${config} $out/helix/config.toml
+    ln -sv ${languagesConfig} $out/helix/languages.toml
+  '';
+  runtime = runCommandLocal "hx-runtime" {} ''
     mkdir -pv $out
-    cp -r ${themesDir} $out/themes
-    cp ${languagesConfig} $out/languages.toml
+    cp -r ${helix.runtime}/* $out/
+    chmod -R u+w $out
+    mkdir -pv $out/themes
+    cp ${themesDir}/* $out/themes/
   '';
 in
-  mkWrapper pkgs helix
+  runCommandLocal "${helixUnwrapped.name}-wrapped" {
+    nativeBuildInputs = [pkgs.makeWrapper];
+  }
   # bash
   ''
+    cp -r ${helixUnwrapped} $out
+    chmod -R u+w $out
+    ln -sv ${runtime} $out/bin/runtime
     wrapProgram $out/bin/hx \
-      --add-flags "-c ${config}" \
-      --set HELIX_RUNTIME "${runtime}"
+      --set HELIX_RUNTIME "${runtime}" \
+      --set XDG_CONFIG_HOME "${configDir}" \
+      --prefix PATH : "${makeBinPath runtimeInputs}"
   ''
