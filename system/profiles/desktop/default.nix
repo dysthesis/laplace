@@ -81,6 +81,7 @@ in {
       terminus_font
       jbcustom-nf
       literata
+      etBook
       sf-pro
       georgia-fonts
       newcomputermodern

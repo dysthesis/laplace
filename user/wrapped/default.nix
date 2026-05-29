@@ -43,6 +43,7 @@
       helix = callPackage ./helix {
         inherit lib pkgs;
         inherit (pkgs.unstable) helix;
+        helixUnwrapped = pkgs.unstable.helix-unwrapped;
       };
       fzf = callPackage ./fzf {inherit lib pkgs;};
       rofi = callPackage ./rofi {inherit lib pkgs;};
