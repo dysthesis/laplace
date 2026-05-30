@@ -17,7 +17,7 @@ in {
       stevenblack.enable = true;
       enableIPv6 = true;
       networkmanager = {
-        enable = mkDefault (!config.networking.wireless.enable);
+        enable = mkDefault true;
         plugins = with pkgs; [
           networkmanager-openvpn
         ];
