@@ -10,7 +10,7 @@ in {
     services.radicle = {
       enable = true;
       node.openFirewall = true;
-      privateKeyFile = "${cfg.dataDir}/keys/radicle";
+      privateKey = "${cfg.dataDir}/keys/radicle";
       publicKey = "${cfg.dataDir}/keys/radicle.pub";
 
       # settings = {
