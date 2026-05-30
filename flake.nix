@@ -55,13 +55,18 @@
         };
     }
     // {
+      overlays = {
+        linux-hardened = import ./nix/overlays/linux-hardened.nix;
+        default = self.overlays.linux-hardened;
+      };
+
       inherit nixosConfigurations;
     };
 
   inputs = {
     # TODO: See if switching to unstable fixes
     # https://github.com/NixOS/nixpkgs/issues/222181
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 
     # Supposedly faster Nix.

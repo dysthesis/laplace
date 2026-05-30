@@ -41,6 +41,7 @@ in
           # Use stable nixpkgs by default, but allow accessing unstable packages
           # by using `pkgs.unstable`
           nixpkgs.overlays = [
+            self.overlays.linux-hardened
             (final: _prev: {
               # Provide a non-aliased `system` attribute to avoid deprecation warnings.
               system = final.stdenv.hostPlatform.system;
