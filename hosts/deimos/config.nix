@@ -85,8 +85,8 @@ in {
           model = "nomic-embed-text";
         };
 
-        search.enable = true;
-        webui.enable = true;
+        search.enable = false;
+        webui.enable = false;
       };
 
       services.miniflux.enable = true;
