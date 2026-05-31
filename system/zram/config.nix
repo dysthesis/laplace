@@ -17,16 +17,13 @@ in {
       ];
       kernelModules = [
         "zstd"
-        "z3fold"
       ];
       initrd = {
         availableKernelModules = [
           "lz4"
           "zstd"
-          "z3fold"
         ];
         kernelModules = [
-          "z3fold"
           "zstd"
         ];
       };
