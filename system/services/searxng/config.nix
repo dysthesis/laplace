@@ -13,7 +13,7 @@ in {
     services.searx = {
       package = pkgs.searxng;
       enable = true;
-      runInUwsgi = false;
+      configureUwsgi = false;
       redisCreateLocally = true;
       limiterSettings = {
         botdetection = {
