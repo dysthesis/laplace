@@ -14,7 +14,7 @@ in {
   config = {
     nix = {
       # Ensure we actually use Determinate Nix so the guarded settings take effect.
-      package = lib.mkDefault inputs.determinate.inputs.nix.packages.${pkgs.stdenv.system}.default;
+      package = lib.mkDefault inputs.determinate.inputs.nix.packages.${pkgs.stdenv.hostPlatform.system}.default;
       settings =
         {
           extra-platforms = ["aarch64-linux"];

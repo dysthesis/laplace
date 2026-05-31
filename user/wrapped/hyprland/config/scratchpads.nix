@@ -8,7 +8,7 @@
   inherit
     (lib)
     getExe
-    fold
+    foldr
     ;
   hyprctl = "${hyprland}/bin/hyprctl";
   inherit (pkgs) writeShellScriptBin;
@@ -57,7 +57,7 @@
   conditional =
     # sh
     ''
-      ${fold mkCondition '''' scratchpads}
+      ${foldr mkCondition '''' scratchpads}
       fi
     '';
 

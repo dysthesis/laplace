@@ -9,7 +9,7 @@
   ...
 }: let
   startup = let
-    inherit (lib) fold;
+    inherit (lib) foldr;
 
     inherit (lib.cli) toGNUCommandLineShell;
     wlsunset = let
@@ -28,7 +28,7 @@
     wlr-randr = let
       wlr-randr = lib.getExe pkgs.wlr-randr;
       wlr-randr-args =
-        fold (
+        foldr (
           curr: acc: "${acc} --output ${curr.name} --mode ${toString curr.width}x${toString curr.height}@${toString curr.refreshRate}Hz"
         ) ""
         config.laplace.hardware.monitors;
