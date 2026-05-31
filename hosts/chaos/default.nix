@@ -6,6 +6,7 @@
   lib,
   ...
 }: let
+  inherit (lib) mkForce recursiveUpdate;
   system = pkgs.stdenv.hostPlatform.system;
   keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF4Rfg1TJZb861LSAJZn1xKNO1PXf7Oz2Mucq//9Dr9s demiurge@phobos"
@@ -21,13 +22,12 @@ in {
   ];
 
   config =
-    {
+    recursiveUpdate {
       isoImage.edition = "chaos";
       laplace = {
         profiles = ["desktop"];
         harden = ["kernel"];
       };
-      boot.zfs.forceImportRoot = false;
       sops.secrets.chaos.neededForUsers = true;
       users.users.root = {
         hashedPassword = mkForce null;
@@ -43,7 +43,6 @@ in {
 
         unstable.uutils-coreutils-noprefix
         unstable.tor-browser
-        unstable.protonvpn-gui
         unstable.sbctl
         unstable.w3m
         unstable.chawan
@@ -52,8 +51,8 @@ in {
         inputs.poincare.packages.${system}.default
       ];
     }
-    // lib.fold (
-      curr: acc: acc // {users.users.${curr}.openssh.authorizedKeys.keys = keys;}
-    ) {}
-    users;
+    (lib.foldr (
+        curr: acc: acc // {users.users.${curr}.openssh.authorizedKeys.keys = keys;}
+      ) {}
+      users);
 }
