@@ -19,6 +19,7 @@ in {
       if (config.nixpkgs.system != "aarch64-linux")
       then ["aarch64-linux"]
       else [];
+    boot.zfs.forceImportRoot = false;
     environment.systemPackages = with pkgs; [
       pam_u2f
     ];
