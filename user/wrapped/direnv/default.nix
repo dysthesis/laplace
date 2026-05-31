@@ -12,7 +12,7 @@
     };
   };
   direnvConfigFile = pkgs.writers.writeTOML "direnv.toml" direnvConfig;
-  direnvConfigDir = pkgs.runCommandNoCCLocal "direnv-config" {} ''
+  direnvConfigDir = pkgs.runCommandLocal "direnv-config" {} ''
      mkdir -pv $out/direnv
     cp ${direnvConfigFile} $out/direnv/direnv.toml
   '';
