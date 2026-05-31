@@ -12,7 +12,7 @@
     ./hardware.nix
   ];
 
-  boot.kernelPackages = pkgs.linuxKernel.packages.linux_rpi3;
+  boot.kernelPackages = pkgs.linuxPackagesFor (pkgs.callPackage "${inputs.nixos-hardware}/raspberry-pi/common/kernel.nix" {rpiVersion = 3;});
   laplace = {
     services = {
       searxng.enable = true;
@@ -40,12 +40,14 @@
 
   services.resolved = {
     enable = true;
-    dnssec = "true";
-    fallbackDns = [
-      "9.9.9.9"
-      "9.0.0.9"
-    ];
-    dnsovertls = "true";
+    settings.Resolve = {
+      DNSSEC = "true";
+      DNSOverTLS = "true";
+      FallbackDNS = [
+        "9.9.9.9"
+        "9.0.0.9"
+      ];
+    };
   };
 
   networking = {
