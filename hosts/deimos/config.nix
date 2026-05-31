@@ -2,17 +2,15 @@
   pkgs,
   inputs,
   ...
-}: let
-  gemma4Revision = "462a98a12e28e2cbcfccaf78fe41e3e50235e6ae";
-  gemma4Base = "https://huggingface.co/google/gemma-4-26B-A4B-it/resolve/${gemma4Revision}";
-in {
+}: {
   imports = [
     inputs.nixos-hardware.nixosModules.common-cpu-amd # APU logic
     inputs.nixos-hardware.nixosModules.common-gpu-amd # AMD GPU support
   ];
   config = {
+    boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     laplace = {
-      harden = ["kernel"];
+      # harden = ["kernel"];
       profiles = ["desktop"];
       hardware = {
         cpu = ["amd"];
