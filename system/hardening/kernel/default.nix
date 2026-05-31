@@ -39,7 +39,7 @@ in {
     };
 
     boot = {
-      kernelPackages = mkDefault pkgs.linuxPackages_hardened;
+      kernelPackages = mkDefault pkgs.linuxPackages_hardened; # BUG: causes kernel panic
       kernelParams = [
         # Don't merge slabs
         "slab_nomerge"
