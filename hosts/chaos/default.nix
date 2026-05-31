@@ -1,5 +1,6 @@
 {
   modulesPath,
+  config,
   pkgs,
   inputs,
   lib,
@@ -25,6 +26,13 @@ in {
       laplace = {
         profiles = ["desktop"];
         harden = ["kernel"];
+      };
+      boot.zfs.forceImportRoot = false;
+      sops.secrets.chaos.neededForUsers = true;
+      users.users.root = {
+        hashedPassword = mkForce null;
+        initialHashedPassword = mkForce null;
+        hashedPasswordFile = config.sops.secrets.chaos.path;
       };
       environment.systemPackages = with pkgs; [
         configured.foot
