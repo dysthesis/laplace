@@ -7,6 +7,8 @@
   cfg = config.laplace.services.miniflux.enable;
   inherit
     (lib)
+    getExe
+    mkForce
     mkIf
     ;
 
@@ -29,6 +31,7 @@
           --replace-fail '`font-src test.com;`' $'`font-src \'self\' test.com;`'
       '';
   });
+  minifluxBin = getExe minifluxPackage;
 
   # KaTeX assets and bootstrap script that stay in the Nix store.
   katexInit =
@@ -238,6 +241,28 @@ in {
       };
       adminCredentialsFile = config.sops.secrets.miniflux_admin.path;
     };
+
+    security.apparmor.policies."bin.miniflux".profile = mkForce ''
+      abi <abi/4.0>,
+      include <tunables/global>
+
+      profile ${minifluxBin} flags=(attach_disconnected) {
+        include <abstractions/base>
+        include <abstractions/nameservice>
+        include <abstractions/ssl_certs>
+        include <abstractions/golang>
+        include "${pkgs.apparmorRulesFromClosure {name = "miniflux";} minifluxPackage}"
+        ${minifluxBin} r,
+        /run/miniflux/** rw,
+
+        # PostgreSQL socket mediation can report disconnected paths on newer kernels.
+        /run/postgresql/ r,
+        /run/postgresql/.s.PGSQL.5432 rw,
+        /run/postgresql/.s.PGSQL.5432.lock r,
+
+        include if exists <local/bin.miniflux>
+      }
+    '';
 
     virtualisation.oci-containers.containers."full-text-rss" = {
       autoStart = true;
