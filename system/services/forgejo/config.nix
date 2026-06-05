@@ -31,6 +31,7 @@ in {
 
         forgejo = {
           enable = true;
+          stateDir = cfg.stateDir;
           database.type = "postgres";
           # Enable support for Git Large File Storage
           lfs.enable = true;

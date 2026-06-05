@@ -91,7 +91,8 @@
         "/var/lib/bluetooth"
         "/var/lib/pipewire"
         "/etc/config"
-        config.laplace.services.forgejo.stateDir
+        config.services.forgejo.stateDir
+        config.services.postgresql.dataDir
       ];
     };
 
