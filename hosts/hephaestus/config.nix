@@ -36,7 +36,7 @@
       };
     };
 
-    sops.secrets."cloudflared/erebus" = {};
+    sops.secrets."cloudflared/hephaestus" = {};
 
     environment.systemPackages = with pkgs; [
       vim # for emergencies
