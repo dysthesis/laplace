@@ -1,5 +1,4 @@
 {
-  lib,
   pkgs,
   config,
   ...
@@ -33,8 +32,10 @@
       python3
     ];
 
-    image.modules.proxmox = {
-      proxmox.qemuConf.bios = "ovmf";
+    image.modules.proxmox.proxmox = {
+      cloudInit.enable = false;
+      qemuConf.bios = "ovmf";
+      qemuConf.net0 = "virtio=00:00:00:00:00:00,bridge=vmbr0";
     };
 
     users.users.archon = let
@@ -68,9 +69,31 @@
         ];
     };
 
-    mnemosyne.enable = true;
+    mnemosyne = {
+      enable = true;
+      dirs = [
+        "/etc/nixos"
+        "/etc/NetworkManager/system-connections"
+        "/etc/secrets"
+        "/var/lib/bluetooth"
+        "/var/lib/pipewire"
+        "/etc/config"
+        config.laplace.services.forgejo.stateDir
+      ];
+    };
 
-    services.qemuGuest.enable = lib.mkDefault true;
+    services.openssh.hostKeys = [
+      {
+        path = "/nix/persist/etc/ssh/ssh_host_rsa_key";
+        type = "rsa";
+        bits = 4096;
+      }
+      {
+        path = "/nix/persist/etc/ssh/ssh_host_ed25519_key";
+        type = "ed25519";
+      }
+    ];
+    services.qemuGuest.enable = true;
     nix.settings.trusted-users = ["root" "@wheel"]; # Allow remote updates
   };
 }

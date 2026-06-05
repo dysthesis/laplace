@@ -12,6 +12,11 @@ in {
   in
     # From https://wiki.nixos.org/wiki/Forgejo
     mkIf cfg.enable {
+      networking.firewall.allowedTCPPorts = [
+        config.services.forgejo.settings.server.HTTP_PORT
+        config.services.forgejo.settings.server.SSH_PORT
+      ];
+
       services = {
         nginx = {
           virtualHosts.${forgejo.settings.server.DOMAIN} = {
