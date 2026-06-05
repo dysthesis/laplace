@@ -32,16 +32,23 @@ in {
         forgejo = {
           enable = true;
           stateDir = cfg.stateDir;
+          user = "git";
+          group = "git";
           database.type = "postgres";
+          database.user = "git";
+          database.name = "git";
           # Enable support for Git Large File Storage
           lfs.enable = true;
 
           settings = {
+            repository.USE_COMPAT_SSH_URI = false;
+
             server = {
               DOMAIN = "git.dysthesis.com";
               # You need to specify this to remove the port from URLs in the web UI.
               ROOT_URL = "https://${srv.DOMAIN}/";
               HTTP_PORT = 8080;
+              SSH_USER = "git";
               SSH_PORT = lib.head config.services.openssh.ports;
             };
 
@@ -65,6 +72,17 @@ in {
             # };
           };
         };
+      };
+
+      users = {
+        users.git = {
+          home = config.services.forgejo.stateDir;
+          useDefaultShell = true;
+          group = "git";
+          isSystemUser = true;
+        };
+
+        groups.git = {};
       };
     };
 }

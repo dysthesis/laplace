@@ -1,4 +1,3 @@
-Building images
-===============
+# Building images
 
 NixOS upstreamed `nixos-generators`.
