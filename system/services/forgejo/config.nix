@@ -18,6 +18,8 @@ in {
       ];
 
       systemd.tmpfiles.rules = [
+        "d '${forgejo.stateDir}' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "d '${forgejo.stateDir}/data' 0750 ${forgejo.user} ${forgejo.group} - -"
         "d '${forgejo.stateDir}/data/tmp' 0750 ${forgejo.user} ${forgejo.group} - -"
         "z '${forgejo.stateDir}/data/tmp' 0750 ${forgejo.user} ${forgejo.group} - -"
       ];
