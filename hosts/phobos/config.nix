@@ -1,17 +1,19 @@
-{
+{pkgs, ...}: {
   config = {
     # reduce bootloader menu delay and tighten LUKS retry and timeout
-    boot = {
-      loader.timeout = 0;
-      initrd.luks.devices."cryptroot" = {
-        device = "/dev/disk/by-partlabel/disk-main-luks";
-        crypttabExtraOpts = ["tries=1" "timeout=30"];
-      };
-    };
+    # boot = {
+    #   loader.timeout = 0;
+    #   initrd.luks.devices."cryptroot" = {
+    #     device = "/dev/disk/by-partlabel/disk-main-luks";
+    #     crypttabExtraOpts = ["tries=1" "timeout=30"];
+    #   };
+    # };
 
+    boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     laplace = {
+      services.tailscale.enable = true;
       harden = [
-        "kernel"
+        # "kernel"
         # Keep malloc hardening enabled here. Zen already ships with
         # --enable-replace-malloc, but on this AMD laptop it still needs the
         # wrapper-side Zink workaround in user/wrapped/zen.
