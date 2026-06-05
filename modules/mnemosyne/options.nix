@@ -8,6 +8,7 @@
     mkOption
     mkEnableOption
     ;
+  inherit (lib.lists) unique;
 
   inherit
     (lib.types)
@@ -29,6 +30,7 @@ in {
     dirs = mkOption {
       type = listOf str;
       description = "List of directories to persist";
+      apply = unique;
       default =
         [
           "/etc/nixos"
@@ -47,7 +49,8 @@ in {
           "/var/cache/mullvad-vpn"
         ]
         ++ addIf config.laplace.services.forgejo.enable [
-          config.laplace.services.forgejo.stateDir
+          config.services.forgejo.stateDir
+          config.services.postgresql.dataDir
         ]
         ++ addIf config.laplace.services.tailscale.enable [
           "/var/lib/tailscale"
