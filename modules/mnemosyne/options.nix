@@ -46,6 +46,9 @@ in {
           "/etc/mullvad-vpn"
           "/var/cache/mullvad-vpn"
         ]
+        ++ addIf config.laplace.services.forgejo.enable [
+          config.laplace.services.forgejo.stateDir
+        ]
         ++ addIf config.laplace.services.tailscale.enable [
           "/var/lib/tailscale"
         ]
