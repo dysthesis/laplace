@@ -46,6 +46,9 @@ in {
           "/etc/mullvad-vpn"
           "/var/cache/mullvad-vpn"
         ]
+        ++ addIf config.laplace.services.tailscale.enable [
+          "/var/lib/tailscale"
+        ]
         ++ addIf config.laplace.services.llm.enable [
           "/var/lib/private/ollama"
           "/var/lib/private/open-webui"
