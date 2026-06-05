@@ -40,7 +40,7 @@ in {
               DOMAIN = "git.dysthesis.com";
               # You need to specify this to remove the port from URLs in the web UI.
               ROOT_URL = "https://${srv.DOMAIN}/";
-              HTTP_PORT = 3000;
+              HTTP_PORT = 8080;
               SSH_PORT = lib.head config.services.openssh.ports;
             };
 
