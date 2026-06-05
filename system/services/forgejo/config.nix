@@ -42,6 +42,7 @@ in {
 
           settings = {
             repository.USE_COMPAT_SSH_URI = false;
+            DEFAULT.APP_NAME = "Hephaestus";
 
             server = {
               DOMAIN = "git.dysthesis.com";
