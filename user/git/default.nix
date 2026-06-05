@@ -3,7 +3,15 @@
   pkgs,
   ...
 }: {
-  environment.systemPackages = with pkgs; [difftastic];
+  environment.systemPackages = with pkgs; [
+    cloudflared
+    difftastic
+  ];
+  programs.ssh.extraConfig = ''
+    Host git.dysthesis.com
+      User git
+      ProxyCommand ${lib.getExe pkgs.cloudflared} access ssh --hostname ssh.git.dysthesis.com
+  '';
   programs.git = rec {
     enable = true;
     lfs.enable = true;

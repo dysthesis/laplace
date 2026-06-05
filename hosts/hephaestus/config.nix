@@ -30,6 +30,7 @@
           tunnels."935e2a12-7e09-415b-aa06-ad54530580fc" = {
             credentialsFile = config.sops.secrets."cloudflared/hephaestus".path;
             ingress."git.dysthesis.com" = "http://localhost:${toString config.services.forgejo.settings.server.HTTP_PORT}";
+            ingress."ssh.git.dysthesis.com" = "ssh://localhost:${toString config.services.forgejo.settings.server.SSH_PORT}";
             default = "http_status:404";
           };
         };
