@@ -7,10 +7,10 @@
   inherit (lib.babel.system) mkSystem;
   inherit (builtins) mapAttrs;
   hosts = {
-    erebus = "aarch64-linux"; # Raspberry Pi
     phobos = "x86_64-linux"; # Laptop
     deimos = "x86_64-linux"; # PC
     chaos = "x86_64-linux"; # Installer ISO
+    hephaestus = "x86_64-linux"; # Forgejo host on Proxmox
   };
   defaultImports = [
     ../system
@@ -49,7 +49,7 @@ in
             (final: _prev: {
               unstable = import inputs.nixpkgs-unstable {
                 system = final.stdenv.hostPlatform.system;
-                config = final.config;
+                inherit (final) config;
                 overlays = [
                   (unstableFinal: unstablePrev: {
                     pythonPackagesExtensions =

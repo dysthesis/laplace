@@ -71,3 +71,6 @@ image DISK PROFILE="chaos":
 
 clean:
   fd "core|result|out|test" --no-ignore-vcs -x rm
+
+proxmox HOST:
+  nix build .#nixosConfigurations.{{HOST}}.config.system.build.images.proxmox
