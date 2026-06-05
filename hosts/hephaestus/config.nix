@@ -23,8 +23,20 @@
         enable = true;
         flakePath = "/etc/config";
       };
-      services.forgejo.enable = true;
+      services = {
+        forgejo.enable = true;
+        cloudflared = {
+          enable = true;
+          tunnels."935e2a12-7e09-415b-aa06-ad54530580fc" = {
+            credentialsFile = config.sops.secrets."cloudflared/hephaestus".path;
+            ingress."git.dysthesis.com" = "http://localhost:${toString config.services.forgejo.settings.server.HTTP_PORT}";
+            default = "http_status:404";
+          };
+        };
+      };
     };
+
+    sops.secrets."cloudflared/erebus" = {};
 
     environment.systemPackages = with pkgs; [
       vim # for emergencies
@@ -46,6 +58,7 @@
     in {
       description = "Archon";
       isNormalUser = true;
+      hashedPassword = "$y$j9T$CHw.uVYenh9K/w.r7JYrW.$OFud2Bjlrhk1FWJZWjkOIJ9RREUBJ8Dg/8UFa1Ns8n5";
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJoKu8wF8Ts5xlCcKBQ8zRU7A4NsujnhzfsGfaP62kf2 demiurge@phobos"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUPaVrhCJ8fDKDYCcIeICgCv6W+0GdGmMDrngIg1oKg demiurge@deimos"
