@@ -17,6 +17,11 @@ in {
         config.services.forgejo.settings.server.SSH_PORT
       ];
 
+      systemd.tmpfiles.rules = [
+        "d '${forgejo.stateDir}/data/tmp' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "z '${forgejo.stateDir}/data/tmp' 0750 ${forgejo.user} ${forgejo.group} - -"
+      ];
+
       services = {
         nginx = {
           virtualHosts.${forgejo.settings.server.DOMAIN} = {
