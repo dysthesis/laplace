@@ -61,30 +61,33 @@
         firewall.enable = true;
       };
 
-      services.llm = {
-        enable = true;
-        # backend = "vllm";
-        modelRegistry = {
-          # "qwen3.6-27b" = {
-          #   url = "https://huggingface.co/unsloth/Qwen3.6-27B-MTP-GGUF/resolve/main/Qwen3.6-27B-Q4_K_M.gguf";
-          #   sha256 = "sha256-p8vT7MDj+bMz7e5hrma8h+1xPF1JWHqDVYFHIu0yng8=";
-          # };
-          "qwen3.6-35b-a3b" = {
-            url = "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q6_K.gguf";
-            sha256 = "sha256-SZNbBK2IPC89TaYfZbYJ1Efa1n0LCEU7kKuwmhuzVGQ=";
+      services = {
+        tailscale.enable = true;
+        llm = {
+          enable = true;
+          # backend = "vllm";
+          modelRegistry = {
+            # "qwen3.6-27b" = {
+            #   url = "https://huggingface.co/unsloth/Qwen3.6-27B-MTP-GGUF/resolve/main/Qwen3.6-27B-Q4_K_M.gguf";
+            #   sha256 = "sha256-p8vT7MDj+bMz7e5hrma8h+1xPF1JWHqDVYFHIu0yng8=";
+            # };
+            "qwen3.6-35b-a3b" = {
+              url = "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q6_K.gguf";
+              sha256 = "sha256-SZNbBK2IPC89TaYfZbYJ1Efa1n0LCEU7kKuwmhuzVGQ=";
+            };
           };
+
+          contextSize = 262144;
+          model = "qwen3.6-35b-a3b";
+
+          embedding = {
+            enable = false;
+            model = "nomic-embed-text";
+          };
+
+          search.enable = false;
+          webui.enable = false;
         };
-
-        contextSize = 262144;
-        model = "qwen3.6-35b-a3b";
-
-        embedding = {
-          enable = false;
-          model = "nomic-embed-text";
-        };
-
-        search.enable = false;
-        webui.enable = false;
       };
 
       services.miniflux.enable = true;
