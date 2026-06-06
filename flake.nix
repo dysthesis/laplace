@@ -69,11 +69,6 @@
     # Supposedly faster Nix.
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
-    nix-ai-tools = {
-      url = "github:numtide/nix-ai-tools";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     # Formatter for the whole codebase
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -83,11 +78,6 @@
     read = {
       url = "github:dysthesis/read";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    euler = {
-      url = "github:dysthesis/euler";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     status = {
@@ -163,16 +153,5 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixos-anywhere = {
-      url = "github:nix-community/nixos-anywhere";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    helium = {
-      url = "github:schembriaiden/helium-browser-nix-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    opencode.url = "github:anomalyco/opencode";
   };
 }
