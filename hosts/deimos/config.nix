@@ -100,7 +100,6 @@
         server = "pipewire";
       };
 
-      impermanence.enable = true;
       zram.enable = true;
 
       users = ["demiurge"];
