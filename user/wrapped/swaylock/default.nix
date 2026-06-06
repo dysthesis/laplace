@@ -1,12 +1,11 @@
 {
   lib,
   pkgs,
-  self,
   swaylock-effects,
   ...
 }: let
   inherit (builtins) concatStringsSep;
-  wallpaper = "${self}/user/wallpaper.png";
+  wallpaper = "${../../assets/wallpaper.png}";
 
   tokens = [
     "--clock"

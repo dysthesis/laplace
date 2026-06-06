@@ -1,5 +1,4 @@
 {
-  self,
   pkgs,
   config,
   lib,
@@ -16,7 +15,7 @@
   cfg = config.laplace.display.servers;
 
   isWayland = elem "wayland" cfg;
-  wallpaper = "${self}/user/wallpaper.png";
+  wallpaper = "${../../../../user/assets/wallpaper.png}";
   location =
     config.location or {
       latitude = 0;

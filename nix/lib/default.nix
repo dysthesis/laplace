@@ -27,8 +27,16 @@ nixpkgs.lib.extend (
 
       path = {inherit getItemsOfType getDirectories getFiles;};
 
+      # Import every immediate subdirectory that is a module (has a
+      # default.nix), so non-module data directories (e.g. assets) can live
+      # alongside modules without being imported. Uses path concatenation
+      # (not string interpolation) so imported modules stay within the flake
+      # source tree and their relative paths resolve correctly.
       modules.importInDirectory = dir:
-        dir |> getDirectories |> map (module: "${dir}/${module}");
+        dir
+        |> getDirectories
+        |> builtins.filter (module: builtins.pathExists "${dir}/${module}/default.nix")
+        |> map (module: dir + "/${module}");
 
       # Wraps a binary (or list of binaries) with the given postBuild snippet,
       # carrying through the original mainProgram.
