@@ -61,8 +61,6 @@ in {
         ]
         ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
         ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
-        ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
-        ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
         ++ addIf config.laplace.docker.enable [
           config.laplace.docker.dataDir
         ]

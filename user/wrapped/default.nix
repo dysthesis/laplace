@@ -142,15 +142,7 @@
         inherit pkgs lib;
         cacheDir = "/home/demiurge/.cache/dwl_info";
       };
-      bash = callPackage ./bash {
-        inherit
-          self
-          pkgs
-          lib
-          inputs
-          config
-          ;
-      };
+      bash = callPackage ./bash {inherit pkgs lib config;};
       ytfzf = callPackage ./ytfzf {inherit lib pkgs;};
       zathura = callPackage ./zathura {inherit lib pkgs;};
       dunst = callPackage ./dunst {inherit lib pkgs config;};
