@@ -4,7 +4,6 @@
   ...
 }: {
   config = {
-    # boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     laplace = {
       bootloader = "systemd-boot";
 
@@ -25,15 +24,6 @@
       };
       services = {
         forgejo.enable = true;
-        cloudflared = {
-          enable = true;
-          tunnels."935e2a12-7e09-415b-aa06-ad54530580fc" = {
-            credentialsFile = config.sops.secrets."cloudflared/hephaestus".path;
-            ingress."git.dysthesis.com" = "http://localhost:${toString config.services.forgejo.settings.server.HTTP_PORT}";
-            ingress."ssh.git.dysthesis.com" = "ssh://localhost:${toString config.services.forgejo.settings.server.SSH_PORT}";
-            default = "http_status:404";
-          };
-        };
       };
     };
 
@@ -108,7 +98,16 @@
         type = "ed25519";
       }
     ];
-    services.qemuGuest.enable = true;
+    services = {
+      qemuGuest.enable = true;
+      cloudflared = {
+        enable = true;
+        tunnels."4627a163-b910-476e-953f-353d3bfaa6d1" = {
+          credentialsFile = config.sops.secrets."cloudflared/hephaestus".path;
+          default = "http_status:404";
+        };
+      };
+    };
     nix.settings.trusted-users = ["root" "@wheel"]; # Allow remote updates
   };
 }

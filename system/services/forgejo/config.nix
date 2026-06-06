@@ -19,9 +19,19 @@ in {
 
       systemd.tmpfiles.rules = [
         "d '${forgejo.stateDir}' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "d '${forgejo.stateDir}/.ssh' 0700 ${forgejo.user} ${forgejo.group} - -"
+        "d '${forgejo.stateDir}/custom' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "d '${forgejo.stateDir}/dump' 0750 ${forgejo.user} ${forgejo.group} - -"
         "d '${forgejo.stateDir}/data' 0750 ${forgejo.user} ${forgejo.group} - -"
         "d '${forgejo.stateDir}/data/tmp' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "z '${forgejo.stateDir}/data/tmp' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "d '${forgejo.stateDir}/log' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "d '${forgejo.stateDir}/repositories' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "Z '${forgejo.stateDir}/.ssh' - ${forgejo.user} ${forgejo.group} - -"
+        "Z '${forgejo.stateDir}/custom' - ${forgejo.user} ${forgejo.group} - -"
+        "Z '${forgejo.stateDir}/dump' - ${forgejo.user} ${forgejo.group} - -"
+        "Z '${forgejo.stateDir}/data' - ${forgejo.user} ${forgejo.group} - -"
+        "Z '${forgejo.stateDir}/log' - ${forgejo.user} ${forgejo.group} - -"
+        "Z '${forgejo.stateDir}/repositories' - ${forgejo.user} ${forgejo.group} - -"
       ];
 
       services = {
