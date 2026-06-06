@@ -15,7 +15,6 @@
         fail2ban.enable = true;
       };
 
-      impermanence.enable = true;
       zram.enable = true;
 
       nh = {

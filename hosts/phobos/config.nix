@@ -65,7 +65,6 @@
         server = "pipewire";
       };
 
-      impermanence.enable = true;
       zram.enable = true;
 
       display = {
