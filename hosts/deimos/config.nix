@@ -41,7 +41,7 @@
       };
 
       bootloader = "systemd-boot";
-      docker.enable = true;
+      # docker.enable = true;
 
       network = {
         bluetooth.enable = true;
