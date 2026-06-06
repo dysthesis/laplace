@@ -3,14 +3,12 @@
 
   outputs = inputs @ {
     self,
-    nixpressions,
     nixpkgs,
     treefmt-nix,
     ...
   }: let
     inherit (builtins) mapAttrs;
-    inherit (nixpressions) mkLib;
-    lib = mkLib nixpkgs;
+    lib = import ./nix/lib nixpkgs;
 
     # Systems to support
     systems = [
