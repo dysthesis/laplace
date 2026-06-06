@@ -90,12 +90,6 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Personal library
-    nixpressions = {
-      url = "github:dysthesis/nixpressions";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     status = {
       url = "github:dysthesis/status";
       inputs.nixpkgs.follows = "nixpkgs";

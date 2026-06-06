@@ -42,6 +42,8 @@ in
           # by using `pkgs.unstable`
           nixpkgs.overlays = [
             self.overlays.linux-hardened
+            # Flake-local font packages (formerly from nixpressions).
+            (import ../nix/pkgs)
             (final: _prev: {
               # Provide a non-aliased `system` attribute to avoid deprecation warnings.
               system = final.stdenv.hostPlatform.system;
