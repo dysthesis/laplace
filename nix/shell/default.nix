@@ -20,7 +20,6 @@ pkgs.mkShell {
       };
     }))
     deadnix
-    alejandra
     just
     npins
     sops
