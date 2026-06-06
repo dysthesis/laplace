@@ -3,14 +3,13 @@
   lib,
   inputs,
   pkgs,
-  self,
   terminal ? {
     package = pkgs.configured.foot;
     appId = "foot";
   },
   ...
 }: let
-  wallpaper = "${self}/user/wallpaper.png";
+  wallpaper = "${../../assets/wallpaper.png}";
   system = pkgs.stdenv.hostPlatform.system;
   baseSpec = import "${inputs.dwl}/nix/config/spec.nix";
   configSpec =

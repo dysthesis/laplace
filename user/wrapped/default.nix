@@ -60,10 +60,9 @@
           pkgs
           lib
           inputs
-          self
           ;
       };
-      swaylock = callPackage ./swaylock {inherit lib pkgs self;};
+      swaylock = callPackage ./swaylock {inherit lib pkgs;};
       hyprland = callPackage ./hyprland {
         inherit
           pkgs
