@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   config,
   pkgs,
@@ -10,7 +9,6 @@
   cfg = config.laplace.profiles;
 
   browser = ["zen"];
-  nixpressions = (import "${inputs.nixpressions}/overlays" pkgs) pkgs pkgs;
 
   xdgAssociations = type: program: list:
     builtins.listToAttrs (
@@ -73,17 +71,17 @@ in {
       };
     };
     fonts.packages = with pkgs; [
-      nixpressions.fast-fonts
+      fast-fonts
       atkinson-hyperlegible-next
       noto-fonts
       noto-fonts-color-emoji
       noto-fonts-cjk-sans
       terminus_font
-      nixpressions.jbcustom-nf
-      nixpressions.literata
+      jbcustom-nf
+      literata
       et-book
-      nixpressions.sf-pro
-      nixpressions.georgia-fonts
+      sf-pro
+      georgia-fonts
       newcomputermodern
       nerd-fonts.jetbrains-mono
       nerd-fonts.iosevka
