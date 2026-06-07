@@ -4,7 +4,7 @@
   ...
 }: let
   inherit (lib) makeBinPath;
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   deps = with pkgs; [
     libnotify
   ];

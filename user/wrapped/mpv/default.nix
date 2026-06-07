@@ -5,7 +5,7 @@
 }: let
   inherit (lib) mapAttrsToList;
   inherit (lib.strings) concatStringsSep;
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit
     (pkgs)
     anime4k

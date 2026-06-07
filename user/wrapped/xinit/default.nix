@@ -6,7 +6,7 @@
   ...
 }: let
   inherit (lib) getExe;
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   system = pkgs.stdenv.hostPlatform.system;
 
   inherit (inputs.mandelbrot.packages.${system}) xmonad;

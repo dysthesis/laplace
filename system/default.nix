@@ -5,7 +5,7 @@
   config,
   ...
 }: let
-  inherit (lib.babel.modules) importInDirectory;
+  inherit (lib.laplace.modules) importInDirectory;
   system = pkgs.stdenv.hostPlatform.system;
 in {
   config = {

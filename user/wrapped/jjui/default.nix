@@ -4,7 +4,7 @@
   jjui,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   config = import ./config.nix {};
   configFile = pkgs.writers.writeTOML "config.toml" config;
   configDir = pkgs.runCommandLocal "jjui-config" {} ''

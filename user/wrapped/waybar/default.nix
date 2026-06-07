@@ -4,7 +4,7 @@
   lib,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   nixosConfig = config;
   settings = import ./config.nix {inherit pkgs lib config;};
   weather = import ./weather.nix {inherit pkgs;};

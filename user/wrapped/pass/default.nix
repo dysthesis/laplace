@@ -9,7 +9,7 @@
     x11Support = false;
     dmenuSupport = false;
   };
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
 in
   mkWrapper pkgs passBuild
   # bash

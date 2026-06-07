@@ -6,7 +6,7 @@
   inherit (lib) mkDefault;
 in {
   imports = [
-    (lib.babel.modules.mkSelector {
+    (lib.laplace.modules.mkSelector {
       dir = ./.;
       option = ["laplace" "bootloader"];
       multiple = false;

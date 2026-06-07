@@ -4,7 +4,7 @@
   config,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
 
   rev = "c291194a4e593bbbb91420e81fa0111508084448";
   srcHash = "sha256-LipZljhxpMFOEce+KNNcjJVWKsxDJnhgJm9UWJ4sWJI=";

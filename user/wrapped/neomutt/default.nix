@@ -5,7 +5,7 @@
   neomutt,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (lib) makeBinPath;
 
   config = import ./config.nix {inherit pkgs lib;};

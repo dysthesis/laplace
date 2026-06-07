@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   deps = with pkgs; [python3];
 in
   mkWrapper pkgs pkgs.timewarrior ''

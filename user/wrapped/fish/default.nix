@@ -22,7 +22,7 @@
     mapAttrsToList
     mapAttrs'
     ;
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (pkgs.stdenv.hostPlatform) system;
   vendorConf = "share/fish/vendor_conf.d";
   loadPlugin =

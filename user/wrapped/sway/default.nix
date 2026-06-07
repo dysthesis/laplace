@@ -7,7 +7,7 @@
   config,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   configFile = callPackage ./config.nix {
     inherit
       lib

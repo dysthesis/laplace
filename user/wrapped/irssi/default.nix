@@ -7,7 +7,7 @@
   config,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
 
   irssiConfig = writeTextFile {
     name = "config";

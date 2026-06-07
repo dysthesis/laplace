@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (pkgs) writeText;
   inherit (lib.attrsets) mapAttrsToList;
   inherit (builtins) concatStringsSep;
