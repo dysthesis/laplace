@@ -17,7 +17,7 @@
     ../modules
     ../user
     inputs.disko.nixosModules.disko
-    inputs.nix-index-database.darwinModules.nix-index
+    inputs.nix-index-database.nixosModules.nix-index
   ];
   extraModules = [inputs.determinate.nixosModules.default];
 in
@@ -44,56 +44,7 @@ in
             self.overlays.linux-hardened
             # Flake-local font packages (formerly from nixpressions).
             (import ../nix/pkgs)
-            (final: _prev: {
-              # Provide a non-aliased `system` attribute to avoid deprecation warnings.
-              system = final.stdenv.hostPlatform.system;
-            })
-            (final: _prev: {
-              unstable = import inputs.nixpkgs-unstable {
-                system = final.stdenv.hostPlatform.system;
-                inherit (final) config;
-                overlays = [
-                  (unstableFinal: unstablePrev: {
-                    pythonPackagesExtensions =
-                      (unstablePrev.pythonPackagesExtensions or [])
-                      ++ [
-                        (_pythonFinal: pythonPrev: {
-                          # transformers 5.5 imports ReasoningEffort from mistral-common;
-                          # nixpkgs currently has 1.8.8, which lacks that symbol.
-                          mistral-common = pythonPrev.mistral-common.overridePythonAttrs (old: rec {
-                            version = "1.11.1";
-                            src = unstableFinal.fetchFromGitHub {
-                              owner = "mistralai";
-                              repo = "mistral-common";
-                              tag = "v${version}";
-                              hash = "sha256-wmU5keSAVLYD5LUkqKjNrXbKWxLHpXOEjUjCRCFsqN4=";
-                            };
-                            dependencies = (old.dependencies or []) ++ [pythonPrev.pycountry];
-                            disabledTestPaths = (old.disabledTestPaths or []) ++ ["tests/guidance"];
-                          });
-                        })
-                      ];
-                  })
-                ];
-              };
-            })
-            # Silence the deprecated `pkgs.system` alias warning without hiding other warnings.
-            (_final: prev: let
-              prevLib = prev.lib;
-              suppressMsg = msg: let
-                s = toString msg;
-              in
-                builtins.match ".*has been renamed to/replaced by 'stdenv\\.hostPlatform\\.system'.*" s != null;
-            in {
-              lib =
-                prevLib
-                // {
-                  warn = msg: val:
-                    if suppressMsg msg
-                    then val
-                    else prevLib.warn msg val;
-                };
-            })
+            (import ../nix/overlays/unstable.nix inputs)
           ];
           imports =
             [
