@@ -14,6 +14,17 @@ nixpkgs.lib.extend (
 
     getDirectories = dir: getItemsOfType dir "directory";
     getFiles = dir: getItemsOfType dir "regular";
+
+    # Import every immediate subdirectory that is a module (has a default.nix),
+    # so non-module data directories (e.g. assets) can live alongside modules
+    # without being imported. Uses path concatenation (not string
+    # interpolation) so imported modules stay within the flake source tree and
+    # their relative paths resolve correctly.
+    importInDirectory = dir:
+      dir
+      |> getDirectories
+      |> builtins.filter (module: builtins.pathExists "${dir}/${module}/default.nix")
+      |> map (module: dir + "/${module}");
   in {
     babel = {
       forAllSystems = {
@@ -27,16 +38,43 @@ nixpkgs.lib.extend (
 
       path = {inherit getItemsOfType getDirectories getFiles;};
 
-      # Import every immediate subdirectory that is a module (has a
-      # default.nix), so non-module data directories (e.g. assets) can live
-      # alongside modules without being imported. Uses path concatenation
-      # (not string interpolation) so imported modules stay within the flake
-      # source tree and their relative paths resolve correctly.
-      modules.importInDirectory = dir:
-        dir
-        |> getDirectories
-        |> builtins.filter (module: builtins.pathExists "${dir}/${module}/default.nix")
-        |> map (module: dir + "/${module}");
+      modules = {
+        inherit importInDirectory;
+
+        # Declarative "selector" module: derive an enum from the names of the
+        # immediate subdirectories of `dir`, expose it as the option at the
+        # attribute path `option`, and import every child (each child gates
+        # itself on this option via `mkIf`). Collapses the repeated
+        # getDirectories + mkOption + importInDirectory boilerplate.
+        #
+        #   option   :: attr-path segments, e.g. ["laplace" "hardware" "cpu"]
+        #   multiple :: true  -> listOf (enum members), default []
+        #               false -> enum members, explicit `default` required
+        #   extra    :: extra enum members beyond the subdir names, e.g. ["none"]
+        mkSelector = {
+          dir,
+          option,
+          description ? "",
+          multiple ? true,
+          extra ? [],
+          default ? (
+            if multiple
+            then []
+            else throw "mkSelector: scalar selector '${final.showOption option}' needs an explicit `default`"
+          ),
+        }: let
+          base = final.types.enum (getDirectories dir ++ extra);
+        in {
+          options = final.setAttrByPath option (final.mkOption {
+            type =
+              if multiple
+              then final.types.listOf base
+              else base;
+            inherit default description;
+          });
+          imports = importInDirectory dir;
+        };
+      };
 
       # Wraps a binary (or list of binaries) with the given postBuild snippet,
       # carrying through the original mainProgram.
