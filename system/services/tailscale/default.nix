@@ -8,6 +8,8 @@
 in {
   options.laplace.services.tailscale.enable = mkEnableOption "Whether or not to enable Tailscale";
   config = mkIf cfg.enable {
+    mnemosyne.dirs = ["/var/lib/tailscale"];
+
     # Taken from https://wiki.nixos.org/wiki/Tailscale
     services.tailscale.enable = true;
     networking.nftables.enable = true;

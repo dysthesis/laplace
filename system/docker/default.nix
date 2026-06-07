@@ -23,6 +23,8 @@ in {
     };
   };
   config = mkIf cfg.enable {
+    mnemosyne.dirs = [cfg.dataDir];
+
     virtualisation = {
       oci-containers.backend = mkDefault "podman";
       podman = {

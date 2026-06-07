@@ -14,6 +14,8 @@ in {
     mkEnableOption "Whether or not to enable secure boot.";
 
   config = mkIf cfg {
+    mnemosyne.dirs = ["/var/lib/sbctl"];
+
     environment.systemPackages = [
       # For debugging and troubleshooting Secure Boot.
       pkgs.unstable.sbctl

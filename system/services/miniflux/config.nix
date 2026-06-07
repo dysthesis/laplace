@@ -227,6 +227,11 @@
   '';
 in {
   config = mkIf cfg {
+    mnemosyne.dirs = [
+      "/var/lib/private/miniflux"
+      "/var/lib/postgresql"
+    ];
+
     # Tell sops-nix that this should be found in the default sops file.
     sops.secrets.miniflux_admin = {};
 
