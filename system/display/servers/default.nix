@@ -1,31 +1,20 @@
 {
-  config,
   lib,
+  config,
   ...
-}: let
-  inherit (lib) mkOption mkIf;
-  inherit (lib.babel.modules) importInDirectory;
-  inherit (lib.babel.path) getDirectories;
-  inherit
-    (lib.types)
-    listOf
-    enum
-    ;
+}: {
+  imports = [
+    (lib.babel.modules.mkSelector {
+      dir = ./.;
+      option = ["laplace" "display" "servers"];
+      description = "Which display servers to enable";
+    })
+  ];
 
-  elems = getDirectories ./.;
-in {
-  options.laplace.display.servers = mkOption {
-    type = listOf (enum elems);
-    description = "Which display servers to enable";
-    default = [];
-  };
-
-  config = mkIf (config.laplace.display != []) {
+  config = lib.mkIf (config.laplace.display.servers != []) {
     location = {
       latitude = 33.9;
       longitude = 151.2;
     };
   };
-
-  imports = importInDirectory ./.;
 }

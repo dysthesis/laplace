@@ -3,19 +3,19 @@
   lib,
   ...
 }: let
-  inherit
-    (lib)
-    mkDefault
-    mkOption
-    ;
-  inherit
-    (lib.types)
-    enum
-    ;
-  inherit (lib.babel.path) getDirectories;
-  inherit (lib.babel.modules) importInDirectory;
-  options = (getDirectories ./.) ++ ["none"];
+  inherit (lib) mkDefault;
 in {
+  imports = [
+    (lib.babel.modules.mkSelector {
+      dir = ./.;
+      option = ["laplace" "bootloader"];
+      multiple = false;
+      extra = ["none"];
+      default = "none";
+      description = "Which bootloader to use";
+    })
+  ];
+
   config.boot = {
     initrd.verbose = mkDefault false;
     tmp = {
@@ -23,10 +23,4 @@ in {
       cleanOnBoot = mkDefault (!config.boot.tmp.useTmpfs);
     };
   };
-  options.laplace.bootloader = mkOption {
-    type = enum options;
-    description = "Which bootloader to use";
-    default = "none";
-  };
-  imports = importInDirectory ./.;
 }
