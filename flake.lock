@@ -6,7 +6,7 @@
           "mandelbrot",
           "nixpkgs"
         ],
-        "treefmt": "treefmt_2"
+        "treefmt": "treefmt_3"
       },
       "locked": {
         "lastModified": 1749436073,
@@ -28,7 +28,7 @@
           "read",
           "nixpkgs"
         ],
-        "treefmt": "treefmt_4"
+        "treefmt": "treefmt_5"
       },
       "locked": {
         "lastModified": 1749436073,
@@ -51,7 +51,7 @@
           "clean",
           "nixpkgs"
         ],
-        "treefmt": "treefmt_5"
+        "treefmt": "treefmt_6"
       },
       "locked": {
         "lastModified": 1749436073,
@@ -74,7 +74,7 @@
           "r",
           "nixpkgs"
         ],
-        "treefmt": "treefmt_6"
+        "treefmt": "treefmt_7"
       },
       "locked": {
         "lastModified": 1749436073,
@@ -97,7 +97,7 @@
           "sim",
           "nixpkgs"
         ],
-        "treefmt": "treefmt_7"
+        "treefmt": "treefmt_8"
       },
       "locked": {
         "lastModified": 1749436073,
@@ -121,7 +121,7 @@
           "nixpkgs"
         ],
         "rust-overlay": "rust-overlay_2",
-        "treefmt-nix": "treefmt-nix_4"
+        "treefmt-nix": "treefmt-nix_5"
       },
       "locked": {
         "lastModified": 1751188635,
@@ -413,6 +413,28 @@
         "type": "github"
       }
     },
+    "gungnir": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "nixpressions": "nixpressions_2",
+        "treefmt-nix": "treefmt-nix_2"
+      },
+      "locked": {
+        "lastModified": 1768621830,
+        "narHash": "sha256-JC6jK6ExvCpt6SwpQmGwhvGTGmKq6H/MIwaidpT74FI=",
+        "owner": "dysthesis",
+        "repo": "gungnir",
+        "rev": "c2ca3982791e54204ed79717a96b56477eab1053",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dysthesis",
+        "repo": "gungnir",
+        "type": "github"
+      }
+    },
     "hercules-ci-effects": {
       "inputs": {
         "flake-parts": [
@@ -488,7 +510,7 @@
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
-        "treefmt-nix": "treefmt-nix_2"
+        "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
         "lastModified": 1753588434,
@@ -522,26 +544,6 @@
       "original": {
         "owner": "niksingh710",
         "repo": "minimal-tmux-status",
-        "type": "github"
-      }
-    },
-    "nh": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1780776654,
-        "narHash": "sha256-RsYfw6HcHNQ3L9mepb1h+QX75jyWFJkEO1eagtgwadk=",
-        "owner": "viperML",
-        "repo": "nh",
-        "rev": "41e8eadfe4806b644eaa7d423054d85cdd9abdd7",
-        "type": "github"
-      },
-      "original": {
-        "owner": "viperML",
-        "repo": "nh",
         "type": "github"
       }
     },
@@ -770,10 +772,10 @@
     "nixpressions_2": {
       "inputs": {
         "nixpkgs": [
-          "poincare",
+          "gungnir",
           "nixpkgs"
         ],
-        "treefmt": "treefmt_3"
+        "treefmt": "treefmt_2"
       },
       "locked": {
         "lastModified": 1764825587,
@@ -792,10 +794,10 @@
     "nixpressions_3": {
       "inputs": {
         "nixpkgs": [
-          "status",
+          "poincare",
           "nixpkgs"
         ],
-        "treefmt": "treefmt_8"
+        "treefmt": "treefmt_4"
       },
       "locked": {
         "lastModified": 1764825587,
@@ -816,8 +818,8 @@
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
-        "nixpressions": "nixpressions_2",
-        "treefmt-nix": "treefmt-nix_3"
+        "nixpressions": "nixpressions_3",
+        "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
         "lastModified": 1780281195,
@@ -864,7 +866,7 @@
           "nixpkgs"
         ],
         "rust-overlay": "rust-overlay_3",
-        "treefmt-nix": "treefmt-nix_5"
+        "treefmt-nix": "treefmt-nix_6"
       },
       "locked": {
         "lastModified": 1751191633,
@@ -889,7 +891,7 @@
         ],
         "r": "r",
         "sim": "sim",
-        "treefmt-nix": "treefmt-nix_7"
+        "treefmt-nix": "treefmt-nix_8"
       },
       "locked": {
         "lastModified": 1753055493,
@@ -911,9 +913,9 @@
         "determinate": "determinate",
         "disko": "disko",
         "dwl": "dwl",
+        "gungnir": "gungnir",
         "lanzaboote": "lanzaboote",
         "mandelbrot": "mandelbrot",
-        "nh": "nh",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
         "nixpak": "nixpak",
@@ -922,7 +924,6 @@
         "poincare": "poincare",
         "read": "read",
         "sops-nix": "sops-nix",
-        "status": "status",
         "treefmt-nix": "treefmt-nix_9",
         "zen-browser": "zen-browser"
       }
@@ -1022,7 +1023,7 @@
           "nixpkgs"
         ],
         "rust-overlay": "rust-overlay_4",
-        "treefmt-nix": "treefmt-nix_6"
+        "treefmt-nix": "treefmt-nix_7"
       },
       "locked": {
         "lastModified": 1751423167,
@@ -1055,28 +1056,6 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
-        "type": "github"
-      }
-    },
-    "status": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "nixpressions": "nixpressions_3",
-        "treefmt-nix": "treefmt-nix_8"
-      },
-      "locked": {
-        "lastModified": 1768621840,
-        "narHash": "sha256-T5KX9flOCEObNITm06KiJynrnsWfWsW5KIiQB42mzhM=",
-        "owner": "dysthesis",
-        "repo": "status",
-        "rev": "3f3339f3b2beb738daa33843464bc7f5830da8b8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dysthesis",
-        "repo": "status",
         "type": "github"
       }
     },
@@ -1126,6 +1105,27 @@
     "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
+          "gungnir",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1738953846,
+        "narHash": "sha256-yrK3Hjcr8F7qS/j2F+r7C7o010eVWWlm4T1PrbKBOxQ=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "4f09b473c936d41582dd744e19f34ec27592c5fd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_3": {
+      "inputs": {
+        "nixpkgs": [
           "mandelbrot",
           "nixpkgs"
         ]
@@ -1144,7 +1144,7 @@
         "type": "github"
       }
     },
-    "treefmt-nix_3": {
+    "treefmt-nix_4": {
       "inputs": {
         "nixpkgs": [
           "poincare",
@@ -1165,7 +1165,7 @@
         "type": "github"
       }
     },
-    "treefmt-nix_4": {
+    "treefmt-nix_5": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -1187,7 +1187,7 @@
         "type": "github"
       }
     },
-    "treefmt-nix_5": {
+    "treefmt-nix_6": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -1209,7 +1209,7 @@
         "type": "github"
       }
     },
-    "treefmt-nix_6": {
+    "treefmt-nix_7": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -1231,7 +1231,7 @@
         "type": "github"
       }
     },
-    "treefmt-nix_7": {
+    "treefmt-nix_8": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -1244,27 +1244,6 @@
         "owner": "numtide",
         "repo": "treefmt-nix",
         "rev": "ac8e6f32e11e9c7f153823abc3ab007f2a65d3e1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
-    "treefmt-nix_8": {
-      "inputs": {
-        "nixpkgs": [
-          "status",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1762938485,
-        "narHash": "sha256-AlEObg0syDl+Spi4LsZIBrjw+snSVU4T8MOeuZJUJjM=",
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "rev": "5b4ee75aeefd1e2d5a1cc43cf6ba65eba75e83e4",
         "type": "github"
       },
       "original": {
@@ -1296,6 +1275,28 @@
     "treefmt_2": {
       "inputs": {
         "nixpkgs": [
+          "gungnir",
+          "nixpressions",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1744961264,
+        "narHash": "sha256-aRmUh0AMwcbdjJHnytg1e5h5ECcaWtIFQa6d9gI85AI=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "8d404a69efe76146368885110f29a2ca3700bee6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt_3": {
+      "inputs": {
+        "nixpkgs": [
           "mandelbrot",
           "babel",
           "nixpkgs"
@@ -1315,7 +1316,7 @@
         "type": "github"
       }
     },
-    "treefmt_3": {
+    "treefmt_4": {
       "inputs": {
         "nixpkgs": [
           "poincare",
@@ -1337,33 +1338,10 @@
         "type": "github"
       }
     },
-    "treefmt_4": {
-      "inputs": {
-        "nixpkgs": [
-          "read",
-          "babel",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1744961264,
-        "narHash": "sha256-aRmUh0AMwcbdjJHnytg1e5h5ECcaWtIFQa6d9gI85AI=",
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "rev": "8d404a69efe76146368885110f29a2ca3700bee6",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
     "treefmt_5": {
       "inputs": {
         "nixpkgs": [
           "read",
-          "clean",
           "babel",
           "nixpkgs"
         ]
@@ -1386,7 +1364,7 @@
       "inputs": {
         "nixpkgs": [
           "read",
-          "r",
+          "clean",
           "babel",
           "nixpkgs"
         ]
@@ -1409,7 +1387,7 @@
       "inputs": {
         "nixpkgs": [
           "read",
-          "sim",
+          "r",
           "babel",
           "nixpkgs"
         ]
@@ -1431,8 +1409,9 @@
     "treefmt_8": {
       "inputs": {
         "nixpkgs": [
-          "status",
-          "nixpressions",
+          "read",
+          "sim",
+          "babel",
           "nixpkgs"
         ]
       },
