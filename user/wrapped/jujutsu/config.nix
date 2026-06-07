@@ -40,9 +40,9 @@ in
         "bookmark"
         "move"
         "--from"
-        "closest_bookmark($change_id)"
+        "closest_bookmark(@)"
         "--to"
-        "closest_pushable($change_id)"
+        "closest_pushable(@)"
       ];
       patch = [
         "push"
