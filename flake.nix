@@ -80,11 +80,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    status = {
-      url = "github:dysthesis/status";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Neovim flake
     poincare = {
       url = "github:dysthesis/poincare";
@@ -93,6 +88,16 @@
 
     dwl = {
       url = "github:dysthesis/dwl";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Suckless suite (st, dmenu, xsecurelock) for the xorg session.
+    # NOTE: gungnir's `packages` output currently fails to evaluate under
+    # Determinate Nix. The xorg path in system/users/demiurge is lazy and
+    # unused (no host enables it), so this stays dormant until gungnir is
+    # fixed upstream; restoring the input only resolves the dangling ref.
+    gungnir = {
+      url = "github:dysthesis/gungnir";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -117,12 +122,6 @@
     # Secure boot
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # A nice wrapper for Nix
-    nh = {
-      url = "github:viperML/nh";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
