@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
 in
   mkWrapper pkgs pkgs.spotify-player ''
     wrapProgram $out/bin/spotify_player \

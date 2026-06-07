@@ -5,7 +5,7 @@
   niri ? pkgs.niri,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   configPath = import ./config {
     inherit pkgs lib config;
   };

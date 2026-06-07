@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (builtins) elem;
   inherit (lib) getExe' optionalString;
 

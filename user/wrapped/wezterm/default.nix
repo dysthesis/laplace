@@ -4,7 +4,7 @@
   wezterm,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
 in
   mkWrapper pkgs wezterm
   # sh

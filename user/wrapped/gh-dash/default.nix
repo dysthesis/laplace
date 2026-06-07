@@ -7,7 +7,7 @@
   delta,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   config = import ./config.nix {inherit lib delta gh writeShellScript;};
   configFile = pkgs.writers.writeYAML "config.yml" config;
 in

@@ -4,7 +4,7 @@
   inputs,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (pkgs.writers) writeTOML;
   cfg = writeTOML "bibiman-config" (import ./config.nix {inherit inputs pkgs lib;});
 in

@@ -10,7 +10,7 @@
     isString
     ;
   inherit (lib.generators) toINI;
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   # From home-manager
   yesNo = value:
     if value

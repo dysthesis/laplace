@@ -78,7 +78,7 @@
 
   formatted = concatStringsSep " \\\n      " (map mkParam tokens);
 in
-  lib.babel.pkgs.mkWrapper pkgs swaylock-effects ''
+  lib.laplace.pkgs.mkWrapper pkgs swaylock-effects ''
     wrapProgram "$out/bin/swaylock" \
       ${formatted}
   ''

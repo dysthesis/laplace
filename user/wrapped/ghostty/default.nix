@@ -5,7 +5,7 @@
   withDecorations ? false,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   cfg = import ./config.nix {
     inherit
       pkgs

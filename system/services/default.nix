@@ -1,5 +1,5 @@
 {lib, ...}: let
-  inherit (lib.babel.modules) importInDirectory;
+  inherit (lib.laplace.modules) importInDirectory;
 in {
   imports = importInDirectory ./.;
 }

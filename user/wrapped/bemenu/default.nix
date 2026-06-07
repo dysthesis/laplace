@@ -13,7 +13,7 @@
       })
     ];
   });
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (builtins) concatStringsSep;
   # Adaptive sizing based on primary monitor, similar to waybar/style.nix
   monitors = config.laplace.hardware.monitors or [];

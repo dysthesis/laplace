@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   deps = with pkgs; [rocmPackages.rocm-smi];
 in
   mkWrapper pkgs pkgs.unstable.btop-rocm

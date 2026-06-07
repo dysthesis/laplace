@@ -7,7 +7,7 @@
 }: let
   inherit (pkgs.unstable) callPackage;
   inherit (lib) makeOverridable;
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   system = pkgs.stdenv.hostPlatform.system;
   overlay = _final: _prev: let
     guiPackage = package: package.config.env;

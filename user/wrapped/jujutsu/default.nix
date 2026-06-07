@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (pkgs.writers) writeTOML;
   config = writeTOML "jujutsu-config" (import ./config.nix {inherit pkgs lib;});
 in

@@ -4,7 +4,7 @@
   ...
 }: {
   imports = [
-    (lib.babel.modules.mkSelector {
+    (lib.laplace.modules.mkSelector {
       dir = ./.;
       option = ["laplace" "display" "servers"];
       description = "Which display servers to enable";

@@ -4,7 +4,7 @@
   direnv,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   direnvConfig = {
     global = {
       log_format = "-";

@@ -4,7 +4,7 @@
   lib,
   ...
 }: let
-  inherit (lib.babel.system) mkSystem;
+  inherit (lib.laplace.system) mkSystem;
   inherit (builtins) mapAttrs;
   hosts = {
     phobos = "x86_64-linux"; # Laptop
@@ -33,7 +33,7 @@ in
           ;
         # BUG: For some reason, wifi is fucked if I import the hardened.nix profile,
         # but not if I add all of the options myself manually. This is so fucking weird.
-        profiles = ["minimal"];
+        nixosProfiles = ["minimal"];
         specialArgs = {inherit lib;};
         config = {
           documentation.man.enable = true;

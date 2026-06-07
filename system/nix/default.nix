@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib.babel.modules) importInDirectory;
+  inherit (lib.laplace.modules) importInDirectory;
   inherit (lib) optionalAttrs optionals;
   # Determinate-only settings (eval-cores, lazy-trees, parallel-eval) cause
   # warnings on upstream Nix, so gate them on the Determinate package.

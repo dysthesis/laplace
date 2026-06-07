@@ -1,6 +1,6 @@
 # Flake-local library, formerly sourced from the `nixpressions` flake.
-# Only the helpers this configuration actually uses are kept here; the
-# `babel` namespace is preserved so existing call sites need no changes.
+# Only the helpers this configuration actually uses are kept here, exposed
+# under the `laplace` namespace.
 nixpkgs:
 nixpkgs.lib.extend (
   final: _prev: let
@@ -26,7 +26,7 @@ nixpkgs.lib.extend (
       |> builtins.filter (module: builtins.pathExists "${dir}/${module}/default.nix")
       |> map (module: dir + "/${module}");
   in {
-    babel = {
+    laplace = {
       forAllSystems = {
         pkgs ? nixpkgs,
         overlays ? [],
@@ -102,7 +102,7 @@ nixpkgs.lib.extend (
         config,
         inputs,
         specialArgs,
-        profiles ? [],
+        nixosProfiles ? [],
         extraModules ? [],
         ...
       }:
@@ -117,8 +117,8 @@ nixpkgs.lib.extend (
                   profilesPath = "${modulesPath}/profiles";
                   validProfiles = map (final.removeSuffix ".nix") (getFiles profilesPath);
                 in
-                  (final.checkListOfEnum "valid modules" validProfiles profiles) {
-                    imports = map (profile: "${profilesPath}/${profile}.nix") profiles;
+                  (final.checkListOfEnum "valid modules" validProfiles nixosProfiles) {
+                    imports = map (profile: "${profilesPath}/${profile}.nix") nixosProfiles;
                   }
               )
               config

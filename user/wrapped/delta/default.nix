@@ -4,7 +4,7 @@
   delta,
   ...
 }: let
-  inherit (lib.babel.pkgs) mkWrapper;
+  inherit (lib.laplace.pkgs) mkWrapper;
   features = [
     "side-by-side"
     "unobtrusive-line-numbers"

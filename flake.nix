@@ -17,7 +17,7 @@
       "aarch64-darwin"
     ];
 
-    forAllSystems = lib.babel.forAllSystems {inherit systems;};
+    forAllSystems = lib.laplace.forAllSystems {inherit systems;};
 
     treefmt =
       forAllSystems
