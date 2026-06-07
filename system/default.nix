@@ -16,7 +16,7 @@ in {
       DO_NOT_TRACK = "true";
     };
     boot.binfmt.emulatedSystems =
-      if (config.nixpkgs.system != "aarch64-linux")
+      if (system != "aarch64-linux")
       then ["aarch64-linux"]
       else [];
     boot.zfs.forceImportRoot = false;
