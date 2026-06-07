@@ -1,21 +1,6 @@
-{lib, ...}: let
-  inherit (lib) mkOption;
-  inherit (lib.babel.modules) importInDirectory;
-  inherit (lib.babel.path) getDirectories;
-  inherit
-    (lib.types)
-    listOf
-    enum
-    ;
-
-  elems = getDirectories ./.;
-in {
-  options.laplace.hardware.cpu = mkOption {
-    type = listOf (enum elems);
-    # I only have AMD  devices
-    description = "The manufaturer of the CPU";
-    default = [];
-  };
-
-  imports = importInDirectory ./.;
+{lib, ...}:
+lib.babel.modules.mkSelector {
+  dir = ./.;
+  option = ["laplace" "hardware" "cpu"];
+  description = "The manufacturer of the CPU";
 }
