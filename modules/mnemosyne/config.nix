@@ -42,6 +42,16 @@
 in {
   # TODO: Add a check to ensure that `cfg.persistDir` is on a persisted volume
   config = mkIf cfg.enable {
+    # Base directories always persisted; service modules contribute the rest.
+    mnemosyne.dirs = [
+      "/etc/nixos"
+      "/etc/NetworkManager/system-connections"
+      "/etc/ssh"
+      "/var/lib/bluetooth"
+      "/var/lib/pipewire"
+      "/etc/secrets"
+    ];
+
     # We need to run the systemd service very early in the boot process
     # so that the persisted state is available to the system from the
     # start.

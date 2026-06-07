@@ -1,6 +1,7 @@
 {
   pkgs,
   config,
+  lib,
   ...
 }: {
   config = {
@@ -74,7 +75,9 @@
 
     mnemosyne = {
       enable = true;
-      dirs = [
+      # Curated set: mkForce replaces the merged base + service contributions
+      # (notably drops /etc/ssh, whose host keys are persisted directly).
+      dirs = lib.mkForce [
         "/etc/nixos"
         "/etc/NetworkManager/system-connections"
         "/etc/secrets"

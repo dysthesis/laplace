@@ -16,6 +16,8 @@ in {
     };
   };
   config = mkIf cfg.enable {
+    mnemosyne.dirs = [cfg.dataDir];
+
     services.radicle = {
       enable = true;
       node.openFirewall = true;

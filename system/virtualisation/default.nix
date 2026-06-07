@@ -9,6 +9,8 @@
 in {
   options.laplace.virtualisation.enable = mkEnableOption "Whether or not to enable virtualisation capabilities";
   config = mkIf cfg.enable {
+    mnemosyne.dirs = ["/var/lib/libvirt"];
+
     virtualisation = {
       spiceUSBRedirection.enable = true;
 
