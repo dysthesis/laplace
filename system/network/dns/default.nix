@@ -1,10 +1,10 @@
 {lib, ...}: let
-  inherit (lib) mkDefault;
+  inherit (lib) mkDefault mkEnableOption;
 in {
-  imports = [
-    ./options.nix
-    ./config.nix
-  ];
+  imports = [./config.nix];
+
+  options.laplace.network.dnscrypt-proxy.enable =
+    mkEnableOption "Whether or not to enable DNSCrypt-Proxy";
 
   config.networking.nameservers = mkDefault [
     "1.1.1.1"
