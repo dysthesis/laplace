@@ -15,10 +15,6 @@
     listOf
     str
     ;
-  addIf = cond: content:
-    if cond
-    then content
-    else [];
 in {
   options.mnemosyne = {
     enable = mkEnableOption "Whether to enable state persistence for ephemeral root";
@@ -40,32 +36,32 @@ in {
           "/var/lib/pipewire"
           "/etc/secrets"
         ]
-        ++ addIf config.laplace.services.miniflux.enable [
+        ++ lib.optionals config.laplace.services.miniflux.enable [
           "/var/lib/private/miniflux"
           "/var/lib/postgresql"
         ]
-        ++ addIf config.laplace.network.vpn.enable [
+        ++ lib.optionals config.laplace.network.vpn.enable [
           "/etc/mullvad-vpn"
           "/var/cache/mullvad-vpn"
         ]
-        ++ addIf config.laplace.services.forgejo.enable [
+        ++ lib.optionals config.laplace.services.forgejo.enable [
           config.services.forgejo.stateDir
           config.services.postgresql.dataDir
         ]
-        ++ addIf config.laplace.services.tailscale.enable [
+        ++ lib.optionals config.laplace.services.tailscale.enable [
           "/var/lib/tailscale"
         ]
-        ++ addIf config.laplace.services.llm.enable [
+        ++ lib.optionals config.laplace.services.llm.enable [
           "/var/lib/private/ollama"
           "/var/lib/private/open-webui"
         ]
-        ++ addIf config.laplace.virtualisation.enable ["/var/lib/libvirt"]
-        ++ addIf config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
-        ++ addIf config.laplace.docker.enable [
+        ++ lib.optionals config.laplace.virtualisation.enable ["/var/lib/libvirt"]
+        ++ lib.optionals config.laplace.security.secure-boot.enable ["/var/lib/sbctl"]
+        ++ lib.optionals config.laplace.docker.enable [
           config.laplace.docker.dataDir
         ]
-        ++ addIf config.laplace.services.llm.enable [config.laplace.services.llm.dataDir]
-        ++ addIf config.laplace.services.radicle.enable [config.laplace.services.radicle.dataDir];
+        ++ lib.optionals config.laplace.services.llm.enable [config.laplace.services.llm.dataDir]
+        ++ lib.optionals config.laplace.services.radicle.enable [config.laplace.services.radicle.dataDir];
     };
     mountOpts = mkOption {
       type = listOf str;
