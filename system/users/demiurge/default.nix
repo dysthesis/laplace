@@ -47,11 +47,6 @@ in {
         ];
 
       packages = let
-        addIf = cond: content:
-          if cond
-          then content
-          else [];
-
         basePackages = with pkgs; [
           rsync
           gnupg
@@ -87,7 +82,7 @@ in {
             bibata-cursors
             pwvucontrol
           ]
-          ++ addIf (builtins.elem "wayland" config.laplace.display.servers) [
+          ++ lib.optionals (builtins.elem "wayland" config.laplace.display.servers) [
             wl-clipboard
             grim
             slurp
@@ -96,7 +91,7 @@ in {
             configured.fuzzel
             configured.foot
           ]
-          ++ addIf (builtins.elem "xorg" config.laplace.display.servers) (
+          ++ lib.optionals (builtins.elem "xorg" config.laplace.display.servers) (
             with inputs.gungnir.packages.${hostSystem}; let
               fontSize =
                 if config.networking.hostName == "phobos"
@@ -168,7 +163,7 @@ in {
         desktopPackages =
           cli ++ dev ++ desktop ++ applications ++ system ++ misc ++ apps ++ productivity;
       in
-        basePackages ++ addIf isDesktop desktopPackages;
+        basePackages ++ lib.optionals isDesktop desktopPackages;
     };
   };
 }
