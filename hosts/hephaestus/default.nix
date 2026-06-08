@@ -2,17 +2,13 @@
 # (disk layout, impermanence, bootloader, virtio, serial, qemuGuest, the archon
 # admin user, the VMA image artifact) lives in the `proxmox` profile; this module
 # only declares what is specific to this guest.
-{
-  config,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   laplace = {
     profiles = ["proxmox"];
     proxmox = {
       cores = 2;
       memory = 4096; # MiB
-      diskSize = "32G";
+      diskSize = "64G";
       # macAddress left as zeros; Proxmox assigns one on restore.
     };
 
@@ -38,16 +34,6 @@
   # state dirs are contributed by the forgejo module; base dirs (/etc/ssh, ...)
   # by mnemosyne itself - so no mkForce, just this host-specific addition.
   mnemosyne.dirs = ["/etc/config"];
-
-  sops.secrets."cloudflared/hephaestus" = {};
-
-  services.cloudflared = {
-    enable = true;
-    tunnels."4627a163-b910-476e-953f-353d3bfaa6d1" = {
-      credentialsFile = config.sops.secrets."cloudflared/hephaestus".path;
-      default = "http_status:404";
-    };
-  };
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies
