@@ -67,28 +67,33 @@ in {
     # seabios + grub (legacy). disko's EF02 partition sets boot.loader.grub.devices
     # to /dev/vda, so we only pick the bootloader and disable EFI vars (no ESP).
     laplace.bootloader = mkDefault "grub";
-    boot.loader.efi.canTouchEfiVariables = mkForce false;
 
-    # virtio guest essentials, inlined rather than importing the upstream
-    # qemu-guest profile so the whole module stays gated behind `enabled`.
-    boot.initrd.availableKernelModules = [
-      "virtio_pci"
-      "virtio_blk"
-      "virtio_scsi"
-      "virtio_net"
-      "uas"
-      "sd_mod"
-    ];
-    boot.initrd.kernelModules = [
-      "virtio_balloon"
-      "virtio_console"
-      "virtio_rng"
-    ];
-    # Serial console so `qm terminal` works; keep tty1 for the noVNC console.
-    boot.kernelParams = [
-      "console=ttyS0,115200"
-      "console=tty1"
-    ];
+    boot = {
+      loader.efi.canTouchEfiVariables = mkForce false;
+
+      # virtio guest essentials, inlined rather than importing the upstream
+      # qemu-guest profile so the whole module stays gated behind `enabled`.
+      initrd = {
+        availableKernelModules = [
+          "virtio_pci"
+          "virtio_blk"
+          "virtio_scsi"
+          "virtio_net"
+          "uas"
+          "sd_mod"
+        ];
+        kernelModules = [
+          "virtio_balloon"
+          "virtio_console"
+          "virtio_rng"
+        ];
+      };
+      # Serial console so `qm terminal` works; keep tty1 for the noVNC console.
+      kernelParams = [
+        "console=ttyS0,115200"
+        "console=tty1"
+      ];
+    };
     services.qemuGuest.enable = true;
 
     # Allow remote `nixos-rebuild`/`nh` from the workstations.
@@ -157,8 +162,7 @@ in {
         scsihw = "virtio-scsi-single";
         virtio0 = "local-lvm:vm-9999-disk-0";
         ostype = "l26";
-        cores = cfg.cores;
-        memory = cfg.memory;
+        inherit (cfg) cores memory;
         bios = "seabios";
         name = hostName;
         net0 = "virtio=${cfg.macAddress},bridge=${cfg.bridge}";

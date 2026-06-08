@@ -16,11 +16,11 @@
 
   isWayland = elem "wayland" cfg;
   wallpaper = "${../../../../user/assets/wallpaper.png}";
-  location =
-    config.location or {
-      latitude = 0;
-      longitude = 0;
-    };
+  defaultLocation = {
+    latitude = 0;
+    longitude = 0;
+  };
+  location = defaultLocation // (config.location or {});
   hasLocation = (location.latitude != 0) || (location.longitude != 0);
 
   lockCommand = "${getExe pkgs.configured.swaylock} -f";
