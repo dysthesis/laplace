@@ -119,18 +119,15 @@
     };
 
   normaliseSection = section: let
+    defaults = {
+      groups = [];
+      before = [];
+      after = [];
+    };
     raw =
       if builtins.isList section
-      then {
-        groups = section;
-        before = [];
-        after = [];
-      }
-      else {
-        groups = section.groups or [];
-        before = section.before or [];
-        after = section.after or [];
-      };
+      then defaults // {groups = section;}
+      else defaults // section;
   in {
     groups = builtins.filter (group: group != []) (map stripDisabled raw.groups);
     before = stripDisabled raw.before;
@@ -196,7 +193,7 @@
         modules
         metrics
         ;
-      theme = settings.theme;
+      inherit (settings) theme;
     };
 
   waybarConfig =

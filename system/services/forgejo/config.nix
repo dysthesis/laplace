@@ -53,12 +53,14 @@ in {
 
         forgejo = {
           enable = true;
-          stateDir = cfg.stateDir;
+          inherit (cfg) stateDir;
           user = "git";
           group = "git";
-          database.type = "postgres";
-          database.user = "git";
-          database.name = "git";
+          database = {
+            type = "postgres";
+            user = "git";
+            name = "git";
+          };
           # Enable support for Git Large File Storage
           lfs.enable = true;
 
