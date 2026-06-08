@@ -62,7 +62,10 @@
       };
 
       services = {
-        tailscale.enable = true;
+        tailscale = {
+          enable = true;
+          denySubnetRoutes = true;
+        };
         llm = {
           enable = true;
           # backend = "vllm";

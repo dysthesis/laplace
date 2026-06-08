@@ -6,12 +6,20 @@
   inherit (lib) mkEnableOption mkIf;
   cfg = config.laplace.services.tailscale;
 in {
-  options.laplace.services.tailscale.enable = mkEnableOption "Whether or not to enable Tailscale";
+  options.laplace.services.tailscale = {
+    enable = mkEnableOption "Whether or not to enable Tailscale";
+    denySubnetRoutes = mkEnableOption "refusing subnet routes advertised by tailnet peers (sets --accept-routes=false), so a peer advertising the local LAN can't blackhole it through the tunnel";
+  };
   config = mkIf cfg.enable {
     mnemosyne.dirs = ["/var/lib/tailscale"];
 
     # Taken from https://wiki.nixos.org/wiki/Tailscale
     services.tailscale.enable = true;
+
+    # Optionally refuse subnet routes advertised by tailnet peers. Without this, a
+    # peer advertising the local LAN routes it through the tunnel and blackholes
+    # LAN hosts (router, proxmox) when the advertiser drops.
+    services.tailscale.extraSetFlags = mkIf cfg.denySubnetRoutes ["--accept-routes=false"];
     networking.nftables.enable = true;
     networking.firewall = {
       enable = true;
