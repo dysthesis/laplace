@@ -11,7 +11,10 @@
 
     boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     laplace = {
-      services.tailscale.enable = true;
+      services.tailscale = {
+        enable = true;
+        denySubnetRoutes = true;
+      };
       harden = [
         # "kernel"
         # Keep malloc hardening enabled here. Zen already ships with
