@@ -8,4 +8,8 @@ final: _prev: {
   georgia-fonts = final.callPackage ./georgia-fonts {};
   jbcustom-nf = final.callPackage ./jbcustom-nf {};
   literata = final.callPackage ./literata {};
+
+  # Curried: `pkgs.proxmox-vma { rawImage; qemuConf; baseName; }`. Consumed by
+  # the proxmox guest profile to turn a disko raw image into a VMA archive.
+  proxmox-vma = final.callPackage ./proxmox-vma {};
 }
