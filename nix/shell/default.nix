@@ -29,7 +29,7 @@ pkgs.mkShell {
     shfmt
     shellcheck
     mergiraf
-    defuddle-cli
+    defuddle
     nodejs
   ];
 }
