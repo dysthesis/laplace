@@ -26,6 +26,13 @@
   in
     mapAttrs (_: forAllSystems) {
       devShells = pkgs: {default = import ./nix/shell pkgs;};
+      # Reproducible shell-startup benchmark: `nix run .#bench`. See bench/README.md.
+      apps = pkgs: {
+        bench = {
+          type = "app";
+          program = lib.getExe (import ./bench pkgs);
+        };
+      };
       # for `nix fmt`
       formatter = pkgs: treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.wrapper;
       # for `nix flake check`
