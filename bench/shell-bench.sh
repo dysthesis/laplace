@@ -170,6 +170,8 @@ tier_metrics() {
     --label "$label" --mode "${BENCH_MODE:-}" --spawn-mode "$([[ $login == 1 ]] && echo login || echo interactive)")
   [[ "$login" == 1 ]] && probeargs+=(--login)
   [[ -n "$regex" ]] && probeargs+=(--prompt-regex "$regex")
+  # Per-call extras, e.g. BENCH_PROBE_EXTRA=--no-raw for readline shells.
+  [[ -n "${BENCH_PROBE_EXTRA:-}" ]] && probeargs+=(${BENCH_PROBE_EXTRA})
   log "T2 metrics: $label"
   [[ $DRYRUN == 1 ]] && return 0
   pin env "${runenv[@]}" python3 "$PROBE" "${probeargs[@]}" > "$out" \
@@ -189,7 +191,8 @@ tier_profile_fish() {
   # fish profile columns: Time(us)  Sum(us)  Command. Rank by self-time.
   if [[ -s "$prof" ]]; then
     { printf 'top init lines by self-time (us):\n'
-      tail -n +2 "$prof" | sort -t$'\t' -k1 -rn | head -25
+      # `head` closing the pipe early SIGPIPEs `sort` under pipefail; don't die.
+      tail -n +2 "$prof" | sort -t$'\t' -k1 -rn | head -25 || true
     } > "$OUTDIR/${label}.profile-top.txt"
     log "  -> $OUTDIR/${label}.profile-top.txt"
   fi
@@ -211,15 +214,17 @@ tier_ablation_fish() {
   log "  config: $cfg"
 
   # Suspects worth ablating: name -> extended-regex matching the init line(s).
+  # Each regex must match both the historical runtime form (`tool init |
+  # source`) and the baked form (`source /nix/store/…-tool-init.fish`).
   local -a names=(dbus task_startup zoxide starship_init direnv transience plugins)
   local -a regexes=(
     'dbus-update-activation-environment'
     'next due\.before'
     'zoxide.*init'
-    'starship.*init fish'
-    'direnv hook fish'
+    'starship.*init'
+    'direnv hook fish|direnv-hook\.fish'
     'enable_transience'
-    'load_plugin '
+    'load_plugin |fish-plugin-paths'
   )
 
   # Baseline: reconstructed config, nothing ablated (regex matches nothing), run
@@ -354,7 +359,10 @@ for mode in "${MODE_LIST[@]}"; do
       declare -a BENV_PURE=("${RUNENV[@]}" "BASH_NO_FISH=1")
       lbl="bash-pure.${local_tag}"
       want_tier coarse  && tier_coarse  "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
-      want_tier metrics && tier_metrics "$lbl" "$bb" "$login" "" "${BENV_PURE[@]}"
+      # --no-raw: readline suppresses its own echo if termios ECHO is off at
+      # startup, which would make every input_lag sample a 10 s timeout.
+      want_tier metrics && BENCH_PROBE_EXTRA=--no-raw \
+        tier_metrics "$lbl" "$bb" "$login" "" "${BENV_PURE[@]}"
       want_tier syscall && tier_syscall "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
       # real handoff bash -> fish (what a terminal actually does)
       lbl="bash-handoff.${local_tag}"

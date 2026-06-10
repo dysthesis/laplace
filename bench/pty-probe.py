@@ -111,11 +111,12 @@ def _reply_for(q: bytes) -> bytes:
 class Pty:
     """A shell running in a pseudo-terminal we can read from and type into."""
 
-    def __init__(self, argv, env, cols, rows):
+    def __init__(self, argv, env, cols, rows, raw=True):
         self.argv = argv
         self.env = env
         self.cols = cols
         self.rows = rows
+        self.raw = raw
         self.pid = -1
         self.fd = -1
         self.buf = bytearray()           # everything read so far (raw)
@@ -139,11 +140,15 @@ class Pty:
         fcntl.ioctl(self.fd, termios.TIOCSWINSZ, winsz)
         # Raw mode: kill kernel echo/canonical processing so we time the SHELL's
         # rendered echo (syntax highlight, autosuggest), not the instant kernel
-        # echo that races it before the line editor takes over.
-        try:
-            tty.setraw(self.fd)
-        except termios.error:
-            pass
+        # echo that races it before the line editor takes over. Caveat:
+        # readline samples the termios ECHO flag at startup and suppresses its
+        # own rendered echo when it is off, so for readline shells (bash) raw
+        # mode must stay off (--no-raw) or every keystroke probe times out.
+        if self.raw:
+            try:
+                tty.setraw(self.fd)
+            except termios.error:
+                pass
         # Non-blocking reads for the select() loop.
         flags = fcntl.fcntl(self.fd, fcntl.F_GETFL)
         fcntl.fcntl(self.fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
@@ -307,7 +312,8 @@ def measure_spawn_metrics(args, env, step=None) -> dict:
     }
 
     for _ in range(args.prompt_runs):
-        p = Pty(_argv(args), env, args.cols, args.rows).spawn()
+        p = Pty(_argv(args), env, args.cols, args.rows,
+                raw=not args.no_raw).spawn()
         try:
             # ---- first_prompt --------------------------------------------
             def first_pred(stripped):
@@ -324,13 +330,18 @@ def measure_spawn_metrics(args, env, step=None) -> dict:
             # ---- command_lag: Enter on an empty line ---------------------
             # Measure send -> the redraw settling (full prompt painted), not the
             # first prompt glyph, so the cheap transient-prompt char doesn't
-            # mask starship's real per-Enter render cost.
+            # mask starship's real per-Enter render cost. The render arrives in
+            # bursts (transient repaint, clear, full prompt) whose internal
+            # gaps reach ~90 ms here, so the quiesce window must comfortably
+            # exceed them or the sample randomly clocks an intermediate burst.
+            # Use the same window as first_prompt; t_ready is the last byte's
+            # time, so the wait itself does not inflate the number.
             for _i in range(args.inner_iters):
-                _drain(p)
+                _drain(p, quiet_s=0.05, cap_s=1.0)
                 t_send = time.monotonic()
                 p.write(b"\r")
                 _m, t_ready, _q = p.pump_until(
-                    lambda _b: False, timeout_s=timeout_s, quiesce_s=0.015
+                    lambda _b: False, timeout_s=timeout_s, quiesce_s=quiesce_s
                 )
                 out["command_lag_ms"].append((t_ready - t_send) * 1000.0)
 
@@ -369,7 +380,8 @@ def measure_first_command(args, env, step=None) -> list:
         mark = secrets.token_hex(8)
         cenv = dict(env)
         cenv["BPROBE_MARK"] = mark
-        p = Pty(_argv(args), cenv, args.cols, args.rows).spawn()
+        p = Pty(_argv(args), cenv, args.cols, args.rows,
+                raw=not args.no_raw).spawn()
         try:
             # Type immediately; the shell buffers until its line editor is up,
             # so the time until the sentinel prints is first_command_lag.
@@ -495,6 +507,10 @@ def main():
     ap.add_argument("--prompt-regex", default=None,
                     help="bytes-regex marking the prompt tail (else quiescence)")
     ap.add_argument("--quiesce-ms", type=float, default=120.0)
+    ap.add_argument("--no-raw", action="store_true",
+                    help="keep the pty's termios sane (ECHO on): required for "
+                         "readline shells, which suppress their own echo when "
+                         "ECHO is off at startup")
     ap.add_argument("--timeout-ms", type=float, default=10000.0)
     ap.add_argument("--prompt-runs", type=int, default=10,
                     help="cold spawns for first_prompt/first_command/exit")
