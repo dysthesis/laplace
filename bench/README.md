@@ -148,7 +148,17 @@ Lessons already baked in from validating against fish:
   probe we don't answer, it will hang to the timeout — add it there.
 - **Raw mode + settle** isolate the shell's *rendered* echo from the kernel's
   instant echo and from pending redraw bytes. Without this, `input_lag`
-  collapses to ~0 (kernel echo) or to a stale match.
+  collapses to ~0 (kernel echo) or to a stale match. Exception: readline
+  samples the termios ECHO flag at startup and *suppresses its own echo* when
+  it is off, so readline shells (bash) must be probed with `--no-raw` (the
+  harness does this for `bash-pure`) or every keystroke times out.
+- **`command_lag` quiesces on the full render.** A starship prompt arrives in
+  several bursts (transient repaint, clear, full prompt) whose internal gaps
+  reach tens of ms; the quiesce window for this metric therefore matches
+  `--quiesce-ms` (default 120 ms), well past any inter-burst gap. The recorded
+  time is the *last byte's* arrival, so the window itself doesn't inflate the
+  number — but a too-small window randomly clocks an intermediate burst and
+  bimodalises the metric.
 - **`input_lag_longbuf ≈ input_lag`** for fish, because fish re-highlights
   *incrementally*; appending a keystroke is cheap regardless of line length.
   This is unlike the zsh-syntax-highlighting plugin the second write-up

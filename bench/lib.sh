@@ -85,9 +85,13 @@ gen_ablation_config() {
   local outdir="$1" cfg="$2" loadplugin="$3" regex="$4"
   local vd="$outdir/share/fish/vendor_conf.d"
   mkdir -p "$vd"
-  [[ -f "$loadplugin" ]] && cp "$loadplugin" "$vd/load_plugin.fish"
+  # `[[ ... ]] && cp` would abort the whole script under set -e when the
+  # config has no load_plugin.fish (it is optional).
+  if [[ -f "$loadplugin" ]]; then cp "$loadplugin" "$vd/load_plugin.fish"; fi
   # Prefix matching lines with a comment marker; leave everything else intact.
-  sed -E "s|^(.*(${regex}).*)$|# ABLATED: \1|" "$cfg" > "$vd/user_config.fish"
+  # \x01 as the s/// delimiter: the regexes contain `|` alternations.
+  local d=$'\x01'
+  sed -E "s${d}^(.*(${regex}).*)\$${d}# ABLATED: \\1${d}" "$cfg" > "$vd/user_config.fish"
   printf '%s\n' "$outdir/share"
 }
 
