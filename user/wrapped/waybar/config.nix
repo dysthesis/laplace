@@ -13,7 +13,6 @@
     gtkLayerShell = true;
     baseHeight = {
       default = 34.0;
-      yaldabaoth = 28.0;
     };
   };
 
