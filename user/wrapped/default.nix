@@ -170,7 +170,6 @@
       spotify-player = callPackage ./spotify_player {inherit lib pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
       taskwarrior-tui = callPackage ./taskwarrior-tui {inherit lib pkgs;};
-      weechat = callPackage ./weechat {inherit lib pkgs;};
       zen = guiPackage (
         callPackage ./zen {
           inherit
