@@ -12,6 +12,30 @@
   inherit (builtins) elem;
   cfg = config.laplace.display.servers;
 in {
+  imports = [
+    (lib.laplace.modules.mkSelector {
+      dir = ./sessions;
+      option = ["laplace" "display" "xorg" "session"];
+      description = "Which X11 session to run";
+      multiple = false;
+      default = "xmonad";
+      # Without this, the broken default would fail wayland-only hosts.
+      active = config: elem "xorg" config.laplace.display.servers;
+      broken = {
+        xmonad = "the pinned gungnir revision's packages output fails to evaluate and the pinned mandelbrot revision's lock fetches the deleted dysthesis/babel repo; both are fixed in their local checkouts — push them, run `nix flake update gungnir mandelbrot`, then drop this entry and the worksUpstream guard in ./sessions/xmonad";
+      };
+    })
+  ];
+
+  # Set by the selected session module; the bash wrapper execs this on
+  # VT1 login instead of hardcoding startx.
+  options.laplace.display.xorg.sessionCommand = lib.mkOption {
+    type = lib.types.nullOr lib.types.str;
+    default = null;
+    internal = true;
+    description = "Command login shells exec to start the X11 session.";
+  };
+
   config = mkIf (elem "xorg" cfg) {
     environment.systemPackages = with pkgs; [
       xclip

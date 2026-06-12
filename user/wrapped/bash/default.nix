@@ -6,19 +6,25 @@
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
   inherit (builtins) elem;
-  inherit (lib) getExe' optionalString;
+  inherit (lib) optionalString;
 
   configuration = let
+    # Session commands are contributed by the selected compositor/session
+    # modules under system/display/servers. The null checks matter: a session
+    # marked broken contributes nothing, and interpolating the resulting null
+    # here would otherwise throw before the broken-member assertion renders.
+    waylandSession = config.laplace.display.wayland.sessionCommand;
+    xorgSession = config.laplace.display.xorg.sessionCommand;
     startWayland = ''
-      exec ${getExe' pkgs.configured.niri "niri-session"}
+      exec ${waylandSession}
     '';
-    startXorg = "exec ${pkgs.configured.xinit}/bin/startx";
+    startXorg = "exec ${xorgSession}";
     startDisplay =
       # sh
       ''
         if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-         ${optionalString (elem "wayland" config.laplace.display.servers) startWayland}
-         ${optionalString (elem "xorg" config.laplace.display.servers) startXorg}
+         ${optionalString (elem "wayland" config.laplace.display.servers && waylandSession != null) startWayland}
+         ${optionalString (elem "xorg" config.laplace.display.servers && xorgSession != null) startXorg}
         fi
       '';
     startFish =

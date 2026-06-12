@@ -90,27 +90,9 @@ in {
             configured.bibata-hyprcursor
             configured.fuzzel
             configured.foot
-          ]
-          ++ lib.optionals (builtins.elem "xorg" config.laplace.display.servers) (
-            with inputs.gungnir.packages.${hostSystem}; let
-              fontSize =
-                if config.networking.hostName == "phobos"
-                then 15
-                else 12;
-            in [
-              xsecurelock
-              xclip
-              (st {
-                inherit fontSize;
-                borderpx = 20;
-                shell = lib.getExe pkgs.configured.fish;
-              })
-              (dmenu {
-                inherit fontSize;
-                lineHeight = 26;
-              })
-            ]
-          );
+          ];
+        # xorg session packages (gungnir's st/dmenu/xsecurelock) moved to
+        # system/display/servers/xorg/sessions/xmonad.
 
         applications = with pkgs; [
           zotero
