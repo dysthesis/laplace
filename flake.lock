@@ -3,28 +3,6 @@
     "babel": {
       "inputs": {
         "nixpkgs": [
-          "mandelbrot",
-          "nixpkgs"
-        ],
-        "treefmt": "treefmt_3"
-      },
-      "locked": {
-        "lastModified": 1749436073,
-        "narHash": "sha256-MPJwegO9Ale4RBLgJ1faisf1VDXkyVisFAGJLg62T3w=",
-        "owner": "dysthesis",
-        "repo": "babel",
-        "rev": "238a0e5a7bf12a48194ee0311f1ef088c08ecbf6",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dysthesis",
-        "repo": "babel",
-        "type": "github"
-      }
-    },
-    "babel_2": {
-      "inputs": {
-        "nixpkgs": [
           "read",
           "nixpkgs"
         ],
@@ -44,7 +22,7 @@
         "type": "github"
       }
     },
-    "babel_3": {
+    "babel_2": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -67,7 +45,7 @@
         "type": "github"
       }
     },
-    "babel_4": {
+    "babel_3": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -90,7 +68,7 @@
         "type": "github"
       }
     },
-    "babel_5": {
+    "babel_4": {
       "inputs": {
         "nixpkgs": [
           "read",
@@ -115,7 +93,7 @@
     },
     "clean": {
       "inputs": {
-        "babel": "babel_3",
+        "babel": "babel_2",
         "nixpkgs": [
           "read",
           "nixpkgs"
@@ -444,11 +422,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1768621830,
-        "narHash": "sha256-JC6jK6ExvCpt6SwpQmGwhvGTGmKq6H/MIwaidpT74FI=",
+        "lastModified": 1781265769,
+        "narHash": "sha256-mq1xplUV2IxErr+qRJ623vWtPBdMTaA+C3nyyntwg90=",
         "owner": "dysthesis",
         "repo": "gungnir",
-        "rev": "c2ca3982791e54204ed79717a96b56477eab1053",
+        "rev": "f7a368c1c1f1a147789df112996b4c40186f9fe7",
         "type": "github"
       },
       "original": {
@@ -528,18 +506,18 @@
     },
     "mandelbrot": {
       "inputs": {
-        "babel": "babel",
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
+        "nixpressions": "nixpressions_3",
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1753588434,
-        "narHash": "sha256-LTGgUTOyQSu0rvp8YybyU9PMkQaTuUonAFyxy6n32FY=",
+        "lastModified": 1781265709,
+        "narHash": "sha256-SGch6Ft1CFoTtw2e9Rr25BtbKfIaWMmDFh5CkcONIe8=",
         "owner": "dysthesis",
         "repo": "mandelbrot",
-        "rev": "9cfa694e3106b817ac4b6173c702f1568f3dd77f",
+        "rev": "0aa3b80200224ae3b8449612d63c26d73012ba86",
         "type": "github"
       },
       "original": {
@@ -855,6 +833,28 @@
     "nixpressions_3": {
       "inputs": {
         "nixpkgs": [
+          "mandelbrot",
+          "nixpkgs"
+        ],
+        "treefmt": "treefmt_3"
+      },
+      "locked": {
+        "lastModified": 1764825587,
+        "narHash": "sha256-lJXQsUsKhlkZ4SH1ovKr39A6YCOnwchqPZeRXBKytLo=",
+        "owner": "dysthesis",
+        "repo": "nixpressions",
+        "rev": "82418c95524c5a77ba6578b037bf3ece31b4e8e6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dysthesis",
+        "repo": "nixpressions",
+        "type": "github"
+      }
+    },
+    "nixpressions_4": {
+      "inputs": {
+        "nixpkgs": [
           "poincare",
           "nixpkgs"
         ],
@@ -880,7 +880,7 @@
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
-        "nixpressions": "nixpressions_3",
+        "nixpressions": "nixpressions_4",
         "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
@@ -922,7 +922,7 @@
     },
     "r": {
       "inputs": {
-        "babel": "babel_4",
+        "babel": "babel_3",
         "nixpkgs": [
           "read",
           "nixpkgs"
@@ -946,7 +946,7 @@
     },
     "read": {
       "inputs": {
-        "babel": "babel_2",
+        "babel": "babel",
         "clean": "clean",
         "nixpkgs": [
           "nixpkgs"
@@ -1079,7 +1079,7 @@
     },
     "sim": {
       "inputs": {
-        "babel": "babel_5",
+        "babel": "babel_4",
         "nixpkgs": [
           "read",
           "nixpkgs"
@@ -1360,7 +1360,7 @@
       "inputs": {
         "nixpkgs": [
           "mandelbrot",
-          "babel",
+          "nixpressions",
           "nixpkgs"
         ]
       },

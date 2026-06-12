@@ -19,11 +19,9 @@ in {
       description = "Which X11 session to run";
       multiple = false;
       default = "xmonad";
-      # Without this, the broken default would fail wayland-only hosts.
+      # Gate any future `broken` member on xorg actually being enabled, so a
+      # broken default cannot fail wayland-only hosts.
       active = config: elem "xorg" config.laplace.display.servers;
-      broken = {
-        xmonad = "the pinned gungnir revision's packages output fails to evaluate and the pinned mandelbrot revision's lock fetches the deleted dysthesis/babel repo; both are fixed in their local checkouts — push them, run `nix flake update gungnir mandelbrot`, then drop this entry and the worksUpstream guard in ./sessions/xmonad";
-      };
     })
   ];
 
