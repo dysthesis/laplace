@@ -654,11 +654,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780539866,
-        "narHash": "sha256-SLjFDX7AOX+vstHIpGztj1JrJ5J96SxfN8kPa0ZfMVY=",
+        "lastModified": 1781356953,
+        "narHash": "sha256-Z6+m8YqDkW/7wF0RSqbisR2TbBM6opAT60eTOe/o91g=",
         "owner": "nixpak",
         "repo": "nixpak",
-        "rev": "ad5ac7d24a505db29671edadfe6a8f985aa6e94e",
+        "rev": "26b2c3bfcc07c548ffa4c66121b397303bcf50f5",
         "type": "github"
       },
       "original": {
@@ -730,11 +730,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1781266271,
-        "narHash": "sha256-ohcynIomov+zVFCNFqSpyeD0qM8b07jG7Ri4D+P/XZM=",
+        "lastModified": 1781408246,
+        "narHash": "sha256-9TVN2+OyqmbhPWLabQB977d986WI5+Y8TU/BxhsvdQI=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9a479a81572bf5e3ee95600cf1b692d58b54d41d",
+        "rev": "5683ad2eb72152de54c574a5fb9a62181c569871",
         "type": "github"
       },
       "original": {
@@ -772,11 +772,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1780902259,
-        "narHash": "sha256-q8yYEC5f1mFlQO9RGna4LTc9QrcvWunX6FYp83munkQ=",
+        "lastModified": 1781216227,
+        "narHash": "sha256-9mUW6gNwoN2SWc/l0fW4svPNOulXLl8ijqKyeSOGgJE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "bd0ff2d3eac24699c3664d5966b9ef36f388e2ca",
+        "rev": "a0374025a863d007d98e3297f6aa46cc3141c2f0",
         "type": "github"
       },
       "original": {
@@ -1499,11 +1499,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781173532,
-        "narHash": "sha256-MwnZpL82aQO1I15JH525vz6REI/OULEAmXDp6cIcgNg=",
+        "lastModified": 1781353552,
+        "narHash": "sha256-FHqsgWr7O3XcRNtBO/bjo/nI06EP9JjUb5AEz0Dh3HI=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "f13e82162fae68af7716147207fa5f868f5ca381",
+        "rev": "b7562bb6de361d2982a2a6104ee27e4f3169efa5",
         "type": "github"
       },
       "original": {
