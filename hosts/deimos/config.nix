@@ -67,7 +67,7 @@
           denySubnetRoutes = true;
         };
         llm = {
-          enable = true;
+          enable = false;
           # backend = "vllm";
           modelRegistry = {
             # "qwen3.6-27b" = {
@@ -106,7 +106,10 @@
       zram.enable = true;
 
       users = ["demiurge"];
-      display.servers = ["wayland"];
+      display = {
+        servers = ["wayland"];
+        wayland.compositor = "dwl";
+      };
 
       virtualisation.enable = true;
       nh = {

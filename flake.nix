@@ -157,5 +157,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    status = {
+      url = "github:dysthesis/status";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }

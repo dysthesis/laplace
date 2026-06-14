@@ -88,7 +88,7 @@ in {
             slurp
             swappy
             configured.bibata-hyprcursor
-            configured.fuzzel
+            configured.bemenu
             configured.foot
           ];
         # xorg session packages (gungnir's st/dmenu/xsecurelock) moved to
