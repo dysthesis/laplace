@@ -51,6 +51,7 @@ in {
         allowUnfreePredicate = pkg:
           builtins.elem (lib.getName pkg) [
             "obsidian"
+            "claude-code"
             "open-webui"
             "steam"
             "steam-unwrapped"

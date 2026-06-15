@@ -6,6 +6,7 @@
   ...
 }: let
   inherit (lib) mkIf;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (builtins) elem filter hasAttr;
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
@@ -102,7 +103,12 @@ in {
           })
           unstable.tor-browser
           tigervnc
-          obsidian
+          (mkWrapper pkgs.unstable pkgs.unstable.obsidian ''
+            wrapProgram $out/bin/obsidian \
+            --prefix PATH : ${lib.makeBinPath (with pkgs.unstable; [
+              claude-code
+            ])} '')
+          unstable.claude-code
         ];
 
         system = with pkgs; [
