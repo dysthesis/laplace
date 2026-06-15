@@ -8,6 +8,30 @@
     inputs.nixos-hardware.nixosModules.common-gpu-amd # AMD GPU support
   ];
   config = {
+    networking = {
+      hostId = "47494eeb";
+      defaultGateway = {
+        address = "10.0.20.1";
+        interface = "priv";
+      };
+      interfaces.priv.useDHCP = true;
+      interfaces.mgmt.ipv4.addresses = [
+        {
+          address = "10.0.30.10";
+          prefixLength = 24;
+        }
+      ];
+      vlans = {
+        mgmt = {
+          id = 30;
+          interface = "enp5s0";
+        };
+        priv = {
+          id = 20;
+          interface = "enp5s0";
+        };
+      };
+    };
     boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     laplace = {
       # harden = ["kernel"];
@@ -46,7 +70,7 @@
       network = {
         bluetooth.enable = true;
         wifi.enable = true;
-        dnscrypt-proxy.enable = true;
+        dnscrypt-proxy.enable = false;
         tor = {
           enable = true;
           libera-chat-map.enable = true;
