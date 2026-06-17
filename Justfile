@@ -66,4 +66,4 @@ clean:
   fd "core|result|out|test" --no-ignore-vcs -x rm
 
 proxmox HOST:
-  nix build .#nixosConfigurations.{{HOST}}.config.system.build.images.proxmox
+  nix build .#nixosConfigurations.{{HOST}}.config.system.build.proxmoxVMA
