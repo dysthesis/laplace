@@ -39,9 +39,15 @@ in {
       enable = true;
       flakePath = "/etc/config";
     };
+
+    services.caddy.enable = true;
   };
 
-  mnemosyne.dirs = ["/etc/config"];
+  mnemosyne.dirs = [
+    "/etc/config"
+    "/var/lib/acme"
+    "/var/lib/caddy"
+  ];
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies
