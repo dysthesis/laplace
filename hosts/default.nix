@@ -12,6 +12,8 @@
     chaos = "x86_64-linux"; # Installer ISO
     hephaestus = "x86_64-linux"; # Forgejo host on Proxmox
     hermes = "x86_64-linux"; # AdGuard Home
+    portunus = "x86_64-linux"; # Reverse proxy host on Proxmox
+    bifrost = "x86_64-linux"; # Headscale host on Proxmox
   };
   defaultImports = [
     ../system
