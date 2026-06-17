@@ -146,10 +146,6 @@
     time.timeZone = "Australia/Sydney";
     i18n.defaultLocale = "en_AU.UTF-8";
 
-    networking.nameservers = [
-      "1.1.1.1"
-      "1.0.0.1"
-    ];
     programs.steam = {
       enable = true;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
