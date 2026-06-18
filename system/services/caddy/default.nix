@@ -18,41 +18,19 @@ in {
       default = null;
       description = "Email address used for ACME account registration.";
     };
-
-    acme.cloudflareDns01 = {
-      enable = mkEnableOption "Cloudflare DNS-01 ACME challenges";
-
-      environmentFile = mkOption {
-        type = types.nullOr types.path;
-        default = null;
-        description = "Environment file containing Cloudflare credentials for lego, for example CF_DNS_API_TOKEN.";
-      };
-    };
   };
 
   config = mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = !cfg.acme.cloudflareDns01.enable || cfg.acme.cloudflareDns01.environmentFile != null;
-        message = "laplace.services.caddy.acme.cloudflareDns01.enable requires environmentFile.";
-      }
-    ];
-
+    # Caddy manages its own certs, obtaining them automatically via HTTP-01 /
+    # TLS-ALPN-01 over the firewalled ports below; NixOS `security.acme` (lego)
+    # does not apply to it. This needs inbound :443 reachable (it is, via the
+    # edge port-forward). Switch to DNS-01 (caddy.withPlugins cloudflare) only
+    # if you put Cloudflare's proxy in front or want wildcard certs.
     services.caddy = {
       enable = true;
       enableReload = true;
       openFirewall = true;
       inherit (cfg) email;
-    };
-
-    security.acme = mkIf cfg.acme.cloudflareDns01.enable {
-      acceptTerms = true;
-      defaults = {
-        inherit (cfg) email;
-        dnsProvider = "cloudflare";
-        dnsResolver = "1.1.1.1:53";
-        environmentFile = cfg.acme.cloudflareDns01.environmentFile;
-      };
     };
   };
 }
