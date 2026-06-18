@@ -42,13 +42,13 @@ in {
       enable = true;
       enableReload = true;
       openFirewall = true;
-      email = cfg.email;
+      inherit (cfg) email;
     };
 
     security.acme = mkIf cfg.acme.cloudflareDns01.enable {
       acceptTerms = true;
       defaults = {
-        email = cfg.email;
+        inherit (cfg) email;
         dnsProvider = "cloudflare";
         dnsResolver = "1.1.1.1:53";
         environmentFile = cfg.acme.cloudflareDns01.environmentFile;
