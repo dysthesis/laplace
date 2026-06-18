@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
   fqdn = "dysthesis.com";
   subdomain = "headscale";
 in {
@@ -6,6 +10,7 @@ in {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.40.1"];
+    firewall.allowedTCPPorts = [80 443 config.laplace.services.headplane.port];
   };
 
   systemd.network.networks."10-lan" = {

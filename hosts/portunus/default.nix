@@ -18,6 +18,7 @@ in {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.40.1"];
+    firewall.allowedTCPPorts = [80 443];
   };
 
   systemd.network.networks."10-lan" = {
