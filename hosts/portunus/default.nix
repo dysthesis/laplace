@@ -1,6 +1,16 @@
-{pkgs, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
   fqdn = "dysthesis.com";
+  ddnsHost = "portunus.${fqdn}";
 in {
+  sops.secrets = {
+    cloudflare_acme_env = {};
+    cloudflare_ddns_token = {};
+  };
+
   networking = {
     useNetworkd = true;
     useDHCP = false;
@@ -40,13 +50,35 @@ in {
       flakePath = "/etc/config";
     };
 
-    services.caddy.enable = true;
+    services.caddy = {
+      enable = true;
+      acme.cloudflareDns01 = {
+        enable = true;
+        environmentFile = config.sops.secrets.cloudflare_acme_env.path;
+      };
+    };
+  };
+
+  services.ddclient = {
+    enable = true;
+    protocol = "cloudflare";
+    server = "api.cloudflare.com/client/v4";
+    username = "token";
+    passwordFile = config.sops.secrets.cloudflare_ddns_token.path;
+    zone = fqdn;
+    domains = [ddnsHost];
+    usev6 = "";
+    interval = "5min";
+    extraConfig = ''
+      ttl=1
+    '';
   };
 
   mnemosyne.dirs = [
     "/etc/config"
     "/var/lib/acme"
     "/var/lib/caddy"
+    "/var/lib/ddclient"
   ];
 
   environment.systemPackages = with pkgs; [
