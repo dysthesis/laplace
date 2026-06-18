@@ -24,7 +24,12 @@
 
     services = {
       adguardhome.enable = true;
-      tailscale.enable = true;
+      tailscale = {
+        enable = true;
+        # AdGuard owns 0.0.0.0:53 here; keep tailscaled from pulling in
+        # systemd-resolved and squatting tcp/53 via its loopback stubs.
+        denyDNS = true;
+      };
     };
   };
   networking = {
