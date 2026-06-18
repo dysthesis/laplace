@@ -3,7 +3,7 @@ keys:
   - &phobos age1h9ecmz8zzh9eecx74m4ehge988z77kg2kme7hq2w6v8hcf8kv36qaq3d2h
   - &erebus age153c0rty0sfplkul8u3amvfew3tcwnjtv8cq06az5ynvrkeg7npdszh5ca4
   - &hephaestus age15hrcysykzlp0wprysz5nudsdx24dyhj8sf2883vfervdshuugc4q6qyuxj
-  # - &portunus PORTUNUS_AGE_PUBLIC_KEY_REPLACE_ME
+  - &portunus age1p4vym0jys7rvdks539w8jd8r5zgs5dcp228uymt8r5dtngrzp3ssz3mfek
 creation_rules:
   - path_regex: system/secrets/portunus\.(yaml|json|env|ini)$
     key_groups:
@@ -11,7 +11,7 @@ creation_rules:
           - *deimos
           - *phobos
           - *erebus
-          # - *portunus
+          - *portunus
   - path_regex: system/secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:
