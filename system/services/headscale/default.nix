@@ -45,7 +45,10 @@ in {
   };
 
   config = mkIf cfg.enable {
-    mnemosyne.dirs = ["/var/lib/private/headscale"];
+    mnemosyne.dirs = [
+      "/var/lib/private/headscale"
+      "/var/lib/headscale"
+    ];
 
     services.headscale = {
       enable = true;
