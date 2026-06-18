@@ -15,6 +15,7 @@
     portunus = "x86_64-linux"; # Reverse proxy host on Proxmox
     bifrost = "x86_64-linux"; # Headscale host on Proxmox
     charon = "x86_64-linux"; # Tailscale exit node
+    mneme = "x86_64-linux"; # Immich
   };
   defaultImports = [
     ../system
