@@ -58,7 +58,9 @@ in {
         server_url = "https://${cfg.fqdn}";
         dns = {
           base_domain = cfg.baseDomain;
-          override_local_dns = false;
+          # Default to split/additive DNS; hosts can flip this to push a tailnet
+          # nameserver (see bifrost, which routes tailnet DNS through AdGuard).
+          override_local_dns = lib.mkDefault false;
         };
       };
     };
