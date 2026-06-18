@@ -22,7 +22,10 @@
       flakePath = "/etc/config";
     };
 
-    services.adguardhome.enable = true;
+    services = {
+      adguardhome.enable = true;
+      tailscale.enable = true;
+    };
   };
 
   # Persist the on-disk flake clone used for remote rebuilds. The AdGuard state
