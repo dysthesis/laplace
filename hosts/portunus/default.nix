@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: let
@@ -77,6 +78,19 @@ in {
     extraConfig = ''
       ttl=1
     '';
+  };
+
+  # Work around nixpkgs#350408: DynamicUser sometimes is not visible to NSS
+  # when ddclient's ExecStartPre resolves $USER for install --owner.
+  users.groups.ddclient = {};
+  users.users.ddclient = {
+    isSystemUser = true;
+    group = "ddclient";
+  };
+  systemd.services.ddclient.serviceConfig = {
+    DynamicUser = lib.mkForce false;
+    User = "ddclient";
+    Group = "ddclient";
   };
 
   mnemosyne.dirs = [
