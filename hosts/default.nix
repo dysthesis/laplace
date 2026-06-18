@@ -14,6 +14,7 @@
     hermes = "x86_64-linux"; # AdGuard Home
     portunus = "x86_64-linux"; # Reverse proxy host on Proxmox
     bifrost = "x86_64-linux"; # Headscale host on Proxmox
+    charon = "x86_64-linux"; # Tailscale exit node
   };
   defaultImports = [
     ../system
