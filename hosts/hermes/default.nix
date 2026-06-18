@@ -31,10 +31,6 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.20.1"];
-    firewall.allowedTCPPorts = [
-      3000
-      53
-    ];
   };
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
