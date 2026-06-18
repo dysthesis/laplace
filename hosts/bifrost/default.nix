@@ -43,6 +43,11 @@ in {
       fqdn = "${subdomain}.${fqdn}";
       baseDomain = "tailnet.${fqdn}";
     };
+
+    services.headplane = {
+      enable = true;
+      fqdn = "headplane.${fqdn}";
+    };
   };
 
   mnemosyne.dirs = ["/etc/config"];

@@ -8,6 +8,8 @@
   ddnsHost = "portunus.${fqdn}";
   headscaleHost = "headscale.${fqdn}";
   headscaleUpstream = "10.0.40.3:8080";
+  headplaneHost = "headplane.${fqdn}";
+  headplaneUpstream = "10.0.40.3:3000";
 in {
   sops.secrets = {
     cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
@@ -52,6 +54,9 @@ in {
       enable = true;
       virtualHosts.${headscaleHost}.extraConfig = ''
         reverse_proxy http://${headscaleUpstream}
+      '';
+      virtualHosts.${headplaneHost}.extraConfig = ''
+        reverse_proxy http://${headplaneUpstream}
       '';
     };
   };
