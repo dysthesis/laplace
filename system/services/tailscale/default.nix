@@ -3,13 +3,13 @@
   lib,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf optionals;
+  inherit (lib) mkEnableOption mkIf mkForce optionals;
   cfg = config.laplace.services.tailscale;
 in {
   options.laplace.services.tailscale = {
     enable = mkEnableOption "Whether or not to enable Tailscale";
     denySubnetRoutes = mkEnableOption "refusing subnet routes advertised by tailnet peers (sets --accept-routes=false), so a peer advertising the local LAN can't blackhole it through the tunnel";
-    denyDNS = mkEnableOption "refusing the tailnet's DNS settings (sets --accept-dns=false), so tailscaled doesn't pull in systemd-resolved and hand it the loopback :53 stubs - leaving the port free for a local resolver like AdGuard";
+    denyDNS = mkEnableOption "refusing the tailnet's DNS settings (sets --accept-dns=false and disables the systemd-resolved unit the tailscale module enables by default), so resolved's loopback :53 stubs don't squat tcp/53 - leaving the port free for a local resolver like AdGuard";
   };
   config = mkIf cfg.enable {
     mnemosyne.dirs = ["/var/lib/tailscale"];
@@ -21,12 +21,15 @@ in {
     # peer advertising the local LAN routes it through the tunnel and blackholes
     # LAN hosts (router, proxmox) when the advertiser drops.
     #
-    # denyDNS keeps tailscaled out of the host's DNS: with --accept-dns the NixOS
-    # module brings up systemd-resolved, whose 127.0.0.53/127.0.0.54 stubs hold
-    # tcp/53 and collide with a local resolver binding 0.0.0.0:53 (e.g. AdGuard).
+    # denyDNS keeps tailscaled out of the host's DNS. The runtime --accept-dns=false
+    # alone is not enough: the upstream tailscale module enables systemd-resolved
+    # (mkDefault true), whose 127.0.0.53/127.0.0.54 stubs hold tcp/53 and collide
+    # with a local resolver binding 0.0.0.0:53 (e.g. AdGuard). So also tear down the
+    # resolved unit; the host then resolves via networking.nameservers directly.
     services.tailscale.extraSetFlags =
       optionals cfg.denySubnetRoutes ["--accept-routes=false"]
       ++ optionals cfg.denyDNS ["--accept-dns=false"];
+    services.resolved.enable = mkIf cfg.denyDNS (mkForce false);
     networking.nftables.enable = true;
     networking.firewall = {
       enable = true;
