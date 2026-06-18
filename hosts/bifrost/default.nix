@@ -52,6 +52,16 @@ in {
       enable = true;
       fqdn = "${subdomain}.${fqdn}";
       baseDomain = "tailnet.${fqdn}";
+
+      # Push the AdGuard instance on hermes as the tailnet's resolver. Must be
+      # hermes's *tailnet* IP, not its LAN 10.0.20.82: tailnet clients live on
+      # other subnets and only reach AdGuard over tailscale0 (where AdGuard
+      # already binds 0.0.0.0:53). override_local_dns sends all tailnet DNS
+      # through it for filtering everywhere.
+      settings.dns = {
+        override_local_dns = true;
+        nameservers.global = ["100.64.0.5"];
+      };
     };
 
     services.headplane = {
