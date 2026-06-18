@@ -3,12 +3,13 @@
   lib,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf;
+  inherit (lib) mkEnableOption mkIf optionals;
   cfg = config.laplace.services.tailscale;
 in {
   options.laplace.services.tailscale = {
     enable = mkEnableOption "Whether or not to enable Tailscale";
     denySubnetRoutes = mkEnableOption "refusing subnet routes advertised by tailnet peers (sets --accept-routes=false), so a peer advertising the local LAN can't blackhole it through the tunnel";
+    denyDNS = mkEnableOption "refusing the tailnet's DNS settings (sets --accept-dns=false), so tailscaled doesn't pull in systemd-resolved and hand it the loopback :53 stubs - leaving the port free for a local resolver like AdGuard";
   };
   config = mkIf cfg.enable {
     mnemosyne.dirs = ["/var/lib/tailscale"];
@@ -19,7 +20,13 @@ in {
     # Optionally refuse subnet routes advertised by tailnet peers. Without this, a
     # peer advertising the local LAN routes it through the tunnel and blackholes
     # LAN hosts (router, proxmox) when the advertiser drops.
-    services.tailscale.extraSetFlags = mkIf cfg.denySubnetRoutes ["--accept-routes=false"];
+    #
+    # denyDNS keeps tailscaled out of the host's DNS: with --accept-dns the NixOS
+    # module brings up systemd-resolved, whose 127.0.0.53/127.0.0.54 stubs hold
+    # tcp/53 and collide with a local resolver binding 0.0.0.0:53 (e.g. AdGuard).
+    services.tailscale.extraSetFlags =
+      optionals cfg.denySubnetRoutes ["--accept-routes=false"]
+      ++ optionals cfg.denyDNS ["--accept-dns=false"];
     networking.nftables.enable = true;
     networking.firewall = {
       enable = true;
