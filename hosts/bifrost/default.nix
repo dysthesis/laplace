@@ -40,6 +40,12 @@ in {
       enable = true;
       flakePath = "/etc/config";
     };
+
+    services.headscale = {
+      enable = true;
+      fqdn = "${subdomain}.${fqdn}";
+      baseDomain = "tailnet.${fqdn}";
+    };
   };
 
   mnemosyne.dirs = ["/etc/config"];

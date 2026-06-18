@@ -5,6 +5,8 @@
 }: let
   fqdn = "dysthesis.com";
   ddnsHost = "portunus.${fqdn}";
+  headscaleHost = "headscale.${fqdn}";
+  headscaleUpstream = "10.0.40.3:8080";
 in {
   sops.secrets = {
     cloudflare_acme_env.sopsFile = ../../system/secrets/portunus.yaml;
@@ -48,6 +50,10 @@ in {
 
     services.caddy = {
       enable = true;
+      virtualHosts.${headscaleHost}.extraConfig = ''
+        reverse_proxy http://${headscaleUpstream}
+      '';
+
       acme.cloudflareDns01 = {
         enable = true;
         environmentFile = config.sops.secrets.cloudflare_acme_env.path;
@@ -62,7 +68,10 @@ in {
     username = "token";
     passwordFile = config.sops.secrets.cloudflare_ddns_token.path;
     zone = fqdn;
-    domains = [ddnsHost];
+    domains = [
+      ddnsHost
+      headscaleHost
+    ];
     usev6 = "";
     interval = "5min";
     extraConfig = ''
@@ -74,7 +83,7 @@ in {
     "/etc/config"
     "/var/lib/acme"
     "/var/lib/caddy"
-    "/var/lib/ddclient"
+    "/var/lib/private/ddclient"
   ];
 
   environment.systemPackages = with pkgs; [
