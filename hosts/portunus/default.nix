@@ -10,7 +10,6 @@
   headscaleUpstream = "10.0.40.3:8080";
 in {
   sops.secrets = {
-    cloudflare_acme_env.sopsFile = ../../system/secrets/portunus.yaml;
     cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
   };
   networking = {
@@ -54,11 +53,6 @@ in {
       virtualHosts.${headscaleHost}.extraConfig = ''
         reverse_proxy http://${headscaleUpstream}
       '';
-
-      acme.cloudflareDns01 = {
-        enable = true;
-        environmentFile = config.sops.secrets.cloudflare_acme_env.path;
-      };
     };
   };
 
@@ -69,10 +63,9 @@ in {
     username = "token";
     passwordFile = config.sops.secrets.cloudflare_ddns_token.path;
     zone = fqdn;
-    domains = [
-      ddnsHost
-      headscaleHost
-    ];
+    # headscaleHost is a CNAME to ddnsHost in Cloudflare, so it follows this
+    # A record automatically; managing it here would clash with the CNAME.
+    domains = [ddnsHost];
     usev6 = "";
     interval = "5min";
     extraConfig = ''
