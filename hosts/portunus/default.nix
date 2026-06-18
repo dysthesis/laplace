@@ -7,10 +7,9 @@
   ddnsHost = "portunus.${fqdn}";
 in {
   sops.secrets = {
-    cloudflare_acme_env = {};
-    cloudflare_ddns_token = {};
+    cloudflare_acme_env.sopsFile = ../../system/secrets/portunus.yaml;
+    cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
   };
-
   networking = {
     useNetworkd = true;
     useDHCP = false;
@@ -31,16 +30,13 @@ in {
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
-      memory = 2048; # MiB
-      diskSize = "64G";
+      memory = 1024; # MiB
+      diskSize = "20G";
     };
 
     security = {
       privesc = "doas";
       apparmor.enable = true;
-      polkit.enable = true;
-      firewall.enable = true;
-      fail2ban.enable = true;
     };
 
     zram.enable = true;
