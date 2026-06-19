@@ -61,6 +61,26 @@ in {
       settings.dns = {
         override_local_dns = true;
         nameservers.global = ["100.64.0.5"];
+
+        # MagicDNS records for the apps behind mimir's internal Caddy. Point at
+        # mimir's *tailnet* IP (100.x), not its 10.0.20.83 LAN address, so the
+        # traffic rides WireGuard. These FQDNs sit under base_domain, so the
+        # Tailscale client answers them locally and never forwards to AdGuard,
+        # even with override_local_dns on.
+        extra_records = let
+          mimir = "100.64.0.X"; # TODO: mimir's tailnet IP, once it has joined
+        in [
+          {
+            name = "miniflux.tailnet.${fqdn}";
+            type = "A";
+            value = mimir;
+          }
+          {
+            name = "silverbullet.tailnet.${fqdn}";
+            type = "A";
+            value = mimir;
+          }
+        ];
       };
     };
 

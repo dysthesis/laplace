@@ -1,0 +1,68 @@
+{pkgs, ...}: {
+  laplace = {
+    profiles = ["proxmox"];
+    proxmox = {
+      # Linkwarden = Next.js server + worker + Postgres + a headless Chromium it
+      # spawns to archive each link (screenshot/PDF/singlefile). Chromium is the
+      # spike: ~0.5-1 GiB per archive on top of node/postgres, so 4 GiB gives it
+      # headroom (root tmpfs takes 50% of RAM = 2 GiB; zram cushions the rest).
+      # simplification: bulk-archiving large batches can still pressure RAM;
+      # upgrade path is bump memory to 6144/8192 if Chromium starts OOMing.
+      cores = 2;
+      memory = 4096; # MiB
+      # Archives (PDF + screenshot + singlefile HTML per link) accumulate in
+      # /var/lib/linkwarden on the btrfs /nix/persist; 100G holds tens of
+      # thousands of pages. Bump if the archive grows past that.
+      diskSize = "100G";
+    };
+
+    security = {
+      privesc = "doas";
+      apparmor.enable = true;
+    };
+
+    zram.enable = true;
+
+    nh = {
+      enable = true;
+      flakePath = "/etc/config";
+    };
+
+    services = {
+      linkwarden.enable = true;
+      # Required: linkwarden is tailnet-only (port firewalled, reachable solely
+      # over the tailscale0-trusted interface). Asserted by the linkwarden module.
+      tailscale.enable = true;
+      # First-run note: upstream disables registration, which locks out the very
+      # first signup. Set `linkwarden.enableRegistration = true` here, create the
+      # initial account, then revert this to keep the (tailnet-only) instance shut.
+    };
+  };
+
+  networking = {
+    useNetworkd = true;
+    useDHCP = false;
+    nameservers = ["10.0.20.1"];
+  };
+
+  systemd.network.networks."10-lan" = {
+    matchConfig.Name = "en* eth*";
+    networkConfig = {
+      Address = "10.0.20.84/24";
+      Gateway = "10.0.20.1";
+      DNS = "10.0.20.1";
+      DHCP = "no";
+    };
+  };
+
+  # Persist the on-disk flake clone used for remote rebuilds. Linkwarden's state
+  # (/var/lib/linkwarden) and the Postgres cluster are contributed by the
+  # linkwarden module's mnemosyne.dirs; base dirs (/etc/ssh, ...) by mnemosyne
+  # itself - so just this host-specific addition here.
+  mnemosyne.dirs = ["/etc/config"];
+
+  environment.systemPackages = with pkgs; [
+    vim # for emergencies
+    git # for pulling Nix flakes
+  ];
+}

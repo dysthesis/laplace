@@ -3,6 +3,7 @@ keys:
   - &phobos age1h9ecmz8zzh9eecx74m4ehge988z77kg2kme7hq2w6v8hcf8kv36qaq3d2h
   - &erebus age153c0rty0sfplkul8u3amvfew3tcwnjtv8cq06az5ynvrkeg7npdszh5ca4
   - &portunus age13k9y8tycez2hel2myaduexnk2rcfp3xjenjnffvgmuutsge54flqxtexlh
+  - &mimir age13pf560d7qeugt4ldwa7s7985rgjh2mxngm9j5rcxw9f2ryv8aarqj32v7j
 creation_rules:
   - path_regex: system/secrets/portunus\.(yaml|json|env|ini)$
     key_groups:
@@ -11,6 +12,13 @@ creation_rules:
           - *phobos
           - *erebus
           - *portunus
+  - path_regex: system/secrets/mimir\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *erebus
+          - *mimir
   - path_regex: system/secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:
