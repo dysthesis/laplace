@@ -117,8 +117,6 @@
         };
       };
 
-      services.miniflux.enable = true;
-
       # Expose llama-cpp on the Podman bridge so Perplexica can reach it.
       # services.llama-cpp.host = "0.0.0.0";
 
