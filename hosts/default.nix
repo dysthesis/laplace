@@ -16,6 +16,8 @@
     bifrost = "x86_64-linux"; # Headscale host on Proxmox
     charon = "x86_64-linux"; # Tailscale exit node
     mneme = "x86_64-linux"; # Immich
+    mimir = "x86_64-linux"; # Miniflux + SilverBullet behind an internal Caddy
+    garmr = "x86_64-linux"; # Linkwarden on Proxmox
   };
   defaultImports = [
     ../system
