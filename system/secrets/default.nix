@@ -9,7 +9,9 @@
   hostName = config.networking.hostName or "";
 in {
   imports = [inputs.sops-nix.nixosModules.sops];
-  sops = mkIf (hostName != "phobos") {
+  # phobos has no age key; chaos is the live ISO (not a sops recipient, and the
+  # age key would live on a /nix/persist that doesn't exist on the ISO).
+  sops = mkIf (!(elem hostName ["phobos" "chaos"])) {
     secrets = mkIf hasDemiurge {
       libera.owner = "demiurge";
     };
