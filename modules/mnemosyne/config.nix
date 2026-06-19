@@ -16,15 +16,10 @@
     (lib.strings)
     concatStringsSep
     normalizePath
-    removePrefix
     ;
-  inherit (builtins) replaceStrings;
   cfg = config.mnemosyne;
   # Where each persisted directory is stored at.
   persistPath = path: normalizePath "${cfg.persistDir}${path}";
-  # Which systemd service is responsible for mounting the persistence volume
-  persistMountService =
-    cfg.persistDir |> removePrefix "/" |> replaceStrings ["/"] ["-"] |> (x: "${x}.mount");
   # Compose an attribute set of bind mounts for the persisted directories.
   mkMounts = dirs:
     dirs
@@ -37,8 +32,10 @@
     })
     |> mkMerge;
 
-  # Compose a script to create the necessary directories in the persisted state storage.
-  mkSourcePaths = dirs: dirs |> (dirs: forEach dirs (path: "mkdir -p ${persistPath path}")) |> concatStringsSep "\n";
+  # Compose a script to create the necessary directories in the persisted state
+  # storage. `root` prefixes the mount root: in systemd-initrd the persist volume
+  # is mounted under /sysroot, so the source dirs must be created there.
+  mkSourcePaths = root: dirs: dirs |> (dirs: forEach dirs (path: "mkdir -p ${root}${persistPath path}")) |> concatStringsSep "\n";
 in {
   # TODO: Add a check to ensure that `cfg.persistDir` is on a persisted volume
   config = mkIf cfg.enable {
@@ -76,15 +73,25 @@ in {
     boot.initrd.systemd.enable = mkDefault true;
     # Mount the persisted direcotries to their proper paths.
     fileSystems = mkMounts cfg.dirs;
-    # Ensure that the necessary paths exist in the persisted state storage.
+    # Ensure that the necessary paths exist in the persisted state storage before
+    # the stage-2 bind mounts (and before switch-root). systemd-initrd mounts
+    # neededForBoot filesystems under /sysroot, so:
+    #   - order with RequiresMountsFor on the /sysroot-prefixed path: systemd
+    #     resolves the real mount unit (e.g. sysroot-nix-persist.mount) by path,
+    #     avoiding the fragile hand-computed unit name that never matched; and
+    #   - mkdir into /sysroot<persistDir>, the actual mounted volume, not the
+    #     ephemeral initrd ramfs.
+    # before=initrd-fs.target (not sysroot.mount): the persist submount is itself
+    # ordered after sysroot.mount, so ordering before it would deadlock.
     boot.initrd.systemd.services.make-source-of-persistent-dirs = {
-      wantedBy = ["initrd-root-device.target"];
-      before = ["sysroot.mount"];
-      requires = [persistMountService];
-      after = [persistMountService];
+      wantedBy = ["initrd-fs.target"];
+      before = ["initrd-fs.target"];
+      unitConfig = {
+        DefaultDependencies = false;
+        RequiresMountsFor = "/sysroot${cfg.persistDir}";
+      };
       serviceConfig.Type = "oneshot";
-      unitConfig.DefaultDependencies = false;
-      script = mkSourcePaths cfg.dirs;
+      script = mkSourcePaths "/sysroot" cfg.dirs;
     };
   };
 }
