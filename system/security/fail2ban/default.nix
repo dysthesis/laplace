@@ -12,7 +12,10 @@ in {
     services.fail2ban = {
       enable = true;
       ignoreIP = [
-        "192.168.1.0/24"
+        "127.0.0.0/8" # loopback
+        "10.0.20.0/24" # VLAN20 (services/desktops)
+        "10.0.40.0/24" # VLAN40 (edge/headscale)
+        "100.64.0.0/10" # tailnet (CGNAT range Tailscale/Headscale use)
       ];
       extraPackages = [pkgs.ipset];
       banaction = "iptables-ipset-proto6-allports";
