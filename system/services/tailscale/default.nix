@@ -37,6 +37,10 @@ in {
       trustedInterfaces = [config.services.tailscale.interfaceName];
       # Allow the Tailscale UDP port through the firewall
       allowedUDPPorts = [config.services.tailscale.port];
+      # Tailscale's asymmetric routing (and subnet-router/exit-node forwarding)
+      # is dropped by strict reverse-path filtering, so relax it to "loose" on
+      # tailnet hosts. mkDefault lets a host override per its needs.
+      checkReversePath = lib.mkDefault "loose";
     };
 
     # 2. Force tailscaled to use nftables (Critical for clean nftables-only systems)
