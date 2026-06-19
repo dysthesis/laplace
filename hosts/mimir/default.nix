@@ -24,18 +24,21 @@
   minifluxUpstream = "127.0.0.1:8087";
   silverbulletUpstream = "127.0.0.1:8101";
 in {
-  # Cloudflare API token with Zone:DNS:Edit on dysthesis.com, for the DNS-01
-  # challenge. Lives in mimir's own sops file (mirrors portunus's pattern).
-  sops.secrets.cloudflare_api_key.sopsFile = ../../system/secrets/mimir.yaml;
+  sops = {
+    secrets = {
+      # Cloudflare API token with Zone:DNS:Edit on dysthesis.com, for the DNS-01
+      # challenge. Lives in mimir's own sops file (mirrors portunus's pattern).
+      cloudflare_api_key.sopsFile = ../../system/secrets/mimir.yaml;
+      # miniflux_admin was moved out of the shared secrets.yaml into mimir.yaml; the
+      # miniflux module declares the secret against the default file, so repoint it.
+      miniflux_admin.sopsFile = ../../system/secrets/mimir.yaml;
+    };
 
-  # miniflux_admin was moved out of the shared secrets.yaml into mimir.yaml; the
-  # miniflux module declares the secret against the default file, so repoint it.
-  sops.secrets.miniflux_admin.sopsFile = ../../system/secrets/mimir.yaml;
-
-  # Render the token into an EnvironmentFile so Caddy can read {env.CF_API_TOKEN}.
-  sops.templates."caddy-cloudflare.env".content = ''
-    CF_API_TOKEN=${config.sops.placeholder.cloudflare_api_key}
-  '';
+    # Render the token into an EnvironmentFile so Caddy can read {env.CF_API_TOKEN}.
+    templates."caddy-cloudflare.env".content = ''
+      CF_API_TOKEN=${config.sops.placeholder.cloudflare_api_key}
+    '';
+  };
 
   networking = {
     useNetworkd = true;
@@ -82,7 +85,7 @@ in {
 
       caddy = {
         enable = true;
-        email = "dysthesis@gmail.com";
+        email = "dysthesis@protonmail.com";
 
         # One wildcard site, DNS-01 issued, routed by Host. The explicit `tls`
         # block forces the DNS challenge; without it Caddy falls back to
