@@ -52,6 +52,5 @@ in {
         include if exists <local/bin.miniflux>
       }
     '';
-
   };
 }
