@@ -68,7 +68,7 @@ in {
         # Tailscale client answers them locally and never forwards to AdGuard,
         # even with override_local_dns on.
         extra_records = let
-          mimir = "100.64.0.X"; # TODO: mimir's tailnet IP, once it has joined
+          mimir = "100.64.0.8"; # TODO: mimir's tailnet IP, once it has joined
         in [
           {
             name = "miniflux.tailnet.${fqdn}";
