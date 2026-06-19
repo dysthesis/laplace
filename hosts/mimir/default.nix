@@ -114,8 +114,8 @@ in {
   # The stock Caddy has no `dns cloudflare`; bake the plugin in. Hash is the
   # vendored-deps FOD hash; bump it whenever the plugin version changes.
   services.caddy.package = pkgs.caddy.withPlugins {
-    plugins = ["github.com/caddy-dns/cloudflare@v0.2.1"];
-    hash = "sha256-I0FjQOfFaGlOEJlQECmYNBKjIY4CIg5aCCQ/ORmnrSU=";
+    plugins = ["github.com/caddy-dns/cloudflare@v0.2.4"];
+    hash = "sha256-8yZDrejNKsaUnUaTUFYbarWNmxafqp2z2rWo+XRsxV8=";
   };
 
   # Feed the sops-rendered token into Caddy's process environment.
