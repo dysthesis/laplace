@@ -28,11 +28,13 @@ in {
         profiles = ["desktop"];
         harden = ["kernel"];
       };
-      sops.secrets.chaos.neededForUsers = true;
+      # Lock root on the ISO. chaos is gated out of sops (system/secrets), so it
+      # cannot decrypt a password secret; admin is via the nixos user (Calamares
+      # autologin + SSH keys below). Set initialPassword here if an emergency
+      # root login is ever wanted.
       users.users.root = {
         hashedPassword = mkForce null;
         initialHashedPassword = mkForce null;
-        hashedPasswordFile = config.sops.secrets.chaos.path;
       };
       environment.systemPackages = with pkgs; [
         configured.foot
@@ -52,7 +54,9 @@ in {
       ];
     }
     (lib.foldr (
-        curr: acc: acc // {users.users.${curr}.openssh.authorizedKeys.keys = keys;}
+        # recursiveUpdate, not //: a shallow merge would replace the whole users
+        # attr each step and clobber the previously-set user's keys.
+        curr: acc: recursiveUpdate acc {users.users.${curr}.openssh.authorizedKeys.keys = keys;}
       ) {}
       users);
 }
