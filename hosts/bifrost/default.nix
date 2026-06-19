@@ -10,10 +10,12 @@ in {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.40.1"];
+    # Only the Headscale coordination port is served on the LAN: portunus
+    # terminates TLS for headscale.dysthesis.com and reverse-proxies to
+    # 10.0.40.3:8080 over VLAN40, so that hop is plaintext within the trusted
+    # infra segment by design. 80/443 were dead (no web server runs here) and
+    # Headplane is now bound to loopback.
     firewall.allowedTCPPorts = [
-      80
-      443
-      config.laplace.services.headplane.port
       config.laplace.services.headscale.port
     ];
   };
@@ -87,6 +89,11 @@ in {
     services.headplane = {
       enable = true;
       fqdn = "headplane.${fqdn}";
+      # Headplane mints pre-auth keys and manages nodes; with no OIDC and only
+      # api-key login it must not sit on the LAN. Bind loopback and reach it via
+      # an SSH tunnel: ssh -L 3000:localhost:3000 bifrost
+      address = "127.0.0.1";
+      openFirewall = false;
     };
   };
 

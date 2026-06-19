@@ -26,10 +26,14 @@ in {
       enable = true;
       # Keep web-UI changes between rebuilds; no declarative settings to merge over.
       mutableSettings = true;
-      openFirewall = true; # opens the web UI port (3000/tcp) only
+      # Don't open the web UI (3000/tcp) on every interface. AdGuard still binds
+      # 0.0.0.0, but with the port closed in the host firewall only the tailnet
+      # can reach the UI (tailscale0 is a trusted interface); the LAN cannot.
+      openFirewall = false;
     };
 
-    # openFirewall does not cover the resolver itself. LAN clients reach DNS on 53.
+    # The resolver port is opened explicitly so LAN/tailnet clients reach DNS on
+    # 53; the web UI is deliberately not opened here (tailnet-only, see above).
     networking.firewall = {
       allowedTCPPorts = [53];
       allowedUDPPorts = [53];
