@@ -76,21 +76,3 @@ deploy *ARGS:
 
 deploy-one HOST *ARGS:
   colmena apply --on {{HOST}} {{ARGS}}
-
-# Show which guests differ from their running system, without pushing anything.
-# Sharper than `colmena apply dry-activate` (which copies the closure first):
-# this only builds locally and reads the remote /run/current-system symlink.
-deploy-diff:
-  #!/usr/bin/env sh
-  set -eu
-  for pair in mneme=10.0.20.81 hermes=10.0.20.82 mimir=10.0.20.83 \
-              garmr=10.0.20.84 horos=10.0.20.85 charon=10.0.20.10 \
-              portunus=10.0.40.2 bifrost=10.0.40.3; do
-    h=${pair%%=*}; ip=${pair#*=}
-    out=$(nix build --no-link --print-out-paths \
-      ".#nixosConfigurations.$h.config.system.build.toplevel")
-    cur=$(ssh -o ConnectTimeout=5 -o BatchMode=yes "root@$ip" \
-      readlink -f /run/current-system) || { printf '%-10s UNREACHABLE\n' "$h"; continue; }
-    if [ "$out" = "$cur" ]; then printf '%-10s up-to-date\n' "$h"; \
-    else printf '%-10s CHANGED\n' "$h"; fi
-  done

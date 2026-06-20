@@ -4,7 +4,7 @@
     proxmox = {
       cores = 1;
       memory = 2048; # MiB, ballooning ceiling
-      balloon = 512; # MiB, ballooning floor (AdGuard idles ~150 MiB)
+      balloon = 384; # MiB, ballooning floor (AdGuard idles ~150 MiB; headroom for filter lists/query log)
       diskSize = "64G";
     };
 

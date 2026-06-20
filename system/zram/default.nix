@@ -3,7 +3,7 @@
   config,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf mkOption;
+  inherit (lib) mkEnableOption mkIf mkOption mkDefault;
   inherit (lib.types) int str;
   cfg = config.laplace.zram;
 in {
@@ -24,6 +24,17 @@ in {
     zramSwap = {
       enable = true;
       inherit (cfg) memoryPercent algorithm;
+    };
+    # Bias the VM toward compressed in-RAM swap so cold anonymous pages move
+    # into zram (a few-x smaller) instead of sitting as full-size RSS. On a
+    # ballooned guest this shrinks the resident footprint the host must back,
+    # letting the balloon reclaim more before real pressure. swappiness=180 is
+    # the zram-era recommended value (range extends to 200 on modern kernels);
+    # page-cluster=0 reads one page at a time, matching zram's cheap random
+    # decompression. mkDefault so a host can override.
+    boot.kernel.sysctl = {
+      "vm.swappiness" = mkDefault 180;
+      "vm.page-cluster" = mkDefault 0;
     };
     boot = {
       kernelParams = [
