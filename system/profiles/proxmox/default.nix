@@ -115,6 +115,14 @@ in {
     };
     services.qemuGuest.enable = true;
 
+    # The journal lives on the tmpfs root: mnemosyne does not persist /var/log,
+    # so with no /var/log/journal directory journald keeps logs in /run (RAM).
+    # The default volatile cap scales with /run (~10% of RAM), which on the
+    # larger guests is tens of MiB of RAM spent on logs. Pin a deterministic
+    # ceiling instead. (If /var/log/journal is ever persisted to btrfs, switch
+    # this to SystemMaxUse, which governs the persistent store.)
+    services.journald.extraConfig = "RuntimeMaxUse=50M";
+
     # Receive closures pushed by the central deployer (Colmena, `just deploy`).
     nix.settings.trusted-users = ["root" "@wheel"];
 
