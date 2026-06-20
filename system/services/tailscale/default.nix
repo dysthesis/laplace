@@ -15,32 +15,40 @@ in {
     mnemosyne.dirs = ["/var/lib/tailscale"];
 
     # Taken from https://wiki.nixos.org/wiki/Tailscale
-    services.tailscale.enable = true;
+    services = {
+      tailscale = {
+        enable = true;
+        disableUpstreamLogging = true;
+        # Optionally refuse subnet routes advertised by tailnet peers. Without this, a
+        # peer advertising the local LAN routes it through the tunnel and blackholes
+        # LAN hosts (router, proxmox) when the advertiser drops.
+        #
+        # denyDNS keeps tailscaled out of the host's DNS. The runtime --accept-dns=false
+        # alone is not enough: the upstream tailscale module enables systemd-resolved
+        # (mkDefault true), whose 127.0.0.53/127.0.0.54 stubs hold tcp/53 and collide
+        # with a local resolver binding 0.0.0.0:53 (e.g. AdGuard). So also tear down the
+        # resolved unit; the host then resolves via networking.nameservers directly.
+        extraSetFlags =
+          optionals cfg.denySubnetRoutes ["--accept-routes=false"]
+          ++ optionals cfg.denyDNS ["--accept-dns=false"];
+      };
 
-    # Optionally refuse subnet routes advertised by tailnet peers. Without this, a
-    # peer advertising the local LAN routes it through the tunnel and blackholes
-    # LAN hosts (router, proxmox) when the advertiser drops.
-    #
-    # denyDNS keeps tailscaled out of the host's DNS. The runtime --accept-dns=false
-    # alone is not enough: the upstream tailscale module enables systemd-resolved
-    # (mkDefault true), whose 127.0.0.53/127.0.0.54 stubs hold tcp/53 and collide
-    # with a local resolver binding 0.0.0.0:53 (e.g. AdGuard). So also tear down the
-    # resolved unit; the host then resolves via networking.nameservers directly.
-    services.tailscale.extraSetFlags =
-      optionals cfg.denySubnetRoutes ["--accept-routes=false"]
-      ++ optionals cfg.denyDNS ["--accept-dns=false"];
-    services.resolved.enable = mkIf cfg.denyDNS (mkForce false);
-    networking.nftables.enable = true;
-    networking.firewall = {
-      enable = true;
-      # Always allow traffic from your Tailscale network
-      trustedInterfaces = [config.services.tailscale.interfaceName];
-      # Allow the Tailscale UDP port through the firewall
-      allowedUDPPorts = [config.services.tailscale.port];
-      # Tailscale's asymmetric routing (and subnet-router/exit-node forwarding)
-      # is dropped by strict reverse-path filtering, so relax it to "loose" on
-      # tailnet hosts. mkDefault lets a host override per its needs.
-      checkReversePath = lib.mkDefault "loose";
+      resolved.enable = mkIf cfg.denyDNS (mkForce false);
+    };
+
+    networking = {
+      nftables.enable = true;
+      firewall = {
+        enable = true;
+        # Always allow traffic from your Tailscale network
+        trustedInterfaces = [config.services.tailscale.interfaceName];
+        # Allow the Tailscale UDP port through the firewall
+        allowedUDPPorts = [config.services.tailscale.port];
+        # Tailscale's asymmetric routing (and subnet-router/exit-node forwarding)
+        # is dropped by strict reverse-path filtering, so relax it to "loose" on
+        # tailnet hosts. mkDefault lets a host override per its needs.
+        checkReversePath = lib.mkDefault "loose";
+      };
     };
 
     # 2. Force tailscaled to use nftables (Critical for clean nftables-only systems)
