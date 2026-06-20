@@ -92,6 +92,7 @@ in {
           "adguard.${fqdn}".extraConfig = proxy "hermes.tailnet.${fqdn}:80";
           "miniflux.${fqdn}".extraConfig = proxy "mimir.tailnet.${fqdn}:8087";
           "silverbullet.${fqdn}".extraConfig = proxy "mimir.tailnet.${fqdn}:8101";
+          "linkwarden.${fqdn}".extraConfig = proxy "garmr.tailnet.${fqdn}:3000";
         };
       };
     };
