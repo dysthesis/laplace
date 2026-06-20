@@ -18,7 +18,6 @@
     mneme = "x86_64-linux"; # Immich
     mimir = "x86_64-linux"; # Miniflux + SilverBullet (fronted by horos)
     horos = "x86_64-linux"; # Central tailnet reverse proxy on Proxmox
-    garmr = "x86_64-linux"; # Linkwarden on Proxmox
   };
   defaultImports = [
     ../system
@@ -37,6 +36,9 @@
     # Flake-local font packages (formerly from nixpressions).
     (import ../nix/pkgs)
     (import ../nix/overlays/unstable.nix inputs)
+    # Bound switch-to-configuration so a hung activation self-recovers instead
+    # of spinning forever on the lock (see the file for the upstream bug).
+    (import ../nix/overlays/stc-timeout.nix)
   ];
 
   # mkSystem-arg builder, shared so `nixosConfigurations` and the `colmena` hive
