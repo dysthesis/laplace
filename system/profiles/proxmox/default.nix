@@ -15,7 +15,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf mkDefault mkForce elem mkOption types;
+  inherit (lib) mkIf mkDefault mkForce elem mkOption optionalAttrs types;
   enabled = elem "proxmox" config.laplace.profiles;
   cfg = config.laplace.proxmox;
   hostName = config.networking.hostName;
@@ -39,7 +39,18 @@ in {
     memory = mkOption {
       type = types.ints.positive;
       default = 2048;
-      description = "RAM in MiB baked into the guest's qemu-server.conf.";
+      description = "RAM in MiB baked into the guest's qemu-server.conf. With ballooning this is the maximum.";
+    };
+    balloon = mkOption {
+      type = types.nullOr types.ints.unsigned;
+      default = null;
+      description = ''
+        Minimum RAM in MiB for ballooning (the qemu-server `balloon` property).
+        null omits the line, so Proxmox keeps the guest pinned at `memory`. A
+        value below `memory` lets the host reclaim down to it under pressure
+        (the guest boots at `memory` and the balloon inflates as needed); 0
+        disables the balloon device entirely.
+      '';
     };
     bridge = mkOption {
       type = types.str;
@@ -59,6 +70,14 @@ in {
   };
 
   config = mkIf enabled {
+    # Ballooning floor can't exceed the ceiling, or Proxmox rejects the conf.
+    assertions = [
+      {
+        assertion = cfg.balloon == null || cfg.balloon <= cfg.memory;
+        message = "laplace.proxmox.balloon (${toString cfg.balloon}) must be <= laplace.proxmox.memory (${toString cfg.memory}) on ${hostName}.";
+      }
+    ];
+
     # Default admin identity. mkDefault so a host that sets `laplace.users`
     # replaces it wholesale (rather than concatenating a duplicate); a guest with
     # a different admin just declares its own list.
@@ -168,7 +187,8 @@ in {
         net0 = "virtio=${cfg.macAddress},bridge=${cfg.bridge}";
         serial0 = "socket";
         agent = 1;
-      };
+      }
+      // optionalAttrs (cfg.balloon != null) {inherit (cfg) balloon;};
     };
   };
 }
