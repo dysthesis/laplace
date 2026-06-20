@@ -48,7 +48,7 @@ in {
     proxmox = {
       cores = 1;
       memory = 2048; # MiB, ballooning ceiling
-      balloon = 512; # MiB, ballooning floor (headscale + headplane are light)
+      balloon = 384; # MiB, ballooning floor (headscale + headplane are light)
       diskSize = "64G";
     };
 

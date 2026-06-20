@@ -19,6 +19,18 @@
   enabled = elem "proxmox" config.laplace.profiles;
   cfg = config.laplace.proxmox;
   hostName = config.networking.hostName;
+  # Cap the tmpfs root against the ballooning *floor*, not the RAM ceiling. The
+  # guest boots seeing `memory` (ceiling) RAM, so a `size=50%` root tmpfs is
+  # half the ceiling - but under host pressure the balloon reclaims down to
+  # `balloon`, and a tmpfs that can still admit half-the-ceiling of pages then
+  # exceeds what the guest physically holds (kernel tmpfs docs warn this
+  # deadlocks/OOMs). 75% of the floor keeps the worst-case tmpfs fill inside the
+  # reclaimed-down footprint; it auto-scales per host (charon 256->192M,
+  # garmr/mneme get proportionally larger /tmp for Chromium/transcode scratch).
+  rootTmpfsSize =
+    if cfg.balloon != null
+    then "${toString (builtins.div (cfg.balloon * 3) 4)}M"
+    else "50%";
   btrfsMountOptions = [
     "defaults"
     "noatime"
@@ -115,13 +127,32 @@ in {
     };
     services.qemuGuest.enable = true;
 
+    # `/` is already tmpfs (RAM), so the global boot.tmp.useTmpfs (a *second*
+    # tmpfs for /tmp, default 50% of RAM) is redundant here and doubles the
+    # RAM-backed-write surface. Force it off so /tmp rides the root tmpfs and is
+    # bounded by rootTmpfsSize, not its own half-of-RAM cap.
+    boot.tmp.useTmpfs = mkForce false;
+
     # The journal lives on the tmpfs root: mnemosyne does not persist /var/log,
     # so with no /var/log/journal directory journald keeps logs in /run (RAM).
     # The default volatile cap scales with /run (~10% of RAM), which on the
     # larger guests is tens of MiB of RAM spent on logs. Pin a deterministic
     # ceiling instead. (If /var/log/journal is ever persisted to btrfs, switch
     # this to SystemMaxUse, which governs the persistent store.)
-    services.journald.extraConfig = "RuntimeMaxUse=50M";
+    services.journald.extraConfig = "RuntimeMaxUse=32M";
+
+    # Backstop for the tightened ballooning floors: when the host reclaims a
+    # guest down near its floor and a burst (git gc, Chromium archive, ML run,
+    # a /tmp filler) pushes it over, earlyoom kills the offender early instead
+    # of letting the guest stall in a livelock. It watches free RAM *and* zram
+    # swap, so balloon deflation alone (reclaimable cache) does not trip it.
+    services.earlyoom.enable = mkDefault true;
+
+    # sshd socket-activated rather than resident: per-connection spawn frees a
+    # few MiB of idle RSS on every guest. Colmena opens a fresh connection per
+    # deploy, so push-deploy still works; if it ever misbehaves the Proxmox
+    # serial/noVNC console (console=ttyS0/tty1 above) is the recovery path.
+    services.openssh.startWhenNeeded = mkDefault true;
 
     # Receive closures pushed by the central deployer (Colmena, `just deploy`).
     nix.settings.trusted-users = ["root" "@wheel"];
@@ -188,7 +219,7 @@ in {
       nodev."/" = {
         fsType = "tmpfs";
         mountOptions = [
-          "size=50%"
+          "size=${rootTmpfsSize}"
           "mode=755"
           "defaults"
         ];

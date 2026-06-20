@@ -34,7 +34,7 @@ in {
     proxmox = {
       cores = 1;
       memory = 1024; # MiB, ballooning ceiling
-      balloon = 512; # MiB, ballooning floor (mirrors the imperative qm setting)
+      balloon = 384; # MiB, ballooning floor (caddy + ddclient are tiny; 384 leaves Go-runtime margin)
       diskSize = "20G";
     };
 

@@ -57,7 +57,7 @@ in {
     proxmox = {
       cores = 1;
       memory = 1024; # MiB, ballooning ceiling
-      balloon = 512; # MiB, ballooning floor
+      balloon = 384; # MiB, ballooning floor (caddy + tailscaled; 384 leaves two Go daemons margin)
       diskSize = "15G";
     };
 

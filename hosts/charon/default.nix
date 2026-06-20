@@ -20,7 +20,7 @@
     proxmox = {
       cores = 1;
       memory = 1024; # MiB, ballooning ceiling
-      balloon = 512; # MiB, ballooning floor (mirrors the imperative qm setting)
+      balloon = 256; # MiB, ballooning floor (tailscaled exit node idles ~30-50 MiB)
       diskSize = "20G";
     };
 
