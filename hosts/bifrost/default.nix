@@ -64,23 +64,35 @@ in {
         override_local_dns = true;
         nameservers.global = ["100.64.0.5"];
 
-        # MagicDNS records for the apps behind mimir's internal Caddy. Point at
-        # mimir's *tailnet* IP (100.x), not its 10.0.20.83 LAN address, so the
-        # traffic rides WireGuard. These FQDNs sit under base_domain, so the
-        # Tailscale client answers them locally and never forwards to AdGuard,
-        # even with override_local_dns on.
+        # MagicDNS records for the apps behind the central Caddy on horos. All
+        # the service names point at horos's *tailnet* IP (100.x), not its LAN
+        # address, so the traffic rides WireGuard; horos then proxies each to the
+        # app's own node over the tailnet. The names are bare *.dysthesis.com
+        # with no public Cloudflare A record, so they resolve only here - the
+        # tailscale client answers these explicit records and off-tailnet gets
+        # NXDOMAIN from public DNS.
         extra_records = let
-          mimir = "100.64.0.8"; # TODO: mimir's tailnet IP, once it has joined
+          horos = "100.64.0.9"; # TODO: horos's tailnet IP, once it has joined
         in [
           {
-            name = "miniflux.tailnet.${fqdn}";
+            name = "immich.${fqdn}";
             type = "A";
-            value = mimir;
+            value = horos;
           }
           {
-            name = "silverbullet.tailnet.${fqdn}";
+            name = "adguard.${fqdn}";
             type = "A";
-            value = mimir;
+            value = horos;
+          }
+          {
+            name = "miniflux.${fqdn}";
+            type = "A";
+            value = horos;
+          }
+          {
+            name = "silverbullet.${fqdn}";
+            type = "A";
+            value = horos;
           }
         ];
       };
