@@ -12,6 +12,7 @@ in {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.40.1"];
+    hosts."10.0.40.2" = ["headscale.dysthesis.com"];
     # Only the Headscale coordination port is served on the LAN: portunus
     # terminates TLS for headscale.dysthesis.com and reverse-proxies to
     # 10.0.40.3:8080 over VLAN40, so that hop is plaintext within the trusted
