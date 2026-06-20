@@ -41,7 +41,8 @@ in {
     profiles = ["proxmox"];
     proxmox = {
       cores = 2;
-      memory = 2048; # MiB
+      memory = 2048; # MiB, ballooning ceiling
+      balloon = 768; # MiB, ballooning floor (Postgres + two app processes)
       diskSize = "32G";
     };
 

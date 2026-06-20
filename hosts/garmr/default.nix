@@ -9,7 +9,11 @@
       # simplification: bulk-archiving large batches can still pressure RAM;
       # upgrade path is bump memory to 6144/8192 if Chromium starts OOMing.
       cores = 2;
-      memory = 4096; # MiB
+      memory = 4096; # MiB, ballooning ceiling
+      # Floor kept above the node/Postgres baseline; the Chromium archive spike
+      # (~0.5-1 GiB) rides the headroom up to the 4096 ceiling, so the balloon
+      # only reclaims toward 1024 when idle.
+      balloon = 1024; # MiB, ballooning floor
       # Archives (PDF + screenshot + singlefile HTML per link) accumulate in
       # /var/lib/linkwarden on the btrfs /nix/persist; 100G holds tens of
       # thousands of pages. Bump if the archive grows past that.

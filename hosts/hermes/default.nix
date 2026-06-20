@@ -3,7 +3,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
-      memory = 2048; # MiB
+      memory = 2048; # MiB, ballooning ceiling
+      balloon = 512; # MiB, ballooning floor (AdGuard idles ~150 MiB)
       diskSize = "64G";
     };
 
