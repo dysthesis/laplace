@@ -72,7 +72,7 @@ in {
         # tailscale client answers these explicit records and off-tailnet gets
         # NXDOMAIN from public DNS.
         extra_records = let
-          horos = "100.64.0.9"; # TODO: horos's tailnet IP, once it has joined
+          horos = "100.64.0.10";
         in [
           {
             name = "immich.${fqdn}";
