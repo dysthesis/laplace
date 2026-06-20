@@ -23,11 +23,6 @@
 
     zram.enable = true;
 
-    nh = {
-      enable = true;
-      flakePath = "/etc/config";
-    };
-
     services = {
       linkwarden.enable = true;
       # Required: linkwarden is tailnet-only (port firewalled, reachable solely
@@ -60,12 +55,6 @@
       DHCP = "no";
     };
   };
-
-  # Persist the on-disk flake clone used for remote rebuilds. Linkwarden's state
-  # (/var/lib/linkwarden) and the Postgres cluster are contributed by the
-  # linkwarden module's mnemosyne.dirs; base dirs (/etc/ssh, ...) by mnemosyne
-  # itself - so just this host-specific addition here.
-  mnemosyne.dirs = ["/etc/config"];
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies

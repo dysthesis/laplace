@@ -58,11 +58,6 @@ in {
 
     zram.enable = true;
 
-    nh = {
-      enable = true;
-      flakePath = "/etc/config";
-    };
-
     services.headscale = {
       enable = true;
       fqdn = "${subdomain}.${fqdn}";
@@ -132,8 +127,6 @@ in {
 
     services.tailscale.enable = true;
   };
-
-  mnemosyne.dirs = ["/etc/config"];
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies

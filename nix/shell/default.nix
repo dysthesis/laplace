@@ -24,6 +24,11 @@ pkgs.mkShell {
     npins
     sops
     rsync
+    # Push-deploy the Proxmox guests (`just deploy`). simplification: uses the
+    # raw `colmena` flake output via nixpkgs' CLI rather than the colmena flake
+    # input + makeHive; add the input if hermetic `nix run`/`flake check` eval is
+    # wanted.
+    colmena
 
     bash-language-server
     shfmt

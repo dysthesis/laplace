@@ -115,8 +115,24 @@ in {
     };
     services.qemuGuest.enable = true;
 
-    # Allow remote `nixos-rebuild`/`nh` from the workstations.
+    # Receive closures pushed by the central deployer (Colmena, `just deploy`).
     nix.settings.trusted-users = ["root" "@wheel"];
+
+    # Central push-deploy connects as root over the LAN and runs
+    # switch-to-configuration directly, so the closure activates without
+    # interactive escalation. Root SSH stays disabled globally
+    # (system/default.nix forces PermitRootLogin "no"); this Match re-permits it
+    # *key-only* from the two infra VLANs where the workstations live. doas keeps
+    # prompting for interactive use - unweakened.
+    services.openssh.extraConfig = ''
+      Match Address 10.0.20.0/24,10.0.40.0/24
+        PermitRootLogin prohibit-password
+    '';
+    users.users.root.openssh.authorizedKeys.keys = [
+      # Workstation deploy keys (mirror archon's; rotate together).
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJoKu8wF8Ts5xlCcKBQ8zRU7A4NsujnhzfsGfaP62kf2 demiurge@phobos"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUPaVrhCJ8fDKDYCcIeICgCv6W+0GdGmMDrngIg1oKg demiurge@deimos"
+    ];
 
     # Real impermanence: tmpfs root, btrfs-backed persistent /nix + /nix/persist.
     mnemosyne.enable = true;
@@ -176,19 +192,20 @@ in {
     system.build.proxmoxVMA = pkgs.proxmox-vma {
       rawImage = config.system.build.diskoImages;
       baseName = "vzdump-qemu-${hostName}";
-      qemuConf = {
-        boot = "order=virtio0";
-        scsihw = "virtio-scsi-single";
-        virtio0 = "local-lvm:vm-9999-disk-0";
-        ostype = "l26";
-        inherit (cfg) cores memory;
-        bios = "seabios";
-        name = hostName;
-        net0 = "virtio=${cfg.macAddress},bridge=${cfg.bridge}";
-        serial0 = "socket";
-        agent = 1;
-      }
-      // optionalAttrs (cfg.balloon != null) {inherit (cfg) balloon;};
+      qemuConf =
+        {
+          boot = "order=virtio0";
+          scsihw = "virtio-scsi-single";
+          virtio0 = "local-lvm:vm-9999-disk-0";
+          ostype = "l26";
+          inherit (cfg) cores memory;
+          bios = "seabios";
+          name = hostName;
+          net0 = "virtio=${cfg.macAddress},bridge=${cfg.bridge}";
+          serial0 = "socket";
+          agent = 1;
+        }
+        // optionalAttrs (cfg.balloon != null) {inherit (cfg) balloon;};
     };
   };
 }

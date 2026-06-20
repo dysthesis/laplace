@@ -68,11 +68,6 @@ in {
 
     zram.enable = true;
 
-    nh = {
-      enable = true;
-      flakePath = "/etc/config";
-    };
-
     services = {
       # Needed both to reach the upstreams over WireGuard and so clients reach
       # this proxy (the *.dysthesis.com names resolve to its tailnet IP).
@@ -110,7 +105,6 @@ in {
     config.sops.templates."caddy-cloudflare.env".path;
 
   mnemosyne.dirs = [
-    "/etc/config" # on-disk flake clone for remote rebuilds
     "/var/lib/caddy" # ACME account + issued certs
   ];
 

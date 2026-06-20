@@ -22,18 +22,8 @@
 
     zram.enable = true;
 
-    nh = {
-      enable = true;
-      flakePath = "/etc/config";
-    };
-
     services.forgejo.enable = true;
   };
-
-  # Persist the on-disk flake clone used for remote rebuilds. Forgejo + postgres
-  # state dirs are contributed by the forgejo module; base dirs (/etc/ssh, ...)
-  # by mnemosyne itself - so no mkForce, just this host-specific addition.
-  mnemosyne.dirs = ["/etc/config"];
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies

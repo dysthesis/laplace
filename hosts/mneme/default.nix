@@ -14,11 +14,6 @@
 
     zram.enable = true;
 
-    nh = {
-      enable = true;
-      flakePath = "/etc/config";
-    };
-
     services = {
       immich.enable = true;
       tailscale.enable = true;
@@ -40,11 +35,6 @@
       DHCP = "no";
     };
   };
-
-  # Persist the on-disk flake clone used for remote rebuilds. The AdGuard state
-  # dir is contributed by the adguardhome module; base dirs (/etc/ssh, ...) by
-  # mnemosyne itself - so no mkForce, just this host-specific addition.
-  mnemosyne.dirs = ["/etc/config"];
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies

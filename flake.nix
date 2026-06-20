@@ -22,7 +22,8 @@
     treefmt =
       forAllSystems
       (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
-    nixosConfigurations = import ./hosts {inherit self lib inputs;};
+    hosts = import ./hosts {inherit self lib inputs;};
+    inherit (hosts) nixosConfigurations;
   in
     mapAttrs (_: forAllSystems) {
       devShells = pkgs: {default = import ./nix/shell pkgs;};
@@ -64,6 +65,13 @@
       };
 
       inherit nixosConfigurations;
+
+      # Push-deploy hive for the Proxmox guests: `colmena apply --on @proxmox`
+      # (or `just deploy`). See nix/deploy.
+      colmena = import ./nix/deploy {
+        inherit self inputs lib;
+        inherit (hosts) nodeModules overlays;
+      };
     };
 
   inputs = {
