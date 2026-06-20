@@ -101,7 +101,7 @@ in {
           (unstable.prismlauncher.override {
             jdks = with pkgs; [zulu25 jdk21 jdk17 jdk8];
           })
-          unstable.tor-browser
+          # unstable.tor-browser
           tigervnc
           (mkWrapper pkgs.unstable pkgs.unstable.obsidian ''
             wrapProgram $out/bin/obsidian \
