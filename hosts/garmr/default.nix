@@ -39,6 +39,12 @@
     };
   };
 
+  # Linkwarden's NextAuth (v4) requires NEXTAUTH_URL = the browser-facing URL,
+  # and nixpkgs leaves it unset. Clients reach this instance only via Caddy on
+  # horos (linkwarden.dysthesis.com, TLS terminated there, proxied over the
+  # tailnet), so point it at that name + /api/v1/auth or login/CSRF breaks.
+  services.linkwarden.environment.NEXTAUTH_URL = "https://linkwarden.dysthesis.com/api/v1/auth";
+
   networking = {
     useNetworkd = true;
     useDHCP = false;
