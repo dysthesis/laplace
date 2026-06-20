@@ -36,6 +36,7 @@
     # Flake-local font packages (formerly from nixpressions).
     (import ../nix/pkgs)
     (import ../nix/overlays/unstable.nix inputs)
+    inputs.nix-minecraft.overlay
     # Bound switch-to-configuration so a hung activation self-recovers instead
     # of spinning forever on the lock (see the file for the upstream bug).
     (import ../nix/overlays/stc-timeout.nix)

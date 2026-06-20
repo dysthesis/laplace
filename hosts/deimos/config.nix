@@ -86,6 +86,13 @@
       };
 
       services = {
+        minecraft.retirement-home = {
+          enable = true;
+          autoStart = false;
+          openFirewall = false;
+          memoryGb = 8;
+        };
+
         tailscale = {
           enable = true;
           denySubnetRoutes = true;
