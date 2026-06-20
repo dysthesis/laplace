@@ -87,7 +87,8 @@ in {
         # plus one extra_record on bifrost.
         virtualHosts = {
           "immich.${fqdn}".extraConfig = proxy "mneme.tailnet.${fqdn}:2283";
-          "adguard.${fqdn}".extraConfig = proxy "hermes.tailnet.${fqdn}:3000";
+          # AdGuard's setup wizard moved its web UI off the 3000 default onto 80.
+          "adguard.${fqdn}".extraConfig = proxy "hermes.tailnet.${fqdn}:80";
           "miniflux.${fqdn}".extraConfig = proxy "mimir.tailnet.${fqdn}:8087";
           "silverbullet.${fqdn}".extraConfig = proxy "mimir.tailnet.${fqdn}:8101";
         };
