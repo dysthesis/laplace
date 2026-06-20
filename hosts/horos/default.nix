@@ -86,6 +86,7 @@ in {
         # app's node name over the tailnet. Adding an app = one more line here
         # plus one extra_record on bifrost.
         virtualHosts = {
+          "headplane.${fqdn}".extraConfig = proxy "bifrost.tailnet.${fqdn}:3000";
           "immich.${fqdn}".extraConfig = proxy "mneme.tailnet.${fqdn}:2283";
           # AdGuard's setup wizard moved its web UI off the 3000 default onto 80.
           "adguard.${fqdn}".extraConfig = proxy "hermes.tailnet.${fqdn}:80";
