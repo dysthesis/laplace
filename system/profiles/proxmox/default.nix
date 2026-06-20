@@ -26,7 +26,7 @@
   # exceeds what the guest physically holds (kernel tmpfs docs warn this
   # deadlocks/OOMs). 75% of the floor keeps the worst-case tmpfs fill inside the
   # reclaimed-down footprint; it auto-scales per host (charon 256->192M,
-  # garmr/mneme get proportionally larger /tmp for Chromium/transcode scratch).
+  # mneme gets a proportionally larger /tmp for transcode scratch).
   rootTmpfsSize =
     if cfg.balloon != null
     then "${toString (builtins.div (cfg.balloon * 3) 4)}M"
@@ -148,11 +148,15 @@ in {
     # swap, so balloon deflation alone (reclaimable cache) does not trip it.
     services.earlyoom.enable = mkDefault true;
 
-    # sshd socket-activated rather than resident: per-connection spawn frees a
-    # few MiB of idle RSS on every guest. Colmena opens a fresh connection per
-    # deploy, so push-deploy still works; if it ever misbehaves the Proxmox
-    # serial/noVNC console (console=ttyS0/tty1 above) is the recovery path.
-    services.openssh.startWhenNeeded = mkDefault true;
+    # sshd MUST stay resident, NOT socket-activated, on these headless guests.
+    # A switch-to-configuration hang (the STC job-wait loops have no timeout and
+    # spin forever if the systemd dbus transport drops mid-switch - see the
+    # `timeout`-wrapped STC overlay in nix/overlays/stc-timeout.nix) or memory
+    # pressure can leave sshd.socket with no listener, stranding the guest with
+    # no recovery path but the Proxmox console. A resident sshd.service survives
+    # both. The few MiB `startWhenNeeded` saved are not worth losing remote
+    # access to a headless VM - that trade cost mimir/horos/mneme a deploy.
+    services.openssh.startWhenNeeded = mkDefault false;
 
     # Receive closures pushed by the central deployer (Colmena, `just deploy`).
     nix.settings.trusted-users = ["root" "@wheel"];

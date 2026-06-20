@@ -108,11 +108,6 @@ in {
             type = "A";
             value = horos;
           }
-          {
-            name = "linkwarden.${fqdn}";
-            type = "A";
-            value = horos;
-          }
         ];
       };
     };
