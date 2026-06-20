@@ -19,7 +19,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
-      memory = 1024; # MiB
+      memory = 1024; # MiB, ballooning ceiling
+      balloon = 512; # MiB, ballooning floor (mirrors the imperative qm setting)
       diskSize = "20G";
     };
 

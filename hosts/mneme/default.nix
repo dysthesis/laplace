@@ -3,7 +3,10 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 4;
-      memory = 8096; # MiB
+      memory = 8096; # MiB, ballooning ceiling
+      # Immich (ML models + server) + Postgres + Redis; floor well above their
+      # resident set so the host never reclaims into a live photo import / ML run.
+      balloon = 2048; # MiB, ballooning floor
       diskSize = "256G";
     };
 

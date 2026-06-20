@@ -7,7 +7,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 2;
-      memory = 4096; # MiB
+      memory = 4096; # MiB, ballooning ceiling
+      balloon = 1024; # MiB, ballooning floor (Forgejo + Postgres working set)
       diskSize = "64G";
       # macAddress left as zeros; Proxmox assigns one on restore.
     };
