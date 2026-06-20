@@ -43,8 +43,9 @@ in {
       settings = {
         # Serve DoH (/dns-query) over the plain HTTP port so horos terminates TLS
         # and forwards it - https://adguard.dysthesis.com/dns-query then works
-        # without AdGuard holding its own cert.
-        tls.allow_unencrypted_doh = true;
+        # without AdGuard holding its own cert. AdGuard Home >= 0.107.74 moved
+        # this from tls.allow_unencrypted_doh to doh.insecure_enabled.
+        doh.insecure_enabled = true;
 
         # Behind the proxy AdGuard sees horos as the source of every query; trust
         # its tailnet IP so the forwarded X-Forwarded-For restores the real client
