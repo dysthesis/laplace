@@ -1,10 +1,12 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: let
   fqdn = "dysthesis.com";
   subdomain = "headscale";
+  horosTailnetIp = "100.64.0.10";
 in {
   networking = {
     useNetworkd = true;
@@ -14,10 +16,20 @@ in {
     # terminates TLS for headscale.dysthesis.com and reverse-proxies to
     # 10.0.40.3:8080 over VLAN40, so that hop is plaintext within the trusted
     # infra segment by design. 80/443 were dead (no web server runs here) and
-    # Headplane is now bound to loopback.
-    firewall.allowedTCPPorts = [
-      config.laplace.services.headscale.port
-    ];
+    # Headplane is reachable only from horos over tailscale0.
+    firewall = {
+      allowedTCPPorts = [
+        config.laplace.services.headscale.port
+      ];
+
+      # Do not trust all tailnet peers on this host: Headplane is a management UI.
+      # Only horos may reach it over tailscale0; horos then serves
+      # headplane.dysthesis.com to the rest of the tailnet.
+      trustedInterfaces = lib.mkForce [];
+      extraInputRules = ''
+        iifname "${config.services.tailscale.interfaceName}" ip saddr ${horosTailnetIp} tcp dport ${toString config.laplace.services.headplane.port} accept
+      '';
+    };
   };
 
   systemd.network.networks."10-lan" = {
@@ -72,8 +84,13 @@ in {
         # tailscale client answers these explicit records and off-tailnet gets
         # NXDOMAIN from public DNS.
         extra_records = let
-          horos = "100.64.0.10";
+          horos = horosTailnetIp;
         in [
+          {
+            name = "headplane.${fqdn}";
+            type = "A";
+            value = horos;
+          }
           {
             name = "immich.${fqdn}";
             type = "A";
@@ -101,12 +118,13 @@ in {
     services.headplane = {
       enable = true;
       fqdn = "headplane.${fqdn}";
-      # Headplane mints pre-auth keys and manages nodes; with no OIDC and only
-      # api-key login it must not sit on the LAN. Bind loopback and reach it via
-      # an SSH tunnel: ssh -L 3000:localhost:3000 bifrost
-      address = "127.0.0.1";
+      # Horos proxies this over the tailnet. The port is not opened globally;
+      # host firewall allows only horos's tailnet IP to connect.
+      address = "0.0.0.0";
       openFirewall = false;
     };
+
+    services.tailscale.enable = true;
   };
 
   mnemosyne.dirs = ["/etc/config"];
