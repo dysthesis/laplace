@@ -44,11 +44,6 @@ in {
 
     zram.enable = true;
 
-    nh = {
-      enable = true;
-      flakePath = "/etc/config";
-    };
-
     services.caddy = {
       enable = true;
       virtualHosts.${headscaleHost}.extraConfig = ''
@@ -88,7 +83,6 @@ in {
   };
 
   mnemosyne.dirs = [
-    "/etc/config"
     "/var/lib/acme"
     "/var/lib/caddy"
     "/var/lib/private/ddclient"

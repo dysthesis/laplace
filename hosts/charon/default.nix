@@ -29,15 +29,8 @@
     };
 
     zram.enable = true;
-
-    nh = {
-      enable = true;
-      flakePath = "/etc/config";
-    };
     services.tailscale.enable = true;
   };
-
-  mnemosyne.dirs = ["/etc/config"];
 
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = 1;

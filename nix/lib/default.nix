@@ -30,6 +30,42 @@ nixpkgs.lib.extend (
       dir
       |> getModuleDirs
       |> map (module: dir + "/${module}");
+
+    # The module list + specialArgs that compose a host, factored out of
+    # `mkSystem` so Colmena can consume the same modules (it must own the
+    # nixosSystem call itself to inject its `deployment` namespace). One source
+    # of truth for both `nixosConfigurations` and the `colmena` hive. See
+    # nix/deploy and hosts/default.nix.
+    mkSystemModules = {
+      self,
+      system,
+      hostname,
+      config,
+      inputs,
+      specialArgs,
+      nixosProfiles ? [],
+      extraModules ? [],
+      ...
+    }: {
+      inherit system;
+      specialArgs = {inherit self inputs;} // specialArgs;
+      modules =
+        [
+          {networking.hostName = hostname;}
+          {nixpkgs.hostPlatform = final.mkDefault system;}
+          (
+            {modulesPath, ...}: let
+              profilesPath = "${modulesPath}/profiles";
+              validProfiles = map (final.removeSuffix ".nix") (getFiles profilesPath);
+            in
+              (final.checkListOfEnum "valid modules" validProfiles nixosProfiles) {
+                imports = map (profile: "${profilesPath}/${profile}.nix") nixosProfiles;
+              }
+          )
+          config
+        ]
+        ++ extraModules;
+    };
   in {
     laplace = {
       forAllSystems = {
@@ -122,37 +158,10 @@ nixpkgs.lib.extend (
           meta = {inherit (target.meta) mainProgram;};
         };
 
-      system.mkSystem = {
-        self,
-        system,
-        hostname,
-        config,
-        inputs,
-        specialArgs,
-        nixosProfiles ? [],
-        extraModules ? [],
-        ...
-      }:
-        final.nixosSystem {
-          inherit system;
-          modules =
-            [
-              {networking.hostName = hostname;}
-              {nixpkgs.hostPlatform = final.mkDefault system;}
-              (
-                {modulesPath, ...}: let
-                  profilesPath = "${modulesPath}/profiles";
-                  validProfiles = map (final.removeSuffix ".nix") (getFiles profilesPath);
-                in
-                  (final.checkListOfEnum "valid modules" validProfiles nixosProfiles) {
-                    imports = map (profile: "${profilesPath}/${profile}.nix") nixosProfiles;
-                  }
-              )
-              config
-            ]
-            ++ extraModules;
-          specialArgs = {inherit self inputs;} // specialArgs;
-        };
+      system = {
+        inherit mkSystemModules;
+        mkSystem = args: final.nixosSystem (mkSystemModules args);
+      };
     };
   }
 )

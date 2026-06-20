@@ -52,11 +52,6 @@ in {
 
     zram.enable = true;
 
-    nh = {
-      enable = true;
-      flakePath = "/etc/config";
-    };
-
     services = {
       tailscale.enable = true;
       miniflux.enable = true;
@@ -74,10 +69,6 @@ in {
   # Miniflux bakes BASE_URL into absolute links + cookie scope, so it must match
   # the public origin horos serves, not the module's bare-localhost default.
   services.miniflux.config.BASE_URL = lib.mkForce "https://${minifluxHost}";
-
-  mnemosyne.dirs = [
-    "/etc/config" # on-disk flake clone for remote rebuilds
-  ];
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies
