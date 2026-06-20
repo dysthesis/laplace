@@ -24,12 +24,38 @@ in {
 
     services.adguardhome = {
       enable = true;
-      # Keep web-UI changes between rebuilds; no declarative settings to merge over.
+      # mutableSettings keeps web-UI changes (filters, rewrites, the encryption
+      # wizard) across rebuilds; the upstream module deep-merges `settings` below
+      # over the live config on each start (declarative keys win), so the two
+      # coexist.
       mutableSettings = true;
-      # Don't open the web UI (3000/tcp) on every interface. AdGuard still binds
-      # 0.0.0.0, but with the port closed in the host firewall only the tailnet
-      # can reach the UI (tailscale0 is a trusted interface); the LAN cannot.
+      # Don't open the web UI on every interface. AdGuard still binds 0.0.0.0, but
+      # with the port closed in the host firewall only the tailnet can reach it
+      # (tailscale0 is a trusted interface); the LAN cannot.
       openFirewall = false;
+
+      # The plain-HTTP UI/DoH port. The module forces
+      # http.address = "${host}:${port}" into the merged config, so this MUST
+      # match the port horos's Caddy proxies to (hermes:80) - otherwise the merge
+      # resets the UI to the 3000 default and breaks the reverse proxy.
+      port = 80;
+
+      settings = {
+        # Serve DoH (/dns-query) over the plain HTTP port so horos terminates TLS
+        # and forwards it - https://adguard.dysthesis.com/dns-query then works
+        # without AdGuard holding its own cert.
+        tls.allow_unencrypted_doh = true;
+
+        # Behind the proxy AdGuard sees horos as the source of every query; trust
+        # its tailnet IP so the forwarded X-Forwarded-For restores the real client
+        # for per-client rules/stats. Narrow /32 (not the whole 100.64.0.0/10) so
+        # no other tailnet peer can spoof XFF.
+        dns.trusted_proxies = [
+          "127.0.0.0/8"
+          "::1/128"
+          "100.64.0.10/32" # horos
+        ];
+      };
     };
 
     # The resolver port is opened explicitly so LAN/tailnet clients reach DNS on
