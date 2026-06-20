@@ -23,7 +23,7 @@ in {
   config = mkIf cfg.enable {
     zramSwap = {
       enable = true;
-      inherit (cfg) memoryPercent;
+      inherit (cfg) memoryPercent algorithm;
     };
     boot = {
       kernelParams = [
