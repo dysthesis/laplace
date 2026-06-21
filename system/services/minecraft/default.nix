@@ -171,6 +171,10 @@ in {
   config = mkIf cfg.enable {
     mnemosyne.dirs = [cfg.dataDir];
 
+    # Open up port for Simple Voice Chat
+    # See: https://modrepo.de/minecraft/voicechat/wiki/server_setup_self_hosted
+    networking.firewall.allowedUDPPorts = [24454];
+
     services.minecraft-servers = {
       enable = true;
       eula = true;
