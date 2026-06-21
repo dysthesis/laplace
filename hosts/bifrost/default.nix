@@ -169,6 +169,11 @@ in {
               value = mimirTailnetIp;
             }
             {
+              name = "tasks.${fqdn}";
+              type = "A";
+              value = mimirTailnetIp;
+            }
+            {
               name = "mc.${fqdn}";
               type = "A";
               value = lokiTailnetIp;
