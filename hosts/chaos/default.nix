@@ -25,7 +25,9 @@ in {
       isoImage.edition = "chaos";
       laplace = {
         profiles = ["desktop"];
-        harden = ["kernel"];
+        # Installer ISO uses the stock kernel; the hardened profile is marked
+        # panic-prone in system/hardening/kernel.
+        harden = [];
       };
       # Lock root on the ISO. chaos is gated out of sops (system/secrets), so it
       # cannot decrypt a password secret; admin is via the nixos user (Calamares

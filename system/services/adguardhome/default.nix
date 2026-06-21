@@ -41,20 +41,15 @@ in {
       port = 80;
 
       settings = {
-        # Serve DoH (/dns-query) over the plain HTTP port so horos terminates TLS
-        # and forwards it - https://adguard.dysthesis.com/dns-query then works
-        # without AdGuard holding its own cert. AdGuard Home >= 0.107.74 moved
-        # this from tls.allow_unencrypted_doh to doh.insecure_enabled.
+        # Serve DoH (/dns-query) over the plain HTTP port so node-local Caddy
+        # terminates TLS and forwards it. AdGuard Home >= 0.107.74 moved this
+        # from tls.allow_unencrypted_doh to doh.insecure_enabled.
         doh.insecure_enabled = true;
 
-        # Behind the proxy AdGuard sees horos as the source of every query; trust
-        # its tailnet IP so the forwarded X-Forwarded-For restores the real client
-        # for per-client rules/stats. Narrow /32 (not the whole 100.64.0.0/10) so
-        # no other tailnet peer can spoof XFF.
+        # Behind node-local Caddy, only loopback should be trusted to supply XFF.
         dns.trusted_proxies = [
           "127.0.0.0/8"
           "::1/128"
-          "100.64.0.10/32" # horos
         ];
       };
     };

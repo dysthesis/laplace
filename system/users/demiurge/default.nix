@@ -96,7 +96,7 @@ in {
         # system/display/servers/xorg/sessions/xmonad.
 
         applications = with pkgs; [
-          zotero
+          configured.zotero
           signal-desktop
           (unstable.prismlauncher.override {
             jdks = with pkgs; [zulu25 jdk21 jdk17 jdk8];
@@ -116,18 +116,15 @@ in {
           wireguard-tools
         ];
 
-        apps = with pkgs.configured;
-          [
-            zathura
-            spotify-player
-            mpv
-            neomutt
-          ]
-          ++ (with pkgs.unstable; [
-            vesktop
-            zen
-            # todoist-electron
-          ]);
+        apps = with pkgs.configured; [
+          zathura
+          spotify-player
+          mpv
+          neomutt
+          vesktop
+          zen
+          # todoist-electron
+        ];
 
         productivity = with pkgs.configured; [
           # read

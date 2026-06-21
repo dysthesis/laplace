@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib) mkEnableOption mkIf mkOption optional types;
 
   cfg = config.laplace.services.minecraft.retirement-home;
 
@@ -171,9 +171,9 @@ in {
   config = mkIf cfg.enable {
     mnemosyne.dirs = [cfg.dataDir];
 
-    # Open up port for Simple Voice Chat
+    # Keep Simple Voice Chat exposure tied to the main Minecraft exposure switch.
     # See: https://modrepo.de/minecraft/voicechat/wiki/server_setup_self_hosted
-    networking.firewall.allowedUDPPorts = [24454];
+    networking.firewall.allowedUDPPorts = optional cfg.openFirewall 24454;
 
     services.minecraft-servers = {
       enable = true;
