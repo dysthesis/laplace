@@ -109,6 +109,13 @@ in {
               type = "A";
               value = horos;
             }
+            # Minecraft on loki. horos socket-proxies raw TCP 25565 to loki's
+            # tailnet node (no Caddy/TLS - the Java protocol is plain TCP).
+            {
+              name = "mc.${fqdn}";
+              type = "A";
+              value = horos;
+            }
           ];
         };
       };

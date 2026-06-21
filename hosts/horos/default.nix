@@ -103,6 +103,32 @@ in {
   systemd.services.caddy.serviceConfig.EnvironmentFile =
     config.sops.templates."caddy-cloudflare.env".path;
 
+  # Minecraft (loki) ingress. The Java protocol is raw TCP, not HTTP, so it can't
+  # ride a Caddy reverse_proxy (and needs no TLS). A systemd socket proxy - shipped
+  # with systemd, no extra package - accepts mc.dysthesis.com:25565 on the tailnet
+  # and forwards to loki's node. Only tailscale0 is trusted
+  # (laplace.services.tailscale), so the LAN never reaches 25565; mc.dysthesis.com
+  # resolves to horos's tailnet IP via the bifrost extra_record. The upstream is
+  # loki's tailnet name (its MC port is closed to the LAN), so this rides WireGuard.
+  systemd.sockets.minecraft-loki = {
+    description = "Minecraft ingress socket (forwarded to loki)";
+    wantedBy = ["sockets.target"];
+    socketConfig.ListenStream = "25565";
+  };
+  systemd.services.minecraft-loki = {
+    description = "Minecraft TCP proxy to loki over the tailnet";
+    requires = ["minecraft-loki.socket" "tailscaled.service"];
+    after = ["minecraft-loki.socket" "tailscaled.service"];
+    serviceConfig = {
+      ExecStart = "${config.systemd.package}/lib/systemd/systemd-socket-proxyd loki.tailnet.${fqdn}:25565";
+      DynamicUser = true; # pure userspace TCP relay - no fs/privilege surface
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      NoNewPrivileges = true;
+      RestrictAddressFamilies = ["AF_INET" "AF_INET6" "AF_UNIX"]; # AF_UNIX: sd_notify + resolved
+    };
+  };
+
   mnemosyne.dirs = [
     "/var/lib/caddy" # ACME account + issued certs
   ];
