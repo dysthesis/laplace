@@ -17,6 +17,12 @@ in {
     useDHCP = false;
     nameservers = ["10.0.40.1"];
     hosts."10.0.40.2" = ["headscale.dysthesis.com"];
+    # nftables backend. The firewall scoping below lives in extraInputRules, which
+    # ONLY applies on the nftables firewall — on iptables it silently evaporates.
+    # tailscale used to flip nftables on; now that bifrost is off the tailnet that
+    # coupling is gone, so set it explicitly or headscale's :8080 accept disappears
+    # and the control plane is firewalled to :22 only. No Docker here, so it's safe.
+    nftables.enable = true;
     # Headscale is reachable only from VLAN40: portunus terminates TLS for
     # headscale.dysthesis.com and reverse-proxies to 10.0.40.3:8080 over the
     # trusted infra segment.
@@ -159,6 +165,11 @@ in {
               value = mimirTailnetIp;
             }
             {
+              name = "status.${fqdn}";
+              type = "A";
+              value = mimirTailnetIp;
+            }
+            {
               name = "mc.${fqdn}";
               type = "A";
               value = lokiTailnetIp;
@@ -175,6 +186,16 @@ in {
       };
 
       tailscale.enable = true;
+
+      # SSH/pull: bifrost is in the DMZ and off the tailnet, so the hub dials IN.
+      # It listens on :45876, scoped to mimir only; OPNsense must also pass VLAN20
+      # (mimir 10.0.20.83) -> 10.0.40.3:45876. KEY is the hub's PUBLIC key (same
+      # string as portunus / the old WS env files), so no sops.
+      beszel.agent = {
+        enable = true;
+        key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINq5YPgIMrkCV4JIl0DEihMUE/G3z480LbAun0TapjbO";
+        trustedHubs = ["10.0.20.83"];
+      };
 
       caddy = {
         enable = true;

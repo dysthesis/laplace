@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   networking = {
     useNetworkd = true;
     useDHCP = false;
@@ -30,13 +34,21 @@
     };
 
     zram.enable = true;
-    services.tailscale = {
-      enable = true;
-      # ip_forward + ipv6 forwarding come bundled with this option.
-      advertiseExitNode = true;
+    services = {
+      tailscale = {
+        enable = true;
+        # ip_forward + ipv6 forwarding come bundled with this option.
+        advertiseExitNode = true;
+      };
+      beszel.agent = {
+        enable = true;
+        hubUrl = "https://status.dysthesis.com";
+        environmentFile = config.sops.secrets.beszel_agent_env.path;
+      };
     };
   };
 
+  sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/charon.yaml;
   environment.systemPackages = with pkgs; [
     vim # for emergencies
     git # for pulling Nix flakes

@@ -1,4 +1,9 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
+  sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/mneme.yaml;
   laplace = {
     profiles = ["proxmox"];
     proxmox = {
@@ -18,6 +23,11 @@
     services = {
       immich.enable = true;
       tailscale.enable = true;
+      beszel.agent = {
+        enable = true;
+        hubUrl = "https://status.dysthesis.com";
+        environmentFile = config.sops.secrets.beszel_agent_env.path;
+      };
 
       caddy = {
         enable = true;

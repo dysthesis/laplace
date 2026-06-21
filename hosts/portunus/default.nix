@@ -9,14 +9,16 @@
   headscaleHost = "headscale.${fqdn}";
   headscaleUpstream = "10.0.40.3:8080";
 in {
-  sops.secrets = {
-    cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
-  };
+  sops.secrets.cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
   networking = {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.40.1"];
     firewall.allowedTCPPorts = [80 443];
+    # nftables backend so the beszel agent's scoped :45876 rule (extraInputRules)
+    # actually applies — it is a silent no-op on the iptables backend. portunus
+    # has no tailscale (which would flip this on), and no Docker, so set it here.
+    nftables.enable = true;
   };
 
   systemd.network.networks."10-lan" = {
@@ -37,19 +39,28 @@ in {
       balloon = 384; # MiB, ballooning floor (caddy + ddclient are tiny; 384 leaves Go-runtime margin)
       diskSize = "20G";
     };
-
     security = {
       privesc = "doas";
       apparmor.enable = true;
     };
 
     zram.enable = true;
-
-    services.caddy = {
-      enable = true;
-      virtualHosts.${headscaleHost}.extraConfig = ''
-        reverse_proxy http://${headscaleUpstream}
-      '';
+    services = {
+      # SSH/pull: portunus is in the DMZ and cannot reach the tailnet hub, so the
+      # hub dials IN instead. portunus listens on :45876, scoped to mimir only;
+      # OPNsense must also pass VLAN20 (mimir 10.0.20.83) -> 10.0.40.2:45876. KEY
+      # is the hub's PUBLIC key (same string as the WS env files), so no sops.
+      beszel.agent = {
+        enable = true;
+        key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINq5YPgIMrkCV4JIl0DEihMUE/G3z480LbAun0TapjbO";
+        trustedHubs = ["10.0.20.83"];
+      };
+      caddy = {
+        enable = true;
+        virtualHosts.${headscaleHost}.extraConfig = ''
+          reverse_proxy http://${headscaleUpstream}
+        '';
+      };
     };
   };
 
