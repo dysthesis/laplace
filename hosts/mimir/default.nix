@@ -64,12 +64,15 @@ in {
   # Caddy on horos can reach them over the tailnet. The ports are never added to
   # the firewall, so only tailscale0 (trusted) reaches them - same tailnet-only
   # posture as Immich/AdGuard.
-  services.miniflux.config.LISTEN_ADDR = lib.mkForce "0.0.0.0:8087";
-  services.silverbullet.listenAddress = lib.mkForce "0.0.0.0";
-
-  # Miniflux bakes BASE_URL into absolute links + cookie scope, so it must match
-  # the public origin horos serves, not the module's bare-localhost default.
-  services.miniflux.config.BASE_URL = lib.mkForce "https://${minifluxHost}";
+  services = {
+    miniflux.config = {
+      LISTEN_ADDR = lib.mkForce "0.0.0.0:8087";
+      # Miniflux bakes BASE_URL into absolute links + cookie scope, so it must match
+      # the public origin horos serves, not the module's bare-localhost default.
+      BASE_URL = lib.mkForce "https://${minifluxHost}";
+    };
+    silverbullet.listenAddress = lib.mkForce "0.0.0.0";
+  };
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies

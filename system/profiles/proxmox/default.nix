@@ -125,52 +125,56 @@ in {
         "console=tty1"
       ];
     };
-    services.qemuGuest.enable = true;
-
     # `/` is already tmpfs (RAM), so the global boot.tmp.useTmpfs (a *second*
     # tmpfs for /tmp, default 50% of RAM) is redundant here and doubles the
     # RAM-backed-write surface. Force it off so /tmp rides the root tmpfs and is
     # bounded by rootTmpfsSize, not its own half-of-RAM cap.
     boot.tmp.useTmpfs = mkForce false;
 
-    # The journal lives on the tmpfs root: mnemosyne does not persist /var/log,
-    # so with no /var/log/journal directory journald keeps logs in /run (RAM).
-    # The default volatile cap scales with /run (~10% of RAM), which on the
-    # larger guests is tens of MiB of RAM spent on logs. Pin a deterministic
-    # ceiling instead. (If /var/log/journal is ever persisted to btrfs, switch
-    # this to SystemMaxUse, which governs the persistent store.)
-    services.journald.extraConfig = "RuntimeMaxUse=32M";
+    services = {
+      qemuGuest.enable = true;
 
-    # Backstop for the tightened ballooning floors: when the host reclaims a
-    # guest down near its floor and a burst (git gc, Chromium archive, ML run,
-    # a /tmp filler) pushes it over, earlyoom kills the offender early instead
-    # of letting the guest stall in a livelock. It watches free RAM *and* zram
-    # swap, so balloon deflation alone (reclaimable cache) does not trip it.
-    services.earlyoom.enable = mkDefault true;
+      # The journal lives on the tmpfs root: mnemosyne does not persist /var/log,
+      # so with no /var/log/journal directory journald keeps logs in /run (RAM).
+      # The default volatile cap scales with /run (~10% of RAM), which on the
+      # larger guests is tens of MiB of RAM spent on logs. Pin a deterministic
+      # ceiling instead. (If /var/log/journal is ever persisted to btrfs, switch
+      # this to SystemMaxUse, which governs the persistent store.)
+      journald.extraConfig = "RuntimeMaxUse=32M";
 
-    # sshd MUST stay resident, NOT socket-activated, on these headless guests.
-    # A switch-to-configuration hang (the STC job-wait loops have no timeout and
-    # spin forever if the systemd dbus transport drops mid-switch - see the
-    # `timeout`-wrapped STC overlay in nix/overlays/stc-timeout.nix) or memory
-    # pressure can leave sshd.socket with no listener, stranding the guest with
-    # no recovery path but the Proxmox console. A resident sshd.service survives
-    # both. The few MiB `startWhenNeeded` saved are not worth losing remote
-    # access to a headless VM - that trade cost mimir/horos/mneme a deploy.
-    services.openssh.startWhenNeeded = mkDefault false;
+      # Backstop for the tightened ballooning floors: when the host reclaims a
+      # guest down near its floor and a burst (git gc, Chromium archive, ML run,
+      # a /tmp filler) pushes it over, earlyoom kills the offender early instead
+      # of letting the guest stall in a livelock. It watches free RAM *and* zram
+      # swap, so balloon deflation alone (reclaimable cache) does not trip it.
+      earlyoom.enable = mkDefault true;
+
+      openssh = {
+        # sshd MUST stay resident, NOT socket-activated, on these headless guests.
+        # A switch-to-configuration hang (the STC job-wait loops have no timeout and
+        # spin forever if the systemd dbus transport drops mid-switch - see the
+        # `timeout`-wrapped STC overlay in nix/overlays/stc-timeout.nix) or memory
+        # pressure can leave sshd.socket with no listener, stranding the guest with
+        # no recovery path but the Proxmox console. A resident sshd.service survives
+        # both. The few MiB `startWhenNeeded` saved are not worth losing remote
+        # access to a headless VM - that trade cost mimir/horos/mneme a deploy.
+        startWhenNeeded = mkDefault false;
+
+        # Central push-deploy connects as root over the LAN and runs
+        # switch-to-configuration directly, so the closure activates without
+        # interactive escalation. Root SSH stays disabled globally
+        # (system/default.nix forces PermitRootLogin "no"); this Match re-permits it
+        # *key-only* from the two infra VLANs where the workstations live. doas keeps
+        # prompting for interactive use - unweakened.
+        extraConfig = ''
+          Match Address 10.0.20.0/24,10.0.40.0/24
+            PermitRootLogin prohibit-password
+        '';
+      };
+    };
 
     # Receive closures pushed by the central deployer (Colmena, `just deploy`).
     nix.settings.trusted-users = ["root" "@wheel"];
-
-    # Central push-deploy connects as root over the LAN and runs
-    # switch-to-configuration directly, so the closure activates without
-    # interactive escalation. Root SSH stays disabled globally
-    # (system/default.nix forces PermitRootLogin "no"); this Match re-permits it
-    # *key-only* from the two infra VLANs where the workstations live. doas keeps
-    # prompting for interactive use - unweakened.
-    services.openssh.extraConfig = ''
-      Match Address 10.0.20.0/24,10.0.40.0/24
-        PermitRootLogin prohibit-password
-    '';
     users.users.root.openssh.authorizedKeys.keys = [
       # Workstation deploy keys (mirror archon's; rotate together).
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJoKu8wF8Ts5xlCcKBQ8zRU7A4NsujnhzfsGfaP62kf2 demiurge@phobos"
