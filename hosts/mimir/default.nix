@@ -57,6 +57,22 @@ in {
       tailscale.enable = true;
       miniflux.enable = true;
       silverbullet.enable = true;
+
+      # Each app's own TLS frontend, colocated (no central horos proxy). DNS-01
+      # because the names have no public A record. Both resolve to mimir now.
+      caddy = {
+        enable = true;
+        email = "dysthesis@protonmail.com";
+        openFirewall = false; # tailnet-only; :443 reached over tailscale0
+        cloudflare = {
+          enable = true;
+          sopsFile = ../../system/secrets/cloudflare.yaml;
+          proxies = {
+            "miniflux.dysthesis.com" = "localhost:8087";
+            "silverbullet.dysthesis.com" = "localhost:8101";
+          };
+        };
+      };
     };
   };
 

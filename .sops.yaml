@@ -5,7 +5,22 @@ keys:
   - &portunus age13k9y8tycez2hel2myaduexnk2rcfp3xjenjnffvgmuutsge54flqxtexlh
   - &mimir age13pf560d7qeugt4ldwa7s7985rgjh2mxngm9j5rcxw9f2ryv8aarqj32v7j
   - &horos age1a0h7kxkl4d2uhz8c9h888apw4c7smuzgjwdh560cz8zqmqv8wqwqfyvfah
+  - &mneme age1uc5rklesyd980ums9c6u66jn07cu3hsyds4djnuwd8thsvxruc5q0qvnlw
+  - &hermes age1klugnwttlp7pn0tjmlh4k2n7qqd3qjl4exk4ee3pf9trwlh69qlsee7mg2
+  - &bifrost age1v50x0dt5jgh5wwxq0u5v7l3q7lvr0z8en7qcm774wmuy0fkvx36sw986kf
 creation_rules:
+  # Shared Cloudflare DNS-01 token: every node running a per-app Caddy needs it.
+  # Tight recipient set (these hosts + admins), not a catch-all shared file.
+  - path_regex: system/secrets/cloudflare\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *erebus
+          - *mneme
+          - *mimir
+          - *hermes
+          - *bifrost
   - path_regex: system/secrets/portunus\.(yaml|json|env|ini)$
     key_groups:
       - age:

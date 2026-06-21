@@ -26,8 +26,25 @@
         # systemd-resolved and squatting tcp/53 via its loopback stubs.
         denyDNS = true;
       };
+
+      # AdGuard's own TLS frontend (no central horos proxy). adguard.dysthesis.com
+      # resolves to hermes now and is reached over the tailnet (admin-only via ACL).
+      caddy = {
+        enable = true;
+        email = "dysthesis@protonmail.com";
+        openFirewall = false; # tailnet-only; :443 reached over tailscale0
+        cloudflare = {
+          enable = true;
+          sopsFile = ../../system/secrets/cloudflare.yaml;
+          proxies."adguard.dysthesis.com" = "localhost:80";
+        };
+      };
     };
   };
+
+  # AdGuard owns 0.0.0.0:80 (its web UI); stop Caddy from also grabbing :80 for
+  # HTTP->HTTPS redirects. DNS-01 needs no :80, so Caddy listens on :443 only.
+  services.caddy.globalConfig = "auto_https disable_redirects";
   networking = {
     useNetworkd = true;
     useDHCP = false;
