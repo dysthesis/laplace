@@ -15,6 +15,7 @@
   ...
 }: let
   minifluxHost = "miniflux.dysthesis.com";
+  vikunjaHost = "tasks.dysthesis.com";
 in {
   # miniflux_admin lives in mimir's own sops file (moved out of the shared
   # secrets.yaml); the miniflux module declares the secret against the default
@@ -41,8 +42,8 @@ in {
     profiles = ["proxmox"];
     proxmox = {
       cores = 2;
-      memory = 2048; # MiB, ballooning ceiling
-      balloon = 768; # MiB, ballooning floor (Postgres + two app processes)
+      memory = 3072; # MiB, ballooning ceiling
+      balloon = 1024; # MiB, ballooning floor (Postgres + three app processes)
       diskSize = "32G";
     };
 
@@ -57,6 +58,7 @@ in {
       tailscale.enable = true;
       miniflux.enable = true;
       silverbullet.enable = true;
+      vikunja.enable = true;
 
       # Each app's own TLS frontend, colocated (no central horos proxy). DNS-01
       # because the names have no public A record. Both resolve to mimir now.
@@ -70,6 +72,7 @@ in {
           proxies = {
             "miniflux.dysthesis.com" = "localhost:8087";
             "silverbullet.dysthesis.com" = "localhost:8101";
+            "tasks.dysthesis.com" = "localhost:3456";
           };
         };
       };
@@ -88,6 +91,14 @@ in {
       BASE_URL = lib.mkForce "https://${minifluxHost}";
     };
     silverbullet.listenAddress = lib.mkForce "0.0.0.0";
+
+    # Vikunja bakes publicurl into the frontend's API base; force it to the public
+    # origin Caddy serves, not the module's localhost default. Stays loopback-bound
+    # (Caddy is colocated here), tailnet-only via Caddy's openFirewall = false.
+    vikunja = {
+      frontendScheme = lib.mkForce "https";
+      frontendHostname = lib.mkForce vikunjaHost;
+    };
   };
 
   environment.systemPackages = with pkgs; [
