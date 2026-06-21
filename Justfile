@@ -79,54 +79,21 @@ deploy *ARGS:
 deploy-one HOST *ARGS:
   colmena apply --on {{HOST}} {{ARGS}}
 
-retirement-home-prepare:
-  sudo systemd-tmpfiles --create --prefix=/srv/minecraft
-  sudo install -d -m 0770 -o minecraft -g minecraft /srv/minecraft/retirement-home
-
-retirement-home-start: retirement-home-prepare
-  sudo systemctl start {{retirement_home_service}}
-
-retirement-home-stop:
-  sudo systemctl stop {{retirement_home_service}}
-
-retirement-home-logs:
-  sudo journalctl -fu {{retirement_home_service}}
-
-retirement-home-cmd CMD:
-  sudo sh -c 'printf "%s\n" "$1" > {{retirement_home_stdin}}' sh "{{CMD}}"
-
-retirement-home-pregen RADIUS="10000" WORLD="world_nether" SHAPE="circle": retirement-home-prepare
-  #!/usr/bin/env bash
-  set -euo pipefail
-
-  service="{{retirement_home_service}}"
-  stdin="{{retirement_home_stdin}}"
-
-  if sudo systemctl is-active --quiet "$service"; then
-    printf 'retirement-home already active; assuming console is ready.\n'
-  else
-    started="$(date --iso-8601=seconds)"
-    sudo systemctl start "$service"
-    printf 'Waiting for retirement-home to finish startup...\n'
-
-    until sudo journalctl -u "$service" --since "$started" --no-pager | grep -q 'Done ('; do
-      if ! sudo systemctl is-active --quiet "$service"; then
-        sudo journalctl -u "$service" -n 80 --no-pager >&2
-        exit 1
-      fi
-      sleep 10
-    done
-  fi
-
-  sudo sh -c 'out=$1; shift; printf "%s\n" "$@" > "$out"' sh "$stdin" \
-    "chunky world {{WORLD}}" \
-    "chunky shape {{SHAPE}}" \
-    "chunky spawn" \
-    "chunky radius {{RADIUS}}" \
-    "chunky start"
-
-  printf 'Chunky pregen started: world=%s shape=%s radius=%s.\n' "{{WORLD}}" "{{SHAPE}}" "{{RADIUS}}"
-  printf 'Watch logs: just retirement-home-logs\n'
-
-retirement-home-progress:
-  just retirement-home-cmd 'chunky progress'
+# Generate (idempotent) a persisted sops age key on a host and print its public
+# recipient for .sops.yaml. TARGET is an ssh destination, e.g. root@10.0.20.81.
+# The path matches sops.age.keyFile in system/secrets - under /nix/persist so it
+# survives impermanence (/etc/secrets would not). Add the printed age1... line to
+# .sops.yaml, then `sops` the secret so this host can decrypt it.
+age-key TARGET:
+  #!/usr/bin/env sh
+  set -eu
+  ssh {{TARGET}} '
+    set -eu
+    f=/nix/persist/etc/secrets/age/keys.txt
+    install -d -m 700 "${f%/*}"
+    if [ ! -s "$f" ]; then
+      umask 077
+      nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -o "$f" >&2
+    fi
+    nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -y "$f"
+  '
