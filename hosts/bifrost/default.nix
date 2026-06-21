@@ -178,14 +178,14 @@ in {
         };
       };
 
-      headplane = {
-        enable = true;
-        fqdn = "headplane.${fqdn}";
-        address = "127.0.0.1";
-        openFirewall = false;
-      };
+      # headplane = {
+      #   enable = true;
+      #   fqdn = "headplane.${fqdn}";
+      #   address = "127.0.0.1";
+      #   openFirewall = false;
+      # };
 
-      tailscale.enable = true;
+      # tailscale.enable = true;
 
       # SSH/pull: bifrost is in the DMZ and off the tailnet, so the hub dials IN.
       # It listens on :45876, scoped to mimir only; OPNsense must also pass VLAN20
