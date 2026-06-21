@@ -7,6 +7,7 @@
   cfg = config.laplace.services.headscale;
 in {
   imports = [
+    ./acl.nix
     (mkAliasOptionModule ["laplace" "services" "headscale" "settings"] ["services" "headscale" "settings"])
   ];
 

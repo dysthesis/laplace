@@ -82,7 +82,9 @@ in {
         # plus one extra_record on bifrost.
         virtualHosts = {
           "headplane.${fqdn}".extraConfig = proxy "bifrost.tailnet.${fqdn}:3000";
-          "immich.${fqdn}".extraConfig = proxy "mneme.tailnet.${fqdn}:2283";
+          # immich is intentionally NOT proxied here: it is ACL-gated per-cohort at
+          # its mneme backend (immich.dysthesis.com resolves straight to mneme), which
+          # a shared :443 Caddy listener cannot isolate. See hosts/bifrost acl groups.
           # AdGuard's setup wizard moved its web UI off the 3000 default onto 80.
           "adguard.${fqdn}".extraConfig = proxy "hermes.tailnet.${fqdn}:80";
           "miniflux.${fqdn}".extraConfig = proxy "mimir.tailnet.${fqdn}:8087";
