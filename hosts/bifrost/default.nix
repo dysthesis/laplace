@@ -105,12 +105,14 @@ in {
               destinations = ["group:admin:*" "autogroup:internet:*"];
             };
 
-            # Minecraft guests: loki's Minecraft port directly and DNS, nothing else.
-            # adguard:53 because override_local_dns routes all of a client's DNS
-            # there; without it their device loses general resolution.
+            # Minecraft guests: loki's Minecraft port (TCP 25565), Simple Voice Chat
+            # (UDP 24454 - voice data; the handshake rides the 25565 plugin channel,
+            # so both ports are required), and DNS, nothing else. adguard:53 because
+            # override_local_dns routes all of a client's DNS there; without it their
+            # device loses general resolution.
             minecraft = {
               members = ["tom" "olivia" "ash" "anika" "mary"];
-              destinations = ["mc:25565" "adguard:53"];
+              destinations = ["mc:25565" "mc:24454" "adguard:53"];
             };
 
             # Immich guests: immich's own Caddy on mneme:443, plus DNS. Hitting that
