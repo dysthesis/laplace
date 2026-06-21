@@ -86,12 +86,12 @@
       };
 
       services = {
-        minecraft.retirement-home = {
-          enable = true;
-          autoStart = false;
-          openFirewall = false;
-          memoryGb = 8;
-        };
+        # minecraft.retirement-home = {
+        #   enable = true;
+        #   autoStart = false;
+        #   openFirewall = false;
+        #   memoryGb = 8;
+        # };
 
         tailscale = {
           enable = true;
