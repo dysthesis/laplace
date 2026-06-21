@@ -36,7 +36,7 @@
       };
 
       channels = (
-        { name = "#irssi";     chatnet = "liberachat";  autojoin = "Yes"; },
+        { name = "#irssi";     chatnet = "libera";  autojoin = "Yes"; },
       );
 
       aliases = {

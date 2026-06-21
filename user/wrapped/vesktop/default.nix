@@ -31,7 +31,7 @@ in
         "org.gtk.vfs.*" = "talk";
         "ca.desrt.dconf" = "talk";
         "org.freedesktop.portal.Desktop" = "talk"; # Main portal interface
-        "org.freedesktop.portal.FildesChooser" = "talk"; # File picker
+        "org.freedesktop.portal.FileChooser" = "talk"; # File picker
         "org.a11y.Bus" = "talk"; # Accessibility
       };
 

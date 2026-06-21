@@ -1,14 +1,10 @@
-# Miniflux + SilverBullet host, running as a Proxmox guest. Generic VM concerns
+# Miniflux + SilverBullet + Vikunja host, running as a Proxmox guest. Generic VM concerns
 # (disk, impermanence, bootloader, virtio, qemuGuest, the archon admin user, the
-# VMA artifact) live in the `proxmox` profile; this module only declares the two
+# VMA artifact) live in the `proxmox` profile; this module only declares the app
 # apps.
 #
-# TLS lives elsewhere now: the central Caddy on horos terminates https for
-# miniflux.dysthesis.com / silverbullet.dysthesis.com and reverse-proxies here
-# over the tailnet. So both apps bind 0.0.0.0 (reachable from horos via
-# tailscale0) instead of loopback, and their ports stay out of the firewall -
-# laplace.services.tailscale trusts only tailscale0, so they're tailnet-only,
-# never exposed on the LAN or publicly. No Caddy, cert, or Cloudflare token here.
+# TLS terminates on the node-local Caddy. Apps bind loopback; only Caddy reaches
+# their raw ports, and :443 is tailnet-only via laplace.services.tailscale.
 {
   lib,
   pkgs,
@@ -79,18 +75,15 @@ in {
     };
   };
 
-  # Rebind both apps from the module-default loopback to all interfaces so the
-  # Caddy on horos can reach them over the tailnet. The ports are never added to
-  # the firewall, so only tailscale0 (trusted) reaches them - same tailnet-only
-  # posture as Immich/AdGuard.
+  # Caddy is colocated here, so raw app ports stay loopback-only.
   services = {
     miniflux.config = {
-      LISTEN_ADDR = lib.mkForce "0.0.0.0:8087";
+      LISTEN_ADDR = lib.mkForce "127.0.0.1:8087";
       # Miniflux bakes BASE_URL into absolute links + cookie scope, so it must match
-      # the public origin horos serves, not the module's bare-localhost default.
+      # the public origin Caddy serves, not the module's bare-localhost default.
       BASE_URL = lib.mkForce "https://${minifluxHost}";
     };
-    silverbullet.listenAddress = lib.mkForce "0.0.0.0";
+    silverbullet.listenAddress = lib.mkForce "127.0.0.1";
 
     # Vikunja bakes publicurl into the frontend's API base; force it to the public
     # origin Caddy serves, not the module's localhost default. Stays loopback-bound

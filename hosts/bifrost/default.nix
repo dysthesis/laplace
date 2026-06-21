@@ -21,15 +21,10 @@ in {
     useDHCP = false;
     nameservers = ["10.0.40.1"];
     hosts."10.0.40.2" = ["headscale.dysthesis.com"];
-    # Only the Headscale coordination port is served on the LAN: portunus
-    # terminates TLS for headscale.dysthesis.com and reverse-proxies to
-    # 10.0.40.3:8080 over VLAN40, so that hop is plaintext within the trusted
-    # infra segment by design.
+    # Headscale is reachable only from VLAN40: portunus terminates TLS for
+    # headscale.dysthesis.com and reverse-proxies to 10.0.40.3:8080 over the
+    # trusted infra segment.
     firewall = {
-      allowedTCPPorts = [
-        config.laplace.services.headscale.port
-      ];
-
       # Headplane is a management UI, so do NOT trust tailscale0 wholesale. Open
       # only :443 (this host's own Caddy fronting headplane.dysthesis.com) on the
       # tailnet; the headscale ACL is the real gate (only group:admin reaches
@@ -42,6 +37,7 @@ in {
       # breaking DNS for c-ares clients like nix (glibc/NSS still works via D-Bus).
       trustedInterfaces = lib.mkForce ["lo"];
       extraInputRules = ''
+        ip saddr 10.0.40.0/24 tcp dport ${toString config.laplace.services.headscale.port} accept
         iifname "${config.services.tailscale.interfaceName}" tcp dport 443 accept
       '';
     };
@@ -76,6 +72,7 @@ in {
     services = {
       headscale = {
         enable = true;
+        openFirewall = false;
         fqdn = "${subdomain}.${fqdn}";
         baseDomain = "tailnet.${fqdn}";
 
