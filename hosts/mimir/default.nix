@@ -56,8 +56,6 @@ in {
       silverbullet.enable = true;
       vikunja.enable = true;
 
-      # Each app's own TLS frontend, colocated (no central horos proxy). DNS-01
-      # because the names have no public A record. Both resolve to mimir now.
       caddy = {
         enable = true;
         email = "dysthesis@protonmail.com";
@@ -75,19 +73,19 @@ in {
     };
   };
 
-  # Caddy is colocated here, so raw app ports stay loopback-only.
   services = {
     miniflux.config = {
       LISTEN_ADDR = lib.mkForce "127.0.0.1:8087";
-      # Miniflux bakes BASE_URL into absolute links + cookie scope, so it must match
-      # the public origin Caddy serves, not the module's bare-localhost default.
+      # Miniflux bakes BASE_URL into absolute links + cookie scope, so it must
+      # match the public origin Caddy serves, not the module's bare-localhost
+      # default.
       BASE_URL = lib.mkForce "https://${minifluxHost}";
     };
     silverbullet.listenAddress = lib.mkForce "127.0.0.1";
 
-    # Vikunja bakes publicurl into the frontend's API base; force it to the public
-    # origin Caddy serves, not the module's localhost default. Stays loopback-bound
-    # (Caddy is colocated here), tailnet-only via Caddy's openFirewall = false.
+    # Vikunja bakes publicurl into the frontend's API base; force it to the
+    # public origin Caddy serves, not the module's localhost default. Stays
+    # loopback-bound, Tailnet-only.
     vikunja = {
       frontendScheme = lib.mkForce "https";
       frontendHostname = lib.mkForce vikunjaHost;

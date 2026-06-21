@@ -4,8 +4,6 @@
     proxmox = {
       cores = 4;
       memory = 8096; # MiB, ballooning ceiling
-      # Immich (ML models + server) + Postgres + Redis; floor well above their
-      # resident set so the host never reclaims into a live photo import / ML run.
       balloon = 2048; # MiB, ballooning floor
       diskSize = "256G";
     };
@@ -21,18 +19,13 @@
       immich.enable = true;
       tailscale.enable = true;
 
-      # immich's own TLS frontend, colocated with the app (no central horos
-      # proxy). DNS-01 because immich.dysthesis.com has no public A record. Gives
-      # https://immich.dysthesis.com on mneme:443, ACL-gated per cohort at
-      # immich:443. Needs the sops onboarding below before it evaluates/deploys.
       caddy = {
         enable = true;
         email = "dysthesis@protonmail.com";
-        openFirewall = false; # tailnet-only; :443 reached over tailscale0
+        openFirewall = false;
         cloudflare = {
           enable = true;
           sopsFile = ../../system/secrets/cloudflare.yaml;
-          # immich binds 0.0.0.0:2283 (its module default); Caddy proxies locally.
           proxies."immich.dysthesis.com" = "localhost:2283";
         };
       };

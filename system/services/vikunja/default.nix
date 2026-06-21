@@ -10,9 +10,6 @@ in {
     mkEnableOption "Vikunja, a self-hosted to-do / task management web app";
 
   config = mkIf cfg {
-    # DynamicUser + StateDirectory=vikunja => the real dir is /var/lib/private/vikunja
-    # (with /var/lib/vikunja symlinked to it). Persist the real one; it holds both the
-    # sqlite db and uploaded files (files.basepath = /var/lib/vikunja/files).
     mnemosyne.dirs = ["/var/lib/private/vikunja"];
 
     services.vikunja = {
