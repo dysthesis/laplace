@@ -18,6 +18,7 @@
     mneme = "x86_64-linux"; # Immich
     mimir = "x86_64-linux"; # Miniflux + SilverBullet (fronted by horos)
     horos = "x86_64-linux"; # Central tailnet reverse proxy on Proxmox
+    loki = "x86_64-linux"; # Dedicated Minecraft host on Proxmox
   };
   defaultImports = [
     ../system
