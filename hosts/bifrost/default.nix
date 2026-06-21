@@ -98,11 +98,12 @@ in {
             };
 
             minecraft = {
-              members = ["tom" "olivia" "ash" "anika" "mary"];
+              members = ["tom" "olivia" "ash" "anika" "mary" "esther"];
               destinations = [
                 "mc:25565" # The server itself
                 "mc:24454" # Simple Voice Chat (via UDP)
                 "adguard:53" # AdGuard because it's the Tailnet's default DNS
+                "autogroup:internet:*" # The rest of the internet
               ];
             };
 
@@ -111,6 +112,7 @@ in {
               destinations = [
                 "immich:443" # Immich itself (behind Caddy)
                 "adguard:53" #  AdGuard because it's the Tailnet's default DNS
+                "autogroup:internet:*" # The rest of the internet
               ];
             };
           };
