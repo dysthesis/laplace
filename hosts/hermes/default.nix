@@ -1,4 +1,9 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
+  sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/hermes.yaml;
   laplace = {
     profiles = ["proxmox"];
     proxmox = {
@@ -20,6 +25,15 @@
 
     services = {
       adguardhome.enable = true;
+      # WS/push: hermes is on the tailnet, so the agent dials OUT to the hub. The
+      # hub binds loopback on mimir behind a tailnet-only Caddy, so the only way in
+      # is https://status.dysthesis.com over tailscale0 — not mimir's :8090
+      # (loopback) nor its LAN :443 (tailscale0-only).
+      beszel.agent = {
+        enable = true;
+        hubUrl = "https://status.dysthesis.com";
+        environmentFile = config.sops.secrets.beszel_agent_env.path;
+      };
       tailscale = {
         enable = true;
         # AdGuard owns 0.0.0.0:53 here; keep tailscaled from pulling in
@@ -49,6 +63,11 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.20.1"];
+    # tailscale runs with denyDNS here (AdGuard owns :53), so MagicDNS can't
+    # resolve the tailnet-only hub name and the system resolver (10.0.20.1) returns
+    # NXDOMAIN. Pin it to mimir's tailnet IP; the agent reaches the hub's Caddy over
+    # tailscale0 and the cert SNI still matches.
+    hosts."100.64.0.8" = ["status.dysthesis.com"];
   };
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";

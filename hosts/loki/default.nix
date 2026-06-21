@@ -1,19 +1,10 @@
-# Dedicated Homestead Minecraft host, running as a Proxmox guest. Its only job is
-# the Fabric server; everything generic (disk, impermanence, bootloader, virtio,
-# qemuGuest, the archon admin user, the VMA artifact) comes from the `proxmox`
-# profile, exactly like mimir/horos/bifrost.
-#
-# Reachable only over the tailnet: horos forwards mc.dysthesis.com (raw TCP 25565,
-# not HTTP, so it bypasses Caddy via a systemd socket proxy - see horos) to this
-# guest's tailnet node. The MC port is never opened on the LAN -
-# laplace.services.tailscale trusts only tailscale0, so horos (a tailnet peer)
-# reaches it while the LAN cannot. mc.dysthesis.com resolves to horos's tailnet IP
-# via the bifrost extra_record.
-#
-# World migration from deimos is a one-off data copy, not config:
-#   rsync deimos:/srv/minecraft/retirement-home/ loki:/srv/minecraft/retirement-home/
-# before first start (the seed otherwise regenerates a fresh, identical world).
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
+  sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/loki.yaml;
+
   networking = {
     useNetworkd = true;
     useDHCP = false;
@@ -50,7 +41,11 @@
 
     services = {
       tailscale.enable = true;
-
+      beszel.agent = {
+        enable = true;
+        hubUrl = "https://status.dysthesis.com";
+        environmentFile = config.sops.secrets.beszel_agent_env.path;
+      };
       minecraft.retirement-home = {
         enable = true;
         autoStart = true; # dedicated host - the server is the point

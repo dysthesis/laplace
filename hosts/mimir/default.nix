@@ -6,17 +6,22 @@
 # TLS terminates on the node-local Caddy. Apps bind loopback; only Caddy reaches
 # their raw ports, and :443 is tailnet-only via laplace.services.tailscale.
 {
+  config,
   lib,
   pkgs,
   ...
 }: let
   minifluxHost = "miniflux.dysthesis.com";
   vikunjaHost = "tasks.dysthesis.com";
+  beszelHost = "status.dysthesis.com";
 in {
   # miniflux_admin lives in mimir's own sops file (moved out of the shared
   # secrets.yaml); the miniflux module declares the secret against the default
   # file, so repoint it.
   sops.secrets.miniflux_admin.sopsFile = ../../system/secrets/mimir.yaml;
+  # beszel agent's KEY + mimir's per-system TOKEN, consumed as the agent's
+  # EnvironmentFile below.
+  sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/mimir.yaml;
 
   networking = {
     useNetworkd = true;
@@ -38,8 +43,8 @@ in {
     profiles = ["proxmox"];
     proxmox = {
       cores = 2;
-      memory = 3072; # MiB, ballooning ceiling
-      balloon = 1024; # MiB, ballooning floor (Postgres + three app processes)
+      memory = 3584; # MiB, ballooning ceiling
+      balloon = 1280; # MiB, ballooning floor (Postgres + four app processes)
       diskSize = "32G";
     };
 
@@ -55,6 +60,19 @@ in {
       miniflux.enable = true;
       silverbullet.enable = true;
       vikunja.enable = true;
+      beszel = {
+        hub = {
+          enable = true;
+          appUrl = "https://${beszelHost}";
+        };
+        # Colocated with the hub: dial it direct on loopback, skipping Caddy/TLS
+        # and the tailnet round-trip. KEY + TOKEN come from the sops env file.
+        agent = {
+          enable = true;
+          hubUrl = "http://localhost:8090";
+          environmentFile = config.sops.secrets.beszel_agent_env.path;
+        };
+      };
 
       caddy = {
         enable = true;
@@ -67,6 +85,7 @@ in {
             "miniflux.dysthesis.com" = "localhost:8087";
             "silverbullet.dysthesis.com" = "localhost:8101";
             "tasks.dysthesis.com" = "localhost:3456";
+            "status.dysthesis.com" = "localhost:8090";
           };
         };
       };
