@@ -7,6 +7,14 @@
   fqdn = "dysthesis.com";
   subdomain = "headscale";
   horosTailnetIp = "100.64.0.10";
+  # hermes' tailnet IP, where AdGuard binds 0.0.0.0:53. Shared by the resolver
+  # push (override_local_dns) and the ACL host alias friends use for DNS.
+  adguardTailnetIp = "100.64.0.5";
+  # mneme's tailnet IP. Immich binds 0.0.0.0:2283 there and is ACL-gated per-cohort
+  # at that real backend, NOT behind horos:443 (where one Caddy listener muxes every
+  # web app + the headplane UI into a single object an L3/L4 ACL cannot split). So
+  # immich.dysthesis.com resolves straight here, bypassing the proxy.
+  mnemeTailnetIp = "100.64.0.6";
 in {
   networking = {
     useNetworkd = true;
@@ -65,34 +73,76 @@ in {
         fqdn = "${subdomain}.${fqdn}";
         baseDomain = "tailnet.${fqdn}";
 
-        # Push the AdGuard instance on hermes as the tailnet's resolver. Must be
-        # hermes's *tailnet* IP, not its LAN 10.0.20.82: tailnet clients live on
-        # other subnets and only reach AdGuard over tailscale0 (where AdGuard
-        # already binds 0.0.0.0:53). override_local_dns sends all tailnet DNS
-        # through it for filtering everywhere.
+        # Declarative tailnet ACL. Headscale runs allow-all until this loads, then
+        # flips to default-deny, so the `admin` self-mesh is what keeps the existing
+        # fleet talking; guest cohorts are walled off to one backend each. Per-app
+        # isolation gates the real backend node:port, never horos:443 (one Caddy
+        # listener fronts every web app + headplane, indistinguishable to an L3/L4
+        # ACL); minecraft is the exception - a dedicated port on horos.
+        # See system/services/headscale/acl.nix.
+        acl = {
+          enable = true;
+          hosts = {
+            mc = "${horosTailnetIp}/32"; # horos socket-proxies :25565 onward to loki
+            adguard = "${adguardTailnetIp}/32"; # hermes' AdGuard, the tailnet resolver
+            immich = "${mnemeTailnetIp}/32"; # immich's real backend; bypasses the horos:443 mux
+          };
+          groups = {
+            # Your fleet: every infra + personal node is user `demiurge`. The
+            # self-mesh restores connectivity once the deny-all policy loads.
+            admin = {
+              members = ["demiurge"];
+              destinations = ["group:admin:*"];
+            };
+
+            # Minecraft guests: the loki ingress (a dedicated port on horos) and DNS,
+            # nothing else. adguard:53 because override_local_dns routes all of a
+            # client's DNS there; without it their device loses general resolution.
+            minecraft = {
+              members = ["tom" "olivia" "ash" "anika" "mary"];
+              destinations = ["mc:25565" "adguard:53"];
+            };
+
+            # Immich guests: immich's mneme backend directly, plus DNS. Hitting the
+            # real node:port (not horos:443) is what keeps them off every other web
+            # app and the headplane control plane.
+            photos = {
+              members = ["sheva"];
+              destinations = ["immich:2283" "adguard:53"];
+            };
+          };
+        };
+
         settings.dns = {
           override_local_dns = true;
-          nameservers.global = ["100.64.0.5"];
+          nameservers.global = [adguardTailnetIp];
 
-          # MagicDNS records for the apps behind the central Caddy on horos. All
-          # the service names point at horos's *tailnet* IP (100.x), not its LAN
-          # address, so the traffic rides WireGuard; horos then proxies each to the
-          # app's own node over the tailnet. The names are bare *.dysthesis.com
+          # MagicDNS records for the apps behind the central Caddy on horos. Most
+          # service names point at horos's *tailnet* IP (100.x), not its LAN
+          # address, so the traffic rides WireGuard and horos proxies each to the
+          # app's own node over the tailnet. Immich is the exception (see below): it
+          # resolves straight to its backend so the ACL can gate it per-cohort. The
+          # names are bare *.dysthesis.com
           # with no public Cloudflare A record, so they resolve only here - the
           # tailscale client answers these explicit records and off-tailnet gets
           # NXDOMAIN from public DNS.
           extra_records = let
             horos = horosTailnetIp;
+            mneme = mnemeTailnetIp;
           in [
             {
               name = "headplane.${fqdn}";
               type = "A";
               value = horos;
             }
+            # Resolves to mneme, not horos: immich is ACL-gated per-cohort at
+            # mneme:2283, so it is deliberately off the shared horos Caddy. Served
+            # over the tailnet (WireGuard-encrypted); add a cert on mneme for browser
+            # TLS / the immich PWA if you want it.
             {
               name = "immich.${fqdn}";
               type = "A";
-              value = horos;
+              value = mneme;
             }
             {
               name = "adguard.${fqdn}";
@@ -109,8 +159,6 @@ in {
               type = "A";
               value = horos;
             }
-            # Minecraft on loki. horos socket-proxies raw TCP 25565 to loki's
-            # tailnet node (no Caddy/TLS - the Java protocol is plain TCP).
             {
               name = "mc.${fqdn}";
               type = "A";
