@@ -1,10 +1,3 @@
-# Profile for NixOS guests running as Proxmox VMs.
-#
-# Owns the *runtime* half of a guest (filesystems, bootloader, serial console,
-# virtio, qemuGuest) AND the image-build half (disko layout + a VMA artifact),
-# from a single source of truth, so a guest's host module only declares its
-# services and a little sizing under `laplace.proxmox.*`.
-#
 # Impermanence is real here: `/` is tmpfs, with `/nix` and `/nix/persist` on a
 # btrfs disk (the deimos pattern, minus LUKS/@home/@swap and using BIOS boot).
 # State is kept declaratively via `mnemosyne` (see [[mnemosyne-persist-mount-coupling]]:
@@ -19,14 +12,6 @@
   enabled = elem "proxmox" config.laplace.profiles;
   cfg = config.laplace.proxmox;
   hostName = config.networking.hostName;
-  # Cap the tmpfs root against the ballooning *floor*, not the RAM ceiling. The
-  # guest boots seeing `memory` (ceiling) RAM, so a `size=50%` root tmpfs is
-  # half the ceiling - but under host pressure the balloon reclaims down to
-  # `balloon`, and a tmpfs that can still admit half-the-ceiling of pages then
-  # exceeds what the guest physically holds (kernel tmpfs docs warn this
-  # deadlocks/OOMs). 75% of the floor keeps the worst-case tmpfs fill inside the
-  # reclaimed-down footprint; it auto-scales per host (charon 256->192M,
-  # mneme gets a proportionally larger /tmp for transcode scratch).
   rootTmpfsSize =
     if cfg.balloon != null
     then "${toString (builtins.div (cfg.balloon * 3) 4)}M"
@@ -39,9 +24,6 @@
     "discard=async"
   ];
 in {
-  # Declared unconditionally: the selector imports this module for every host, so
-  # the option must exist even where the profile is disabled. Only `config` below
-  # is gated.
   options.laplace.proxmox = {
     cores = mkOption {
       type = types.ints.positive;
