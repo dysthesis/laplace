@@ -35,8 +35,12 @@ in {
       # breaking DNS for c-ares clients like nix (glibc/NSS still works via
       # D-Bus).
       trustedInterfaces = lib.mkForce ["lo"];
+      # portunus (10.0.40.2) is the only host that proxies to headscale :8080, and
+      # the only legitimate :22 source is the VLAN20 deploy push (heimdall allows
+      # trusted -> DMZ). Everything else on the DMZ /24 is a sacrificial neighbour.
       extraInputRules = ''
-        ip saddr 10.0.40.0/24 tcp dport ${toString config.laplace.services.headscale.port} accept
+        ip saddr 10.0.40.2/32 tcp dport ${toString config.laplace.services.headscale.port} accept
+        ip saddr 10.0.20.0/24 tcp dport 22 accept
         iifname "${config.services.tailscale.interfaceName}" tcp dport 443 accept
       '';
     };
@@ -51,6 +55,11 @@ in {
       DHCP = "no";
     };
   };
+
+  # The global default opens :22 on every interface (system/default.nix). bifrost
+  # is in the DMZ, so close that and let the scoped extraInputRules rule above be
+  # the sole :22 opening (VLAN20 deploy source only).
+  services.openssh.openFirewall = lib.mkForce false;
 
   laplace = {
     profiles = ["proxmox"];
