@@ -2,17 +2,19 @@
 # The L3 enforcement half of the SSOT — same dataset as the headscale ACL, so the
 # two layers cannot drift.
 #
-# STAGED: while the tailscale module keeps tailscale0 in trustedInterfaces, every
-# tailnet packet is already accepted before these rules are consulted, so they are
-# redundant and CANNOT lock anyone out. They exist so the ruleset + nft counters
-# can be verified on a live host first; a later change drops tailscale0 from
-# trustedInterfaces (mkForce) to make default-deny real (the flip).
+# THE FLIP (live): server nodes drop tailscale0 from trustedInterfaces, so the
+# rules below are the sole tailnet INPUT gate — default-deny is real. The tailscale
+# module sets trustedInterfaces = [tailscale0] unconditionally, so this mkForce-
+# overrides it (same move bifrost makes for ["lo"]). It is INPUT-only: charon's
+# exit-node FORWARD (filterForward=false), the tunnel (:41641), ICMP echo and the
+# unscoped hermes :53 are all outside input-allow and survive. Workstations
+# (tag "workstation") and off-tailnet hosts (self == null) keep the module default.
 {
   config,
   lib,
   ...
 }: let
-  inherit (lib) optionalString filter elem attrValues concatMap unique mkIf concatStringsSep splitString;
+  inherit (lib) optionalString filter elem attrValues concatMap unique mkIf mkMerge mkForce concatStringsSep splitString;
   inherit (builtins) head elemAt attrNames;
   cfg = config.laplace.tailnet;
   host = config.networking.hostName;
@@ -85,8 +87,19 @@
     ) (attrNames cfg.guests);
 
   rules = unique (flowLines ++ guestLines);
+
+  # Server nodes: a tailnet node that is not a workstation. Workstations are
+  # clients (need tailscale0 trusted for inbound peer traffic) and off-tailnet
+  # hosts have self == null, so both are excluded — the flip lands only on
+  # hermes/mneme/mimir/loki/charon.
+  isServer = self != null && !(elem "workstation" self.tags);
 in {
-  config = mkIf (self != null && rules != []) {
-    networking.firewall.extraInputRules = concatStringsSep "\n" rules + "\n";
-  };
+  config = mkMerge [
+    (mkIf (self != null && rules != []) {
+      networking.firewall.extraInputRules = concatStringsSep "\n" rules + "\n";
+    })
+    (mkIf isServer {
+      networking.firewall.trustedInterfaces = mkForce ["lo"];
+    })
+  ];
 }
