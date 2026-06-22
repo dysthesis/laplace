@@ -8,7 +8,7 @@
   networking = {
     useNetworkd = true;
     useDHCP = false;
-    nameservers = ["10.0.20.1"];
+    nameservers = ["10.0.60.1"];
   };
 
   # VLAN 20, the app segment (mneme .81, hermes .82, mimir .83). This host takes
@@ -16,9 +16,9 @@
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
-      Address = "10.0.20.84/24";
-      Gateway = "10.0.20.1";
-      DNS = "10.0.20.1";
+      Address = "10.0.60.2/24";
+      Gateway = "10.0.60.1";
+      DNS = "10.0.60.1";
       DHCP = "no";
     };
   };
