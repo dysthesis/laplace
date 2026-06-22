@@ -7,7 +7,7 @@
   fqdn = "dysthesis.com";
   ddnsHost = "portunus.${fqdn}";
   headscaleHost = "headscale.${fqdn}";
-  headscaleUpstream = "10.0.40.3:8080";
+  headscaleUpstream = "10.0.50.2:8080";
 in {
   sops.secrets.cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
   networking = {

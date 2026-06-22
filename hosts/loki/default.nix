@@ -11,8 +11,11 @@
     nameservers = ["10.0.60.1"];
   };
 
-  # VLAN 20, the app segment (mneme .81, hermes .82, mimir .83). This host takes
-  # .84; confirm against IPAM before deploying.
+  # VLAN 60, loki's own isolated segment (F10): the untrusted modpack box has no
+  # legitimate VLAN20 peer (game served over tailscale0, beszel dials out over the
+  # tunnel, runtime DNS is AdGuard over the tunnel). LAN reach = gateway (10.0.60.1,
+  # boot DNS + NAT egress) + the workstation->:22 deploy pinhole only; heimdall DROPs
+  # loki->VLAN20/30/40/50. The tailnet half of the containment is the SSOT `game` tag.
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
