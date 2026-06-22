@@ -136,16 +136,6 @@ in {
           ];
         };
       };
-
-      # headplane = {
-      #   enable = true;
-      #   fqdn = "headplane.${fqdn}";
-      #   address = "127.0.0.1";
-      #   openFirewall = false;
-      # };
-
-      # tailscale.enable = true;
-
       # SSH/pull: bifrost is in the DMZ and off the tailnet, so the hub dials IN.
       # It listens on :45876, scoped to mimir only; OPNsense must also pass VLAN20
       # (mimir 10.0.20.83) -> 10.0.40.3:45876. KEY is the hub's PUBLIC key (same
@@ -154,17 +144,6 @@ in {
         enable = true;
         key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINq5YPgIMrkCV4JIl0DEihMUE/G3z480LbAun0TapjbO";
         trustedHubs = ["10.0.20.83"];
-      };
-
-      caddy = {
-        enable = true;
-        email = "dysthesis@protonmail.com";
-        openFirewall = false;
-        cloudflare = {
-          enable = true;
-          sopsFile = ../../system/secrets/cloudflare.yaml;
-          proxies."headplane.${fqdn}" = "localhost:3000";
-        };
       };
     };
   };
