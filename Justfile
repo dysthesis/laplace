@@ -97,3 +97,28 @@ age-key TARGET:
     fi
     nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -y "$f"
   '
+
+# Runtime half of PLAN §5 layer 4 (gotcha 4): assert the LIVE Headscale tags
+# match the SSOT (system/tailnet). The nft layer pins by IP (Nix-authoritative)
+# while Headscale enforces by the tag assigned at enrolment (runtime) - if a node
+# enrolled under the wrong tag the two layers silently diverge. NOT a flake check:
+# the build sandbox has no network. Run manually or on a timer. Guests (untagged,
+# absent from the SSOT) are intentionally ignored. Exits non-zero on any drift.
+tailnet-reconcile TARGET="root@10.0.40.3":
+  #!/usr/bin/env sh
+  set -eu
+  ssot=$(nix eval --json '.#nixosConfigurations.bifrost.config.laplace.tailnet.nodes')
+  live=$(ssh {{TARGET}} 'headscale nodes list --output json')
+  problems=$(printf '%s' "$live" | nix shell nixpkgs#jq -c jq -r --argjson ssot "$ssot" '
+    ($ssot | to_entries | map({key: .key, want: (.value.tags | sort)})) as $want
+    | (map({key: .given_name, value: ((.tags // []) | map(sub("^tag:"; "")) | sort)}) | from_entries) as $have
+    | [ $want[] | .key as $h | ($have[$h]) as $got
+        | if $got == null then "MISSING from tailnet: \($h)"
+          elif $got != .want then "DRIFT \($h): live=\($got|join(",")) ssot=\(.want|join(","))"
+          else empty end ]
+    | .[]')
+  if [ -n "$problems" ]; then
+    printf 'tailnet tag reconcile FAILED (live Headscale tags != SSOT):\n%s\n' "$problems" >&2
+    exit 1
+  fi
+  echo "tailnet tag reconcile OK: live tags == SSOT for all nodes"

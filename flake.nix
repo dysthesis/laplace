@@ -57,6 +57,22 @@
               ${lib.concatStrings (lib.mapAttrsToList validateHost nixosConfigurations)}
               touch $out
             '';
+
+          # Build-time half of PLAN §5 layer 4: gate the SSOT-rendered Headscale
+          # policy against the headscale binary. toJSON guarantees well-formed
+          # HuJSON, but only the control plane catches semantic faults (undefined
+          # tag/alias, empty group). The eval-time checkTailnet invariants
+          # (system/tailnet/default.nix) already fire fleet-wide; this is the
+          # remaining check the build sandbox CAN run (no network/db needed).
+          # Runtime tag reconcile (gotcha 4) is `just tailnet-reconcile`, not a
+          # check here — the sandbox has no network.
+          headscale-policy =
+            pkgs.runCommand "headscale-policy-check" {
+              nativeBuildInputs = [pkgs.headscale];
+            } ''
+              headscale policy check --file ${nixosConfigurations.bifrost.config.laplace.services.headscale.acl.policyFile}
+              touch $out
+            '';
         };
     }
     // {
