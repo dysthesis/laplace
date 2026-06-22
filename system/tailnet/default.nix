@@ -1,13 +1,14 @@
 # Single source of truth for the tailnet — the "frontend" the §5 topology audit
-# (PLAN.md) describes. It carries node identity (addresses + role tags), the
-# role->role reachability matrix, and the guest cohorts. Consumers render the
-# enforcement layers from it: the headscale ACL on bifrost today, per-node
-# nftables + fail2ban later. One dataset, no drift.
+# (PLAN.md) describes. This file is the SCHEMA + VALIDATION half: the
+# laplace.tailnet option types (the trust-boundary input validation) and
+# checkTailnet (referential integrity + the negative security invariants). The
+# DATA those options carry — nodes, the role->role reachability matrix, guest
+# cohorts — lives in ./policy.nix, kept apart from the mechanism that processes it.
 #
-# Pure data, identical on every host: a node cannot read a peer's `config` at
-# eval, so this is NOT derived from cross-node config — it is a plain constant
-# imported fleet-wide (via system/ -> importInDirectory), and each consumer
-# filters by `config.networking.hostName`.
+# The renderers consume the merged config: ./firewall.nix (per-node nftables) on
+# every tailnet host, ./headscale.nix (the ACL) on bifrost. One dataset, no drift;
+# imported fleet-wide (via system/ -> importInDirectory) since a node cannot read
+# a peer's `config` at eval, and each consumer filters by hostName.
 {
   lib,
   config,
@@ -91,9 +92,9 @@
     }
   ];
 in {
-  # The L3 renderer consumes this same data; kept in a separate file so the SSOT
-  # data and its enforcement backend stay distinct.
-  imports = [./firewall.nix];
+  # policy.nix = the data; firewall.nix + headscale.nix = the enforcement backends
+  # (per-node nftables / the headscale ACL). All three consume the schema below.
+  imports = [./policy.nix ./firewall.nix ./headscale.nix];
 
   options.laplace.tailnet = {
     nodes = mkOption {
@@ -176,57 +177,7 @@ in {
     };
   };
 
-  config = {
-    laplace.tailnet.nodes = {
-      hermes = {ip = "100.64.0.5"; ip6 = "fd7a:115c:a1e0::5"; tags = ["dns" "infra"];}; # AdGuard = tailnet resolver
-      mneme = {ip = "100.64.0.6"; ip6 = "fd7a:115c:a1e0::6"; tags = ["photos" "infra"];}; # Immich
-      mimir = {ip = "100.64.0.8"; ip6 = "fd7a:115c:a1e0::8"; tags = ["apps" "monitor" "infra"];}; # miniflux/silverbullet/vikunja + beszel-hub
-      loki = {ip = "100.64.0.12"; ip6 = "fd7a:115c:a1e0::c"; tags = ["game"];}; # Minecraft (untrusted modpack)
-      charon = {ip = "100.64.0.3"; ip6 = "fd7a:115c:a1e0::3"; tags = ["exit"];}; # exit node
-      phobos = {ip = "100.64.0.1"; ip6 = "fd7a:115c:a1e0::1"; tags = ["workstation"];}; # workstation (laptop)
-      deimos = {ip = "100.64.0.4"; ip6 = "fd7a:115c:a1e0::4"; tags = ["workstation"];}; # workstation (PC)
-      phone = {ip = "100.64.0.2"; ip6 = "fd7a:115c:a1e0::2"; tags = ["phone"];}; # tag:phone (current mobile)
-      device = {ip = "100.64.0.7"; ip6 = "fd7a:115c:a1e0::7"; tags = ["phone"];}; # tag:phone (old phone)
-    };
-
-    # §5 matrix, plus the owner phones (tag:phone) which are deliberately granted
-    # FULL reach — all ports to every service tag, incl. exit. Owner devices, not
-    # guests, so the F4/F5 exit-abuse rationale does not apply. Trade-off accepted:
-    # a popped phone keeps mesh reach (the old `device` is the weak link; prefer
-    # deleting it). "infra" is descriptive-only — the service tags below cover
-    # every host that actually serves something, so this is genuinely "everything".
-    laplace.tailnet.flows = [
-      {from = "*"; to = "dns"; ports = ["udp/53" "tcp/53"];} # override_local_dns: all -> AdGuard
-      {from = "*"; to = "monitor"; ports = ["tcp/443"];} # beszel agents -> mimir hub
-      {from = "workstation"; to = "apps"; ports = ["tcp/443"];}
-      {from = "workstation"; to = "photos"; ports = ["tcp/443"];}
-      {from = "workstation"; to = "dns"; ports = ["tcp/443"];} # AdGuard UI
-      {from = "workstation"; to = "exit"; ports = ["*"];} # exit-node egress
-      {from = "phone"; to = "apps"; ports = ["*"];} # owner phones: full reach
-      {from = "phone"; to = "photos"; ports = ["*"];}
-      {from = "phone"; to = "dns"; ports = ["*"];}
-      {from = "phone"; to = "monitor"; ports = ["*"];}
-      {from = "phone"; to = "game"; ports = ["*"];}
-      {from = "phone"; to = "exit"; ports = ["*"];}
-    ];
-
-    laplace.tailnet.guests = {
-      minecraft = {
-        users = ["tom" "olivia" "ash" "anika" "mary" "esther"];
-        reach = {
-          game = ["tcp/25565" "udp/24454"]; # Java + Simple Voice Chat
-          dns = ["udp/53"];
-        };
-      };
-      photos = {
-        users = ["sheva"];
-        reach = {
-          photos = ["tcp/443"];
-          dns = ["udp/53"];
-        };
-      };
-    };
-
-    assertions = flowAsserts ++ guestAsserts ++ uniqAsserts;
-  };
+  # The data lives in ./policy.nix; this is the validation half — the negative
+  # security invariants and referential integrity, read off the merged config.
+  config.assertions = flowAsserts ++ guestAsserts ++ uniqAsserts;
 }
