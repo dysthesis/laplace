@@ -41,7 +41,7 @@
         denyDNS = true;
       };
 
-      # AdGuard's own TLS frontend (no central horos proxy). adguard.dysthesis.com
+      # AdGuard's own TLS frontend (no central proxy). adguard.dysthesis.com
       # resolves to hermes now and is reached over the tailnet (admin-only via ACL).
       caddy = {
         enable = true;

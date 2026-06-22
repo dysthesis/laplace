@@ -29,7 +29,7 @@ in {
 
       # The plain-HTTP UI/DoH port. The module forces
       # http.address = "${host}:${port}" into the merged config, so this MUST
-      # match the port horos's Caddy proxies to (hermes:80) - otherwise the merge
+      # match the port the node-local Caddy proxies to (hermes:80) - otherwise the merge
       # resets the UI to the 3000 default and breaks the reverse proxy.
       port = 80;
 

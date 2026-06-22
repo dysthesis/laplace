@@ -8,7 +8,7 @@
 # IPs, NOT tailnet MagicDNS names, by design: a switch that disrupts
 # tailscale/DNS on a proxy or headscale guest must not be able to sever the very
 # path you are deploying over. Deploy reach-critical guests (bifrost, portunus,
-# horos, hermes) one at a time and keep the Proxmox noVNC console open.
+# hermes) one at a time and keep the Proxmox noVNC console open.
 #
 # Connects as root over SSH (key-only, restricted to the infra VLANs in
 # system/profiles/proxmox), so the closure is received and switch-to-configuration
@@ -31,7 +31,6 @@
     mneme = "10.0.20.81";
     hermes = "10.0.20.82";
     mimir = "10.0.20.83";
-    horos = "10.0.20.85";
     loki = "10.0.20.84";
     charon = "10.0.20.10";
     portunus = "10.0.40.2";

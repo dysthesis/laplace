@@ -81,8 +81,8 @@ in {
       ];
 
       # Stock Caddy has no `dns cloudflare`; bake the plugin in. One source of
-      # truth for the plugin version + vendored-deps FOD hash (was duplicated in
-      # the horos host); bump both together when the caddy/plugin version changes.
+      # truth for the plugin version + vendored-deps FOD hash (was once duplicated
+      # per-host); bump both together when the caddy/plugin version changes.
       services.caddy.package = pkgs.caddy.withPlugins {
         plugins = ["github.com/caddy-dns/cloudflare@v0.2.4"];
         hash = "sha256-8yZDrejNKsaUnUaTUFYbarWNmxafqp2z2rWo+XRsxV8=";
