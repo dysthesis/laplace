@@ -6,10 +6,13 @@
 }: let
   fqdn = "dysthesis.com";
   subdomain = "headscale";
-  adguardTailnetIp = "100.64.0.5"; # hermes - AdGuard (also the tailnet resolver)
-  mnemeTailnetIp = "100.64.0.6"; # mneme - immich
-  mimirTailnetIp = "100.64.0.8"; # mimir - miniflux + silverbullet
-  lokiTailnetIp = "100.64.0.12"; # loki - minecraft
+  # Addresses come from the fleet-wide SSOT (system/tailnet); this host only
+  # references the four nodes it fronts.
+  inherit (config.laplace.tailnet) nodes;
+  adguardTailnetIp = nodes.hermes.ip; # AdGuard (also the tailnet resolver)
+  mnemeTailnetIp = nodes.mneme.ip; # immich
+  mimirTailnetIp = nodes.mimir.ip; # miniflux + silverbullet
+  lokiTailnetIp = nodes.loki.ip; # minecraft
 in {
   networking = {
     useNetworkd = true;
