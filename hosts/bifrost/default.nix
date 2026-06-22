@@ -92,6 +92,22 @@ in {
             adguard = "${adguardTailnetIp}/32";
             immich = "${mnemeTailnetIp}/32";
           };
+
+          # Forced tag for the phones (current `phone` 100.64.0.2, old `device`
+          # 100.64.0.7). Assigning a tag at runtime STRIPS a node's user identity
+          # for ACL matching: a tagged node stops counting as a group:admin member
+          # and is matched only by `tag:phone`. The parity rule below re-grants
+          # today's reach so tagging does not cut the device off; tighten its dst
+          # later to actually restrict the phones. Apply the runtime
+          # `headscale nodes tag` step only AFTER this policy is deployed.
+          tagOwners."tag:phone" = ["group:admin"];
+          rules = [
+            {
+              src = ["tag:phone"];
+              dst = ["group:admin:*" "autogroup:internet:*"];
+            }
+          ];
+
           groups = {
             admin = {
               members = ["demiurge"];
