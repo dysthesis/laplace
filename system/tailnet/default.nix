@@ -91,6 +91,10 @@
     }
   ];
 in {
+  # The L3 renderer consumes this same data; kept in a separate file so the SSOT
+  # data and its enforcement backend stay distinct.
+  imports = [./firewall.nix];
+
   options.laplace.tailnet = {
     nodes = mkOption {
       type = types.attrsOf (types.submodule {
