@@ -11,8 +11,8 @@
     nameservers = ["10.0.20.1"];
   };
 
-  # VLAN 20, the app segment (mneme .81, hermes .82, mimir .83, horos .85). .84 is
-  # the free slot between them; confirm against IPAM before deploying.
+  # VLAN 20, the app segment (mneme .81, hermes .82, mimir .83). This host takes
+  # .84; confirm against IPAM before deploying.
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
@@ -50,7 +50,7 @@
         enable = true;
         autoStart = true; # dedicated host - the server is the point
         restart = "on-failure";
-        openFirewall = false; # tailnet-only; horos forwards 25565 over tailscale0
+        openFirewall = false; # tailnet-only; players reach :25565 over tailscale0
         # Heap at deimos parity. The guest boots at the 10 GiB ceiling, so the
         # 8 GiB heap plus JVM non-heap and OS fits underneath; the 8 GiB balloon
         # floor only bites under host pressure, which a single-purpose node should
