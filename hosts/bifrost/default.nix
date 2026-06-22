@@ -17,7 +17,7 @@ in {
   networking = {
     useNetworkd = true;
     useDHCP = false;
-    nameservers = ["10.0.40.1"];
+    nameservers = ["10.0.50.1"];
     hosts."10.0.40.2" = ["headscale.dysthesis.com"];
     # nftables backend. The firewall scoping below lives in extraInputRules, which
     # ONLY applies on the nftables firewall — on iptables it silently evaporates.
@@ -25,9 +25,10 @@ in {
     # coupling is gone, so set it explicitly or headscale's :8080 accept disappears
     # and the control plane is firewalled to :22 only. No Docker here, so it's safe.
     nftables.enable = true;
-    # Headscale is reachable only from VLAN40: portunus terminates TLS for
-    # headscale.dysthesis.com and reverse-proxies to 10.0.40.3:8080 over the
-    # trusted infra segment.
+    # bifrost lives on its own control VLAN50 (F2/§4 Option A). headscale :8080 is
+    # reachable only from portunus (10.0.40.2, still in VLAN40), which terminates TLS
+    # for headscale.dysthesis.com and reverse-proxies to 10.0.50.2:8080 across the
+    # single heimdall VLAN40->VLAN50 pinhole.
     firewall = {
       # Headplane is a management UI, so do NOT trust tailscale0 wholesale. Open
       # only :443  on the tailnet.
@@ -49,9 +50,9 @@ in {
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
-      Address = "10.0.40.3/24";
-      Gateway = "10.0.40.1";
-      DNS = "10.0.40.1";
+      Address = "10.0.50.2/24";
+      Gateway = "10.0.50.1";
+      DNS = "10.0.50.1";
       DHCP = "no";
     };
   };
@@ -136,9 +137,9 @@ in {
           ];
         };
       };
-      # SSH/pull: bifrost is in the DMZ and off the tailnet, so the hub dials IN.
-      # It listens on :45876, scoped to mimir only; OPNsense must also pass VLAN20
-      # (mimir 10.0.20.83) -> 10.0.40.3:45876. KEY is the hub's PUBLIC key (same
+      # SSH/pull: bifrost is off the tailnet (control VLAN50), so the hub dials IN.
+      # It listens on :45876, scoped to mimir only; OPNsense must pass VLAN20
+      # (mimir 10.0.20.83) -> 10.0.50.2:45876. KEY is the hub's PUBLIC key (same
       # string as portunus / the old WS env files), so no sops.
       beszel.agent = {
         enable = true;

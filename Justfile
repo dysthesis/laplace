@@ -104,7 +104,7 @@ age-key TARGET:
 # enrolled under the wrong tag the two layers silently diverge. NOT a flake check:
 # the build sandbox has no network. Run manually or on a timer. Guests (untagged,
 # absent from the SSOT) are intentionally ignored. Exits non-zero on any drift.
-tailnet-reconcile TARGET="root@10.0.40.3":
+tailnet-reconcile TARGET="root@10.0.50.2":
   #!/usr/bin/env sh
   set -eu
   ssot=$(nix eval --json '.#nixosConfigurations.bifrost.config.laplace.tailnet.nodes')

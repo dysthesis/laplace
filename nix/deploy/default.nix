@@ -34,7 +34,7 @@
     loki = "10.0.60.2";
     charon = "10.0.20.10";
     portunus = "10.0.40.2";
-    bifrost = "10.0.40.3";
+    bifrost = "10.0.50.2";
   };
 
   mkNode = name: targetHost: {
