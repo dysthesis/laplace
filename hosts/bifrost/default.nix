@@ -103,7 +103,8 @@ in {
                 "mc:25565" # The server itself
                 "mc:24454" # Simple Voice Chat (via UDP)
                 "adguard:53" # AdGuard because it's the Tailnet's default DNS
-                "autogroup:internet:*" # The rest of the internet
+                # NB: no autogroup:internet — that grant is exit-node egress, not
+                # "reach the game". It let guests tunnel out the home IP (F4).
               ];
             };
 
@@ -112,7 +113,7 @@ in {
               destinations = [
                 "immich:443" # Immich itself (behind Caddy)
                 "adguard:53" #  AdGuard because it's the Tailnet's default DNS
-                "autogroup:internet:*" # The rest of the internet
+                # NB: no autogroup:internet — exit-node egress, not "reach photos" (F4).
               ];
             };
           };
