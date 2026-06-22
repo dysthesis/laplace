@@ -79,73 +79,14 @@ in {
         fqdn = "${subdomain}.${fqdn}";
         baseDomain = "tailnet.${fqdn}";
 
-        #  Headscale runs allow-all until this loads, then flips to default-deny,
-        # so the `admin` self-mesh is what keeps the existing fleet talking;
-        # guest cohorts are walled off to one backend each.
-        acl = {
-          enable = true;
-          hosts = {
-            mc = "${lokiTailnetIp}/32";
-            adguard = "${adguardTailnetIp}/32";
-            immich = "${mnemeTailnetIp}/32";
-          };
-
-          # Forced tag for the phones (current `phone` 100.64.0.2, old `device`
-          # 100.64.0.7). Assigning a tag at runtime STRIPS a node's user identity
-          # for ACL matching: a tagged node stops counting as a group:admin member
-          # and is matched only by `tag:phone`. The parity rule below re-grants
-          # today's reach so tagging does not cut the device off; tighten its dst
-          # later to actually restrict the phones. Apply the runtime
-          # `headscale nodes tag` step only AFTER this policy is deployed.
-          tagOwners."tag:phone" = ["group:admin"];
-          rules = [
-            {
-              src = ["tag:phone"];
-              dst = ["group:admin:*" "autogroup:internet:*"];
-            }
-          ];
-
-          groups = {
-            admin = {
-              members = ["demiurge"];
-              # group:admin:* meshes our own nodes; autogroup:internet:* is the
-              # separate grant that lets them egress to the wider internet through
-              # an exit node (charon). Without it the default-deny policy still
-              # lets a node reach charon-the-device, but charon drops the
-              # forwarded phone-to-internet packets because the destination is
-              # not an admin node.
-              destinations = ["group:admin:*" "autogroup:internet:*"];
-            };
-
-            minecraft = {
-              members = ["tom" "olivia" "ash" "anika" "mary" "esther"];
-              destinations = [
-                "mc:25565" # The server itself
-                "mc:24454" # Simple Voice Chat (via UDP)
-                "adguard:53" # AdGuard because it's the Tailnet's default DNS
-                # NB: no autogroup:internet — that grant is exit-node egress, not
-                # "reach the game". It let guests tunnel out the home IP (F4).
-              ];
-            };
-
-            photos = {
-              members = ["sheva"];
-              destinations = [
-                "immich:443" # Immich itself (behind Caddy)
-                "adguard:53" #  AdGuard because it's the Tailnet's default DNS
-                # NB: no autogroup:internet — exit-node egress, not "reach photos" (F4).
-              ];
-            };
-          };
-
-          # charon advertises 0.0.0.0/0 + ::/0 as an exit node. Auto-approve
-          # those routes for any node we own, so a charon re-register doesn't
-          # silently drop the routes (and thus egress) until a manual
-          # `approve-routes`.
-          autoApprovers = {
-            exitNode = ["group:admin"];
-          };
-        };
+        # Headscale runs allow-all until this loads, then flips to default-deny.
+        # The whole policy is derived fleet-wide from the SSOT
+        # (system/tailnet/headscale.nix): flows -> rules (tag->tag:port), guests
+        # -> groups, node tags -> tagOwners, exit -> autoApprovers. This host only
+        # flips it on; the hand-written groups/rules/tagOwners that used to live
+        # here are gone (the SSOT renderer supersedes them, incl. the tag:phone
+        # parity hook and the broad autoApprovers=group:admin, now tag:exit = F5).
+        acl.enable = true;
 
         settings.dns = {
           override_local_dns = true;
