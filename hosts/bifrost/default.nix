@@ -9,7 +9,6 @@
   adguardTailnetIp = "100.64.0.5"; # hermes - AdGuard (also the tailnet resolver)
   mnemeTailnetIp = "100.64.0.6"; # mneme - immich
   mimirTailnetIp = "100.64.0.8"; # mimir - miniflux + silverbullet
-  bifrostTailnetIp = "100.64.0.11"; # bifrost (this host) - headplane
   lokiTailnetIp = "100.64.0.12"; # loki - minecraft
 in {
   networking = {
@@ -41,7 +40,6 @@ in {
       extraInputRules = ''
         ip saddr 10.0.40.2/32 tcp dport ${toString config.laplace.services.headscale.port} accept
         ip saddr 10.0.20.0/24 tcp dport 22 accept
-        iifname "${config.services.tailscale.interfaceName}" tcp dport 443 accept
       '';
     };
   };
@@ -146,11 +144,6 @@ in {
           # Tailnet, so the tailscale client answers these explicit records and
           # off-tailnet gets NXDOMAIN from public DNS.
           extra_records = [
-            {
-              name = "headplane.${fqdn}";
-              type = "A";
-              value = bifrostTailnetIp;
-            }
             {
               name = "immich.${fqdn}";
               type = "A";
