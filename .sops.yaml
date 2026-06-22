@@ -9,17 +9,14 @@ keys:
   - &loki age162wqwergctj5qu6q22tsp2r72tqqatktk5tnl7gq9d4kp586a9vqmhq982
   - &charon age18742z73g8qkp5nyul35hz4l4q4hnj2shje6n7p92ard80fspeq3sh7jamp
 creation_rules:
-  # Shared Cloudflare DNS-01 token: every node running a per-app Caddy needs it.
-  # Tight recipient set (these hosts + admins), not a catch-all shared file.
-  - path_regex: system/secrets/cloudflare\.(yaml|json|env|ini)$
-    key_groups:
-      - age:
-          - *deimos
-          - *phobos
-          - *mneme
-          - *mimir
-          - *hermes
-          - *bifrost
+  # Per-node Cloudflare DNS-01 tokens (F3): the token lives as a `cloudflare_api_key`
+  # key inside each Caddy host's own secret file below (hermes/mneme/mimir.yaml),
+  # NOT a shared file — so each node holds ONLY its own token (distinct token per
+  # node => independent revocation + leak attribution; each is still Zone:DNS:Edit,
+  # a token can't be scoped narrower than a zone). The per-host rules below already
+  # encrypt those files to {deimos, phobos, <host>}. bifrost is no longer a
+  # recipient — it never ran Caddy DNS-01 (its headscale TLS terminates at
+  # portunus), so it had no business holding the zone-wide token.
   - path_regex: system/secrets/portunus\.(yaml|json|env|ini)$
     key_groups:
       - age:

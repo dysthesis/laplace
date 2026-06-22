@@ -49,7 +49,7 @@
         openFirewall = false; # tailnet-only; :443 reached over tailscale0
         cloudflare = {
           enable = true;
-          sopsFile = ../../system/secrets/cloudflare.yaml;
+          sopsFile = ../../system/secrets/hermes.yaml;
           proxies."adguard.dysthesis.com" = "localhost:80";
         };
       };

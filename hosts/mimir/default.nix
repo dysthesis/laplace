@@ -80,7 +80,7 @@ in {
         openFirewall = false; # tailnet-only; :443 reached over tailscale0
         cloudflare = {
           enable = true;
-          sopsFile = ../../system/secrets/cloudflare.yaml;
+          sopsFile = ../../system/secrets/mimir.yaml;
           proxies = {
             "miniflux.dysthesis.com" = "localhost:8087";
             "silverbullet.dysthesis.com" = "localhost:8101";
