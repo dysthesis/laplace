@@ -1,5 +1,4 @@
-Caddy for internal sevices
-==========================
+# Caddy for internal sevices
 
 Inside Tailscale, we use Caddy as a reverse-proxy, which serves two purposes:
 
