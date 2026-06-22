@@ -35,7 +35,7 @@
         openFirewall = false;
         cloudflare = {
           enable = true;
-          sopsFile = ../../system/secrets/cloudflare.yaml;
+          sopsFile = ../../system/secrets/mneme.yaml;
           proxies."immich.dysthesis.com" = "localhost:2283";
         };
       };
