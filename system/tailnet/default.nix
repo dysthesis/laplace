@@ -30,11 +30,14 @@
   # port an int or "lo-hi" range. The renderers (later) reuse this same grammar;
   # for now it only gates the checker.
   portOk = s:
-    s == "*"
+    s
+    == "*"
     || (
-      let parts = lib.splitString "/" s;
+      let
+        parts = lib.splitString "/" s;
       in
-        length parts == 2
+        length parts
+        == 2
         && elem (head parts) ["tcp" "udp"]
         && match "[0-9]+(-[0-9]+)?" (elemAt parts 1) != null
     );
@@ -44,24 +47,26 @@
 
   # checkTailnet — referential integrity + the negative security invariants,
   # wired into assertions so a typo or a policy regression fails eval, fleet-wide.
-  flowAsserts = concatMap (f: [
-    {
-      assertion = f.from == "*" || tagDefined f.from;
-      message = "laplace.tailnet: flow from '${f.from}' is not a defined node tag";
-    }
-    {
-      assertion = tagDefined f.to;
-      message = "laplace.tailnet: flow to '${f.to}' is not a defined node tag";
-    }
-    {
-      assertion = all portOk f.ports;
-      message = "laplace.tailnet: flow ${f.from}->${f.to} has a malformed port token (want proto/port or *)";
-    }
-    {
-      assertion = !(f.from == "game" && elem f.to sensitiveTags);
-      message = "laplace.tailnet INVARIANT violated: game must not reach sensitive tag '${f.to}'";
-    }
-  ]) cfg.flows;
+  flowAsserts =
+    concatMap (f: [
+      {
+        assertion = f.from == "*" || tagDefined f.from;
+        message = "laplace.tailnet: flow from '${f.from}' is not a defined node tag";
+      }
+      {
+        assertion = tagDefined f.to;
+        message = "laplace.tailnet: flow to '${f.to}' is not a defined node tag";
+      }
+      {
+        assertion = all portOk f.ports;
+        message = "laplace.tailnet: flow ${f.from}->${f.to} has a malformed port token (want proto/port or *)";
+      }
+      {
+        assertion = !(f.from == "game" && elem f.to sensitiveTags);
+        message = "laplace.tailnet INVARIANT violated: game must not reach sensitive tag '${f.to}'";
+      }
+    ])
+    cfg.flows;
 
   guestAsserts = concatMap (gname: let
     g = cfg.guests.${gname};

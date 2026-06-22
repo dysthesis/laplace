@@ -10,15 +10,51 @@
 {...}: {
   laplace.tailnet = {
     nodes = {
-      hermes = {ip = "100.64.0.5"; ip6 = "fd7a:115c:a1e0::5"; tags = ["dns" "infra"];}; # AdGuard = tailnet resolver
-      mneme = {ip = "100.64.0.6"; ip6 = "fd7a:115c:a1e0::6"; tags = ["photos" "infra"];}; # Immich
-      mimir = {ip = "100.64.0.8"; ip6 = "fd7a:115c:a1e0::8"; tags = ["apps" "monitor" "infra"];}; # miniflux/silverbullet/vikunja + beszel-hub
-      loki = {ip = "100.64.0.12"; ip6 = "fd7a:115c:a1e0::c"; tags = ["game"];}; # Minecraft (untrusted modpack)
-      charon = {ip = "100.64.0.3"; ip6 = "fd7a:115c:a1e0::3"; tags = ["exit"];}; # exit node
-      phobos = {ip = "100.64.0.1"; ip6 = "fd7a:115c:a1e0::1"; tags = ["workstation"];}; # workstation (laptop)
-      deimos = {ip = "100.64.0.4"; ip6 = "fd7a:115c:a1e0::4"; tags = ["workstation"];}; # workstation (PC)
-      phone = {ip = "100.64.0.2"; ip6 = "fd7a:115c:a1e0::2"; tags = ["phone"];}; # tag:phone (current mobile)
-      device = {ip = "100.64.0.7"; ip6 = "fd7a:115c:a1e0::7"; tags = ["phone"];}; # tag:phone (old phone)
+      hermes = {
+        ip = "100.64.0.5";
+        ip6 = "fd7a:115c:a1e0::5";
+        tags = ["dns" "infra"];
+      }; # AdGuard = tailnet resolver
+      mneme = {
+        ip = "100.64.0.6";
+        ip6 = "fd7a:115c:a1e0::6";
+        tags = ["photos" "infra"];
+      }; # Immich
+      mimir = {
+        ip = "100.64.0.8";
+        ip6 = "fd7a:115c:a1e0::8";
+        tags = ["apps" "monitor" "infra"];
+      }; # miniflux/silverbullet/vikunja + beszel-hub
+      loki = {
+        ip = "100.64.0.12";
+        ip6 = "fd7a:115c:a1e0::c";
+        tags = ["game"];
+      }; # Minecraft (untrusted modpack)
+      charon = {
+        ip = "100.64.0.3";
+        ip6 = "fd7a:115c:a1e0::3";
+        tags = ["exit"];
+      }; # exit node
+      phobos = {
+        ip = "100.64.0.1";
+        ip6 = "fd7a:115c:a1e0::1";
+        tags = ["workstation"];
+      }; # workstation (laptop)
+      deimos = {
+        ip = "100.64.0.4";
+        ip6 = "fd7a:115c:a1e0::4";
+        tags = ["workstation"];
+      }; # workstation (PC)
+      phone = {
+        ip = "100.64.0.2";
+        ip6 = "fd7a:115c:a1e0::2";
+        tags = ["phone"];
+      }; # tag:phone (current mobile)
+      device = {
+        ip = "100.64.0.7";
+        ip6 = "fd7a:115c:a1e0::7";
+        tags = ["phone"];
+      }; # tag:phone (old phone)
     };
 
     # §5 matrix, plus the owner phones (tag:phone) which are deliberately granted
@@ -28,19 +64,71 @@
     # deleting it). "infra" is descriptive-only — the service tags below cover
     # every host that actually serves something, so this is genuinely "everything".
     flows = [
-      {from = "*"; to = "dns"; ports = ["udp/53" "tcp/53"];} # override_local_dns: all -> AdGuard
-      {from = "*"; to = "monitor"; ports = ["tcp/443"];} # beszel agents -> mimir hub
-      {from = "workstation"; to = "apps"; ports = ["tcp/443"];}
-      {from = "workstation"; to = "photos"; ports = ["tcp/443"];}
-      {from = "workstation"; to = "dns"; ports = ["tcp/443"];} # AdGuard UI
-      {from = "workstation"; to = "game"; ports = ["tcp/25565" "udp/24454"];} # owner plays MC from PC/laptop
-      {from = "workstation"; to = "exit"; ports = ["*"];} # exit-node egress
-      {from = "phone"; to = "apps"; ports = ["*"];} # owner phones: full reach
-      {from = "phone"; to = "photos"; ports = ["*"];}
-      {from = "phone"; to = "dns"; ports = ["*"];}
-      {from = "phone"; to = "monitor"; ports = ["*"];}
-      {from = "phone"; to = "game"; ports = ["*"];}
-      {from = "phone"; to = "exit"; ports = ["*"];}
+      {
+        from = "*";
+        to = "dns";
+        ports = ["udp/53" "tcp/53"];
+      } # override_local_dns: all -> AdGuard
+      {
+        from = "*";
+        to = "monitor";
+        ports = ["tcp/443"];
+      } # beszel agents -> mimir hub
+      {
+        from = "workstation";
+        to = "apps";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "workstation";
+        to = "photos";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "workstation";
+        to = "dns";
+        ports = ["tcp/443"];
+      } # AdGuard UI
+      {
+        from = "workstation";
+        to = "game";
+        ports = ["tcp/25565" "udp/24454"];
+      } # owner plays MC from PC/laptop
+      {
+        from = "workstation";
+        to = "exit";
+        ports = ["*"];
+      } # exit-node egress
+      {
+        from = "phone";
+        to = "apps";
+        ports = ["*"];
+      } # owner phones: full reach
+      {
+        from = "phone";
+        to = "photos";
+        ports = ["*"];
+      }
+      {
+        from = "phone";
+        to = "dns";
+        ports = ["*"];
+      }
+      {
+        from = "phone";
+        to = "monitor";
+        ports = ["*"];
+      }
+      {
+        from = "phone";
+        to = "game";
+        ports = ["*"];
+      }
+      {
+        from = "phone";
+        to = "exit";
+        ports = ["*"];
+      }
     ];
 
     guests = {

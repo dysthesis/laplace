@@ -73,18 +73,17 @@
     selfFlows;
 
   # guest cohorts whose reach tag this host serves
-  guestLines =
-    concatMap (
-      cname: let
-        g = cfg.guests.${cname};
-      in
-        concatMap (
-          rt:
-            if elem rt self.tags
-            then concatMap (pt: tailnetLines (parsePort pt)) g.reach.${rt}
-            else []
-        ) (attrNames g.reach)
-    ) (attrNames cfg.guests);
+  guestLines = concatMap (
+    cname: let
+      g = cfg.guests.${cname};
+    in
+      concatMap (
+        rt:
+          if elem rt self.tags
+          then concatMap (pt: tailnetLines (parsePort pt)) g.reach.${rt}
+          else []
+      ) (attrNames g.reach)
+  ) (attrNames cfg.guests);
 
   rules = unique (flowLines ++ guestLines);
 
