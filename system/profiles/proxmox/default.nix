@@ -152,8 +152,24 @@ in {
           Match Address 10.0.20.0/24,10.0.40.0/24
             PermitRootLogin prohibit-password
         '';
+
+        # The global default (system/default.nix) opens :22 on every interface, so
+        # a popped node can reach sshd on every peer over the tailnet. Close that on
+        # the fleet and let the scoped rule below be the sole :22 opening. Gated on
+        # nftables: extraInputRules silently evaporates on the iptables backend, so
+        # without nftables this pair would drop :22 entirely (lockout) — an iptables
+        # guest keeps the open default instead.
+        openFirewall = mkIf config.networking.nftables.enable (mkForce false);
       };
     };
+
+    # Scope :22 to the VLAN20 admin/deploy source only. VLAN20-only deliberately
+    # excludes the DMZ (VLAN40): a sacrificial DMZ neighbour must not reach a
+    # guest's sshd. Generalises the former bifrost-only F7 scoping to every
+    # nftables guest. (Merges with any host's own extraInputRules — it is lines.)
+    networking.firewall.extraInputRules = mkIf config.networking.nftables.enable ''
+      ip saddr 10.0.20.0/24 tcp dport 22 accept
+    '';
 
     # Receive closures pushed by the central deployer (Colmena, `just deploy`).
     nix.settings.trusted-users = ["root" "@wheel"];
