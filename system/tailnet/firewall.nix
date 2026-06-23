@@ -56,9 +56,15 @@
     then attrValues cfg.nodes
     else nodesWithTag from;
 
-  # node flows whose destination tag this host carries
+  # node flows whose destination tag this host carries. `to = "exit"` is excluded:
+  # exit-node egress is internet routing THROUGH charon (kernel FORWARD/masquerade,
+  # filterForward=false), carried on the WireGuard underlay (:41641) — nothing lands
+  # in this host's tailscale0 INPUT, so an accept here grants nothing the exit needs.
+  # headscale.nix mirrors this (exit -> autogroup:internet, never tag:exit:*); without
+  # the exclusion charon would open ALL ports to every workstation/phone, drifting from
+  # the ACL and re-opening tailnet :22 to the exit node.
   flowLines = let
-    selfFlows = filter (f: elem f.to self.tags) cfg.flows;
+    selfFlows = filter (f: f.to != "exit" && elem f.to self.tags) cfg.flows;
   in
     concatMap (
       f:
