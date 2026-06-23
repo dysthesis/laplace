@@ -67,11 +67,9 @@ in {
       }
     ];
 
-    # We need to run the systemd service very early in the boot process
-    # so that the persisted state is available to the system from the
-    # start.
+    # Persist bind-mounts must exist before stage-2, which needs systemd in the
+    # initrd (the make-source-of-persistent-dirs unit below runs there).
     boot.initrd.systemd.enable = mkDefault true;
-    # Mount the persisted direcotries to their proper paths.
     fileSystems = mkMounts cfg.dirs;
     # Ensure that the necessary paths exist in the persisted state storage before
     # the stage-2 bind mounts (and before switch-root). systemd-initrd mounts
