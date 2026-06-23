@@ -28,6 +28,12 @@
     hash = "sha512-RyPz/8Dv76Y9Scrhglo+w8vO+B3bd5ZfouYdDp17ho6gNydLVI2m9fU7K92eo0qB6scaOp0Hb2qC9u29QhoKvw==";
   };
 
+  # The mod config as Nix data (discord-config.nix), rendered to
+  # config/Discord-Integration.toml. botToken/botChannel stay @VAR@ placeholders
+  # substituted at server start from the env file by nix-minecraft.
+  discordIntegrationConfig =
+    (pkgs.formats.toml {}).generate "Discord-Integration.toml" (import ./discord-config.nix);
+
   # Homestead's Modrinth manifest marks client-only jars as server-compatible.
   # Exclude them from the server mods directory; Colorwheel also hard-depends
   # Iris and crashes headless server startup.
@@ -263,14 +269,10 @@ in {
           }
           # Keyed after "config" so it lands in the dir copy, not under it: the
           # whole config tree is re-copied each start, so the mod's own writes to
-          # this file never persist — we re-supply it (with the token/channel
-          # substituted from environmentFile) every start instead.
+          # this file never persist — we re-supply it (token substituted from
+          # environmentFile at ExecStartPre) every start instead.
           // optionalAttrs cfg.discord.enable {
-            # writeText (not the bare ./path) so the file is a proper store input
-            # of the start-pre script, with context — a raw source path here lacks
-            # it and is flagged unreliable.
-            "config/Discord-Integration.toml" =
-              pkgs.writeText "Discord-Integration.toml" (builtins.readFile ./Discord-Integration.toml);
+            "config/Discord-Integration.toml" = discordIntegrationConfig;
           };
       };
     };

@@ -1,10 +1,15 @@
+# DiscordIntegration-Fabric config as Nix data, rendered to
+# config/Discord-Integration.toml via pkgs.formats.toml. botToken/botChannel are
+# @VAR@ placeholders substituted at server start from the sops env file by
+# nix-minecraft, so neither enters the store. Field docs ported from the mod
+# default; canonical reference https://wiki.erdbeerbaerlp.de/dcintegration.
 {
   # General options for the bot
   general = {
-    # Bot token. Injected at server start from the sops env file (DISCORD_BOT_TOKEN);
-    # DO NOT commit a real token here.
+    # Bot token. Substituted at server start from the sops env file
+    # (DISCORD_BOT_TOKEN); never resolved at build, never in the store.
     botToken = "@DISCORD_BOT_TOKEN@";
-    # The channel ID where the bot will be working in. Injected from the sops env
+    # The channel ID the bot works in. Substituted at start from the sops env
     # file (DISCORD_CHANNEL_ID).
     botChannel = "@DISCORD_CHANNEL_ID@";
     # The bots status message
@@ -51,7 +56,7 @@
     # commands to discord.
     enabled = true;
     # The Role IDs of your Admin Roles (multiple roles which can access admin commands)
-    adminRoleIDs = ["dysthesis"];
+    adminRoleIDs = ["352824137242116097"];
     # Enable the list command in discord
     listCmdEnabled = true;
     # Show list command only for the user who runs it
