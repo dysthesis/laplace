@@ -7,7 +7,7 @@
 # Identical on every host (a node cannot read a peer's `config` at eval, so this
 # is a plain constant imported fleet-wide, not cross-node config); each consumer
 # filters by `config.networking.hostName`. Confirmed against `headscale nodes list`.
-{...}: {
+_: {
   laplace.tailnet = {
     nodes = {
       hermes = {
@@ -70,10 +70,25 @@
         ports = ["udp/53" "tcp/53"];
       } # override_local_dns: all -> AdGuard
       {
-        from = "*";
+        from = "infra";
         to = "monitor";
         ports = ["tcp/443"];
-      } # beszel agents -> mimir hub
+      } # beszel agents -> mimir hub (trusted hosts only; game is excluded)
+      {
+        from = "exit";
+        to = "monitor";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "workstation";
+        to = "monitor";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "monitor";
+        to = "game";
+        ports = ["tcp/45876"];
+      } # beszel hub pulls loki agent; no game -> monitor reverse path
       {
         from = "workstation";
         to = "apps";

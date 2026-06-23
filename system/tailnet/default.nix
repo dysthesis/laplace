@@ -14,7 +14,7 @@
   config,
   ...
 }: let
-  inherit (lib) mkOption types attrValues concatMap unique elem all;
+  inherit (lib) mkOption types attrValues concatMap unique elem all any filter;
   inherit (builtins) attrNames head elemAt length match;
   cfg = config.laplace.tailnet;
 
@@ -45,6 +45,13 @@
   ips = map (n: n.ip) (attrValues cfg.nodes);
   ip6s = map (n: n.ip6) (attrValues cfg.nodes);
 
+  nodesWithTag = tag: filter (n: elem tag n.tags) (attrValues cfg.nodes);
+  flowSourceNodes = from:
+    if from == "*"
+    then attrValues cfg.nodes
+    else nodesWithTag from;
+  flowHasGameSource = f: any (n: elem "game" n.tags) (flowSourceNodes f.from);
+
   # checkTailnet — referential integrity + the negative security invariants,
   # wired into assertions so a typo or a policy regression fails eval, fleet-wide.
   flowAsserts =
@@ -62,8 +69,8 @@
         message = "laplace.tailnet: flow ${f.from}->${f.to} has a malformed port token (want proto/port or *)";
       }
       {
-        assertion = !(f.from == "game" && elem f.to sensitiveTags);
-        message = "laplace.tailnet INVARIANT violated: game must not reach sensitive tag '${f.to}'";
+        assertion = !(flowHasGameSource f && elem f.to sensitiveTags);
+        message = "laplace.tailnet INVARIANT violated: game must not reach sensitive tag '${f.to}' via flow source '${f.from}'";
       }
     ])
     cfg.flows;
