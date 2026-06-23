@@ -1,0 +1,3 @@
+[general]
+  botToken = "@DISCORD_BOT_TOKEN@"
+  botChannel = "@DISCORD_CHANNEL_ID@"

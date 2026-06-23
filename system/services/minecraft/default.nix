@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf mkOption optional types;
+  inherit (lib) mkEnableOption mkIf mkOption optional optionalAttrs optionalString types;
 
   cfg = config.laplace.services.minecraft.retirement-home;
 
@@ -20,6 +20,15 @@
   serverPackage = pkgs.fabricServers.fabric-1_20_1.override {
     loaderVersion = "0.18.4";
     jre_headless = pkgs.jdk17_headless;
+  };
+
+  # Discord <-> Minecraft chat bridge (server-only). Its one hard dependency,
+  # Fabric API, already ships in the Homestead pack, so nothing else is added.
+  # Bot token and channel are injected at server start from the sops env file
+  # (see discord.environmentFile), never baked into the Nix store.
+  discordIntegration = pkgs.fetchurl {
+    url = "https://cdn.modrinth.com/data/rbJ7eS5V/versions/WLOprDDs/dcintegration-fabric-3.0.7-1.20.1.jar";
+    hash = "sha512-RyPz/8Dv76Y9Scrhglo+w8vO+B3bd5ZfouYdDp17ho6gNydLVI2m9fU7K92eo0qB6scaOp0Hb2qC9u29QhoKvw==";
   };
 
   # Homestead's Modrinth manifest marks client-only jars as server-compatible.
@@ -95,6 +104,9 @@
       fi
       ln -s "$mod" "$out/$name"
     done
+    ${optionalString cfg.discord.enable ''
+      ln -s ${discordIntegration} "$out/dcintegration-fabric-3.0.7-1.20.1.jar"
+    ''}
   '';
 in {
   imports = [inputs.nix-minecraft.nixosModules.minecraft-servers];
@@ -166,10 +178,46 @@ in {
       default = 10;
       description = "Server simulation distance.";
     };
+
+    discord = {
+      enable = mkEnableOption "Discord Integration chat bridge mod";
+
+      environmentFile = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = ''
+          systemd EnvironmentFile (source it from sops) providing
+          DISCORD_BOT_TOKEN and DISCORD_CHANNEL_ID. nix-minecraft substitutes
+          these into config/Discord-Integration.toml (the @VAR@ placeholders) at
+          each server start, so the secrets never enter the Nix store. Wired to
+          the global services.minecraft-servers.environmentFile, which is fine
+          while this host runs a single server.
+        '';
+      };
+    };
   };
 
   config = mkIf cfg.enable {
+    assertions = optional cfg.discord.enable {
+      assertion = cfg.discord.environmentFile != null;
+      message = "laplace.services.minecraft.retirement-home.discord.enable needs discord.environmentFile — the sops env file providing DISCORD_BOT_TOKEN and DISCORD_CHANNEL_ID.";
+    };
+
     mnemosyne.dirs = [cfg.dataDir];
+
+    # nix-minecraft substitutes @VAR@ in managed text `files` from this env at
+    # ExecStartPre, so the bot token reaches Discord-Integration.toml without
+    # ever touching the store. Global option, but loki runs one server.
+    services.minecraft-servers.environmentFile = mkIf cfg.discord.enable cfg.discord.environmentFile;
+
+    # nix-minecraft's unit hardening sets RestrictAddressFamilies without
+    # AF_NETLINK. glibc getaddrinfo probes interfaces over a netlink socket
+    # before resolving, so without it every outbound DNS lookup in the sandboxed
+    # JVM throws UnknownHostException — breaking both Mojang online-mode auth and
+    # the Discord bot's login. Add AF_NETLINK back; the rest of the hardening
+    # (no caps, PrivateDevices, etc.) is untouched.
+    systemd.services."minecraft-server-retirement-home".serviceConfig.RestrictAddressFamilies =
+      lib.mkForce ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
 
     # Keep Simple Voice Chat exposure tied to the main Minecraft exposure switch.
     # See: https://modrepo.de/minecraft/voicechat/wiki/server_setup_self_hosted
@@ -210,11 +258,23 @@ in {
           patchouli_books = "${modpack}/patchouli_books";
         };
 
-        files = {
-          config = "${modpack}/config";
-          kubejs = "${modpack}/kubejs";
-          scripts = "${modpack}/scripts";
-        };
+        files =
+          {
+            config = "${modpack}/config";
+            kubejs = "${modpack}/kubejs";
+            scripts = "${modpack}/scripts";
+          }
+          # Keyed after "config" so it lands in the dir copy, not under it: the
+          # whole config tree is re-copied each start, so the mod's own writes to
+          # this file never persist — we re-supply it (with the token/channel
+          # substituted from environmentFile) every start instead.
+          // optionalAttrs cfg.discord.enable {
+            # writeText (not the bare ./path) so the file is a proper store input
+            # of the start-pre script, with context — a raw source path here lacks
+            # it and is flagged unreliable.
+            "config/Discord-Integration.toml" =
+              pkgs.writeText "Discord-Integration.toml" (builtins.readFile ./Discord-Integration.toml);
+          };
       };
     };
   };
