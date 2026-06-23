@@ -98,7 +98,7 @@ in {
   mnemosyne.dirs = [
     "/var/lib/acme"
     "/var/lib/caddy"
-    "/var/lib/private/ddclient"
+    "/var/lib/ddclient"
   ];
 
   environment.systemPackages = with pkgs; [
