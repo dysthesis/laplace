@@ -18,7 +18,7 @@
     # The bots status message for 1 online player, set to empty to use botStatusName
     botStatusNameSingular = "%online% player online";
     # The bots status message for no online players, set to empty to use botStatusName
-    botStatusNameEmpty = "No one is online";
+    botStatusNameEmpty = "No one is online, lock in Anika.";
     # Type of the bots status
     # Allowed Values: DISABLED,PLAYING,WATCHING,LISTENING,STREAMING,COMPETING,CUSTOM
     botStatusType = "PLAYING";
