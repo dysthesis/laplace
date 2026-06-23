@@ -142,14 +142,15 @@ in {
         # access to a headless VM - that trade cost mimir/horos/mneme a deploy.
         startWhenNeeded = mkDefault false;
 
-        # Central push-deploy connects as root over the LAN and runs
+        # Central push-deploy connects as root over the admin/deploy VLAN and runs
         # switch-to-configuration directly, so the closure activates without
         # interactive escalation. Root SSH stays disabled globally
         # (system/default.nix forces PermitRootLogin "no"); this Match re-permits it
-        # *key-only* from the two infra VLANs where the workstations live. doas keeps
-        # prompting for interactive use - unweakened.
+        # *key-only* from VLAN20. VLAN40/DMZ is deliberately excluded so a guest
+        # with the deploy key cannot root-SSH into peers if firewall scoping is absent.
+        # doas keeps prompting for interactive use - unweakened.
         extraConfig = ''
-          Match Address 10.0.20.0/24,10.0.40.0/24
+          Match Address 10.0.20.0/24
             PermitRootLogin prohibit-password
         '';
 
