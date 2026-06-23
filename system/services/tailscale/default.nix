@@ -61,14 +61,14 @@ in {
       "net.ipv6.conf.all.forwarding" = 1;
     };
 
-    # 2. Force tailscaled to use nftables (Critical for clean nftables-only systems)
-    # This avoids the "iptables-compat" translation layer issues.
+    # Pin tailscaled's firewall backend to nftables; autodetect can fall back to
+    # the iptables-compat shim, which misbehaves on nftables-only hosts.
     systemd.services.tailscaled.serviceConfig.Environment = [
       "TS_DEBUG_FIREWALL_MODE=nftables"
     ];
 
-    # 3. Optimization: Prevent systemd from waiting for network online
-    # (Optional but recommended for faster boot with VPNs)
+    # Don't block boot waiting for network-online: tailscaled brings the tunnel
+    # up itself, so the wait only stalls startup.
     systemd.network.wait-online.enable = false;
     boot.initrd.systemd.network.wait-online.enable = false;
   };

@@ -43,5 +43,5 @@ Tailnet if it is compromised).
 
 In theory, a cleaner architecture for a coordination server would be to split
 the _introducer_ and the _manager_. The former strictly needs to be exposed to
-the public internet, in order to coordinate with new devices; the latter does
+the public internet, to coordinate with new devices; the latter does
 not, and strictly works with nodes who are _already_ in the Tailnet.
