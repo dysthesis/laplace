@@ -108,6 +108,8 @@
         # never see (earlyoom in the proxmox profile is the backstop).
         memoryGb = 10;
 
+        motd = "Oops! All skill issues!";
+
         # Chat bridge. The bot dials discord.com:443 outbound through the VLAN60
         # gateway NAT (egress confirmed reachable); no inbound port is opened.
         discord = {
