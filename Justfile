@@ -111,7 +111,7 @@ tailnet-reconcile TARGET="root@10.0.50.2":
   live=$(ssh {{TARGET}} 'headscale nodes list --output json')
   problems=$(printf '%s' "$live" | nix shell nixpkgs#jq -c jq -r --argjson ssot "$ssot" '
     ($ssot | to_entries | map({key: .key, want: (.value.tags | sort)})) as $want
-    | (map({key: .given_name, value: ((.tags // []) | map(sub("^tag:"; "")) | sort)}) | from_entries) as $have
+    | (map({key: (.givenName // .name), value: ((.tags // []) | map(sub("^tag:"; "")) | sort)}) | from_entries) as $have
     | [ $want[] | .key as $h | ($have[$h]) as $got
         | if $got == null then "MISSING from tailnet: \($h)"
           elif $got != .want then "DRIFT \($h): live=\($got|join(",")) ssot=\(.want|join(","))"
