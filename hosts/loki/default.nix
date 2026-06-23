@@ -3,6 +3,10 @@
   pkgs,
   ...
 }: {
+  # dotenv (DISCORD_BOT_TOKEN + DISCORD_CHANNEL_ID) for the Discord bridge; fed
+  # to the server's EnvironmentFile and substituted into the mod's TOML at start.
+  sops.secrets.discord_bot_env.sopsFile = ../../system/secrets/loki.yaml;
+
   networking = {
     useNetworkd = true;
     useDHCP = false;
@@ -41,7 +45,18 @@
     zram.enable = true;
 
     services = {
-      tailscale.enable = true;
+      tailscale = {
+        enable = true;
+        # Resolve via the VLAN60 gateway (10.0.60.1) directly, not tailnet
+        # MagicDNS. The AdGuard-over-tunnel path to hermes idles cold; re-punching
+        # the direct link (~6s) drops bursty DNS, stalling cold lookups 10-36s and
+        # timing out the Discord bot and Mojang auth (AdGuard itself answers in
+        # ~4ms). denyDNS sets --accept-dns=false and disables resolved, so
+        # resolv.conf falls back to networking.nameservers (10.0.60.1). Trade-off:
+        # loki forgoes AdGuard filtering and tailnet split-horizon names, fine for
+        # a single-purpose box talking to Discord/Mojang/mod CDNs.
+        denyDNS = true;
+      };
       beszel.agent = {
         enable = true;
         # SSH/pull: mimir dials IN to loki, so game cannot initiate HTTPS to the
@@ -59,6 +74,13 @@
         # floor only bites under host pressure, which a single-purpose node should
         # never see (earlyoom in the proxmox profile is the backstop).
         memoryGb = 8;
+
+        # Chat bridge. The bot dials discord.com:443 outbound through the VLAN60
+        # gateway NAT (egress confirmed reachable); no inbound port is opened.
+        discord = {
+          enable = true;
+          environmentFile = config.sops.secrets.discord_bot_env.path;
+        };
       };
     };
   };
