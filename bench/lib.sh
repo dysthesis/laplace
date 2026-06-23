@@ -46,11 +46,12 @@ find_fish_user_config() {
 capture_provenance() {
     local out="$1"
     shift
-    local governor load gitrev gitdirty
+    local governor load gitrev gitstatus gitdirty
     governor="$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo unknown)"
     load="$(cut -d' ' -f1-3 </proc/loadavg 2>/dev/null || echo unknown)"
     gitrev="$(git rev-parse HEAD 2>/dev/null || echo none)"
-    gitdirty="$(git status --porcelain 2>/dev/null | head -1 >/dev/null && echo true || echo false)"
+    gitstatus="$(git status --porcelain 2>/dev/null || true)"
+    gitdirty="$([[ -n $gitstatus ]] && echo true || echo false)"
 
     local extra='{}'
     if [[ $# -gt 0 ]]; then
