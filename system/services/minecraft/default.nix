@@ -22,10 +22,7 @@
     jre_headless = pkgs.jdk17_headless;
   };
 
-  # Discord <-> Minecraft chat bridge (server-only). Its one hard dependency,
-  # Fabric API, already ships in the Homestead pack, so nothing else is added.
-  # Bot token and channel are injected at server start from the sops env file
-  # (see discord.environmentFile), never baked into the Nix store.
+  # Discord to Minecraft chat bridge (server-only).
   discordIntegration = pkgs.fetchurl {
     url = "https://cdn.modrinth.com/data/rbJ7eS5V/versions/WLOprDDs/dcintegration-fabric-3.0.7-1.20.1.jar";
     hash = "sha512-RyPz/8Dv76Y9Scrhglo+w8vO+B3bd5ZfouYdDp17ho6gNydLVI2m9fU7K92eo0qB6scaOp0Hb2qC9u29QhoKvw==";
