@@ -73,7 +73,7 @@
         # 8 GiB heap plus JVM non-heap and OS fits underneath; the 8 GiB balloon
         # floor only bites under host pressure, which a single-purpose node should
         # never see (earlyoom in the proxmox profile is the backstop).
-        memoryGb = 8;
+        memoryGb = 10;
 
         # Chat bridge. The bot dials discord.com:443 outbound through the VLAN60
         # gateway NAT (egress confirmed reachable); no inbound port is opened.
