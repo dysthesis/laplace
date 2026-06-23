@@ -10,13 +10,46 @@
   networking = {
     useNetworkd = true;
     useDHCP = false;
-    nameservers = ["10.0.60.1"];
+    # Local unbound first (caches + serves stale over the gateway's flaky DNS);
+    # the gateway stays as a fallback so loki still resolves if unbound is down.
+    nameservers = ["127.0.0.1" "10.0.60.1"];
+  };
+
+  # Local caching + serve-stale resolver. denyDNS (below) removed systemd-resolved
+  # and its cache, exposing the VLAN60 gateway's ~5% DNS flakiness: every uncached
+  # lookup hit 10.0.60.1 raw, so JDA's per-message REST POSTs to discord.com
+  # intermittently failed with EAI_AGAIN and dropped MC->Discord chat lines (the
+  # gateway WebSocket survived since it resolves once and stays open). unbound
+  # caches answers and, via serve-expired, hands back the last good record when
+  # the gateway flakes, so resolution stops failing. Pure forwarder: the gateway
+  # is the trust boundary, so skip DNSSEC validation to avoid SERVFAIL if it
+  # strips DNSSEC records (no worse than the prior raw-gateway posture).
+  services.unbound = {
+    enable = true;
+    settings = {
+      server = {
+        interface = ["127.0.0.1"];
+        access-control = ["127.0.0.0/8 allow"];
+        serve-expired = true;
+        serve-expired-ttl = 86400;
+        prefetch = true;
+        cache-min-ttl = 60;
+        module-config = ''"iterator"'';
+      };
+      forward-zone = [
+        {
+          name = ".";
+          forward-addr = ["10.0.60.1"];
+        }
+      ];
+    };
   };
 
   # VLAN 60, loki's own isolated segment (F10): the untrusted modpack box has no
   # legitimate VLAN20 peer (game served over tailscale0, Beszel is pulled over the
-  # tunnel by mimir, runtime DNS is AdGuard over the tunnel). LAN reach = gateway (10.0.60.1,
-  # boot DNS + NAT egress) + the workstation->:22 deploy pinhole only; heimdall DROPs
+  # tunnel by mimir; runtime DNS is the VLAN60 gateway via the local unbound cache
+  # below, no longer AdGuard over the tunnel). LAN reach = gateway (10.0.60.1, DNS
+  # + NAT egress) + the workstation->:22 deploy pinhole only; heimdall DROPs
   # loki->VLAN20/30/40/50. The tailnet half of the containment is the SSOT `game` tag.
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
