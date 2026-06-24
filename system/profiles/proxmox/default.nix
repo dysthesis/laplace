@@ -13,7 +13,7 @@
   cfg = config.laplace.proxmox;
   hostName = config.networking.hostName;
   rootTmpfsSize =
-    if cfg.balloon != null
+    if cfg.balloon != null && cfg.balloon > 0
     then "${toString (builtins.div (cfg.balloon * 3) 4)}M"
     else "50%";
   btrfsMountOptions = [
