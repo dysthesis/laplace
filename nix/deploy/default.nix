@@ -14,7 +14,8 @@
 # system/profiles/proxmox), so the closure is received and switch-to-configuration
 # runs without interactive escalation - doas stays password-prompting for humans.
 #
-# hephaestus is intentionally absent: not yet deployed, no static IP assigned.
+# hephaestus is on VLAN70 (10.0.70.2); reach it only after the VMA image is
+# restored and the guest is up, or `colmena apply --on @proxmox` fails on it.
 {
   self,
   inputs,
@@ -35,6 +36,7 @@
     charon = "10.0.20.10";
     portunus = "10.0.40.2";
     bifrost = "10.0.50.2";
+    hephaestus = "10.0.70.2";
   };
 
   mkNode = name: targetHost: {

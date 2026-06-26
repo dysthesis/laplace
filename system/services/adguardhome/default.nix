@@ -44,6 +44,24 @@ in {
           "127.0.0.0/8"
           "::1/128"
         ];
+
+        # Pin upstreams. The first entry is a domain-specific route sending OUR
+        # own zone straight to Cloudflare, which hosts dysthesis.com. With
+        # upstream_mode=parallel AdGuard takes the fastest reply across all
+        # upstreams, and Quad9's dns10 had our public CNAMEs (git, headscale ->
+        # portunus) negative-cached: it answered NODATA in milliseconds and beat
+        # Cloudflare's correct-but-slower answer, so the names intermittently
+        # failed to resolve on the LAN/tailnet. Routing dysthesis.com to the zone
+        # host removes the race; the generic upstreams below still serve everything
+        # else. Declared here (so it can't silently regress) — unlike filters and
+        # rewrites, which stay web-UI mutable; declaring upstream_dns means Nix
+        # owns it and UI edits to the upstream list are reverted on rebuild.
+        dns.upstream_dns = [
+          "[/dysthesis.com/]https://dns.cloudflare.com/dns-query"
+          "https://dns10.quad9.net/dns-query"
+          "https://dns.adguard-dns.com/dns-query"
+          "https://dns.cloudflare.com/dns-query"
+        ];
       };
     };
 
