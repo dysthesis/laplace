@@ -7,6 +7,7 @@ keys:
   - &hermes age1klugnwttlp7pn0tjmlh4k2n7qqd3qjl4exk4ee3pf9trwlh69qlsee7mg2
   - &bifrost age1v50x0dt5jgh5wwxq0u5v7l3q7lvr0z8en7qcm774wmuy0fkvx36sw986kf
   - &loki age162wqwergctj5qu6q22tsp2r72tqqatktk5tnl7gq9d4kp586a9vqmhq982
+  - &hephaestus age1y2zc9judmrtz58jqklf9qst3rfsyn4qpt27sqv74kmum5teacarqykts4t
   - &charon age18742z73g8qkp5nyul35hz4l4q4hnj2shje6n7p92ard80fspeq3sh7jamp
 creation_rules:
   # Per-node Cloudflare DNS-01 tokens (F3): the token lives as a `cloudflare_api_key`
@@ -29,6 +30,12 @@ creation_rules:
           - *deimos
           - *phobos
           - *charon
+  - path_regex: system/secrets/hephaestus\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *hephaestus
   - path_regex: system/secrets/mimir\.(yaml|json|env|ini)$
     key_groups:
       - age:

@@ -7,6 +7,12 @@
     cloudflared
     difftastic
   ];
+  # Build git with the libsecret credential helper so HTTPS tokens (e.g. the
+  # Forgejo PAT for git.dysthesis.com) live in the desktop keyring, not plaintext.
+  # The override ships git-credential-libsecret in $out/bin, so `helper = libsecret`
+  # resolves on PATH. Needs a running Secret Service (gnome-keyring / KWallet /
+  # KeePassXC) on the session, or the helper no-ops and git falls back to prompting.
+  programs.git.package = pkgs.git.override {withLibsecret = true;};
   programs.ssh.extraConfig = ''
     Host git.dysthesis.com
       User git
@@ -60,6 +66,7 @@
         pruneTags = true;
         all = true;
       };
+      credential.helper = "libsecret";
       help.autocorrect = "prompt";
       column.ui = "auto";
       diff = {

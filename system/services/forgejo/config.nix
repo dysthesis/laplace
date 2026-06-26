@@ -11,15 +11,16 @@ in {
     srv = forgejo.settings.server;
   in
     # From https://wiki.nixos.org/wiki/Forgejo
+    #
+    # No node-local reverse proxy or ACME here: TLS terminates at the edge on
+    # portunus's Caddy, which reverse-proxies git.dysthesis.com to this host's raw
+    # HTTP_PORT over the VLAN40->VLAN70 pinhole. Forgejo serves plain HTTP on
+    # :8080, and the hephaestus firewall scopes that port to portunus only. SSH_PORT
+    # is the system openssh port, already scoped to VLAN20 by the proxmox profile.
     mkIf cfg.enable {
       mnemosyne.dirs = [
         forgejo.stateDir
         config.services.postgresql.dataDir
-      ];
-
-      networking.firewall.allowedTCPPorts = [
-        config.services.forgejo.settings.server.HTTP_PORT
-        config.services.forgejo.settings.server.SSH_PORT
       ];
 
       systemd.tmpfiles.rules = [
@@ -40,17 +41,6 @@ in {
       ];
 
       services = {
-        nginx = {
-          virtualHosts.${forgejo.settings.server.DOMAIN} = {
-            forceSSL = true;
-            enableACME = true;
-            extraConfig = ''
-              client_max_body_size 512M;
-            '';
-            locations."/".proxyPass = "http://localhost:${toString srv.HTTP_PORT}";
-          };
-        };
-
         forgejo = {
           enable = true;
           inherit (cfg) stateDir;

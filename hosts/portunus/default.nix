@@ -8,6 +8,12 @@
   ddnsHost = "portunus.${fqdn}";
   headscaleHost = "headscale.${fqdn}";
   headscaleUpstream = "10.0.50.2:8080";
+  # Forgejo on hephaestus, VLAN70. Same edge-TLS split as headscale: Caddy here
+  # terminates TLS and reverse-proxies across the VLAN40->VLAN70 pinhole (OPNsense
+  # must pass it). git.dysthesis.com is a CNAME to ddnsHost in Cloudflare, so it
+  # follows the ddclient A record automatically — do NOT add it to ddclient.
+  gitHost = "git.${fqdn}";
+  gitUpstream = "10.0.70.2:8080";
 in {
   sops.secrets.cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
   networking = {
@@ -58,9 +64,16 @@ in {
       };
       caddy = {
         enable = true;
-        virtualHosts.${headscaleHost}.extraConfig = ''
-          reverse_proxy http://${headscaleUpstream}
-        '';
+        virtualHosts = {
+          ${headscaleHost}.extraConfig = ''
+            reverse_proxy http://${headscaleUpstream}
+          '';
+          # Caddy imposes no request-body cap (unlike nginx's 1M), so large git
+          # pushes over HTTPS pass through without extra config.
+          ${gitHost}.extraConfig = ''
+            reverse_proxy http://${gitUpstream}
+          '';
+        };
       };
     };
   };
