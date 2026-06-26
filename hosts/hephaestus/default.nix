@@ -110,7 +110,12 @@
 
   # Runner registration (.runner) + label/token hashes. Persist across the tmpfs
   # root or it re-registers every boot and burns a fresh token each time.
-  mnemosyne.dirs = ["/var/lib/gitea-runner"];
+  # The runner is a DynamicUser, so systemd keeps real StateDirectory= contents in
+  # /var/lib/private/gitea-runner and leaves /var/lib/gitea-runner as a symlink to
+  # it — persist the private path (the symlink would save nothing, and bind-mounting
+  # the public path makes systemd fail StateDirectory setup with EBUSY trying to
+  # migrate a mountpoint into /var/lib/private).
+  mnemosyne.dirs = ["/var/lib/private/gitea-runner"];
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies
