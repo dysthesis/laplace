@@ -11,7 +11,7 @@
   inherit (config.laplace.tailnet) nodes;
   adguardTailnetIp = nodes.hermes.ip; # AdGuard (also the tailnet resolver)
   mnemeTailnetIp = nodes.mneme.ip; # immich
-  mimirTailnetIp = nodes.mimir.ip; # miniflux + silverbullet
+  mimirTailnetIp = nodes.mimir.ip; # miniflux + silverbullet + radicale
   lokiTailnetIp = nodes.loki.ip; # minecraft
 in {
   networking = {
@@ -127,6 +127,11 @@ in {
             }
             {
               name = "status.${fqdn}";
+              type = "A";
+              value = mimirTailnetIp;
+            }
+            {
+              name = "cal.${fqdn}";
               type = "A";
               value = mimirTailnetIp;
             }
