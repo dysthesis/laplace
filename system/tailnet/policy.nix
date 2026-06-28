@@ -24,7 +24,7 @@ _: {
         ip = "100.64.0.8";
         ip6 = "fd7a:115c:a1e0::8";
         tags = ["apps" "monitor" "infra"];
-      }; # miniflux/silverbullet/vikunja + beszel-hub
+      }; # miniflux/silverbullet/vikunja/radicale + beszel-hub
       loki = {
         ip = "100.64.0.12";
         ip6 = "fd7a:115c:a1e0::c";

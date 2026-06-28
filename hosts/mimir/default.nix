@@ -1,4 +1,4 @@
-# Miniflux + SilverBullet + Vikunja host, running as a Proxmox guest. Generic VM concerns
+# Miniflux + SilverBullet + Vikunja + Radicale host, running as a Proxmox guest. Generic VM concerns
 # (disk, impermanence, bootloader, virtio, qemuGuest, the archon admin user, the
 # VMA artifact) live in the `proxmox` profile; this module only declares the app
 # apps.
@@ -14,6 +14,7 @@
   minifluxHost = "miniflux.dysthesis.com";
   vikunjaHost = "tasks.dysthesis.com";
   beszelHost = "status.dysthesis.com";
+  radicaleHost = "cal.dysthesis.com";
 in {
   # miniflux_admin lives in mimir's own sops file (moved out of the shared
   # secrets.yaml); the miniflux module declares the secret against the default
@@ -44,7 +45,7 @@ in {
     proxmox = {
       cores = 2;
       memory = 3584; # MiB, ballooning ceiling
-      balloon = 1280; # MiB, ballooning floor (Postgres + four app processes)
+      balloon = 1280; # MiB, ballooning floor (Postgres + app processes)
       diskSize = "32G";
     };
 
@@ -60,6 +61,7 @@ in {
       miniflux.enable = true;
       silverbullet.enable = true;
       vikunja.enable = true;
+      radicale.enable = true;
       beszel = {
         hub = {
           enable = true;
@@ -86,6 +88,7 @@ in {
             "silverbullet.dysthesis.com" = "localhost:8101";
             "tasks.dysthesis.com" = "localhost:3456";
             "status.dysthesis.com" = "localhost:8090";
+            ${radicaleHost} = "localhost:${toString config.laplace.services.radicale.port}";
           };
         };
       };
