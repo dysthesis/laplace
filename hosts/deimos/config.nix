@@ -143,7 +143,7 @@
       virtualisation.enable = true;
       nh = {
         enable = true;
-        flakePath = "/home/demiurge/Documents/Projects/nix-config";
+        flakePath = "/home/demiurge/Documents/Projects/laplace";
       };
     };
 
