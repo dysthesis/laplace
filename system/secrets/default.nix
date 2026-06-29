@@ -14,6 +14,9 @@ in {
   sops = mkIf (!(elem hostName ["phobos" "chaos"])) {
     secrets = mkIf hasDemiurge {
       libera.owner = "demiurge";
+      # client_id + encryption_secret lines for Taskwarrior's TaskChampion sync
+      # (tasks.dysthesis.com). The wrapped `task` stages this into ~/.config/task.
+      taskwarrior_sync.owner = "demiurge";
     };
     defaultSopsFile = ./secrets.yaml;
     age.keyFile = "/nix/persist/etc/secrets/age/keys.txt";

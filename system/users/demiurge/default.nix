@@ -123,7 +123,6 @@ in {
           neomutt
           vesktop
           zen
-          # todoist-electron
         ];
 
         productivity = with pkgs.configured; [
@@ -131,7 +130,7 @@ in {
           newsraft
           taskwarrior
           timewarrior
-          taskwarrior-tui
+          taskwarrior-tui2
           zk
           pass
           gh-dash

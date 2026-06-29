@@ -27,6 +27,12 @@
     search.case.sensitive=no
     data.location=~/.local/share/task
 
+    # Sync to the self-hosted TaskChampion server. The url is public; client_id +
+    # encryption_secret live in the sops-managed sync.conf, staged into ~/.config
+    # by the wrapper below so the secret never lands in the Nix store.
+    sync.server.url=https://tasks.dysthesis.com
+    include ~/.config/task/sync.conf
+
     # Prevent priority inversion
     urgency.inherit=1
     urgency.blocking.coefficient=0
@@ -130,10 +136,11 @@
     python3
   ];
 in
-  mkWrapper pkgs pkgs.taskwarrior2
+  mkWrapper pkgs pkgs.taskwarrior3
   # bash
   ''
     wrapProgram $out/bin/task \
      --set TASKRC ${taskrc} \
+     --run 'sync="$HOME/.config/task/sync.conf"; if [ -r /run/secrets/taskwarrior_sync ]; then ${pkgs.coreutils}/bin/install -Dm600 /run/secrets/taskwarrior_sync "$sync"; elif [ ! -e "$sync" ]; then ${pkgs.coreutils}/bin/install -Dm600 /dev/null "$sync"; fi' \
      --prefix PATH ":" "${lib.makeBinPath deps}"
   ''

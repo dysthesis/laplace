@@ -1,4 +1,4 @@
-# Miniflux + SilverBullet + Vikunja + Radicale host, running as a Proxmox guest. Generic VM concerns
+# Miniflux + SilverBullet + TaskChampion + Radicale host, running as a Proxmox guest. Generic VM concerns
 # (disk, impermanence, bootloader, virtio, qemuGuest, the archon admin user, the
 # VMA artifact) live in the `proxmox` profile; this module only declares the app
 # apps.
@@ -12,7 +12,6 @@
   ...
 }: let
   minifluxHost = "miniflux.dysthesis.com";
-  vikunjaHost = "tasks.dysthesis.com";
   beszelHost = "status.dysthesis.com";
   radicaleHost = "cal.dysthesis.com";
 in {
@@ -23,6 +22,7 @@ in {
   # beszel agent's KEY + mimir's per-system TOKEN, consumed as the agent's
   # EnvironmentFile below.
   sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/mimir.yaml;
+  sops.secrets.radicale_htpasswd.sopsFile = ../../system/secrets/mimir.yaml;
 
   networking = {
     useNetworkd = true;
@@ -60,7 +60,7 @@ in {
       tailscale.enable = true;
       miniflux.enable = true;
       silverbullet.enable = true;
-      vikunja.enable = true;
+      taskchampion.enable = true;
       radicale.enable = true;
       beszel = {
         hub = {
@@ -86,7 +86,7 @@ in {
           proxies = {
             "miniflux.dysthesis.com" = "localhost:8087";
             "silverbullet.dysthesis.com" = "localhost:8101";
-            "tasks.dysthesis.com" = "localhost:3456";
+            "tasks.dysthesis.com" = "localhost:${toString config.laplace.services.taskchampion.port}";
             "status.dysthesis.com" = "localhost:8090";
             ${radicaleHost} = "localhost:${toString config.laplace.services.radicale.port}";
           };
@@ -104,14 +104,6 @@ in {
       BASE_URL = lib.mkForce "https://${minifluxHost}";
     };
     silverbullet.listenAddress = lib.mkForce "127.0.0.1";
-
-    # Vikunja bakes publicurl into the frontend's API base; force it to the
-    # public origin Caddy serves, not the module's localhost default. Stays
-    # loopback-bound, Tailnet-only.
-    vikunja = {
-      frontendScheme = lib.mkForce "https";
-      frontendHostname = lib.mkForce vikunjaHost;
-    };
   };
 
   environment.systemPackages = with pkgs; [
