@@ -52,6 +52,7 @@ in {
           builtins.elem (lib.getName pkg) [
             "obsidian"
             "claude-code"
+            "graalvm-oracle"
             "minecraft-server"
             "open-webui"
             "steam"

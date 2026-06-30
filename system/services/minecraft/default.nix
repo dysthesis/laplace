@@ -19,7 +19,8 @@
 
   serverPackage = pkgs.fabricServers.fabric-1_20_1.override {
     loaderVersion = "0.18.4";
-    jre_headless = pkgs.jdk17_headless;
+    # Keep Java 17 for Minecraft 1.20.1/mod compatibility; CE is currently Java 25.
+    jre_headless = pkgs.graalvmPackages.graalvm-oracle_17;
   };
 
   # Discord to Minecraft chat bridge (server-only).

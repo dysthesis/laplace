@@ -99,7 +99,14 @@ in {
           configured.zotero
           unstable.signal-desktop
           (unstable.prismlauncher.override {
-            jdks = with pkgs; [zulu25 jdk21 jdk17 jdk8];
+            jdks = with pkgs; [
+              graalvmPackages.graalvm-ce
+              zulu25
+              jdk21
+              jdk17
+              jdk8
+            ];
+            gamemodeSupport = true;
           })
           # unstable.tor-browser
           tigervnc
