@@ -14,6 +14,7 @@
   minifluxHost = "miniflux.dysthesis.com";
   beszelHost = "status.dysthesis.com";
   radicaleHost = "cal.dysthesis.com";
+  wallabagHost = "wallabag.dysthesis.com";
 in {
   # miniflux_admin lives in mimir's own sops file (moved out of the shared
   # secrets.yaml); the miniflux module declares the secret against the default
@@ -23,6 +24,8 @@ in {
   # EnvironmentFile below.
   sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/mimir.yaml;
   sops.secrets.radicale_htpasswd.sopsFile = ../../system/secrets/mimir.yaml;
+  # wallabag's Symfony secret; add `wallabag_secret` to mimir.yaml (openssl rand -hex 32).
+  sops.secrets.wallabag_secret.sopsFile = ../../system/secrets/mimir.yaml;
 
   networking = {
     useNetworkd = true;
@@ -62,6 +65,12 @@ in {
       silverbullet.enable = true;
       taskchampion.enable = true;
       radicale.enable = true;
+      wallabag = {
+        enable = true;
+        domain = wallabagHost;
+        adminUser = "demiurge";
+        adminEmail = "demiurge@localhost";
+      };
       beszel = {
         hub = {
           enable = true;
@@ -89,6 +98,7 @@ in {
             "tasks.dysthesis.com" = "localhost:${toString config.laplace.services.taskchampion.port}";
             "status.dysthesis.com" = "localhost:8090";
             ${radicaleHost} = "localhost:${toString config.laplace.services.radicale.port}";
+            ${wallabagHost} = "localhost:${toString config.laplace.services.wallabag.port}";
           };
         };
       };
