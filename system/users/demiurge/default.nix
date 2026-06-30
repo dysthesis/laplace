@@ -131,6 +131,8 @@ in {
           taskwarrior
           timewarrior
           taskwarrior-tui2
+          khal
+          vdirsyncer
           zk
           pass
           gh-dash
