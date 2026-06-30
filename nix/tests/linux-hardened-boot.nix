@@ -22,9 +22,9 @@ pkgs.testers.runNixOSTest {
 
     # The patched kernel booted: EXTRAVERSION=-hardened1 yields this exact
     # release string, which only the overlay produces.
-    machine.succeed("test \"$(uname -r)\" = '7.0.12-hardened1'")
+    machine.succeed("test \"$(uname -r)\" = '7.1.0-hardened1'")
 
-    # config.nix took effect, not just any 7.0.12 kernel: PROC_KCORE=no removes
+    # config.nix took effect, not just any 7.1 kernel: PROC_KCORE=no removes
     # /proc/kcore, which is present on a stock NixOS kernel.
     machine.succeed("test ! -e /proc/kcore")
   '';
