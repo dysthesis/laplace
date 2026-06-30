@@ -97,7 +97,7 @@ in {
 
         applications = with pkgs; [
           configured.zotero
-          signal-desktop
+          unstable.signal-desktop
           (unstable.prismlauncher.override {
             jdks = with pkgs; [zulu25 jdk21 jdk17 jdk8];
           })

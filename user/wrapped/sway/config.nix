@@ -46,7 +46,7 @@
     {
       name = "signal";
       prefix = "s";
-      cmd = "${getExe pkgs.signal-desktop} --enable-features=UseOzonePlatform --ozone-platform=wayland";
+      cmd = "${getExe pkgs.unstable.signal-desktop} --enable-features=UseOzonePlatform --ozone-platform=wayland";
     }
     rec {
       name = "foot.term";
