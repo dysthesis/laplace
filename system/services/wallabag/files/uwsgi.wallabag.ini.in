@@ -1,0 +1,36 @@
+[uwsgi]
+master = true
+processes = 4
+cheaper = 1
+die-on-term = true
+
+env = WALLABAG_DATA=@dataDir@
+
+# Serve HTTP on loopback so the host Caddy can reverse-proxy here. Upstream
+# (gdamjan/wallabag-service) instead exposes the uwsgi protocol on a unix socket
+# for nginx; Caddy speaks no uwsgi, hence http-socket.
+http-socket = 127.0.0.1:@port@
+
+mime-file = @mimeTypes@
+site-root = @siteRoot@
+chdir = %(site-root)
+
+static-check = %(site-root)
+# web/ is a symlink farm into the read-only store; uwsgi's static server rejects
+# symlink targets whose realpath escapes the docroot, so whitelist the store.
+static-safe = /nix/store
+static-index = index.html
+static-skip-ext = .php
+static-skip-ext = .inc
+offload-threads = 2
+
+plugins = 0:php
+php-ini = @phpIni@
+php-docroot = %(site-root)
+php-app = app.php
+php-allowed-ext = .php
+php-allowed-ext = .inc
+
+php-set = date.timezone=@timezone@
+# Keep PHP 8 deprecation notices (Symfony 4.4 / old Guzzle) out of responses.
+php-set = display_errors=0
