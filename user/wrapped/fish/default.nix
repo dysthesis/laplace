@@ -120,6 +120,11 @@
       HOME="$TMPDIR" XDG_RUNTIME_DIR="$TMPDIR" ${lib.getExe fish} --no-config ${gen} > $out
     '';
 
+  # The Radicale collection that TaskDroid mirrors Taskwarrior into; excluded
+  # from the startup agenda since those events duplicate the `task next` list
+  # above. Stable as long as the Radicale collection isn't recreated.
+  taskMirrorCalendar = "08dc09ab-c6bf-1a74-8019-003a57d72f37";
+
   deps = with pkgs;
     lib.makeBinPath [
       zoxide
@@ -154,6 +159,7 @@
         source ${direnvHook}
         dbus-update-activation-environment --systemd --all
         ${lib.getExe pkgs.configured.taskwarrior} next due.before:today+7d
+        ${lib.getExe pkgs.configured.khal} list -d ${taskMirrorCalendar} now today
       end
 
       function cpfile

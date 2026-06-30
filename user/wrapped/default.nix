@@ -169,6 +169,8 @@
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
       spotify-player = callPackage ./spotify_player {inherit lib pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
+      khal = callPackage ./khal {inherit lib pkgs;};
+      vdirsyncer = callPackage ./khal/vdirsyncer.nix {inherit lib pkgs;};
       # Last working version for taskwarrior2
       taskwarrior-tui2 = callPackage ./taskwarrior-tui {inherit lib pkgs;};
       zen = guiPackage (
