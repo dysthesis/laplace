@@ -17,7 +17,7 @@
   uwsgiIni = pkgs.replaceVars ./files/uwsgi.wallabag.ini.in {
     inherit dataDir;
     port = toString cfg.port;
-    timezone = cfg.timezone;
+    inherit (cfg) timezone;
     mimeTypes = "${pkgs.mailcap}/etc/mime.types";
     siteRoot = "${dataDir}/web";
     phpIni = "${build.php}/lib/php.ini";

@@ -16,16 +16,18 @@
   radicaleHost = "cal.dysthesis.com";
   wallabagHost = "wallabag.dysthesis.com";
 in {
-  # miniflux_admin lives in mimir's own sops file (moved out of the shared
-  # secrets.yaml); the miniflux module declares the secret against the default
-  # file, so repoint it.
-  sops.secrets.miniflux_admin.sopsFile = ../../system/secrets/mimir.yaml;
-  # beszel agent's KEY + mimir's per-system TOKEN, consumed as the agent's
-  # EnvironmentFile below.
-  sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/mimir.yaml;
-  sops.secrets.radicale_htpasswd.sopsFile = ../../system/secrets/mimir.yaml;
-  # wallabag's Symfony secret; add `wallabag_secret` to mimir.yaml (openssl rand -hex 32).
-  sops.secrets.wallabag_secret.sopsFile = ../../system/secrets/mimir.yaml;
+  sops.secrets = {
+    # miniflux_admin lives in mimir's own sops file (moved out of the shared
+    # secrets.yaml); the miniflux module declares the secret against the default
+    # file, so repoint it.
+    miniflux_admin.sopsFile = ../../system/secrets/mimir.yaml;
+    # beszel agent's KEY + mimir's per-system TOKEN, consumed as the agent's
+    # EnvironmentFile below.
+    beszel_agent_env.sopsFile = ../../system/secrets/mimir.yaml;
+    radicale_htpasswd.sopsFile = ../../system/secrets/mimir.yaml;
+    # wallabag's Symfony secret; add `wallabag_secret` to mimir.yaml (openssl rand -hex 32).
+    wallabag_secret.sopsFile = ../../system/secrets/mimir.yaml;
+  };
 
   networking = {
     useNetworkd = true;
