@@ -154,13 +154,15 @@ in {
         ];
         services.beszel.agent = {
           openFirewall = false;
-          environment.KEY = cfg.agent.key;
-          environment.LISTEN = cfg.agent.listen;
-          # The agent keeps its own SSH host key (.key) here. Without a persistent
-          # dir the key is ephemeral — regenerated each restart — so the hub's
-          # pinned fingerprint breaks on every deploy and the system shows "Down"
-          # even though the listen port is reachable.
-          environment.DATA_DIR = "/var/lib/beszel-agent";
+          environment = {
+            KEY = cfg.agent.key;
+            LISTEN = cfg.agent.listen;
+            # The agent keeps its own SSH host key (.key) here. Without a persistent
+            # dir the key is ephemeral — regenerated each restart — so the hub's
+            # pinned fingerprint breaks on every deploy and the system shows "Down"
+            # even though the listen port is reachable.
+            DATA_DIR = "/var/lib/beszel-agent";
+          };
         };
 
         # Make DATA_DIR real, writable under ProtectSystem=strict, and stable. The

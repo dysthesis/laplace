@@ -17,7 +17,7 @@ in {
       User git
       ProxyCommand ${lib.getExe pkgs.cloudflared} access ssh --hostname ssh.git.dysthesis.com
   '';
-  programs.git = rec {
+  programs.git = {
     enable = true;
     lfs.enable = true;
     # Build git with the libsecret credential helper so HTTPS tokens (e.g. the
