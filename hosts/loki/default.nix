@@ -9,7 +9,7 @@
   # blob is *referenced*, not copied, so it lands on loki's disk exactly once (the
   # symlink target is a runtime dep).
   modpackZip = builtins.path {
-    path = ./. + "/Retirement Home.zip";
+    path = ./. + "/RetirementHome.zip";
     name = "RetirementHome.zip";
   };
   modpack = pkgs.runCommand "retirement-home-modpack" {} ''
