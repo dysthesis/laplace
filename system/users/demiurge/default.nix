@@ -100,7 +100,7 @@ in {
           unstable.signal-desktop
           (unstable.prismlauncher.override {
             jdks = with pkgs; [
-              graalvmPackages.graalvm-ce
+              graalvmPackages.graalvm-oracle_17
               zulu25
               jdk21
               jdk17
