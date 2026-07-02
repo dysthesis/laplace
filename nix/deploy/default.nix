@@ -36,7 +36,7 @@
     charon = "10.0.20.10";
     portunus = "10.0.40.2";
     bifrost = "10.0.50.2";
-    hephaestus = "10.0.70.2";
+    # hephaestus = "10.0.70.2";
   };
 
   mkNode = name: targetHost: {
