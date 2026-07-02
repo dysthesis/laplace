@@ -2,7 +2,21 @@
   config,
   pkgs,
   ...
-}: {
+}: let
+  # 371 MiB modpack served read-only over the tailnet at http://mc.dysthesis.com/modpack.
+  # builtins.path renames it into the store without the space (illegal in store
+  # names). Symlink it into a dir so Caddy's `root` has a directory to serve; the
+  # blob is *referenced*, not copied, so it lands on loki's disk exactly once (the
+  # symlink target is a runtime dep).
+  modpackZip = builtins.path {
+    path = ./. + "/Retirement Home.zip";
+    name = "RetirementHome.zip";
+  };
+  modpack = pkgs.runCommand "retirement-home-modpack" {} ''
+    mkdir -p "$out"
+    ln -s ${modpackZip} "$out/RetirementHome.zip"
+  '';
+in {
   # dotenv (DISCORD_BOT_TOKEN + DISCORD_CHANNEL_ID) for the Discord bridge; fed
   # to the server's EnvironmentFile and substituted into the mod's TOML at start.
   sops.secrets.discord_bot_env.sopsFile = ../../system/secrets/loki.yaml;
@@ -116,6 +130,44 @@
           enable = true;
           environmentFile = config.sops.secrets.discord_bot_env.path;
         };
+      };
+
+      # Modpack download for players over the tailnet, at https://mc.dysthesis.com/modpack.
+      # HTTPS (not plain HTTP) because Firefox's HTTPS-First silently upgrades the bare
+      # name to :443 and hangs forever when nothing answers there. DNS-01 via Cloudflare
+      # is the fleet's issuance path for these tailnet-only names (no public A record, so
+      # HTTP-01/TLS-ALPN can't validate). TRADE-OFF: this puts a zone-wide Cloudflare
+      # DNS-edit token on the deliberately-untrusted modpack box; if loki is popped the
+      # dysthesis.com zone is exposed. Accepted for a browser-friendly download reachable
+      # by the same 'game'-tag cohort (owner + MC friends). Reuses the existing
+      # mc.dysthesis.com record; Minecraft on :25565 is untouched.
+      caddy = {
+        enable = true;
+        email = "dysthesis@protonmail.com"; # ACME account, matches the rest of the fleet
+        # tailnet-only. loki mkForce-drops tailscale0 from trustedInterfaces (the SSOT
+        # "flip" in system/tailnet/firewall.nix), so :80/:443 are NOT open by default —
+        # the tcp/80 + tcp/443 entries on the workstation->game flow and the minecraft
+        # guest reach in system/tailnet/policy.nix open them (nftables + headscale ACL).
+        # openFirewall would instead open them on every interface incl. the LAN.
+        openFirewall = false;
+        cloudflare = {
+          enable = true;
+          sopsFile = ../../system/secrets/loki.yaml; # must hold a `cloudflare_api_key` key
+        };
+        virtualHosts."mc.dysthesis.com".extraConfig = ''
+          tls {
+            dns cloudflare {env.CF_API_TOKEN}
+            resolvers 1.1.1.1
+          }
+          route /modpack {
+            root * ${modpack}
+            rewrite * /RetirementHome.zip
+            # Force a sane download name: the request path is /modpack, so without
+            # this the browser saves the zip as extensionless "modpack".
+            header Content-Disposition "attachment; filename=RetirementHome.zip"
+            file_server
+          }
+        '';
       };
     };
   };
