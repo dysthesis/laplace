@@ -107,8 +107,8 @@ _: {
       {
         from = "workstation";
         to = "game";
-        ports = ["tcp/25565" "udp/24454"];
-      } # owner plays MC from PC/laptop
+        ports = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"];
+      } # owner plays MC + fetches modpack (https://mc.dysthesis.com/modpack) from PC/laptop
       {
         from = "workstation";
         to = "exit";
@@ -150,7 +150,7 @@ _: {
       minecraft = {
         users = ["tom" "olivia" "ash" "anika" "mary" "esther"];
         reach = {
-          game = ["tcp/25565" "udp/24454"]; # Java + Simple Voice Chat
+          game = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"]; # Java + Simple Voice Chat + modpack download
           dns = ["udp/53"];
         };
       };
