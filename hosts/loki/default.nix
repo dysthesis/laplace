@@ -3,13 +3,14 @@
   pkgs,
   ...
 }: let
-  # 371 MiB modpack served read-only over the tailnet at http://mc.dysthesis.com/modpack.
-  # builtins.path renames it into the store without the space (illegal in store
-  # names). Symlink it into a dir so Caddy's `root` has a directory to serve; the
-  # blob is *referenced*, not copied, so it lands on loki's disk exactly once (the
-  # symlink target is a runtime dep).
+  # 408 MiB modpack served read-only over the tailnet at https://mc.dysthesis.com/modpack.
+  # Lives with the minecraft service module, which builds the server mods/config
+  # from the same zip — one file, no client/server drift. Symlink it into a dir
+  # so Caddy's `root` has a directory to serve; the blob is *referenced*, not
+  # copied, so it lands on loki's disk exactly once (the symlink target is a
+  # runtime dep).
   modpackZip = builtins.path {
-    path = ./. + "/RetirementHome.zip";
+    path = ../../system/services/minecraft/RetirementHome.zip;
     name = "RetirementHome.zip";
   };
   modpack = pkgs.runCommand "retirement-home-modpack" {} ''

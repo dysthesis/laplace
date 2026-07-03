@@ -98,12 +98,6 @@ age-key TARGET:
     nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -y "$f"
   '
 
-# Runtime half of PLAN §5 layer 4 (gotcha 4): assert the LIVE Headscale tags
-# match the SSOT (system/tailnet). The nft layer pins by IP (Nix-authoritative)
-# while Headscale enforces by the tag assigned at enrolment (runtime) - if a node
-# enrolled under the wrong tag the two layers silently diverge. NOT a flake check:
-# the build sandbox has no network. Run manually or on a timer. Guests (untagged,
-# absent from the SSOT) are intentionally ignored. Exits non-zero on any drift.
 tailnet-reconcile TARGET="root@10.0.50.2":
   #!/usr/bin/env sh
   set -eu

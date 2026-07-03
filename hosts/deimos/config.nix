@@ -86,12 +86,19 @@
       };
 
       services = {
-        # minecraft.retirement-home = {
-        #   enable = true;
-        #   autoStart = false;
-        #   openFirewall = false;
-        #   memoryGb = 8;
-        # };
+        # Chunk pregen box: same module/seed as loki, so the world generated
+        # here transplants 1:1. Started manually (autoStart off), driven via
+        # the server console socket with Chunky; world rsyncs to loki after.
+        # No discord bridge — nobody chats with a pregen run.
+        minecraft.retirement-home = {
+          enable = true;
+          autoStart = false;
+          openFirewall = false;
+          # Pregen wants worker threads (c2me) more than heap, but 1.20.1
+          # modded gen churns allocation; 12 GiB keeps GC off the critical
+          # path and leaves plenty for the desktop.
+          memoryGb = 12;
+        };
 
         tailscale = {
           enable = true;
