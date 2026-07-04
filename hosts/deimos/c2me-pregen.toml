@@ -1,0 +1,31 @@
+# Server-side c2me override for the deimos pregen box. The pack's own
+# config/c2me.toml (exported from the Prism client instance) ships with
+# parallel worldgen switched off, which leaves chunk generation on the
+# vanilla single-threaded path: during pregen the server thread sits at
+# 100% while the other 15 cores idle (~22 chunks/s observed).
+#
+# Only the keys below differ from the pack config; c2me fills the rest
+# with defaults. nix-minecraft re-copies this file on every server start,
+# so runtime rewrites by c2me never stick.
+version = 3
+
+# The default expression caps workers at cpus/1.2 - 2 = 11 on 16 cores no
+# matter the heap. Dedicated pregen box: go wider, leave ~2 cores for the
+# server thread, lighting and IO threads.
+globalExecutorParallelism = 14
+
+[threadedWorldGen]
+enabled = true
+# Parallel feature gen (trees/ores/structure placement) is upstream's
+# default but the classic crash source in big packs — it's the largest
+# serial section left, so it's on for pregen throughput. c2me's
+# enforceSafeWorldRandomAccess (default on) turns detected races into a
+# hard crash rather than silent corruption, and Chunky resumes after a
+# restart. If worldgen crashes recur, set this false first.
+allowThreadedFeatures = true
+reduceLockRadius = true
+asyncScheduling = true
+
+[vanillaWorldGenOptimizations]
+optimizeAquifer = true
+useEndBiomeCache = true
