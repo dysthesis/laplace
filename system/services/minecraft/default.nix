@@ -136,7 +136,21 @@ in {
         Heap size in GiB allocated to the server. Sets -Xms and -Xmx equal
         (Aikar's rule) to avoid heap-resize GC pauses. 8 GiB suits ~10 players
         on a heavy modpack; modded RAM scales with mods and loaded chunks, not
-        player count, so larger values mostly lengthen GC pauses.
+        player count, so larger values mostly lengthen GC pauses. Keep this
+        below the guest's RAM minus ~2 GiB (JVM non-heap + OS + region-file
+        page cache) or the heap swaps and every GC faults pages back in.
+      '';
+    };
+
+    extraJvmOpts = mkOption {
+      type = types.str;
+      default = "";
+      example = "-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+AlwaysPreTouch";
+      description = ''
+        Extra JVM flags appended after -Xms/-Xmx (GC tuning, JIT, etc.).
+        Empty means bare heap flags + the runtime's default G1. The chosen set
+        comes from an on-host benchmark (Chunky pregen under fixed load, ranked
+        by young-GC pause p99 / GC overhead / throughput); see the tuning plan.
       '';
     };
 
@@ -216,7 +230,7 @@ in {
         enable = true;
         enableReload = true;
         package = serverPackage;
-        jvmOpts = "-Xms${toString cfg.memoryGb}G -Xmx${toString cfg.memoryGb}G";
+        jvmOpts = "-Xms${toString cfg.memoryGb}G -Xmx${toString cfg.memoryGb}G${optionalString (cfg.extraJvmOpts != "") " ${cfg.extraJvmOpts}"}";
         inherit (cfg) autoStart restart;
 
         serverProperties = {
