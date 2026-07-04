@@ -8,6 +8,23 @@
     inputs.nixos-hardware.nixosModules.common-gpu-amd # AMD GPU support
   ];
   config = {
+    # Pregen-box overrides, deimos-only — loki keeps the pack's conservative
+    # settings while players are on it.
+    services.minecraft-servers.servers.retirement-home = {
+      # The pack's c2me config disables parallel worldgen (see
+      # c2me-pregen.toml for the reasoning).
+      files."config/c2me.toml" = ./c2me-pregen.toml;
+      # Pregen ticks legitimately run tens of seconds (c2me mid-tick chunk
+      # tasks), so any CPU competition (a kernel build, say) can push one past
+      # 60 s and the vanilla watchdog kills the server — that's the
+      # 2026-07-04 11:02 crash. No players here to protect; disable it.
+      serverProperties.max-tick-time = -1;
+    };
+
+    # Pregen wins CPU contention against the desktop session (default
+    # CPUWeight is 100). Only bites when cores are oversubscribed.
+    systemd.services.minecraft-server-retirement-home.serviceConfig.CPUWeight = 1000;
+
     networking = {
       hostId = "47494eeb";
       defaultGateway = {
@@ -94,10 +111,13 @@
           enable = true;
           autoStart = false;
           openFirewall = false;
-          # Pregen wants worker threads (c2me) more than heap, but 1.20.1
-          # modded gen churns allocation; 12 GiB keeps GC off the critical
-          # path and leaves plenty for the desktop.
-          memoryGb = 12;
+          # Worker count is pinned in c2me-pregen.toml (14), so heap no longer
+          # gates parallelism — it just has to absorb the allocation churn of
+          # 14 concurrent Terralith/Tectonic gens. 20 GiB + ~2.5 GiB JVM
+          # off-heap leaves ~8 GiB for desktop and page cache on the 31 GiB
+          # box; going higher starts eating the write-back cache the 300+ GB
+          # of region/LOD writes depend on.
+          memoryGb = 20;
         };
 
         tailscale = {

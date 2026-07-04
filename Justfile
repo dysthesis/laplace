@@ -98,6 +98,30 @@ age-key TARGET:
     nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -y "$f"
   '
 
+# Send a console command to the Retirement Home server (needs doas: the
+# stdin FIFO is minecraft:minecraft 660).
+mc +CMD:
+  printf '%s\n' "{{CMD}}" | doas tee {{retirement_home_stdin}} >/dev/null
+
+# Kick off a Chunky pregen around 0,0. Output lands in the server log, not
+# here — `just pregen-status` for a snapshot, `just pregen-watch` to follow.
+pregen-start RADIUS="5000": (mc "chunky center 0 0") (mc ("chunky radius " + RADIUS)) (mc "chunky start")
+
+pregen-pause: (mc "chunky pause")
+
+pregen-resume: (mc "chunky continue")
+
+# Cancel deletes the task's progress; Chunky wants a confirm within 10s.
+pregen-cancel: (mc "chunky cancel") (mc "chunky confirm")
+
+pregen-status: (mc "chunky progress")
+  #!/usr/bin/env sh
+  sleep 1
+  journalctl -u {{retirement_home_service}} -n 15 --no-pager | grep -i chunky || echo "no chunky output in recent log"
+
+pregen-watch:
+  journalctl -fu {{retirement_home_service}}
+
 tailnet-reconcile TARGET="root@10.0.50.2":
   #!/usr/bin/env sh
   set -eu

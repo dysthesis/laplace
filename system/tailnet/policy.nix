@@ -57,12 +57,8 @@ _: {
       }; # tag:phone (old phone)
     };
 
-    # §5 matrix, plus the owner phones (tag:phone) which are deliberately granted
-    # FULL reach — all ports to every service tag, incl. exit. Owner devices, not
-    # guests, so the F4/F5 exit-abuse rationale does not apply. Trade-off accepted:
     # a popped phone keeps mesh reach (the old `device` is the weak link; prefer
-    # deleting it). "infra" is descriptive-only — the service tags below cover
-    # every host that actually serves something, so this is genuinely "everything".
+    # deleting it).
     flows = [
       {
         from = "*";
@@ -148,7 +144,7 @@ _: {
 
     guests = {
       minecraft = {
-        users = ["tom" "olivia" "ash" "anika" "mary" "esther"];
+        users = ["tom" "olivia" "ash" "anika" "mary" "esther" "dini" "terrence"];
         reach = {
           game = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"]; # Java + Simple Voice Chat + modpack download
           dns = ["udp/53"];
