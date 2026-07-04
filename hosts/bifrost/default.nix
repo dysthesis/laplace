@@ -136,6 +136,11 @@ in {
               value = mimirTailnetIp;
             }
             {
+              name = "search.${fqdn}";
+              type = "A";
+              value = mimirTailnetIp;
+            }
+            {
               name = "wallabag.${fqdn}";
               type = "A";
               value = mimirTailnetIp;

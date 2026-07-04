@@ -341,7 +341,7 @@
     "flake-parts_3": {
       "inputs": {
         "nixpkgs-lib": [
-          "nixpak",
+          "hister",
           "nixpkgs"
         ]
       },
@@ -360,6 +360,27 @@
       }
     },
     "flake-parts_4": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "nixpak",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778716662,
+        "narHash": "sha256-m1Yf0wZ8j1OHjTc2UwHwyQRSnNeSgLJOd7q5Y45hzi4=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_5": {
       "inputs": {
         "nixpkgs-lib": [
           "poincare",
@@ -476,6 +497,27 @@
         "type": "github"
       }
     },
+    "hister": {
+      "inputs": {
+        "flake-parts": "flake-parts_3",
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783077594,
+        "narHash": "sha256-8foY3eTNoC5jXM9uDQ9rCOIJWZTD6DeKSM2Ulqdtmug=",
+        "owner": "asciimoo",
+        "repo": "hister",
+        "rev": "5c1f8a73d4ae82b78801575b717a209c7d925671",
+        "type": "github"
+      },
+      "original": {
+        "owner": "asciimoo",
+        "repo": "hister",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -565,7 +607,7 @@
     },
     "neovim-nightly-overlay": {
       "inputs": {
-        "flake-parts": "flake-parts_4",
+        "flake-parts": "flake-parts_5",
         "neovim-src": "neovim-src",
         "nixpkgs": [
           "poincare",
@@ -685,7 +727,7 @@
     },
     "nixpak": {
       "inputs": {
-        "flake-parts": "flake-parts_3",
+        "flake-parts": "flake-parts_4",
         "hercules-ci-effects": "hercules-ci-effects",
         "nixpkgs": [
           "nixpkgs"
@@ -1036,6 +1078,7 @@
         "disko": "disko",
         "dwl": "dwl",
         "gungnir": "gungnir",
+        "hister": "hister",
         "lanzaboote": "lanzaboote",
         "mandelbrot": "mandelbrot",
         "nix-index-database": "nix-index-database",

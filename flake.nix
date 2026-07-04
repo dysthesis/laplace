@@ -210,5 +210,13 @@
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Self-hosted web history search. Needs Go 1.26 → follow nixpkgs-unstable
+    # (26.05 pin is too old), reusing the existing unstable input rather than a
+    # third nixpkgs instance.
+    hister = {
+      url = "github:asciimoo/hister";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 }

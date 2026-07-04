@@ -105,7 +105,8 @@ mc +CMD:
 
 # Kick off a Chunky pregen around 0,0. Output lands in the server log, not
 # here — `just pregen-status` for a snapshot, `just pregen-watch` to follow.
-pregen-start RADIUS="5000": (mc "chunky center 0 0") (mc ("chunky radius " + RADIUS)) (mc "chunky start")
+# WORLD selects the dimension, e.g. minecraft:the_nether / minecraft:the_end.
+pregen-start RADIUS="5000" WORLD="minecraft:overworld": (mc ("chunky world " + WORLD)) (mc "chunky center 0 0") (mc ("chunky radius " + RADIUS)) (mc "chunky start")
 
 pregen-pause: (mc "chunky pause")
 
