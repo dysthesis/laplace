@@ -117,11 +117,20 @@ in {
         autoStart = true; # dedicated host - the server is the point
         restart = "on-failure";
         openFirewall = false; # tailnet-only; players reach :25565 over tailscale0
-        # Heap at deimos parity. The guest boots at the 10 GiB ceiling, so the
-        # 8 GiB heap plus JVM non-heap and OS fits underneath; the 8 GiB balloon
-        # floor only bites under host pressure, which a single-purpose node should
-        # never see (earlyoom in the proxmox profile is the backstop).
+        # 8 GiB heap on the 12 GiB pinned guest (ballooning disabled imperatively
+        # in PVE), leaving ~4 GiB for JVM non-heap + OS + region-file page cache.
+        # Sized per Aikar's rule (heap <= guest RAM - ~2 GiB): an on-host Chunky
+        # pregen benchmark showed zero swap and zero full-GCs at 8 GiB, so a larger
+        # heap would only enlarge the young gen and lengthen pauses. (Before the
+        # pin the guest sat at its 8 GiB balloon floor and this 8 GiB heap forced
+        # ~950k pages/3h into zram — GC pauses faulting them back was the tell.)
         memoryGb = 8;
+
+        # Aikar's G1 flags — won an on-host benchmark (Chunky pregen, 3x600 s):
+        # young-GC pause p99 35 ms / max 38 ms vs bare-G1 baseline p99 61 / max 108,
+        # GC overhead 0.60% vs 0.82%, throughput within noise. Beat the GraalVM
+        # "Obydux" set (p99 45 / max 47) too. Xms=Xmx come from memoryGb above.
+        extraJvmOpts = "-XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1";
 
         motd = "Oops! All skill issues!";
 
