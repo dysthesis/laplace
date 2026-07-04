@@ -15,6 +15,7 @@
   beszelHost = "status.dysthesis.com";
   radicaleHost = "cal.dysthesis.com";
   wallabagHost = "wallabag.dysthesis.com";
+  histerHost = "search.dysthesis.com";
 in {
   sops.secrets = {
     # miniflux_admin lives in mimir's own sops file (moved out of the shared
@@ -49,7 +50,7 @@ in {
     profiles = ["proxmox"];
     proxmox = {
       cores = 2;
-      memory = 3584; # MiB, ballooning ceiling
+      memory = 5120; # MiB, ballooning ceiling (bleve indexing + ~500 MB embedder)
       balloon = 1280; # MiB, ballooning floor (Postgres + app processes)
       diskSize = "32G";
     };
@@ -72,6 +73,22 @@ in {
         domain = wallabagHost;
         adminUser = "demiurge";
         adminEmail = "demiurge@localhost";
+      };
+      hister = {
+        enable = true;
+        domain = histerHost;
+        embedding.enable = true;
+        # Reference doc corpora pulled + imported weekly. Trim to taste; slugs
+        # are the full set from https://hister.org/datasets bar powershell.
+        datasets = [
+          "go-stdlib"
+          "rust-docs"
+          "python-docs"
+          "nodejs-api"
+          "mdn-css"
+          "mdn-html"
+          "mdn-js"
+        ];
       };
       beszel = {
         hub = {
@@ -101,6 +118,7 @@ in {
             "status.dysthesis.com" = "localhost:8090";
             ${radicaleHost} = "localhost:${toString config.laplace.services.radicale.port}";
             ${wallabagHost} = "localhost:${toString config.laplace.services.wallabag.port}";
+            ${histerHost} = "localhost:${toString config.laplace.services.hister.port}";
           };
         };
       };
