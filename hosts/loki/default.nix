@@ -163,6 +163,14 @@ in {
         cloudflare = {
           enable = true;
           sopsFile = ../../system/secrets/loki.yaml; # must hold a `cloudflare_api_key` key
+          # squaremap web map. The caddy module turns this into an HTTPS vhost
+          # (DNS-01 cert, same as mc.dysthesis.com) that reverse-proxies to
+          # squaremap's loopback webserver. A dedicated subdomain (not
+          # mc.dysthesis.com/map) so squaremap's SPA serves from web root with no
+          # subpath asset-rewriting. bifrost's Headscale extra_records resolves
+          # map.dysthesis.com -> loki's tailnet IP; the minecraft `game` ACL
+          # already permits tcp/443, so the friend cohort reaches it unchanged.
+          proxies."map.dysthesis.com" = "localhost:8080";
         };
         virtualHosts."mc.dysthesis.com".extraConfig = ''
           tls {
