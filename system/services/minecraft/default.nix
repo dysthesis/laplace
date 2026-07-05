@@ -28,11 +28,39 @@
     hash = "sha512-RyPz/8Dv76Y9Scrhglo+w8vO+B3bd5ZfouYdDp17ho6gNydLVI2m9fU7K92eo0qB6scaOp0Hb2qC9u29QhoKvw==";
   };
 
+  # Server-admin mods, server-side only (never in the client zip, so no drift):
+  # Ledger = block logging + `/ledger rollback`; squaremap = server-rendered web
+  # map served at map.dysthesis.com. squaremap needs only fabric-api (in the pack).
+  # Ledger is PINNED to 1.2.8, NOT the newest 1.3.18-backport: 1.3.18 hard-requires
+  # fabric-language-kotlin >=1.13.4+kotlin.2.2.0, but the pack ships FLK 1.10.18 and
+  # bumping it would ripple through every other Kotlin mod (and drift from the
+  # client). 1.2.8 requires only FLK >=1.9.4, which the pack's 1.10.18 satisfies;
+  # its `breaks: cardboard` is moot (Cardboard isn't installed). If the pack's FLK
+  # is ever bumped past 1.13.4, move back to 1.3.18-backport. Hashes from:
+  #   nix store prefetch-file --hash-type sha512 <url>
+  ledger = pkgs.fetchurl {
+    url = "https://cdn.modrinth.com/data/LVN9ygNV/versions/pOxgWfwI/ledger-1.2.8.jar";
+    hash = "sha512-gjCufvVJXdQ7brwZ+yErf/sQ3FcfxYbsx+LMgXeYnapBwQKsOG2CWGyDoLSLnbop8JX/pLjXjjTXFeJYMBF/jQ==";
+  };
+  squaremap = pkgs.fetchurl {
+    url = "https://cdn.modrinth.com/data/PFb7ZqK6/versions/AS12cZm5/squaremap-fabric-mc1.20.1-1.2.0.jar";
+    hash = "sha512-4cjgvrjJUtvgoJAtAQIHqwx3SovdOXE2kxaVIIHgO3f7Vm6q2rWRK6MSStMNW5QZfQ2T7Nvdl/hsO/QBDKI97g==";
+  };
+
   # The mod config as Nix data (discord-config.nix), rendered to
   # config/Discord-Integration.toml. botToken/botChannel stay @VAR@ placeholders
   # substituted at server start from the env file by nix-minecraft.
   discordIntegrationConfig =
     (pkgs.formats.toml {}).generate "Discord-Integration.toml" (import ./discord-config.nix);
+
+  # Bring the sparse squaremap config into the store as its own path (with proper
+  # context), the same idiom as modpackZip above. A bare `./squaremap-config.yml`
+  # reference in the start-pre file-copy is otherwise a contextless flake-source
+  # path — nix warns it "will not have a correct store reference".
+  squaremapConfig = builtins.path {
+    path = ./squaremap-config.yml;
+    name = "squaremap-config.yml";
+  };
 
   # Jars added to the Prism instance by hand carry no .index metadata, so the
   # side filter below can't classify them; these are the client-only ones.
@@ -86,6 +114,8 @@
     ${optionalString cfg.discord.enable ''
       cp ${discordIntegration} "$out/mods/dcintegration-fabric-3.0.7-1.20.1.jar"
     ''}
+    cp ${ledger} "$out/mods/ledger-1.2.8.jar"
+    cp ${squaremap} "$out/mods/squaremap-fabric-mc1.20.1-1.2.0.jar"
   '';
 in {
   imports = [inputs.nix-minecraft.nixosModules.minecraft-servers];
@@ -212,6 +242,65 @@ in {
     systemd.services."minecraft-server-retirement-home".serviceConfig.RestrictAddressFamilies =
       lib.mkForce ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
 
+    # --- World maintenance: 6-hourly btrfs snapshots + a nightly restart. ---
+    # Both drive the server over nix-minecraft's stdin socket (default runDir
+    # /run/minecraft + the "retirement-home" server name), mirroring the module's
+    # own ExecStop `echo stop > …stdin` idiom. Whole-VM PBS->B2 stays the coarse
+    # disaster-recovery tier; these snapshots are the fast in-guest rollback tier.
+    systemd.tmpfiles.rules = ["d /nix/.mc-snapshots 0700 root root -"];
+
+    systemd.services.mc-world-snapshot = {
+      description = "Quiesce saves + read-only btrfs snapshot of the world";
+      path = [pkgs.btrfs-progs pkgs.coreutils];
+      serviceConfig.Type = "oneshot";
+      script = ''
+        sock=/run/minecraft/retirement-home.stdin
+        if [ -e "$sock" ]; then
+          echo 'save-off'       > "$sock"
+          echo 'save-all flush' > "$sock"
+          sleep 10 # simplification: fixed flush wait; ceiling = very large worlds; upgrade = poll the journal for "Saved the game"
+        fi
+        # @persist is a btrfs subvol (proxmox profile); snapshot it to a sibling
+        # dir on @nix (same filesystem). simplification: snapshots the WHOLE
+        # persist subvol, not just the world — cheap CoW; upgrade = carve the world
+        # into its own subvol. Ceiling: local only, shares the 64G guest disk with
+        # the store; upgrade = `btrfs send` to another host.
+        btrfs subvolume snapshot -r /nix/persist "/nix/.mc-snapshots/mc-$(date +%Y%m%d-%H%M%S)"
+        [ -e "$sock" ] && echo 'save-on' > "$sock"
+        # keep the newest 24 (timestamped names sort chronologically)
+        ls -1dr /nix/.mc-snapshots/mc-* 2>/dev/null | tail -n +25 | while read -r snap; do
+          btrfs subvolume delete "$snap"
+        done
+      '';
+    };
+    systemd.timers.mc-world-snapshot = {
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        OnCalendar = "*-*-* 00/6:00:00";
+        Persistent = true;
+      };
+    };
+
+    systemd.services.mc-nightly-restart = {
+      description = "Nightly Minecraft restart (modded memory-leak hygiene)";
+      path = [pkgs.coreutils];
+      serviceConfig.Type = "oneshot";
+      script = ''
+        sock=/run/minecraft/retirement-home.stdin
+        [ -e "$sock" ] && { echo 'say Nightly restart in 60s' > "$sock"; sleep 60; }
+        # try-restart restarts only if already running, so a deliberate stop stays
+        # stopped; ExecStop pipes `stop` to the socket for a clean save.
+        systemctl try-restart minecraft-server-retirement-home.service
+      '';
+    };
+    systemd.timers.mc-nightly-restart = {
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        OnCalendar = "05:00";
+        Persistent = true;
+      };
+    };
+
     # Keep Simple Voice Chat exposure tied to the main Minecraft exposure switch.
     # See: https://modrepo.de/minecraft/voicechat/wiki/server_setup_self_hosted
     networking.firewall.allowedUDPPorts = optional cfg.openFirewall 24454;
@@ -240,6 +329,16 @@ in {
           view-distance = cfg.viewDistance;
           simulation-distance = cfg.simulationDistance;
           online-mode = true;
+          # Defence-in-depth behind the tailnet `game` ACL: only accounts in
+          # whitelist.json may join, and enforce-whitelist also kicks any
+          # non-listed player still online on a /reload. whitelist.json lives at
+          # the data-dir root (NOT under the re-copied config/ tree), so
+          # `whitelist add <ign>` from the console persists across restarts.
+          # NOTE: enabling this with an empty list locks EVERYONE out (ops
+          # included) until you add them — run the adds from the console right
+          # after the first deploy; the console bypasses the whitelist.
+          white-list = true;
+          enforce-whitelist = true;
           enable-rcon = false;
           level-seed = "599696504823152026";
           difficulty = 3;
@@ -251,6 +350,14 @@ in {
         files =
           {
             config = "${serverPack}/config";
+            # squaremap keeps its config in its OWN data dir (<datadir>/squaremap/),
+            # NOT the Fabric config/ dir — a config/squaremap/config.yml is silently
+            # ignored (that mistake shipped once). That dir sits outside the config/
+            # tree re-copied each start, so it (and tiles) already persist; we manage
+            # this file only to pin overrides: loopback bind, public web-address, and
+            # capped render threads so a fullrender stops dragging TPS. See
+            # squaremap-config.yml.
+            "squaremap/config.yml" = squaremapConfig;
           }
           # Keyed after "config" so it lands in the dir copy, not under it: the
           # whole config tree is re-copied each start, so the mod's own writes to

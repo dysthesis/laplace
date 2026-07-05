@@ -1,0 +1,38 @@
+# squaremap config. IMPORTANT: squaremap keeps this in its own DATA dir
+# (<server>/squaremap/config.yml), NOT the Fabric config/ dir — an earlier attempt
+# at config/squaremap/config.yml was silently ignored and squaremap ran on
+# defaults. It's wired at `files."squaremap/config.yml"` accordingly. That data dir
+# is outside the config/ tree nix-minecraft re-copies each start, so tiles
+# (squaremap/web) and this file persist on their own; we still manage it via files=
+# to pin the overrides below declaratively.
+#
+# Sparse: squaremap reads each key with a built-in default, so only overrides are
+# listed. config-version pins the schema so squaremap's upgrader stays idle.
+#
+# Overrides:
+#   internal-webserver.bind   loopback only — loki's Caddy reverse-proxies
+#                             map.dysthesis.com -> 127.0.0.1:8080; :8080 is never
+#                             exposed on any interface/ACL.
+#   web-address               public URL used by the `/squaremap link` command and
+#                             the client mod's "open map" button (not the tile-fetch
+#                             base — the frontend fetches tiles relatively).
+#   map.max-render-threads    default -1 = all 4 cores. A fullrender at 4 threads
+#                             saturates the tick thread on this heavy pack and drags
+#                             TPS into constant "Can't keep up!". Cap at 2 (leaves 2
+#                             cores for the game); bump temporarily for an
+#                             empty-server fullrender if you want it faster.
+#   background-render         the ongoing incremental upkeep as chunks load — keep
+#                             it to a single thread and a gentle chunk budget so it
+#                             never noticeably costs TPS.
+config-version: 2
+settings:
+  web-address: https://map.dysthesis.com
+  internal-webserver:
+    bind: 127.0.0.1
+world-settings:
+  default:
+    map:
+      max-render-threads: 2
+      background-render:
+        max-render-threads: 1
+        max-chunks-per-interval: 512

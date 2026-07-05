@@ -150,6 +150,11 @@ in {
               type = "A";
               value = lokiTailnetIp;
             }
+            {
+              name = "map.${fqdn}";
+              type = "A";
+              value = lokiTailnetIp;
+            } # squaremap web map, same loki Caddy as mc.
           ];
         };
       };

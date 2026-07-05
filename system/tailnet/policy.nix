@@ -146,7 +146,7 @@ _: {
       minecraft = {
         users = ["tom" "olivia" "ash" "anika" "mary" "esther" "dini" "terrence"];
         reach = {
-          game = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"]; # Java + Simple Voice Chat + modpack download
+          game = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"]; # Java + Simple Voice Chat + modpack (mc.) + web map (map.), both :443
           dns = ["udp/53"];
         };
       };
