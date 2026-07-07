@@ -62,11 +62,16 @@
     name = "squaremap-config.yml";
   };
 
+  serverIcon = builtins.path {
+    path = ./server-icon.png;
+    name = "server-icon.png";
+  };
+
   serverPack =
     (pkgs.fetchPackwizModpack {
       src = packwizSource;
       side = "server";
-      packHash = "sha256-xwr7/8HUqlAHCIcaTJxk1YOZlY/r1fEHZtvdZS4KvUI=";
+      packHash = "sha256-Rjw8co1hXbHU4B/WxScSKZKVhelZCk1HaqcUAwiTtOg=";
     }).addFiles ({
         "mods/ledger-1.2.8.jar" = ledger;
         "mods/squaremap-fabric-mc1.20.1-1.2.0.jar" = squaremap;
@@ -307,6 +312,7 @@ in {
         files =
           {
             config = "${serverPack}/config";
+            "server-icon.png" = serverIcon;
             # squaremap keeps its config in its OWN data dir (<datadir>/squaremap/),
             # NOT the Fabric config/ dir — a config/squaremap/config.yml is silently
             # ignored (that mistake shipped once). That dir sits outside the config/
