@@ -3,19 +3,57 @@
   pkgs,
   ...
 }: let
-  # 408 MiB modpack served read-only over the tailnet at https://mc.dysthesis.com/modpack.
-  # Lives with the minecraft service module, which builds the server mods/config
-  # from the same zip — one file, no client/server drift. Symlink it into a dir
-  # so Caddy's `root` has a directory to serve; the blob is *referenced*, not
-  # copied, so it lands on loki's disk exactly once (the symlink target is a
-  # runtime dep).
-  modpackZip = builtins.path {
-    path = ../../system/services/minecraft/RetirementHome.zip;
-    name = "RetirementHome.zip";
+  packwizSource = builtins.path {
+    path = ../../system/services/minecraft/retirement-home-packwiz;
+    name = "retirement-home-packwiz";
   };
-  modpack = pkgs.runCommand "retirement-home-modpack" {} ''
-    mkdir -p "$out"
-    ln -s ${modpackZip} "$out/RetirementHome.zip"
+  packwizUrl = "https://mc.dysthesis.com/packwiz/pack.toml";
+  packwizBootstrapJar = pkgs.fetchurl {
+    url = "https://github.com/packwiz/packwiz-installer-bootstrap/releases/latest/download/packwiz-installer-bootstrap.jar";
+    hash = "sha256-qPuyTcYEJ46X9GiOgtPZGjGLmO/AjV2/y8vKtkQ9EWw=";
+  };
+  packwizIcon = ../../system/services/minecraft/retirement-home.png;
+  packwizBootstrap = pkgs.runCommand "retirement-home-packwiz-bootstrap" {nativeBuildInputs = [pkgs.zip];} ''
+    mkdir -p work/minecraft "$out"
+    cp ${packwizBootstrapJar} work/minecraft/packwiz-installer-bootstrap.jar
+    cp ${packwizIcon} work/retirement-home.png
+    # Pre-seed Minecraft's multiplayer server list (NBT): Retirement Home -> mc.dysthesis.com.
+    printf '\x0a\x00\x00\x09\x00\x07servers\x0a\x00\x00\x00\x01\x08\x00\x04name\x00\x0fRetirement Home\x08\x00\x02ip\x00\x10mc.dysthesis.com\x00\x00' > work/minecraft/servers.dat
+    cat > work/instance.cfg <<'EOF'
+    [General]
+    ConfigVersion=1.3
+    ExportAuthor=dysthesis
+    ExportName=Retirement Home
+    ExportSummary=Custom modpack built on Fabulously Optimized, built for a private server.
+    ExportVersion=1.0.0
+    InstanceType=OneSix
+    ManagedPack=false
+    ManagedPackID=
+    ManagedPackName=
+    ManagedPackType=
+    ManagedPackURL=
+    ManagedPackVersionID=
+    ManagedPackVersionName=
+    MaxMemAlloc=5120
+    MinMemAlloc=2048
+    OverrideCommands=true
+    OverrideMemory=true
+    PreLaunchCommand=\"$INST_JAVA\" -jar packwiz-installer-bootstrap.jar -g ${packwizUrl}
+    iconKey=retirement-home
+    name=Retirement Home
+
+    [UI]
+    EOF
+    cat > work/mmc-pack.json <<'EOF'
+    {
+      "components": [
+        { "uid": "net.minecraft", "version": "1.20.1" },
+        { "uid": "net.fabricmc.fabric-loader", "version": "0.18.4" }
+      ],
+      "formatVersion": 1
+    }
+    EOF
+    (cd work && zip -qr "$out/RetirementHome-bootstrap.zip" instance.cfg mmc-pack.json minecraft/packwiz-installer-bootstrap.jar minecraft/servers.dat retirement-home.png)
   '';
 in {
   # dotenv (DISCORD_BOT_TOKEN + DISCORD_CHANNEL_ID) for the Discord bridge; fed
@@ -142,7 +180,9 @@ in {
         };
       };
 
-      # Modpack download for players over the tailnet, at https://mc.dysthesis.com/modpack.
+      # Modpack downloads for players over the tailnet. `/packwiz/pack.toml` is
+      # the live PackWiz source; `/bootstrap` gives Prism a tiny instance ZIP
+      # that auto-updates from PackWiz before launch.
       # HTTPS (not plain HTTP) because Firefox's HTTPS-First silently upgrades the bare
       # name to :443 and hangs forever when nothing answers there. DNS-01 via Cloudflare
       # is the fleet's issuance path for these tailnet-only names (no public A record, so
@@ -177,12 +217,15 @@ in {
             dns cloudflare {env.CF_API_TOKEN}
             resolvers 1.1.1.1
           }
-          route /modpack {
-            root * ${modpack}
-            rewrite * /RetirementHome.zip
-            # Force a sane download name: the request path is /modpack, so without
-            # this the browser saves the zip as extensionless "modpack".
-            header Content-Disposition "attachment; filename=RetirementHome.zip"
+          route /packwiz/* {
+            root * ${packwizSource}
+            uri strip_prefix /packwiz
+            file_server
+          }
+          route /bootstrap/RetirementHome-bootstrap.zip {
+            root * ${packwizBootstrap}
+            rewrite * /RetirementHome-bootstrap.zip
+            header Content-Disposition "attachment; filename=RetirementHome-bootstrap.zip"
             file_server
           }
         '';

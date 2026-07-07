@@ -5,15 +5,15 @@
   pkgs,
   ...
 }: let
-  inherit (lib) concatStringsSep mkEnableOption mkIf mkOption optional optionalAttrs optionalString types;
+  inherit (lib) mkEnableOption mkIf mkOption optional optionalAttrs optionalString types;
 
   cfg = config.laplace.services.minecraft.retirement-home;
 
-  # PrismLauncher instance export; the same file players download from loki's
-  # https://mc.dysthesis.com/modpack, so client and server can never drift.
-  modpackZip = builtins.path {
-    path = ./RetirementHome.zip;
-    name = "RetirementHome.zip";
+  # PackWiz source; loki serves the same tree to clients at /packwiz, so client
+  # and server resolve from one manifest.
+  packwizSource = builtins.path {
+    path = ./retirement-home-packwiz;
+    name = "retirement-home-packwiz";
   };
 
   serverPackage = pkgs.fabricServers.fabric-1_20_1.override {
@@ -54,70 +54,26 @@
     (pkgs.formats.toml {}).generate "Discord-Integration.toml" (import ./discord-config.nix);
 
   # Bring the sparse squaremap config into the store as its own path (with proper
-  # context), the same idiom as modpackZip above. A bare `./squaremap-config.yml`
-  # reference in the start-pre file-copy is otherwise a contextless flake-source
-  # path — nix warns it "will not have a correct store reference".
+  # context). A bare `./squaremap-config.yml` reference in the start-pre file-copy
+  # is otherwise a contextless flake-source path — nix warns it "will not have a
+  # correct store reference".
   squaremapConfig = builtins.path {
     path = ./squaremap-config.yml;
     name = "squaremap-config.yml";
   };
 
-  # Jars added to the Prism instance by hand carry no .index metadata, so the
-  # side filter below can't classify them; these are the client-only ones.
-  # Also the dumping ground for mods whose `side = 'both'` label lies (the
-  # Homestead lesson): a mod that crashes headless startup gets appended here.
-  serverExcludedMods = [
-    "ImmediatelyFast-Fabric-1.5.5+1.20.4.jar"
-    "holdthatchunk-2.0.1.jar"
-    "indium-1.0.36+mc1.20.1.jar"
-    "iris-1.7.6+mc1.20.1.jar"
-    "reeses_sodium_options-1.7.2+mc1.20.1-build.101.jar"
-    "sodium-extra-0.5.9+mc1.20.1.jar"
-    "sodium-fabric-0.5.13+mc1.20.1.jar"
-  ];
-
-  serverExcludedModNames = pkgs.writeText "retirement-home-excluded-mods" (concatStringsSep "\n" serverExcludedMods);
-
-  # The side labels lie the other way too: marked client-only in .index, but
-  # server mods hard-depend on them. Fusion is Rechiseled's textures API —
-  # `environment: "*"` in its fabric.mod.json, Fabric refuses to resolve the
-  # server without it.
-  serverIncludedMods = [
-    "fusion-1.3.5-fabric-mc1.20.1.jar"
-  ];
-
-  serverIncludedModNames = pkgs.writeText "retirement-home-included-mods" (concatStringsSep "\n" serverIncludedMods);
-
-  # Server subset of the pack: config/ plus every mod not marked client-only.
-  # Prism writes packwiz-style .index/*.pw.toml metadata (with a `side` field)
-  # for each mod installed through its downloader; hand-added jars have no
-  # metadata and fall through to the exclusion list above.
   serverPack =
-    pkgs.runCommandLocal "retirement-home-server-pack" {
-      nativeBuildInputs = [pkgs.unzip];
-    } ''
-      unzip -q ${modpackZip} 'minecraft/config/*' 'minecraft/mods/*'
-      mkdir -p "$out/mods"
-      cp -r minecraft/config "$out/config"
-      cd minecraft/mods
-      for jar in *.jar; do
-        if grep -Fxq "$jar" ${serverExcludedModNames}; then
-          continue
-        fi
-        if ! grep -Fxq "$jar" ${serverIncludedModNames}; then
-          toml=$(grep -Flx "filename = '$jar'" .index/*.pw.toml || true)
-          if [ -n "$toml" ] && grep -Fq "side = 'client'" $toml; then
-            continue
-          fi
-        fi
-        cp "$jar" "$out/mods/$jar"
-      done
-      ${optionalString cfg.discord.enable ''
-        cp ${discordIntegration} "$out/mods/dcintegration-fabric-3.0.7-1.20.1.jar"
-      ''}
-      cp ${ledger} "$out/mods/ledger-1.2.8.jar"
-      cp ${squaremap} "$out/mods/squaremap-fabric-mc1.20.1-1.2.0.jar"
-    '';
+    (pkgs.fetchPackwizModpack {
+      src = packwizSource;
+      side = "server";
+      packHash = "sha256-xwr7/8HUqlAHCIcaTJxk1YOZlY/r1fEHZtvdZS4KvUI=";
+    }).addFiles ({
+        "mods/ledger-1.2.8.jar" = ledger;
+        "mods/squaremap-fabric-mc1.20.1-1.2.0.jar" = squaremap;
+      }
+      // optionalAttrs cfg.discord.enable {
+        "mods/dcintegration-fabric-3.0.7-1.20.1.jar" = discordIntegration;
+      });
 in {
   imports = [inputs.nix-minecraft.nixosModules.minecraft-servers];
 
