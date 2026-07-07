@@ -3,8 +3,14 @@
   lib,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf mkForce optionals;
+  inherit (lib) mkEnableOption mkIf mkForce optional optionals;
+  inherit (builtins) elem filter head length;
   cfg = config.laplace.services.tailscale;
+  operatorCandidates = filter (user: elem user config.laplace.users) ["demiurge" "archon"];
+  operatorUser =
+    if operatorCandidates == []
+    then null
+    else head operatorCandidates;
 in {
   options.laplace.services.tailscale = {
     enable = mkEnableOption "Whether or not to enable Tailscale";
@@ -32,11 +38,14 @@ in {
         extraSetFlags =
           optionals cfg.advertiseExitNode ["--advertise-exit-node"]
           ++ optionals cfg.denySubnetRoutes ["--accept-routes=false"]
-          ++ optionals cfg.denyDNS ["--accept-dns=false"];
+          ++ optionals cfg.denyDNS ["--accept-dns=false"]
+          ++ optionals (operatorUser != null) ["--operator=${operatorUser}"];
       };
 
       resolved.enable = mkIf cfg.denyDNS (mkForce false);
     };
+
+    warnings = optional (length operatorCandidates > 1) "Tailscale supports one --operator user; using demiurge because both demiurge and archon are enabled.";
 
     networking = {
       nftables.enable = true;

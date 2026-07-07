@@ -7,8 +7,8 @@
 # Only the keys below differ from the pack config; c2me fills the rest
 # with defaults. nix-minecraft re-copies this file on every server start,
 # so runtime rewrites by c2me never stick.
-version = 3
 
+version = 3
 # The default expression caps workers at cpus/1.2 - 2 = 11 on 16 cores no
 # matter the heap. Dedicated pregen box: go wider, leave ~2 cores for the
 # server thread, lighting and IO threads.

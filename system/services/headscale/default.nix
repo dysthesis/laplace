@@ -8,6 +8,7 @@
 in {
   imports = [
     ./acl.nix
+    ./wg-only.nix
     (mkAliasOptionModule ["laplace" "services" "headscale" "settings"] ["services" "headscale" "settings"])
   ];
 

@@ -92,31 +92,32 @@
   # Prism writes packwiz-style .index/*.pw.toml metadata (with a `side` field)
   # for each mod installed through its downloader; hand-added jars have no
   # metadata and fall through to the exclusion list above.
-  serverPack = pkgs.runCommandLocal "retirement-home-server-pack" {
-    nativeBuildInputs = [pkgs.unzip];
-  } ''
-    unzip -q ${modpackZip} 'minecraft/config/*' 'minecraft/mods/*'
-    mkdir -p "$out/mods"
-    cp -r minecraft/config "$out/config"
-    cd minecraft/mods
-    for jar in *.jar; do
-      if grep -Fxq "$jar" ${serverExcludedModNames}; then
-        continue
-      fi
-      if ! grep -Fxq "$jar" ${serverIncludedModNames}; then
-        toml=$(grep -Flx "filename = '$jar'" .index/*.pw.toml || true)
-        if [ -n "$toml" ] && grep -Fq "side = 'client'" $toml; then
+  serverPack =
+    pkgs.runCommandLocal "retirement-home-server-pack" {
+      nativeBuildInputs = [pkgs.unzip];
+    } ''
+      unzip -q ${modpackZip} 'minecraft/config/*' 'minecraft/mods/*'
+      mkdir -p "$out/mods"
+      cp -r minecraft/config "$out/config"
+      cd minecraft/mods
+      for jar in *.jar; do
+        if grep -Fxq "$jar" ${serverExcludedModNames}; then
           continue
         fi
-      fi
-      cp "$jar" "$out/mods/$jar"
-    done
-    ${optionalString cfg.discord.enable ''
-      cp ${discordIntegration} "$out/mods/dcintegration-fabric-3.0.7-1.20.1.jar"
-    ''}
-    cp ${ledger} "$out/mods/ledger-1.2.8.jar"
-    cp ${squaremap} "$out/mods/squaremap-fabric-mc1.20.1-1.2.0.jar"
-  '';
+        if ! grep -Fxq "$jar" ${serverIncludedModNames}; then
+          toml=$(grep -Flx "filename = '$jar'" .index/*.pw.toml || true)
+          if [ -n "$toml" ] && grep -Fq "side = 'client'" $toml; then
+            continue
+          fi
+        fi
+        cp "$jar" "$out/mods/$jar"
+      done
+      ${optionalString cfg.discord.enable ''
+        cp ${discordIntegration} "$out/mods/dcintegration-fabric-3.0.7-1.20.1.jar"
+      ''}
+      cp ${ledger} "$out/mods/ledger-1.2.8.jar"
+      cp ${squaremap} "$out/mods/squaremap-fabric-mc1.20.1-1.2.0.jar"
+    '';
 in {
   imports = [inputs.nix-minecraft.nixosModules.minecraft-servers];
 

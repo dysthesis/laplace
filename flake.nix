@@ -31,7 +31,8 @@
     hosts = import ./hosts {inherit self lib inputs;};
     inherit (hosts) nixosConfigurations;
   in
-    mapAttrs (_: forAllSystems) {
+    mapAttrs (_: forAllSystems)
+    {
       devShells = pkgs: {default = import ./nix/shell pkgs;};
       # The hardened kernel (`nix build .#linux-hardened`) and its on-demand
       # QEMU boot test. The boot test lives here, not in `checks`, because it
@@ -39,7 +40,8 @@
       # light. Verify the kernel boots explicitly with:
       #   nix build .#linux-hardened-boot-test
       packages = pkgs:
-        lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+        lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux
+        {
           linux-hardened = pkgs.linux_hardened;
         }
         // lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
@@ -77,18 +79,35 @@
             '';
 
           # Build-time half of PLAN §5 layer 4: gate the SSOT-rendered Headscale
-          # policy against the headscale binary. toJSON guarantees well-formed
-          # HuJSON, but only the control plane catches semantic faults (undefined
-          # tag/alias, empty group). The eval-time checkTailnet invariants
+          # policy and rendered service config against the same headscale binary
+          # bifrost runs. configtest needs writable state paths, so the sandbox
+          # copies the rendered config and rewrites only /var/lib + /run paths to
+          # $TMPDIR. toJSON guarantees well-formed HuJSON, but only the control
+          # plane catches semantic faults (undefined tag/alias, empty group). The
+          # eval-time checkTailnet invariants
           # (system/tailnet/default.nix) already fire fleet-wide; this is the
           # remaining check the build sandbox CAN run (no network/db needed).
           # Runtime tag reconcile (gotcha 4) is `just tailnet-reconcile`, not a
           # check here — the sandbox has no network.
-          headscale-policy =
-            pkgs.runCommand "headscale-policy-check" {
-              nativeBuildInputs = [pkgs.headscale];
+          headscale-policy = let
+            headscalePackage = nixosConfigurations.bifrost.config.services.headscale.package;
+          in
+            pkgs.runCommand "headscale-policy-check"
+            {
+              nativeBuildInputs = [headscalePackage];
             } ''
-              headscale policy check --file ${nixosConfigurations.bifrost.config.laplace.services.headscale.acl.policyFile}
+              config="$TMPDIR/headscale.yaml"
+              cp ${nixosConfigurations.bifrost.config.services.headscale.configFile} "$config"
+              substituteInPlace "$config" \
+                --replace-fail /var/lib/headscale "$TMPDIR/state" \
+                --replace-fail /run/headscale "$TMPDIR/run"
+              mkdir -p "$TMPDIR/state" "$TMPDIR/run"
+
+              headscale --force configtest --config "$config"
+              headscale --force policy check \
+                --bypass-grpc-and-access-database-directly \
+                --config "$config" \
+                --file ${nixosConfigurations.bifrost.config.laplace.services.headscale.acl.policyFile}
               touch $out
             '';
         };
@@ -128,6 +147,10 @@
       url = "github:dysthesis/read";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Keep fork's own nixpkgs pin: it carries the Go toolchain revision used by
+    # this headscale fork.
+    headscale.url = "github:dysthesis/headscale?ref=feat/wg-only-peers";
 
     # Neovim flake
     poincare = {
