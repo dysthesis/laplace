@@ -108,7 +108,7 @@ in {
   };
 
   laplace = {
-    harden = ["malloc"];
+    harden = ["malloc" "kernel"];
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
