@@ -1,0 +1,74 @@
+{
+  "favorites": [
+    {
+      "stack": "item:brewery:beer_barley"
+    },
+    {
+      "stack": "item:travelersbackpack:refill_upgrade"
+    },
+    {
+      "stack": {
+        "type": "item",
+        "id": "minecraft:cobbled_deepslate",
+        "amount": 62
+      }
+    }
+  ],
+  "lookup_history": [
+    "item:minecraft:spruce_trapdoor",
+    "item:create:experience_block",
+    "item:minecraft:netherrack",
+    "item:create:cinder_flour",
+    "item:create:blaze_cake_base",
+    "item:create:blaze_cake",
+    "item:minecraft:iron_ingot",
+    "item:minecraft:smooth_basalt",
+    "item:spectrum:polished_basalt",
+    "item:shieldexp:golden_shield{Damage:0}",
+    "item:minecraft:shield{Damage:0}",
+    "item:shieldexp:iron_shield{Damage:0}",
+    "#item:ae2:quartz_pickaxe",
+    "item:ae2:fluix_pickaxe{Damage:0}",
+    "item:supplementaries:safe",
+    "item:travelersbackpack:iron_tier_upgrade",
+    "item:travelersbackpack:blank_upgrade",
+    "item:travelersbackpack:cake{RenderInfo:{},StorageSlots:27,Tier:0,ToolSlots:2,UpgradeSlots:2}",
+    "item:minecraft:stonecutter",
+    "item:tiered:limestone_chunk",
+    "item:ae2:facade{item:\"railways:limestone_locometal_pillar\"}",
+    "item:create:limestone",
+    "item:waystones:warp_stone{Damage:0}",
+    "item:waystones:waystone",
+    "item:advancednetherite:netherite_diamond_sword{Damage:0}",
+    "item:minecraft:raw_iron",
+    "item:minecraft:iron_ore",
+    "item:brewery:whiskey_smokey_reverie",
+    "item:create_enchantment_industry:printer",
+    "item:bosses_of_mass_destruction:mob_ward",
+    "item:bosses_of_mass_destruction:ancient_anima",
+    "item:minecraft:pale_oak_stairs",
+    "item:numismatic-overhaul:gold_coin",
+    "item:brewery:beer_wheat",
+    "item:create_enchantment_industry:enchanting_guide",
+    "item:create_enchantment_industry:hyper_experience_bottle",
+    "item:brewery:beer_barley",
+    "item:brewery:whiskey_ak",
+    "item:brewery:hops_seeds",
+    "item:bakery:sweetberry_cake",
+    "item:bakery:chocolate_box",
+    "item:bakery:linzer_tart_slice",
+    "item:brewery:sideboard",
+    "item:brewery:brewfest_blouse{Damage:0}"
+  ],
+  "craft_history": [
+    "travelersbackpack:blank_upgrade",
+    "minecraft:diamond_sword"
+  ],
+  "recipe_defaults": {
+    "added": [],
+    "tags": {},
+    "resolutions": {},
+    "disabled": []
+  },
+  "hidden_stacks": []
+}

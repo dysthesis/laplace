@@ -1,0 +1,13 @@
+filename = 'MoreBows-1.0.11+1.20.x.jar'
+name = 'More Bows: Restrung!'
+side = 'both'
+
+[download]
+hash = '2675fce3dc31538486e031be03b0df54a6355648b26a84e6eafa7bc5a3ae4925b72054a63b428b026d274703ad7902187bfb5f08f18233e052d9f0d793efaab5'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/CkMS2Yh3/versions/AaB1oW9s/MoreBows-1.0.11%2B1.20.x.jar'
+
+[update.modrinth]
+mod-id = 'CkMS2Yh3'
+version = 'AaB1oW9s'

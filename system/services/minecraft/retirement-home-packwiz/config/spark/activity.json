@@ -1,0 +1,28 @@
+[
+  {
+    "user": {
+      "type": "player",
+      "name": "Dysthesis",
+      "uniqueId": "c8e21043-0ef9-4534-9338-0c30e25898a2"
+    },
+    "time": 1782989040484,
+    "type": "Profiler (live)",
+    "data": {
+      "type": "url",
+      "value": "https://spark.lucko.me/kOKxtIdFqJ"
+    }
+  },
+  {
+    "user": {
+      "type": "player",
+      "name": "Dysthesis",
+      "uniqueId": "c8e21043-0ef9-4534-9338-0c30e25898a2"
+    },
+    "time": 1782988927060,
+    "type": "Profiler",
+    "data": {
+      "type": "url",
+      "value": "https://spark.lucko.me/NPl0CKNseH"
+    }
+  }
+]

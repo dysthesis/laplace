@@ -1,0 +1,8 @@
+filename = "baritone-standalone-fabric-1.10.3.jar"
+name = "Baritone Standalone Fabric"
+side = "client"
+
+[download]
+url = "https://github.com/cabaletta/baritone/releases/download/v1.10.3/baritone-standalone-fabric-1.10.3.jar"
+hash-format = "sha512"
+hash = "150651e36cf3a3f2f4038e144ce276e07afe54ff93cca55c6721f15eb75b404c963ce54ac0cb100c9aadaebdb536cbe9bb2c05f5ac201b4786b6c4a5e6ebf72e"
