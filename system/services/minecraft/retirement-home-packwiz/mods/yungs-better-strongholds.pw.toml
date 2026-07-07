@@ -1,6 +1,6 @@
 filename = 'YungsBetterStrongholds-1.20-Fabric-4.0.3.jar'
 name = "YUNG's Better Strongholds"
-side = 'server'
+side = 'both'
 
 [download]
 hash = 'e70c8daa91e88d8af97e99201264c9646c82a8cf1966b87ca1e53b591e7f1ed3cee2f8875dbe88f9b58e2a7d151fded34896bb4bd23f33f2bfef4c590fbba850'
@@ -12,4 +12,3 @@ url = 'https://cdn.modrinth.com/data/kidLKymU/versions/yV6hn0bB/YungsBetterStron
 mod-id = 'kidLKymU'
 version = 'yV6hn0bB'
 
-type = 'REQUIRED'

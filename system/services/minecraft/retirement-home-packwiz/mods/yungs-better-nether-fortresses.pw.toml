@@ -1,6 +1,6 @@
 filename = 'YungsBetterNetherFortresses-1.20-Fabric-2.0.6.jar'
 name = "YUNG's Better Nether Fortresses"
-side = 'server'
+side = 'both'
 
 [download]
 hash = 'a752f0dea20fa86e6d3a4f87d180af706b2ad5e3d434185aaa624692fc55329a2e2e410e67f843ec982e7b90ae63565b4aed43adbee6c50ded403ef50d91d7fd'
@@ -12,4 +12,3 @@ url = 'https://cdn.modrinth.com/data/Z2mXHnxP/versions/FL88RLRu/YungsBetterNethe
 mod-id = 'Z2mXHnxP'
 version = 'FL88RLRu'
 
-type = 'REQUIRED'

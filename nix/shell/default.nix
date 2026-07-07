@@ -36,5 +36,7 @@ pkgs.mkShell {
     mergiraf
     defuddle
     nodejs
+
+    packwiz # for modpack management
   ];
 }

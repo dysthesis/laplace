@@ -104,7 +104,7 @@ _: {
         from = "workstation";
         to = "game";
         ports = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"];
-      } # owner plays MC + fetches modpack (https://mc.dysthesis.com/modpack) from PC/laptop
+      } # owner plays MC + fetches PackWiz bootstrap/source from PC/laptop
       {
         from = "workstation";
         to = "exit";
