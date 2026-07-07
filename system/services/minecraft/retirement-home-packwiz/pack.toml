@@ -1,0 +1,14 @@
+name = "Retirement Home"
+author = "dysthesis"
+version = "1.0.0"
+description = "A cozy-industrial Fabric pack for freshly-graduated old souls. Cogs, wine, and something in the deep dark. Built on Fabulously Optimized."
+pack-format = "packwiz:1.1.0"
+
+[index]
+file = "index.toml"
+hash-format = "sha256"
+hash = "721aa65759e8f8c6e258d13baa4efe479ad6f4f0fa0e9a383a56baaaba804914"
+
+[versions]
+fabric = "0.18.4"
+minecraft = "1.20.1"

@@ -1,0 +1,15 @@
+filename = 'VanillaBackport-fabric-1.20.1-1.1.7.10.jar'
+name = 'Vanilla Backport'
+side = 'both'
+
+[download]
+hash = 'c5a6cf68f5c185cbe72c3f5c7cbff996f90482c0573391c97f630a0707cb24eb9000c780d6bcf97adf92aaf4617be21e757b8db2614715450243f00aff4c6e03'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/6xwxDTgf/versions/KbcStX3T/VanillaBackport-fabric-1.20.1-1.1.7.10.jar'
+
+[update.modrinth]
+mod-id = '6xwxDTgf'
+version = 'KbcStX3T'
+
+type = 'REQUIRED'
