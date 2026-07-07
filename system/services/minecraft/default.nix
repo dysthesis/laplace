@@ -71,7 +71,7 @@
     (pkgs.fetchPackwizModpack {
       src = packwizSource;
       side = "server";
-      packHash = "sha256-Rjw8co1hXbHU4B/WxScSKZKVhelZCk1HaqcUAwiTtOg=";
+      packHash = "sha256-n2TCGj/qO1FRduJQ4fI/h49XOZyg5e+S/l3kom/pZH0=";
     }).addFiles ({
         "mods/ledger-1.2.8.jar" = ledger;
         "mods/squaremap-fabric-mc1.20.1-1.2.0.jar" = squaremap;
@@ -291,6 +291,9 @@ in {
           view-distance = cfg.viewDistance;
           simulation-distance = cfg.simulationDistance;
           online-mode = true;
+          # Auth/whitelist stay enforced by online-mode + whitelist; this only
+          # allows unsigned chat so No Chat Reports can strip reportable proofs.
+          enforce-secure-profile = false;
           # Defence-in-depth behind the tailnet `game` ACL: only accounts in
           # whitelist.json may join, and enforce-whitelist also kicks any
           # non-listed player still online on a /reload. whitelist.json lives at

@@ -10,15 +10,15 @@ hash = "6003299fd97cb6b383ca3df88a2a676c565585799b1e14bb2987617ee189c7c2"
 
 [[files]]
 file = "config/DistantHorizons.toml"
-hash = "e3f402dcc7a8134f28413b10a7afb54a75f3b736f738a5921dbf86a7965ad264"
+hash = "cefc5ab7397797a621d0e81e8240058c55eeb02ea78ee1ec40c395df24488144"
 
 [[files]]
 file = "config/NoChatReports/NCR-Client.json"
-hash = "9bb046d86d19f20d8d75c3f17365389a1627c1d14cf6f13271ae7ff368794003"
+hash = "33954d3ac63f4b33dbd9d19996e49f2f5577b6ff6410cf91b769b373a85c57f6"
 
 [[files]]
 file = "config/NoChatReports/NCR-Common.json"
-hash = "77777d6d4901caa3b49847bde37722ee3cf81d745cfc2e8ffdd2aca6211418e8"
+hash = "74402f000fe161a85e5480f3151b901411d988e851e3e142cb36e54c3e3c5efb"
 
 [[files]]
 file = "config/NoChatReports/NCR-Encryption.json"
@@ -26,7 +26,7 @@ hash = "ad41c18d8223070fe2a7566dd6d9baad76edc4424c8f6ee3c9e0c596eb7d5a3f"
 
 [[files]]
 file = "config/NoChatReports/NCR-ServerPreferences.json"
-hash = "b0e7fc677751b4df1ceb8f594443b711f3906d77b00cd45eb731c14fafb00455"
+hash = "eb8d7a7afe88dd1ae3f0a2ca8dea907f746d0d61604fbfbd73761f879f6b26dc"
 
 [[files]]
 file = "config/NoChatReports/README.md"
@@ -402,7 +402,7 @@ hash = "b8a87894038f8e3fed39687928119da41553ec72fafd3c6b98e39efb62ac6e7d"
 
 [[files]]
 file = "config/euphoria_patcher/settings.toml"
-hash = "fec26d01025e152ce4d897a86863b1125be7ff5d03266f19b000de4d9bdb617f"
+hash = "67a67f36821cca5d9cb8d6e4b15cf64c189c8b6a722eb41a9c2b3c0f060ca950"
 
 [[files]]
 file = "config/expanded-delight.json"
@@ -1006,11 +1006,11 @@ hash = "ce3b3dbf85ad8a44da8c5a762c961c9d98728645be2d3c529934ded8f65f65b0"
 
 [[files]]
 file = "config/yosbr/config/NoChatReports/NCR-Client.json"
-hash = "5d4ebf1c83e189cc4b67a579f89fc473aded16d6487683dabafff261a944190f"
+hash = "03114e3c02f9d1f1019c55f351783d43bdfe4c0b303e2970cee9a86ba337e102"
 
 [[files]]
 file = "config/yosbr/config/NoChatReports/NCR-Common.json"
-hash = "c335cb5e65abce1bfc063eaddcff3eca759636e32ba7e4993ea249a31ab18816"
+hash = "7a0deedc9f4b45d0e367053e2de7cec099638e58020490e81a16e81bf2f2fbfb"
 
 [[files]]
 file = "config/yosbr/config/NoChatReports/NCR-Encryption.json"
