@@ -1,5 +1,5 @@
 {
-  "defaultSigningMode": "ON_DEMAND",
+  "defaultSigningMode": "NEVER",
   "enableMod": true,
   "showNCRButton": false,
   "showReloadButton": false,
@@ -12,8 +12,8 @@
   "hideSigningRequestMessage": true,
   "alwaysHideReportButton": false,
   "skipRealmsWarning": false,
-  "disableTelemetry": false,
-  "removeTelemetryButton": false,
+  "disableTelemetry": true,
+  "removeTelemetryButton": true,
   "demandOnServer": false,
   "verifiedIconOffsetX": 0,
   "verifiedIconOffsetY": 0

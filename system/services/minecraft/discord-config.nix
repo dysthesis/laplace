@@ -27,7 +27,7 @@
     streamingURL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     # Enable checking for updates? Notification shown after every server start in
     # log when an update is available.
-    enableUpdateChecker = true;
+    enableUpdateChecker = false;
     # The minimum release type for the update checker to notify
     # Allowed values: release, beta, alpha
     updateCheckerMinimumReleaseType = "beta";
