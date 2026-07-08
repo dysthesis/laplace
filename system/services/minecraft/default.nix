@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf mkOption optional optionalAttrs optionalString types;
+  inherit (lib) mkEnableOption mkIf mkOption optional optionalAttrs optionalString recursiveUpdate types;
 
   cfg = config.laplace.services.minecraft.retirement-home;
 
@@ -49,9 +49,18 @@
 
   # The mod config as Nix data (discord-config.nix), rendered to
   # config/Discord-Integration.toml. botToken/botChannel stay @VAR@ placeholders
-  # substituted at server start from the env file by nix-minecraft.
+  # substituted at server start from the env file by nix-minecraft. The invite
+  # link is overridden here (not in discord-config.nix) because the file
+  # otherwise ships the mod's literal example URL, discord.gg/myserver.
   discordIntegrationConfig =
-    (pkgs.formats.toml {}).generate "Discord-Integration.toml" (import ./discord-config.nix);
+    (pkgs.formats.toml {}).generate "Discord-Integration.toml"
+    (recursiveUpdate (import ./discord-config.nix)
+      (optionalAttrs (cfg.discord.inviteUrl != null) {
+        ingameCommand = {
+          inviteURL = cfg.discord.inviteUrl;
+          message = "Join our Discord! ${cfg.discord.inviteUrl}";
+        };
+      }));
 
   # Bring the sparse squaremap config into the store as its own path (with proper
   # context). A bare `./squaremap-config.yml` reference in the start-pre file-copy
@@ -71,7 +80,7 @@
     (pkgs.fetchPackwizModpack {
       src = packwizSource;
       side = "server";
-      packHash = "sha256-5u+np/cpLylLEAW7+dO9tCqJczXoTMjWjXXlvMcGAws=";
+      packHash = "sha256-5rHAEbUr1MV7niRyBmDoA9WDVDh6rqxvafZQezqnkJ4=";
     }).addFiles ({
         "mods/ledger-1.2.8.jar" = ledger;
         "mods/squaremap-fabric-mc1.20.1-1.2.0.jar" = squaremap;
@@ -166,6 +175,17 @@ in {
 
     discord = {
       enable = mkEnableOption "Discord Integration chat bridge mod";
+
+      inviteUrl = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        example = "https://discord.gg/AbCdEfGh";
+        description = ''
+          Discord invite link for the in-game /discord command. Unset leaves
+          the mod's example placeholder (discord.gg/myserver) in place. Invite
+          links are shared with players anyway, so this is not a secret.
+        '';
+      };
 
       environmentFile = mkOption {
         type = types.nullOr types.path;
@@ -316,6 +336,13 @@ in {
           {
             config = "${serverPack}/config";
             "server-icon.png" = serverIcon;
+            # Moonlight loads this folder (path from moonlight-common.json's
+            # global_datapacks_folder) as a server-data pack source. It lives at
+            # the PACK root, so the config-tree copy above misses it — map it
+            # explicitly or the WooledBoots smithing fix and VillagersPlus
+            # numismatic trades silently vanish (that regression shipped once,
+            # with the 2026-07-07 packwiz migration).
+            "moonlight-global-datapacks" = "${serverPack}/moonlight-global-datapacks";
             # squaremap keeps its config in its OWN data dir (<datadir>/squaremap/),
             # NOT the Fabric config/ dir — a config/squaremap/config.yml is silently
             # ignored (that mistake shipped once). That dir sits outside the config/
