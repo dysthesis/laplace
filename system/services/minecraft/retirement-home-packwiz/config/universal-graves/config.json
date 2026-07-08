@@ -50,8 +50,8 @@
   },
   "teleportation": {
     "cost": {
-      "type": "creative",
-      "count": 1
+      "type": "level",
+      "count": 2
     },
     "required_time": 5,
     "y_offset": 1.0,

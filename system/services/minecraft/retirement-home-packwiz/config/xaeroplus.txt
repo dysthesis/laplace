@@ -18,7 +18,7 @@
 [XP] Data Dir Mode:0
 [XP] Deathpoints Render Distance:false
 [XP] Disable Receiving Waypoints:false
-[XP] Disable Teleportation:false
+[XP] Disable Teleportation:true
 [XP] Disable Waypoint Set Change Tooltip:false
 [XP] Disable Waypoint Sharing:false
 [XP] Disable Xaero Internet Access:false

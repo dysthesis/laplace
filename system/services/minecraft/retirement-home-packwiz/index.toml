@@ -233,12 +233,8 @@ file = "config/continuity.json"
 hash = "00267a602028cbb037dcb0b5f803db31bed284235ca9c1ea189ad4179311a2f4"
 
 [[files]]
-file = "config/controlify.json"
-hash = "33da0572babf3a94f420865dc35ce12b6c831bced9fad2e6519703fcf9d2da93"
-
-[[files]]
 file = "config/corgilib/announcement_config.json5"
-hash = "37f3bbf0adb04001cfb813938d4ace3c4d8f62021dbffecc562f2c1ebcfae56c"
+hash = "5746e713a32d7a0c7fc3b1f48ffce4c3173b094108bbc7f4ebb5449ef7139e99"
 
 [[files]]
 file = "config/create-client.toml"
@@ -806,7 +802,7 @@ hash = "539e5dc2f37d4be21e352947d6a3db35e3e06e11feeb5a8e3bb2a8d837585913"
 
 [[files]]
 file = "config/universal-graves/config.json"
-hash = "cf0d1893d9bfd32aaca3a64e5050119c23ddf237ebf11ac9deff3df6c67bbbc1"
+hash = "c3104b2555a224aa3bb9eede340417a038b00962ebcba2b7d840a87a450907aa"
 
 [[files]]
 file = "config/universal-graves/example_models/corpse_player.json"
@@ -1002,7 +998,7 @@ hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
 [[files]]
 file = "config/xaeroplus.txt"
-hash = "ce3b3dbf85ad8a44da8c5a762c961c9d98728645be2d3c529934ded8f65f65b0"
+hash = "cff115d11603cce95870dad93ec057db561b2d348893226be30ea8b8d8c437b2"
 
 [[files]]
 file = "config/yosbr/config/NoChatReports/NCR-Client.json"
@@ -2029,8 +2025,12 @@ hash = "d320a6bbabe4b86591e3fe24487e069f8a8b2a4c1f37b40313827255a8f0522d"
 metafile = true
 
 [[files]]
-file = "options.txt"
-hash = "25dd143c268c98ed364331e78d09f70ab1ef46645cb1144be8fb8fe405e35c03"
+file = "moonlight-global-datapacks/VillagerPlus_Numismatic_Supplementaries.zip"
+hash = "a909ada3f9375b9104a22d256b0ee387f4e559240202affae755c89f7e28dec9"
+
+[[files]]
+file = "moonlight-global-datapacks/WooledBoots_SmithingFix.zip"
+hash = "51cedabfa8b54167b67ad66599f459b3bc9fc0f819bad3dc19788e4a475a56b8"
 
 [[files]]
 file = "patchouli_data.json"
@@ -2043,10 +2043,6 @@ hash = "dfe15f7d4663dd16abc799e152ae0d897b6008fcced49669e5054666703024c8"
 [[files]]
 file = "resourcepacks/Fast Better Grass.zip"
 hash = "8cda732e5215e7fcf6b43019f132900b7efb1625a1fddef5931fb43f4b85a831"
-
-[[files]]
-file = "resourcepacks/FreshAnimations_v1.10.4.zip"
-hash = "8e44b29560d2e7d952c0a4f77f0451e6dcb048f827189bffc712b446be8de7f2"
 
 [[files]]
 file = "resourcepacks/Mod Menu Helper.zip"
