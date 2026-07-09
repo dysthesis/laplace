@@ -62,60 +62,24 @@
   };
 
   # Runner registration creds (UUID + TOKEN env lines), sops-encrypted to this
-  # host's age key. Consumed as the runner's EnvironmentFile below.
+  # host's age key. Consumed as the runner's EnvironmentFile (tokenFile). Secret
+  # wiring is inherently per-host (sops-nix per-host age key); the runner logic
+  # itself lives in system/services/forgejo-runner.
   sops.secrets.action_runner.sopsFile = ../../system/secrets/hephaestus.yaml;
 
-  # Forgejo Actions runner, colocated with the server. Host backend (no container
-  # runtime) — jobs run directly as the gitea-runner DynamicUser, tools come from
-  # hostPackages. Acceptable while only first-party code runs here; the moment
-  # less-trusted/external code lands, lift this onto its own VLAN'd VM and repoint
-  # the `nix` label at a podman/docker backend (workflows say `runs-on: nix`, so
-  # they don't change). See the runner discussion in NOTES if revisiting.
-  services.gitea-actions-runner = {
-    package = pkgs.forgejo-runner;
-    instances.hephaestus = {
-      enable = true;
-      name = "hephaestus";
-      # Colocated: dial Forgejo on loopback, no hairpin through portunus. On a
-      # move to a separate host this becomes the reachable Forgejo address (and a
-      # re-registration with a fresh token happens anyway).
-      url = "http://localhost:8080";
-      # EnvironmentFile with the runner's registration TOKEN (a UUID line rides
-      # along but the register flow ignores it — only TOKEN is read). sops decrypts
-      # it to /run, root-readable; systemd sources it before dropping to the
-      # gitea-runner user. The durable `.runner` identity lands in the mnemosyne-
-      # persisted state dir below, so the token is consumed only on first register /
-      # label change — it must still be valid (unexpired) at that first start.
-      tokenFile = config.sops.secrets.action_runner.path;
-      # Stable abstract label -> host backend. Workflows target `runs-on: nix`; the
-      # backend behind the label can change later without editing any workflow.
-      labels = ["nix:host"];
-      # Host-backend jobs see only these on PATH. Module defaults + nix (the point),
-      # cacert (node/TLS to github for actions), openssh (git remotes over ssh).
-      hostPackages = with pkgs; [
-        bash
-        coreutils
-        curl
-        gawk
-        git
-        gnused
-        nodejs
-        wget
-        nix
-        openssh
-        cacert
-      ];
-    };
+  # Forgejo Actions runner, colocated with the server (host backend, label
+  # `nix:host`). Host-backend jobs run directly as the gitea-runner DynamicUser
+  # with `nix` on PATH — acceptable while only first-party code runs here. When
+  # less-trusted/external code lands, move this onto its own VLAN'd VM and repoint
+  # `url` at the reachable Forgejo address (a fresh token forces re-registration
+  # anyway); workflows say `runs-on: nix`, so they don't change. Persistence,
+  # hostPackages, unit hardening and the label assertion all live in the module.
+  laplace.services.forgejo-runner = {
+    enable = true;
+    # Colocated: dial Forgejo on loopback, no hairpin through portunus.
+    url = "http://localhost:8080";
+    tokenFile = config.sops.secrets.action_runner.path;
   };
-
-  # Runner registration (.runner) + label/token hashes. Persist across the tmpfs
-  # root or it re-registers every boot and burns a fresh token each time.
-  # The runner is a DynamicUser, so systemd keeps real StateDirectory= contents in
-  # /var/lib/private/gitea-runner and leaves /var/lib/gitea-runner as a symlink to
-  # it — persist the private path (the symlink would save nothing, and bind-mounting
-  # the public path makes systemd fail StateDirectory setup with EBUSY trying to
-  # migrate a mountpoint into /var/lib/private).
-  mnemosyne.dirs = ["/var/lib/private/gitea-runner"];
 
   environment.systemPackages = with pkgs; [
     vim # for emergencies
