@@ -1125,6 +1125,11 @@ hash = "e92cd8fa1bb0d91a68a87b41c88865b1567a7aba89e54120d97db03cfd6e7199"
 metafile = true
 
 [[files]]
+file = "mods/ambientsounds.pw.toml"
+hash = "e3714f163dd8d1751d186221ad0049dc5719a2d6537ddfbc4e3403f769cffe2c"
+metafile = true
+
+[[files]]
 file = "mods/amendments.pw.toml"
 hash = "4ee599c18a351ed9abbf1c85194246c429a1d560b96c40436a11e9a9ca4f137a"
 metafile = true
@@ -1230,6 +1235,11 @@ hash = "be9f9867c6210d549540c4fdf932484b0b56badc0910a691825bbd957b720929"
 metafile = true
 
 [[files]]
+file = "mods/chatanimation.pw.toml"
+hash = "cf9a667564de2e65f87965d4fb22e41824738fd7ffb0ad344189570c88b99d44"
+metafile = true
+
+[[files]]
 file = "mods/chunky.pw.toml"
 hash = "ce9f069bb1018c8deed7ea3fa38b9b6878948f7cb57fb7c0376be487011ae4b9"
 metafile = true
@@ -1310,6 +1320,11 @@ hash = "157877feb67f5ed92eb7a310a086bf7baf58ad2461aa36d3541b3a0c0e9a2423"
 metafile = true
 
 [[files]]
+file = "mods/creativecore.pw.toml"
+hash = "7931e33ecb9a1a3d0e993598e7c3677f62337287be199e8fbd640acfeaab46b0"
+metafile = true
+
+[[files]]
 file = "mods/creeper-overhaul.pw.toml"
 hash = "ddf34e5604ca4e79de340cf03b18d15cc054658c11fca9815e64da412321f718"
 metafile = true
@@ -1335,6 +1350,11 @@ hash = "988bc803c903af4dc20ded2f5aa5a5c1f1e27f3a84b700a512118df4ecaaff2b"
 metafile = true
 
 [[files]]
+file = "mods/dripsounds.pw.toml"
+hash = "0c9f3108c7acc23323000945b285604bff97253183376b0557fb2d877cf7cd5d"
+metafile = true
+
+[[files]]
 file = "mods/dynamic-fps.pw.toml"
 hash = "65fbd56a937ab1421a82682fd19e2c5175af25ca335e6a299771c0e530ce5347"
 metafile = true
@@ -1342,6 +1362,11 @@ metafile = true
 [[files]]
 file = "mods/ebe.pw.toml"
 hash = "32b7aebca4926ecfc4a2dee757f1ecdad5425febeb1666b2e8e7f154cf741977"
+metafile = true
+
+[[files]]
+file = "mods/effective.pw.toml"
+hash = "77db2a79ccab8ea16987b981f0de7d6442f716217b83ebe9669f84006b07daf1"
 metafile = true
 
 [[files]]
@@ -1470,6 +1495,11 @@ hash = "1de90bfe7098ac9d600c9572d4a30d017c32af4aaea47d19284757d1d8725c4d"
 metafile = true
 
 [[files]]
+file = "mods/fast-item-frames.pw.toml"
+hash = "079b0f6f75cd47fa7e7a1389656de1eb272a4ff7ba1803e3ec41770c37e16106"
+metafile = true
+
+[[files]]
 file = "mods/fastquit.pw.toml"
 hash = "2e93011b9668ee6ebcccbdb08981d2ed206eb91074a65d307eb409a75d944b73"
 metafile = true
@@ -1507,6 +1537,16 @@ metafile = true
 [[files]]
 file = "mods/geckolib.pw.toml"
 hash = "f74d632447d45072a07dc985c11263c0896d59b97bbcad56fcc655e22ca34ac2"
+metafile = true
+
+[[files]]
+file = "mods/glowing-torchflower.pw.toml"
+hash = "810662db16279e9ee48eef1e75b7799e887868e0b5d5b287307bc449ced4d741"
+metafile = true
+
+[[files]]
+file = "mods/handcrafted.pw.toml"
+hash = "f6629a3c5e023a96cb5d78d66e93b47245996c46a079921b3f6a6094209dc1b0"
 metafile = true
 
 [[files]]
@@ -1562,6 +1602,11 @@ metafile = true
 [[files]]
 file = "mods/language-reload.pw.toml"
 hash = "4d2bb1a37adadf05c1a91842642cc05b5e5d481cdefc8a81559a017011571c40"
+metafile = true
+
+[[files]]
+file = "mods/lets-do-addon-corn-expansion.pw.toml"
+hash = "c0bed9582f4462791b93f276c0ac912f951fc0e606d929d6d5212195cded9be0"
 metafile = true
 
 [[files]]
@@ -1675,6 +1720,11 @@ hash = "b35c70a9236817aa810744885f83188908c41f7eb42e9a3a8339f3cd74d96b14"
 metafile = true
 
 [[files]]
+file = "mods/more-delight.pw.toml"
+hash = "a416ecc5a57ee35348dcc8b69995211bd0bf5fcb63d0a5fab2bc911ea7efcea2"
+metafile = true
+
+[[files]]
 file = "mods/morechathistory.pw.toml"
 hash = "9729edf7691ccda5e408c37907bb488b788b2febc7153f7734a7d22aadebbaca"
 metafile = true
@@ -1770,13 +1820,18 @@ hash = "9b6b4e56dd8657f1b8f5b1d2d619e0806ab9bff714266bb29fc2c82b86205feb"
 metafile = true
 
 [[files]]
+file = "mods/polymorph.pw.toml"
+hash = "8293786ca23e23e7dd04d60d666f34145a00229a5959f7a1962995654cacdf1f"
+metafile = true
+
+[[files]]
 file = "mods/puzzle.pw.toml"
 hash = "9e676c3a961c0f7353000dbd90d4ef698899a6f6da1f9658105d18aa913d2e6c"
 metafile = true
 
 [[files]]
 file = "mods/puzzles-lib.pw.toml"
-hash = "a2f85f22879f6e26e723879169b4af2a5c9cf9343de94db869bfc12ecf7636d8"
+hash = "a1eff7b33a54586b6989c7bfd89992f9d315f1c656b7596649d9af7017c6af7b"
 metafile = true
 
 [[files]]
@@ -1845,8 +1900,18 @@ hash = "18145ff49e91803e1489ab9af487ab313f30bbc05814435929708945bcbe5ea1"
 metafile = true
 
 [[files]]
+file = "mods/sodium-dynamic-lights.pw.toml"
+hash = "83cf89128bfc6d4a5d1da20565e461f89183127d5960935c1f783ba38b0cb53c"
+metafile = true
+
+[[files]]
 file = "mods/sodium-extra.pw.toml"
 hash = "0ca4afc3f918b1c3660cb514a9ed848d3cb61b983576363635911e1120b6f0ed"
+metafile = true
+
+[[files]]
+file = "mods/sodium-options-api.pw.toml"
+hash = "19eeb8e2d15198628ae414184131017d7b91fa322abef285eccefa573754e3d2"
 metafile = true
 
 [[files]]
@@ -1877,6 +1942,11 @@ metafile = true
 [[files]]
 file = "mods/supermartijn642s-core-lib.pw.toml"
 hash = "5b2ab5e0d00af2d54a10b66bd9bad624440a1b70d2fe2a89dcc8dad0b6ea9242"
+metafile = true
+
+[[files]]
+file = "mods/supplementaries-squared.pw.toml"
+hash = "d6527df25f7bde5556b71899b89ce85830cd29ff529bd5845ee41a51cc4441ef"
 metafile = true
 
 [[files]]
@@ -1912,6 +1982,11 @@ metafile = true
 [[files]]
 file = "mods/toms-storage.pw.toml"
 hash = "9c6201f6c24960ef58aa7360e2f14c156c75c3d623c48735076ecc4b39075920"
+metafile = true
+
+[[files]]
+file = "mods/tool-trims.pw.toml"
+hash = "405d5102dc84d1e3a041a5c12e7be8ec970b5a5fc89b30503b8c840464015c9d"
 metafile = true
 
 [[files]]
