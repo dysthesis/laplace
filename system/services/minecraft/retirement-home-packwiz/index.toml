@@ -1785,11 +1785,6 @@ hash = "2687cf29ff1e39b87c5853d263eb811dd9f10027b39f13ca05580de97774702b"
 metafile = true
 
 [[files]]
-file = "mods/nvidium.pw.toml"
-hash = "f8879a5a06411d47d27dc543c718307afb95286a0b91a593692b5a5033ade53d"
-metafile = true
-
-[[files]]
 file = "mods/oh-the-biomes-weve-gone.pw.toml"
 hash = "2d96affb516879897fb001428be7ce2b624462f66cb98abd888c6cd8a07f5e11"
 metafile = true
