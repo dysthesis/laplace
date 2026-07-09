@@ -17,7 +17,7 @@
   };
 
   serverPackage = pkgs.fabricServers.fabric-1_20_1.override {
-    loaderVersion = "0.18.4"; # matches the pack's mmc-pack.json
+    loaderVersion = "0.19.2"; # matches the packwiz Fabric loader version
     # Keep Java 17 for Minecraft 1.20.1/mod compatibility; CE is currently Java 25.
     jre_headless = pkgs.graalvmPackages.graalvm-oracle_17;
   };
@@ -80,7 +80,7 @@
     (pkgs.fetchPackwizModpack {
       src = packwizSource;
       side = "server";
-      packHash = "sha256-uzZHwbBsjyw2WOsOW9Mgj/PW/MXKWfOsbyCr6VXipec=";
+      packHash = "sha256-M++KWH+YcP/0q+IaQuTmOi9+KzZnWQ2tfhvtKb9907Y=";
     }).addFiles ({
         "mods/ledger-1.2.8.jar" = ledger;
         "mods/squaremap-fabric-mc1.20.1-1.2.0.jar" = squaremap;
