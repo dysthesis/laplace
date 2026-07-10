@@ -4,9 +4,11 @@
 # only declares what is specific to this guest.
 #
 # hephaestus lives on its own VLAN70 (10.0.70.2). Forgejo serves plain HTTP on
-# :8080; TLS terminates at the edge on portunus (10.0.40.2, DMZ), which reverse-
-# proxies git.dysthesis.com across a single VLAN40->VLAN70 pinhole — the same
-# split bifrost/headscale use. So :8080 is opened ONLY to portunus.
+# :8080; TLS terminates at the edge on portunus (10.0.40.2, DMZ), which gates
+# git.dysthesis.com behind Anubis and reverse-proxies it across a single
+# VLAN40->VLAN70 pinhole — the same split bifrost/headscale use. The Actions
+# runner lives on talos (10.0.80.2, VLAN80) and dials :8080 directly. So :8080
+# is opened ONLY to those two.
 {
   config,
   pkgs,
@@ -21,10 +23,11 @@
     # (which would flip this on) and no Docker, so set it explicitly. The proxmox
     # profile's :22 scoping (VLAN20-only) is likewise gated on this.
     nftables.enable = true;
-    # portunus (10.0.40.2) is the only host that proxies to Forgejo's HTTP port.
-    # OPNsense must also pass VLAN40 (10.0.40.2) -> 10.0.70.2:<HTTP_PORT>.
+    # portunus (10.0.40.2) proxies to Forgejo's HTTP port; talos (10.0.80.2) is
+    # the Actions runner hitting the API + cloning over it. OPNsense must also
+    # pass VLAN40 (10.0.40.2) and VLAN80 (10.0.80.2) -> 10.0.70.2:<HTTP_PORT>.
     firewall.extraInputRules = ''
-      ip saddr 10.0.40.2/32 tcp dport ${toString config.services.forgejo.settings.server.HTTP_PORT} accept
+      ip saddr { 10.0.40.2, 10.0.80.2 } tcp dport ${toString config.services.forgejo.settings.server.HTTP_PORT} accept
     '';
   };
 
@@ -59,26 +62,6 @@
     zram.enable = true;
 
     services.forgejo.enable = true;
-  };
-
-  # Runner registration creds (UUID + TOKEN env lines), sops-encrypted to this
-  # host's age key. Consumed as the runner's EnvironmentFile (tokenFile). Secret
-  # wiring is inherently per-host (sops-nix per-host age key); the runner logic
-  # itself lives in system/services/forgejo-runner.
-  sops.secrets.action_runner.sopsFile = ../../system/secrets/hephaestus.yaml;
-
-  # Forgejo Actions runner, colocated with the server (host backend, label
-  # `nix:host`). Host-backend jobs run directly as the gitea-runner DynamicUser
-  # with `nix` on PATH — acceptable while only first-party code runs here. When
-  # less-trusted/external code lands, move this onto its own VLAN'd VM and repoint
-  # `url` at the reachable Forgejo address (a fresh token forces re-registration
-  # anyway); workflows say `runs-on: nix`, so they don't change. Persistence,
-  # hostPackages, unit hardening and the label assertion all live in the module.
-  laplace.services.forgejo-runner = {
-    enable = true;
-    # Colocated: dial Forgejo on loopback, no hairpin through portunus.
-    url = "http://localhost:8080";
-    tokenFile = config.sops.secrets.action_runner.path;
   };
 
   environment.systemPackages = with pkgs; [

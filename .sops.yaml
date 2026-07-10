@@ -71,3 +71,8 @@ creation_rules:
       - age:
           - *deimos
           - *phobos
+  - path_regex: system/secrets/talos\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos

@@ -32,11 +32,12 @@
     mneme = "10.0.20.81";
     hermes = "10.0.20.82";
     mimir = "10.0.20.83";
-    loki = "10.0.60.2";
     charon = "10.0.20.10";
     portunus = "10.0.40.2";
     bifrost = "10.0.50.2";
-    # hephaestus = "10.0.70.2";
+    loki = "10.0.60.2";
+    hephaestus = "10.0.70.2";
+    # talos = "10.0.80.2"; # uncomment once the VMA is restored and the guest is up
   };
 
   mkNode = name: targetHost: {
