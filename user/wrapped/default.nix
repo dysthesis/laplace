@@ -21,7 +21,7 @@
       };
       tmux = callPackage ./tmux {inherit inputs pkgs;};
       jjui = callPackage ./jjui {
-        inherit lib pkgs;
+        inherit lib pkgs jujutsu;
         inherit (pkgs) jjui;
       };
       wezterm = callPackage ./wezterm {
@@ -169,8 +169,10 @@
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
       spotify-player = callPackage ./spotify_player {inherit lib pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
-      taskwarrior-tui = callPackage ./taskwarrior-tui {inherit lib pkgs;};
-      weechat = callPackage ./weechat {inherit lib pkgs;};
+      khal = callPackage ./khal {inherit lib pkgs;};
+      vdirsyncer = callPackage ./khal/vdirsyncer.nix {inherit lib pkgs;};
+      # Last working version for taskwarrior2
+      taskwarrior-tui2 = callPackage ./taskwarrior-tui {inherit lib pkgs;};
       zen = guiPackage (
         callPackage ./zen {
           inherit

@@ -1,13 +1,74 @@
 keys:
   - &deimos age1as3g9vmk34s6w4dw3rlua3wdwgxfzr2f9jm6282eqjncnwagwu4snycmx9
   - &phobos age1h9ecmz8zzh9eecx74m4ehge988z77kg2kme7hq2w6v8hcf8kv36qaq3d2h
-  - &erebus age153c0rty0sfplkul8u3amvfew3tcwnjtv8cq06az5ynvrkeg7npdszh5ca4
-  - &hephaestus age15hrcysykzlp0wprysz5nudsdx24dyhj8sf2883vfervdshuugc4q6qyuxj
+  - &portunus age13k9y8tycez2hel2myaduexnk2rcfp3xjenjnffvgmuutsge54flqxtexlh
+  - &mimir age13pf560d7qeugt4ldwa7s7985rgjh2mxngm9j5rcxw9f2ryv8aarqj32v7j
+  - &mneme age1uc5rklesyd980ums9c6u66jn07cu3hsyds4djnuwd8thsvxruc5q0qvnlw
+  - &hermes age1klugnwttlp7pn0tjmlh4k2n7qqd3qjl4exk4ee3pf9trwlh69qlsee7mg2
+  - &bifrost age1v50x0dt5jgh5wwxq0u5v7l3q7lvr0z8en7qcm774wmuy0fkvx36sw986kf
+  - &loki age162wqwergctj5qu6q22tsp2r72tqqatktk5tnl7gq9d4kp586a9vqmhq982
+  - &hephaestus age1y2zc9judmrtz58jqklf9qst3rfsyn4qpt27sqv74kmum5teacarqykts4t
+  - &charon age18742z73g8qkp5nyul35hz4l4q4hnj2shje6n7p92ard80fspeq3sh7jamp
+  - &talos age16ygpgyf73w7kzg4jd7lar5uwnwtgs9xst3445ql7s73cpumpv90sampfa7
 creation_rules:
+  - path_regex: system/secrets/portunus\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *portunus
+  - path_regex: system/secrets/charon\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *charon
+  - path_regex: system/secrets/hephaestus\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *hephaestus
+  - path_regex: system/secrets/mimir\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *mimir
+  - path_regex: system/secrets/mneme\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *mneme
+  - path_regex: system/secrets/hermes\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *hermes
+  - path_regex: system/secrets/bifrost\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *bifrost
+  - path_regex: system/secrets/loki\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *loki
+  - path_regex: system/secrets/talos\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *talos
+  # Catch-all MUST stay last: sops matches creation_rules first-match-wins, so
+  # any per-host rule below this line is dead.
   - path_regex: system/secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:
           - *deimos
           - *phobos
-          - *erebus
-          - *hephaestus

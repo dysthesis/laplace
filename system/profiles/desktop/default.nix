@@ -54,6 +54,12 @@
   );
 in {
   config = mkIf (elem "desktop" cfg) {
+    # Desktop-only firewall surface (moved off laplace.security.firewall so
+    # servers don't inherit it): the Zotero LAN sync/discovery port.
+    networking.firewall = {
+      allowedTCPPorts = [23319]; # zotero
+      allowedUDPPorts = [23319]; # zotero
+    };
     systemd = {
       user.services = {
         syncthing = {
@@ -87,6 +93,10 @@ in {
       nerd-fonts.iosevka
     ];
     services = {
+      # Interactive outbound-connection prompts need a GUI to answer them, so
+      # opensnitch belongs to the desktop profile rather than the generic
+      # firewall module (which headless servers also enable).
+      opensnitch.enable = true;
       seatd = {
         enable = true;
         group = "wheel";
@@ -156,6 +166,7 @@ in {
       sounds.enable = true;
       portal = {
         enable = true;
+        config.common.default = "gtk";
         extraPortals = [pkgs.xdg-desktop-portal-gtk];
       };
     };

@@ -7,14 +7,27 @@
 }: let
   inherit (lib.laplace.modules) importInDirectory;
   system = pkgs.stdenv.hostPlatform.system;
+  isDesktop = builtins.elem "desktop" config.laplace.profiles;
 in {
   config = {
-    environment.sessionVariables = {
-      BROWSER = lib.getExe pkgs.configured.zen;
-      EDITOR = lib.getExe inputs.poincare.packages.${system}.default;
-      GH_TELEMETRY = "false";
-      DO_NOT_TRACK = "true";
-    };
+    environment.sessionVariables =
+      {
+        GH_TELEMETRY = "false";
+        DO_NOT_TRACK = "true";
+        # EDITOR is set everywhere, but getExe bakes a store path into the
+        # closure: only desktops pull the full poincare/neovim; servers fall back
+        # to vim (already shipped "for emergencies"), keeping zen-beta and the
+        # neovim plugin set out of headless system closures.
+        EDITOR = lib.getExe (
+          if isDesktop
+          then inputs.poincare.packages.${system}.default
+          else pkgs.vim
+        );
+      }
+      # A GUI browser only where there is a GUI.
+      // lib.optionalAttrs isDesktop {
+        BROWSER = lib.getExe pkgs.configured.zen;
+      };
     boot.binfmt.emulatedSystems =
       if (system != "aarch64-linux")
       then ["aarch64-linux"]

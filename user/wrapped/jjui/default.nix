@@ -2,10 +2,14 @@
   pkgs,
   lib,
   jjui,
+  jujutsu,
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
-  config = import ./config.nix {};
+  config = import ./config.nix {
+    inherit lib;
+    jjAliases = jujutsu.jjConfig.aliases;
+  };
   configFile = pkgs.writers.writeTOML "config.toml" config;
   configDir = pkgs.runCommandLocal "jjui-config" {} ''
     mkdir -pv $out
@@ -16,5 +20,6 @@ in
   # sh
   ''
     wrapProgram $out/bin/jjui \
-      --set JJUI_CONFIG_DIR ${configDir}
+      --set JJUI_CONFIG_DIR ${configDir} \
+      --prefix PATH : ${lib.makeBinPath [jujutsu]}
   ''

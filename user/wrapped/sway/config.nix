@@ -18,7 +18,6 @@
     if cfg
     then 5
     else 8;
-  # Generate configurations for a signle monitor
   monitorToSwayConfig = monitor: let
     fragments = [
       "output ${monitor.name}"
@@ -29,15 +28,11 @@
       "bg ${../hyprland/wallpaper.png} fill"
     ];
   in
-    # Join the fragments with spaces to form a single line.
     lib.concatStringsSep " " fragments;
 
-  # Map all of our monitors into config text
   monitorConfig =
     config.laplace.hardware.monitors
-    # For each monitor, convert them into a configuration line...
     |> lib.map monitorToSwayConfig
-    # and combine them into a signle, newline-delimited string.
     |> lib.concatStringsSep "\n";
 
   mkScratchpad = scratchpad: ''
@@ -51,7 +46,7 @@
     {
       name = "signal";
       prefix = "s";
-      cmd = "${getExe pkgs.signal-desktop} --enable-features=UseOzonePlatform --ozone-platform=wayland";
+      cmd = "${getExe pkgs.unstable.signal-desktop} --enable-features=UseOzonePlatform --ozone-platform=wayland";
     }
     rec {
       name = "foot.term";

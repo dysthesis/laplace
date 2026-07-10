@@ -13,12 +13,11 @@ in {
 
     services.dbus.apparmor = "disabled";
 
-    # apparmor configuration
     security.apparmor = {
       enable = true;
 
       # whether to enable the AppArmor cache
-      # in /var/cache/apparmore
+      # in /var/cache/apparmor
       enableCache = true;
 
       # whether to kill processes which have an AppArmor profile enabled

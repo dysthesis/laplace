@@ -17,15 +17,44 @@
       "aarch64-darwin"
     ];
 
-    forAllSystems = lib.laplace.forAllSystems {inherit systems;};
+    # The linux-hardened overlay is baked in here so `pkgs.linux_hardened` is
+    # available to the `packages` output and the boot-test check (hosts apply
+    # it separately via hosts/default.nix).
+    forAllSystems = lib.laplace.forAllSystems {
+      inherit systems;
+      overlays = [self.overlays.linux-hardened];
+    };
 
     treefmt =
       forAllSystems
       (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
-    nixosConfigurations = import ./hosts {inherit self lib inputs;};
+    hosts = import ./hosts {inherit self lib inputs;};
+    inherit (hosts) nixosConfigurations;
   in
-    mapAttrs (_: forAllSystems) {
+    mapAttrs (_: forAllSystems)
+    {
       devShells = pkgs: {default = import ./nix/shell pkgs;};
+      # The hardened kernel (`nix build .#linux-hardened`) and its on-demand
+      # QEMU boot test. The boot test lives here, not in `checks`, because it
+      # compiles the kernel — keeping it out of `nix flake check` leaves CI
+      # light. Verify the kernel boots explicitly with:
+      #   nix build .#linux-hardened-boot-test
+      packages = pkgs:
+        lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux
+        {
+          linux-hardened = pkgs.linux_hardened;
+        }
+        // lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
+          linux-hardened-boot-test = import ./nix/tests/linux-hardened-boot.nix {inherit pkgs;};
+        };
+      # Reproducible shell-startup benchmark: `nix run .#bench`. See bench/README.md.
+      apps = pkgs:
+        lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+          bench = {
+            type = "app";
+            program = lib.getExe (import ./bench pkgs);
+          };
+        };
       # for `nix fmt`
       formatter = pkgs: treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.wrapper;
       # for `nix flake check`
@@ -34,19 +63,51 @@
           formatting = treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
         }
         // lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
+          # Each selected compositor/session module contributes its own
+          # validation via laplace.display.checkCommands, so this check
+          # follows compositor swaps without edits here.
           desktop-stack = let
-            validateHost = name: host: ''
-                echo "validating ${name} niri"
-                ${host.config.programs.niri.package}/bin/niri validate
-              test -x ${host.pkgs.configured.waybar}/bin/waybar
-              test -x ${host.pkgs.configured.fuzzel}/bin/fuzzel
-              test -x ${host.pkgs.configured.dunst}/bin/dunst
-              test -x ${host.pkgs.configured.foot}/bin/foot
-            '';
+            validateHost = name: host:
+              lib.optionalString (host.config.laplace.display.checkCommands != []) ''
+                echo "validating ${name}"
+                ${lib.concatStrings host.config.laplace.display.checkCommands}
+              '';
           in
             pkgs.runCommand "desktop-configs" {} ''
-              ${validateHost "deimos" nixosConfigurations.deimos}
-              ${validateHost "phobos" nixosConfigurations.phobos}
+              ${lib.concatStrings (lib.mapAttrsToList validateHost nixosConfigurations)}
+              touch $out
+            '';
+
+          # Build-time half of PLAN §5 layer 4: gate the SSOT-rendered Headscale
+          # policy and rendered service config against the same headscale binary
+          # bifrost runs. configtest needs writable state paths, so the sandbox
+          # copies the rendered config and rewrites only /var/lib + /run paths to
+          # $TMPDIR. toJSON guarantees well-formed HuJSON, but only the control
+          # plane catches semantic faults (undefined tag/alias, empty group). The
+          # eval-time checkTailnet invariants
+          # (system/tailnet/default.nix) already fire fleet-wide; this is the
+          # remaining check the build sandbox CAN run (no network/db needed).
+          # Runtime tag reconcile (gotcha 4) is `just tailnet-reconcile`, not a
+          # check here — the sandbox has no network.
+          headscale-policy = let
+            headscalePackage = nixosConfigurations.bifrost.config.services.headscale.package;
+          in
+            pkgs.runCommand "headscale-policy-check"
+            {
+              nativeBuildInputs = [headscalePackage];
+            } ''
+              config="$TMPDIR/headscale.yaml"
+              cp ${nixosConfigurations.bifrost.config.services.headscale.configFile} "$config"
+              substituteInPlace "$config" \
+                --replace-fail /var/lib/headscale "$TMPDIR/state" \
+                --replace-fail /run/headscale "$TMPDIR/run"
+              mkdir -p "$TMPDIR/state" "$TMPDIR/run"
+
+              headscale --force configtest --config "$config"
+              headscale --force policy check \
+                --bypass-grpc-and-access-database-directly \
+                --config "$config" \
+                --file ${nixosConfigurations.bifrost.config.laplace.services.headscale.acl.policyFile}
               touch $out
             '';
         };
@@ -58,6 +119,13 @@
       };
 
       inherit nixosConfigurations;
+
+      # Push-deploy hive for the Proxmox guests: `colmena apply --on @proxmox`
+      # (or `just deploy`). See nix/deploy.
+      colmena = import ./nix/deploy {
+        inherit self inputs lib;
+        inherit (hosts) nodeModules overlays;
+      };
     };
 
   inputs = {
@@ -79,6 +147,10 @@
       url = "github:dysthesis/read";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Keep fork's own nixpkgs pin: it carries the Go toolchain revision used by
+    # this headscale fork.
+    headscale.url = "github:dysthesis/headscale?ref=feat/wg-only-peers";
 
     # Neovim flake
     poincare = {
@@ -150,6 +222,24 @@
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    status = {
+      url = "github:dysthesis/status";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-minecraft = {
+      url = "github:Infinidoge/nix-minecraft";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Self-hosted web history search. Needs Go 1.26 → follow nixpkgs-unstable
+    # (26.05 pin is too old), reusing the existing unstable input rather than a
+    # third nixpkgs instance.
+    hister = {
+      url = "github:asciimoo/hister";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 }

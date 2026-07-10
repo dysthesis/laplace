@@ -51,6 +51,9 @@ in {
         allowUnfreePredicate = pkg:
           builtins.elem (lib.getName pkg) [
             "obsidian"
+            "claude-code"
+            "graalvm-oracle"
+            "minecraft-server"
             "open-webui"
             "steam"
             "steam-unwrapped"

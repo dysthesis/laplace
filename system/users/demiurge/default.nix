@@ -6,6 +6,7 @@
   ...
 }: let
   inherit (lib) mkIf;
+  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (builtins) elem filter hasAttr;
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
@@ -88,39 +89,33 @@ in {
             slurp
             swappy
             configured.bibata-hyprcursor
-            configured.fuzzel
+            configured.bemenu
             configured.foot
-          ]
-          ++ lib.optionals (builtins.elem "xorg" config.laplace.display.servers) (
-            with inputs.gungnir.packages.${hostSystem}; let
-              fontSize =
-                if config.networking.hostName == "phobos"
-                then 15
-                else 12;
-            in [
-              xsecurelock
-              xclip
-              (st {
-                inherit fontSize;
-                borderpx = 20;
-                shell = lib.getExe pkgs.configured.fish;
-              })
-              (dmenu {
-                inherit fontSize;
-                lineHeight = 26;
-              })
-            ]
-          );
+          ];
+        # xorg session packages (gungnir's st/dmenu/xsecurelock) moved to
+        # system/display/servers/xorg/sessions/xmonad.
 
         applications = with pkgs; [
-          zotero
-          signal-desktop
+          configured.zotero
+          unstable.signal-desktop
           (unstable.prismlauncher.override {
-            jdks = with pkgs; [zulu25 jdk21 jdk17 jdk8];
+            jdks = with pkgs; [
+              graalvmPackages.graalvm-oracle_17
+              zulu25
+              jdk21
+              jdk17
+              jdk8
+            ];
+            gamemodeSupport = true;
           })
-          unstable.tor-browser
+          # unstable.tor-browser
           tigervnc
-          obsidian
+          (mkWrapper pkgs.unstable pkgs.unstable.obsidian ''
+            wrapProgram $out/bin/obsidian \
+            --prefix PATH : ${lib.makeBinPath (with pkgs.unstable; [
+              claude-code
+            ])} '')
+          unstable.claude-code
         ];
 
         system = with pkgs; [
@@ -128,25 +123,23 @@ in {
           wireguard-tools
         ];
 
-        apps = with pkgs.configured;
-          [
-            zathura
-            spotify-player
-            mpv
-            neomutt
-          ]
-          ++ (with pkgs.unstable; [
-            vesktop
-            zen
-            # todoist-electron
-          ]);
+        apps = with pkgs.configured; [
+          zathura
+          spotify-player
+          mpv
+          neomutt
+          vesktop
+          zen
+        ];
 
         productivity = with pkgs.configured; [
           # read
           newsraft
           taskwarrior
           timewarrior
-          taskwarrior-tui
+          taskwarrior-tui2
+          khal
+          vdirsyncer
           zk
           pass
           gh-dash

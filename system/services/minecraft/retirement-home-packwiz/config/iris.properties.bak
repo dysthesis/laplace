@@ -1,0 +1,8 @@
+#This file stores configuration options for Iris, such as the currently active shaderpack
+#Thu Jul 02 17:28:07 AEST 2026
+colorSpace=SRGB
+disableUpdateMessage=true
+enableDebugOptions=false
+maxShadowRenderDistance=6
+shaderPack=ComplementaryReimagined_r5.8.1.zip
+enableShaders=true

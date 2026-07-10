@@ -1,0 +1,14 @@
+filename = 'shieldexp-fabric-1.20.1-1.3.7.jar'
+name = 'Shield Expansion'
+side = 'both'
+
+[download]
+hash = 'f7bf72cac826d3a94bd4bf2f8a8cda665af947632e74fa123b61058fd5431b89b5a3ff91345d82fccda675cd211d337009ea8bb765b3d71dd2dbf0c1e5b667a4'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/sjxWxSao/versions/uYsK77Fw/shieldexp-fabric-1.20.1-1.3.7.jar'
+
+[update.modrinth]
+mod-id = 'sjxWxSao'
+version = 'uYsK77Fw'
+

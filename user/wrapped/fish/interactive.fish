@@ -14,9 +14,6 @@ bind \e\[3\;5~ kill-word
 # alias lt="eza --sort modified -1"
 abbr -a -g e eza
 
-# Bat
-alias bat="bat --theme=base16 --style=changes,header --plain"
-
 # Abbreviations
 abbr -a -g p python
 abbr -a -g pd pushd

@@ -79,4 +79,9 @@ in {
       };
     };
   };
+
+  # Mount the persist volume in the initrd, matching deimos/disks.nix and the
+  # proxmox profile; required if sops (age key under /nix/persist) is ever
+  # enabled here, and feeds the mnemosyne first-boot dir bootstrap.
+  fileSystems."/nix/persist".neededForBoot = true;
 }

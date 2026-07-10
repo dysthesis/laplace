@@ -137,7 +137,12 @@ format = " conda [$symbol$environment]($style)"
 
 [custom.taskwarrior]
 command = "task rc.verbose: rc.report.next.columns:description rc.report.next.labels:1 limit:1 next"
-when = "which task"
+# `command -v` in plain sh: the default shell is $STARSHIP_SHELL (fish), and a
+# child fish re-sources the entire vendor config on every prompt render;
+# `which` costs a further exec. Same predicate, same output, ~10 ms less per
+# prompt.
+when = "command -v task"
+shell = "sh"
 symbol = " "
 
 [dart]

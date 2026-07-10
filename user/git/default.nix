@@ -2,7 +2,12 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  # Single source of truth: the GPG key used for both commit signing and the
+  # gitattributes `encrypt` filter below. (Previously `${config.user.signingKey}`,
+  # which referenced a `config` arg this module doesn't take -> eval error.)
+  signingKey = "6008B52F296392B0";
+in {
   environment.systemPackages = with pkgs; [
     cloudflared
     difftastic
@@ -12,20 +17,26 @@
       User git
       ProxyCommand ${lib.getExe pkgs.cloudflared} access ssh --hostname ssh.git.dysthesis.com
   '';
-  programs.git = rec {
+  programs.git = {
     enable = true;
     lfs.enable = true;
+    # Build git with the libsecret credential helper so HTTPS tokens (e.g. the
+    # Forgejo PAT for git.dysthesis.com) live in the desktop keyring, not plaintext.
+    # The override ships git-credential-libsecret in $out/bin, so `helper = libsecret`
+    # (set in config below) resolves on PATH. Needs a running Secret Service
+    # (gnome-keyring / KWallet / KeePassXC), else the helper no-ops and git prompts.
+    package = pkgs.git.override {withLibsecret = true;};
     config = {
       init.defaultBranch = "main";
       user = {
         email = "antheoraviel@protonmail.com";
         name = "Dysthesis";
-        signingKey = "6008B52F296392B0";
+        inherit signingKey;
       };
       github.user = "dysthesis";
       gitlab."nw-syd-gitlab.cseunsw.tech/api/v4".user = "z5437039";
       filter.encrypt = {
-        clean = "gpg --batch --yes --encrypt --recipient ${config.user.signingKey}";
+        clean = "gpg --batch --yes --encrypt --recipient ${signingKey}";
         smudge = "gpg --batch --yes --decrypt";
       };
       commit = {
@@ -60,6 +71,7 @@
         pruneTags = true;
         all = true;
       };
+      credential.helper = "libsecret";
       help.autocorrect = "prompt";
       column.ui = "auto";
       diff = {

@@ -1,0 +1,14 @@
+name = "Retirement Home"
+author = "dysthesis"
+version = "1.0.0"
+description = "Custom modpack built on Fabulously Optimized, built for a private server."
+pack-format = "packwiz:1.1.0"
+
+[index]
+file = "index.toml"
+hash-format = "sha256"
+hash = "968e789d01c26c86a4e5aff6bc8d07874e17a64484bcaf23dc5e30a7f192b756"
+
+[versions]
+fabric = "0.19.2"
+minecraft = "1.20.1"

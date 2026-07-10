@@ -8,7 +8,48 @@
     inputs.nixos-hardware.nixosModules.common-gpu-amd # AMD GPU support
   ];
   config = {
-    boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
+    # Pregen-box overrides, deimos-only — loki keeps the pack's conservative
+    # settings while players are on it.
+    services.minecraft-servers.servers.retirement-home = {
+      # The pack's c2me config disables parallel worldgen (see
+      # c2me-pregen.toml for the reasoning).
+      files."config/c2me.toml" = ./c2me-pregen.toml;
+      # Pregen ticks legitimately run tens of seconds (c2me mid-tick chunk
+      # tasks), so any CPU competition (a kernel build, say) can push one past
+      # 60 s and the vanilla watchdog kills the server — that's the
+      # 2026-07-04 11:02 crash. No players here to protect; disable it.
+      serverProperties.max-tick-time = -1;
+    };
+
+    # Pregen wins CPU contention against the desktop session (default
+    # CPUWeight is 100). Only bites when cores are oversubscribed.
+    systemd.services.minecraft-server-retirement-home.serviceConfig.CPUWeight = 1000;
+
+    networking = {
+      hostId = "47494eeb";
+      defaultGateway = {
+        address = "10.0.20.1";
+        interface = "priv";
+      };
+      interfaces.priv.useDHCP = true;
+      interfaces.mgmt.ipv4.addresses = [
+        {
+          address = "10.0.30.10";
+          prefixLength = 24;
+        }
+      ];
+      vlans = {
+        mgmt = {
+          id = 30;
+          interface = "enp5s0";
+        };
+        priv = {
+          id = 20;
+          interface = "enp5s0";
+        };
+      };
+    };
+    # boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     laplace = {
       # harden = ["kernel"];
       profiles = ["desktop"];
@@ -46,7 +87,7 @@
       network = {
         bluetooth.enable = true;
         wifi.enable = true;
-        dnscrypt-proxy.enable = true;
+        dnscrypt-proxy.enable = false;
         tor = {
           enable = true;
           libera-chat-map.enable = true;
@@ -62,12 +103,29 @@
       };
 
       services = {
+        # Chunk pregen box: same module/seed as loki, so the world generated
+        # here transplants 1:1. Started manually (autoStart off), driven via
+        # the server console socket with Chunky; world rsyncs to loki after.
+        # No discord bridge — nobody chats with a pregen run.
+        minecraft.retirement-home = {
+          enable = true;
+          autoStart = false;
+          openFirewall = false;
+          # Worker count is pinned in c2me-pregen.toml (14), so heap no longer
+          # gates parallelism — it just has to absorb the allocation churn of
+          # 14 concurrent Terralith/Tectonic gens. 20 GiB + ~2.5 GiB JVM
+          # off-heap leaves ~8 GiB for desktop and page cache on the 31 GiB
+          # box; going higher starts eating the write-back cache the 300+ GB
+          # of region/LOD writes depend on.
+          memoryGb = 20;
+        };
+
         tailscale = {
           enable = true;
           denySubnetRoutes = true;
         };
         llm = {
-          enable = true;
+          enable = false;
           # backend = "vllm";
           modelRegistry = {
             # "qwen3.6-27b" = {
@@ -93,8 +151,6 @@
         };
       };
 
-      services.miniflux.enable = true;
-
       # Expose llama-cpp on the Podman bridge so Perplexica can reach it.
       # services.llama-cpp.host = "0.0.0.0";
 
@@ -106,12 +162,15 @@
       zram.enable = true;
 
       users = ["demiurge"];
-      display.servers = ["wayland"];
+      display = {
+        servers = ["wayland"];
+        wayland.compositor = "dwl";
+      };
 
       virtualisation.enable = true;
       nh = {
         enable = true;
-        flakePath = "/home/demiurge/Documents/Projects/nix-config";
+        flakePath = "/home/demiurge/Documents/Projects/laplace";
       };
     };
 
@@ -119,10 +178,6 @@
     time.timeZone = "Australia/Sydney";
     i18n.defaultLocale = "en_AU.UTF-8";
 
-    networking.nameservers = [
-      "1.1.1.1"
-      "1.0.0.1"
-    ];
     programs.steam = {
       enable = true;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play

@@ -1,9 +1,11 @@
 vcs := `if command -v jj >/dev/null 2>&1 \
            && jj root --ignore-working-copy --quiet >/dev/null 2>&1; then \
-            printf 'jj'; \
-          else \
-            printf 'git'; \
-          fi`
+             printf 'jj'; \
+           else \
+             printf 'git'; \
+           fi`
+retirement_home_service := "minecraft-server-retirement-home"
+retirement_home_stdin := "/run/minecraft/retirement-home.stdin"
 
 update FLAKE="":
   #!/usr/bin/env sh
@@ -66,4 +68,76 @@ clean:
   fd "core|result|out|test" --no-ignore-vcs -x rm
 
 proxmox HOST:
-  nix build .#nixosConfigurations.{{HOST}}.config.system.build.images.proxmox
+  nix build .#nixosConfigurations.{{HOST}}.config.system.build.proxmoxVMA
+
+# Push-deploy the Proxmox guests. `just deploy` does all of them; pass extra
+# colmena args through, e.g. `just deploy --on bifrost`. Deploy reach-critical
+# guests (bifrost/portunus/horos/hermes) one at a time.
+deploy *ARGS:
+  colmena apply --on @proxmox {{ARGS}}
+
+deploy-one HOST *ARGS:
+  colmena apply --on {{HOST}} {{ARGS}}
+
+# Generate (idempotent) a persisted sops age key on a host and print its public
+# recipient for .sops.yaml. TARGET is an ssh destination, e.g. root@10.0.20.81.
+# The path matches sops.age.keyFile in system/secrets - under /nix/persist so it
+# survives impermanence (/etc/secrets would not). Add the printed age1... line to
+# .sops.yaml, then `sops` the secret so this host can decrypt it.
+age-key TARGET:
+  #!/usr/bin/env sh
+  set -eu
+  ssh {{TARGET}} '
+    set -eu
+    f=/nix/persist/etc/secrets/age/keys.txt
+    install -d -m 700 "${f%/*}"
+    if [ ! -s "$f" ]; then
+      umask 077
+      nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -o "$f" >&2
+    fi
+    nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -y "$f"
+  '
+
+# Send a console command to the Retirement Home server (needs doas: the
+# stdin FIFO is minecraft:minecraft 660).
+mc +CMD:
+  printf '%s\n' "{{CMD}}" | doas tee {{retirement_home_stdin}} >/dev/null
+
+# Kick off a Chunky pregen around 0,0. Output lands in the server log, not
+# here — `just pregen-status` for a snapshot, `just pregen-watch` to follow.
+# WORLD selects the dimension, e.g. minecraft:the_nether / minecraft:the_end.
+pregen-start RADIUS="5000" WORLD="minecraft:overworld": (mc ("chunky world " + WORLD)) (mc "chunky center 0 0") (mc ("chunky radius " + RADIUS)) (mc "chunky start")
+
+pregen-pause: (mc "chunky pause")
+
+pregen-resume: (mc "chunky continue")
+
+# Cancel deletes the task's progress; Chunky wants a confirm within 10s.
+pregen-cancel: (mc "chunky cancel") (mc "chunky confirm")
+
+pregen-status: (mc "chunky progress")
+  #!/usr/bin/env sh
+  sleep 1
+  journalctl -u {{retirement_home_service}} -n 15 --no-pager | grep -i chunky || echo "no chunky output in recent log"
+
+pregen-watch:
+  journalctl -fu {{retirement_home_service}}
+
+tailnet-reconcile TARGET="root@10.0.50.2":
+  #!/usr/bin/env sh
+  set -eu
+  ssot=$(nix eval --json '.#nixosConfigurations.bifrost.config.laplace.tailnet.nodes')
+  live=$(ssh {{TARGET}} 'headscale nodes list --output json')
+  problems=$(printf '%s' "$live" | nix shell nixpkgs#jq -c jq -r --argjson ssot "$ssot" '
+    ($ssot | to_entries | map({key: .key, want: (.value.tags | sort)})) as $want
+    | (map({key: (.givenName // .name), value: ((.tags // []) | map(sub("^tag:"; "")) | sort)}) | from_entries) as $have
+    | [ $want[] | .key as $h | ($have[$h]) as $got
+        | if $got == null then "MISSING from tailnet: \($h)"
+          elif $got != .want then "DRIFT \($h): live=\($got|join(",")) ssot=\(.want|join(","))"
+          else empty end ]
+    | .[]')
+  if [ -n "$problems" ]; then
+    printf 'tailnet tag reconcile FAILED (live Headscale tags != SSOT):\n%s\n' "$problems" >&2
+    exit 1
+  fi
+  echo "tailnet tag reconcile OK: live tags == SSOT for all nodes"

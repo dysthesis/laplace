@@ -129,6 +129,14 @@
           argv = [termExe "--app-id=${terminal.appId}.task" "--title=Task" "-e" "taskwarrior-tui"];
         }
         {
+          name = "calscratch";
+          key = "c";
+          keysym = "XKB_KEY_c";
+          id = "${terminal.appId}.cal";
+          isterm = true;
+          argv = [termExe "--app-id=${terminal.appId}.cal" "--title=Calendar" "-e" "ikhal"];
+        }
+        {
           name = "signalscratch";
           key = "s";
           keysym = "XKB_KEY_s";
