@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   ...
@@ -7,7 +8,13 @@
   # gitattributes `encrypt` filter below. (Previously `${config.user.signingKey}`,
   # which referenced a `config` arg this module doesn't take -> eval error.)
   signingKey = "6008B52F296392B0";
-in {
+in
+  # Workstation-only (demiurge hosts). This module writes /etc/gitconfig, which
+  # EVERY git on the host reads — including Forgejo's server-side git on
+  # hephaestus, where `commit.gpgsign` (no secret key in the service's keyring)
+  # 500'd PR merges and `diff.external = difft` (not on the service PATH) 500'd
+  # PR diff views. Headless guests must not inherit a human's git identity.
+  lib.mkIf (lib.elem "demiurge" config.laplace.users) {
   environment.systemPackages = with pkgs; [
     cloudflared
     difftastic
