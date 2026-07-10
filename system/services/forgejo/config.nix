@@ -26,10 +26,11 @@ in {
     # From https://wiki.nixos.org/wiki/Forgejo
     #
     # No node-local reverse proxy or ACME here: TLS terminates at the edge on
-    # portunus's Caddy, which reverse-proxies git.dysthesis.com to this host's raw
-    # HTTP_PORT over the VLAN40->VLAN70 pinhole. Forgejo serves plain HTTP on
-    # :8080, and the hephaestus firewall scopes that port to portunus only. SSH_PORT
-    # is the system openssh port, already scoped to VLAN20 by the proxmox profile.
+    # portunus's Caddy, which gates git.dysthesis.com behind Anubis and proxies
+    # to this host's raw HTTP_PORT over the VLAN40->VLAN70 pinhole. Forgejo
+    # serves plain HTTP on :8080, and the hephaestus firewall scopes that port
+    # to portunus + the talos runner only. SSH_PORT is the system openssh port,
+    # already scoped to VLAN20 by the proxmox profile.
     mkIf cfg.enable {
       mnemosyne.dirs = [
         forgejo.stateDir
@@ -115,11 +116,15 @@ in {
             };
 
             # TLS terminates at portunus (10.0.40.2); Forgejo speaks plain HTTP on
-            # :8080. Trust that one proxy's X-Forwarded-For so audit logs and rate
-            # limiting attribute the real client IP, not portunus.
-            # REVERSE_PROXY_LIMIT stays at its default (1 = exactly one proxy hop).
+            # :8080. Requests traverse TWO proxies on portunus — Caddy, then the
+            # Anubis gate — so X-Forwarded-For arrives as "<client>, 127.0.0.1"
+            # (Anubis appends its view of Caddy, the loopback). Trust both hops
+            # so audit logs and rate limiting attribute the real client IP.
+            # Trusting 127.0.0.1 lets a hephaestus-local process spoof XFF via
+            # loopback; single-admin box, accepted.
             security = {
-              REVERSE_PROXY_TRUSTED_PROXIES = "10.0.40.2/32";
+              REVERSE_PROXY_TRUSTED_PROXIES = "10.0.40.2/32,127.0.0.1/32";
+              REVERSE_PROXY_LIMIT = 2;
               # Local-account password policy. PASSWORD_COMPLEXITY is a comma-joined
               # string, never a Nix list (the ini generator aborts on a list value).
               MIN_PASSWORD_LENGTH = 12;

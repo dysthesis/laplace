@@ -11,6 +11,7 @@
     deimos = "x86_64-linux"; # PC
     chaos = "x86_64-linux"; # Installer ISO
     hephaestus = "x86_64-linux"; # Forgejo host on Proxmox
+    talos = "x86_64-linux"; # Forgejo Actions runner on Proxmox
     hermes = "x86_64-linux"; # AdGuard Home
     portunus = "x86_64-linux"; # Reverse proxy host on Proxmox
     bifrost = "x86_64-linux"; # Headscale host on Proxmox

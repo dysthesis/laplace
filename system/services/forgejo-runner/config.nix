@@ -28,8 +28,8 @@ in {
     # Hardening the upstream module does not apply. DynamicUser already implies
     # ProtectSystem=strict, ProtectHome=read-only, NoNewPrivileges, RestrictSUIDSGID
     # and RemoveIPC; add the kernel-protection set it does NOT imply, plus resource
-    # pressure caps (forgejo-runner ships none — a runaway job otherwise contends
-    # for the whole ~6 GiB VM shared with Forgejo + Postgres).
+    # pressure caps (forgejo-runner ships none — a runaway job otherwise eats
+    # the whole ~6 GiB runner VM).
     #
     # Deliberately NOT set, each for a concrete reason (do not "helpfully" re-add):
     #   MemoryDenyWriteExecute  → breaks node's V8 JIT (nodejs is on PATH for JS actions)
@@ -38,8 +38,8 @@ in {
     #   MemoryMax (hard)        → risks killing a legit nix eval/build at a guessed line;
     #                             earlyoom (proxmox profile) is the real OOM backstop
     #
-    # simplification: MemoryHigh/CPUQuota/TasksMax are conservative figures sized to
-    # the 6 GiB ceiling, not measured. Tune (or drop) if legit CI is throttled.
+    # simplification: MemoryHigh/CPUQuota/TasksMax are conservative figures sized
+    # to a 6 GiB ceiling, not measured. Tune (or drop) if legit CI is throttled.
     # Unit name assumes a DNS-clean instanceName (no systemd-path escaping).
     systemd.services."gitea-runner-${cfg.instanceName}".serviceConfig = {
       MemoryHigh = "3G";

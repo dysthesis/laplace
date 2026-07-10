@@ -14,6 +14,11 @@
   # follows the ddclient A record automatically — do NOT add it to ddclient.
   gitHost = "git.${fqdn}";
   gitUpstream = "10.0.70.2:8080";
+  # Anubis (PoW anti-scraper gate) sits between Caddy and Forgejo. Loopback TCP
+  # rather than the module's default unix socket: the socket lands in
+  # /run/anubis owned by the anubis DynamicUser, and teaching caddy to connect
+  # means group/socket-mode coupling for zero gain on a single-host hop.
+  gitAnubis = "127.0.0.1:8923";
 in {
   sops.secrets.cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
   networking = {
@@ -43,7 +48,7 @@ in {
     proxmox = {
       cores = 1;
       memory = 1024; # MiB, ballooning ceiling
-      balloon = 384; # MiB, ballooning floor (caddy + ddclient are tiny; 384 leaves Go-runtime margin)
+      balloon = 512; # MiB, ballooning floor (caddy + ddclient + anubis; each is a small Go proc)
       diskSize = "20G";
     };
     security = {
@@ -69,13 +74,35 @@ in {
             reverse_proxy http://${headscaleUpstream}
           '';
           # Caddy imposes no request-body cap (unlike nginx's 1M), so large git
-          # pushes over HTTPS pass through without extra config.
+          # pushes over HTTPS pass through without extra config. Forgejo is
+          # gated behind Anubis (below), which proxies on to hephaestus.
           ${gitHost}.extraConfig = ''
-            reverse_proxy http://${gitUpstream}
+            reverse_proxy http://${gitAnubis}
           '';
         };
       };
     };
+  };
+
+  # Anti-scraper gate for the public Forgejo UI: Caddy -> Anubis -> hephaestus.
+  # The default bot rules only challenge browser-ish (Mozilla) user agents and
+  # block known AI scrapers; git's UA ("git/2.x") matches neither, but pin an
+  # explicit ALLOW so clone/push over HTTPS can never regress into an
+  # interstitial if upstream's defaults change. The talos runner bypasses this
+  # entirely (direct VLAN pinhole to hephaestus).
+  services.anubis.instances.git = {
+    settings = {
+      BIND = gitAnubis;
+      BIND_NETWORK = "tcp";
+      TARGET = "http://${gitUpstream}";
+    };
+    policy.extraBots = [
+      {
+        name = "git-clients";
+        user_agent_regex = "^git/";
+        action = "ALLOW";
+      }
+    ];
   };
 
   services.ddclient = {
