@@ -43,6 +43,7 @@
 
   laplace = {
     profiles = ["proxmox"];
+    harden = ["malloc" "kernel"];
     proxmox = {
       cores = 4;
       memory = 6144; # MiB, ballooning ceiling
