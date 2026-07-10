@@ -116,15 +116,13 @@ in {
             };
 
             # TLS terminates at portunus (10.0.40.2); Forgejo speaks plain HTTP on
-            # :8080. Requests traverse TWO proxies on portunus — Caddy, then the
-            # Anubis gate — so X-Forwarded-For arrives as "<client>, 127.0.0.1"
-            # (Anubis appends its view of Caddy, the loopback). Trust both hops
-            # so audit logs and rate limiting attribute the real client IP.
-            # Trusting 127.0.0.1 lets a hephaestus-local process spoof XFF via
-            # loopback; single-admin box, accepted.
+            # :8080. Requests traverse TWO proxies on portunus (Caddy, then the
+            # Anubis gate), but Anubis flattens X-Forwarded-For and strips its
+            # own loopback hop before proxying on, so exactly ONE proxy hop is
+            # visible here and XFF arrives as just "<client>".
+            # REVERSE_PROXY_LIMIT stays at its default (1 = exactly one proxy hop).
             security = {
-              REVERSE_PROXY_TRUSTED_PROXIES = "10.0.40.2/32,127.0.0.1/32";
-              REVERSE_PROXY_LIMIT = 2;
+              REVERSE_PROXY_TRUSTED_PROXIES = "10.0.40.2/32";
               # Local-account password policy. PASSWORD_COMPLEXITY is a comma-joined
               # string, never a Nix list (the ini generator aborts on a list value).
               MIN_PASSWORD_LENGTH = 12;
