@@ -37,7 +37,7 @@
     bifrost = "10.0.50.2";
     loki = "10.0.60.2";
     hephaestus = "10.0.70.2";
-    # talos = "10.0.80.2"; # uncomment once the VMA is restored and the guest is up
+    talos = "10.0.80.2";
   };
 
   mkNode = name: targetHost: {

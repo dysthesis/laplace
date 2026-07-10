@@ -76,8 +76,14 @@ in {
           # Caddy imposes no request-body cap (unlike nginx's 1M), so large git
           # pushes over HTTPS pass through without extra config. Forgejo is
           # gated behind Anubis (below), which proxies on to hephaestus.
+          # header_up is NOT optional: this caddy sends neither X-Real-Ip nor
+          # X-Forwarded-For on its own (verified live), and Anubis hard-500s
+          # ("maybeReverseProxy") without a resolvable client IP.
           ${gitHost}.extraConfig = ''
-            reverse_proxy http://${gitAnubis}
+            reverse_proxy http://${gitAnubis} {
+              header_up X-Real-Ip {client_ip}
+              header_up X-Forwarded-For {client_ip}
+            }
           '';
         };
       };
@@ -95,6 +101,11 @@ in {
       BIND = gitAnubis;
       BIND_NETWORK = "tcp";
       TARGET = "http://${gitUpstream}";
+      # Anubis rewrites X-Forwarded-For before proxying: it appends its own
+      # remote (caddy's loopback, always stripped again) and by default strips
+      # private addresses too — which would erase LAN clients and leave Forgejo
+      # attributing them all to portunus. Keep private IPs in the chain.
+      XFF_STRIP_PRIVATE = false;
     };
     policy.extraBots = [
       {
