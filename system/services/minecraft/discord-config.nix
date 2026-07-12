@@ -144,11 +144,11 @@
   # Settings for embed mode. Each sub-block below shares the same fields:
   #   asEmbed      - send as embed?
   #   colorHexCode - color of the embed bar
-  #   customJSON   - custom embed JSON, overrides colorHexCode. Docs:
-  #                  github.com/ErdbeerbaerLP/DiscordIntegration-Core/wiki/embed-mode
+  #   customJSON   - custom embed JSON, overrides colorHexCode. Placeholders:
+  #                  wiki.erdbeerbaerlp.de/dcintegration:custom-embeds
   embedMode = {
     # Enabling this sends configured messages as embeds (see sub-blocks below)
-    enabled = false;
+    enabled = true;
     # Starting & Started Messages
     startMessages = {
       asEmbed = true;
@@ -161,23 +161,42 @@
       colorHexCode = "#ed4245";
       customJSON = "";
     };
-    # Player join message
+    # Player join message. customJSON adds player head as author icon; color
+    # is decimal RGB (Discord embed JSON).
     playerJoinMessage = {
       asEmbed = true;
       colorHexCode = "#57f287";
-      customJSON = "";
+      customJSON = builtins.toJSON {
+        author = {
+          name = "%name% joined the game";
+          icon_url = "%avatarURL%";
+        };
+        color = 5763719; # #57f287
+      };
     };
     # Player leave messages (also containing timeouts)
     playerLeaveMessages = {
       asEmbed = true;
       colorHexCode = "#ed4245";
-      customJSON = "";
+      customJSON = builtins.toJSON {
+        author = {
+          name = "%name% left the game";
+          icon_url = "%avatarURL%";
+        };
+        color = 15548997; # #ed4245
+      };
     };
-    # Player Death message
+    # Player Death message. Dark red; black bar invisible on dark theme.
     deathMessage = {
       asEmbed = true;
-      colorHexCode = "#000000";
-      customJSON = "";
+      colorHexCode = "#992d22";
+      customJSON = builtins.toJSON {
+        author = {
+          name = "%deathMessage%";
+          icon_url = "%avatarURL%";
+        };
+        color = 10038562; # #992d22
+      };
     };
     # Advancement messages
     advancementMessage = {
@@ -185,11 +204,12 @@
       colorHexCode = "#fee75c";
       customJSON = "";
     };
-    # Player chat messages
+    # Player chat messages: plain text. Webhook already shows name + avatar;
+    # an embed box per chat line is clutter.
     chatMessages = {
       # Generate unique chat colors from player uuid?
       generateUniqueColors = true;
-      asEmbed = true;
+      asEmbed = false;
       colorHexCode = "#808080";
       customJSON = "";
     };
@@ -253,12 +273,13 @@
 
   # Webhook configuration
   webhook = {
-    # Whether the bot should use a webhook (it will create one). Standard channels only.
-    enable = false;
+    # Bot creates a webhook (standard channels only); chat then shows as the
+    # player (name + skin avatar). Bot needs Manage Webhooks in the channel.
+    enable = true;
     # The avatar used for server messages
     serverAvatarURL = "https://raw.githubusercontent.com/ErdbeerbaerLP/Discord-Chat-Integration/master/images/srv.png";
     # The name used for server messages
-    serverName = "Minecraft Server";
+    serverName = "Retirement Home";
     # Use the server name and avatar for RCON
     useServerNameForRcon = true;
     # Use the server name and avatar for Console
