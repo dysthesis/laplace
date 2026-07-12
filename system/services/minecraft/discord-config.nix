@@ -56,7 +56,7 @@
     # commands to discord.
     enabled = true;
     # The Role IDs of your Admin Roles (multiple roles which can access admin commands)
-    adminRoleIDs = ["352824137242116097"];
+    adminRoleIDs = ["1525803665233805513"];
     # Enable the list command in discord
     listCmdEnabled = true;
     # Show list command only for the user who runs it
