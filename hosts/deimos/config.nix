@@ -100,23 +100,6 @@
       };
 
       services = {
-        # Chunk pregen box: same module/seed as loki, so the world generated
-        # here transplants 1:1. Started manually (autoStart off), driven via
-        # the server console socket with Chunky; world rsyncs to loki after.
-        # No discord bridge — nobody chats with a pregen run.
-        minecraft.retirement-home = {
-          enable = true;
-          autoStart = false;
-          openFirewall = false;
-          # Worker count is pinned in c2me-pregen.toml (14), so heap no longer
-          # gates parallelism — it just has to absorb the allocation churn of
-          # 14 concurrent Terralith/Tectonic gens. 20 GiB + ~2.5 GiB JVM
-          # off-heap leaves ~8 GiB for desktop and page cache on the 31 GiB
-          # box; going higher starts eating the write-back cache the 300+ GB
-          # of region/LOD writes depend on.
-          memoryGb = 20;
-        };
-
         tailscale = {
           enable = true;
           denySubnetRoutes = true;
