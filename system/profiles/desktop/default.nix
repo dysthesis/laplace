@@ -38,7 +38,6 @@
       "unknown"
     ]);
 
-  # XDG MIME types
   associations = builtins.mapAttrs (_: v: (map (e: "${e}.desktop") v)) (
     {
       "application/pdf" = ["org.pwmt.zathura-pdf-mupdf"];

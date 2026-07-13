@@ -53,8 +53,8 @@
       inputs
       extraModules
       ;
-    # BUG: For some reason, wifi is fucked if I import the hardened.nix profile,
-    # but not if I add all of the options myself manually. This is so fucking weird.
+    # BUG: wifi breaks when importing the hardened.nix profile, but not when
+    # setting the same options manually.
     nixosProfiles = ["minimal"];
     specialArgs = {inherit lib;};
     config = {

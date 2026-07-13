@@ -108,7 +108,6 @@ in {
             ];
             gamemodeSupport = true;
           })
-          # unstable.tor-browser
           tigervnc
           (mkWrapper pkgs.unstable pkgs.unstable.obsidian ''
             wrapProgram $out/bin/obsidian \
@@ -133,7 +132,6 @@ in {
         ];
 
         productivity = with pkgs.configured; [
-          # read
           newsraft
           taskwarrior
           timewarrior

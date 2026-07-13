@@ -66,8 +66,8 @@
   };
 
   environment.systemPackages = with pkgs; [
-    vim # for emergencies
-    git # for pulling Nix flakes
+    vim
+    git
     python3
   ];
 }

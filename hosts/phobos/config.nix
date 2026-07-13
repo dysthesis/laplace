@@ -1,14 +1,5 @@
 {pkgs, ...}: {
   config = {
-    # reduce bootloader menu delay and tighten LUKS retry and timeout
-    # boot = {
-    #   loader.timeout = 0;
-    #   initrd.luks.devices."cryptroot" = {
-    #     device = "/dev/disk/by-partlabel/disk-main-luks";
-    #     crypttabExtraOpts = ["tries=1" "timeout=30"];
-    #   };
-    # };
-
     boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     laplace = {
       services.tailscale = {
@@ -58,7 +49,6 @@
         privesc = "doas";
         apparmor.enable = true;
         polkit.enable = true;
-        # secure-boot.enable = true;
         firewall.enable = true;
         fail2ban.enable = true;
       };

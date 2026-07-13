@@ -23,16 +23,6 @@ in {
       node.openFirewall = true;
       privateKey = "${cfg.dataDir}/keys/radicle";
       publicKey = "${cfg.dataDir}/keys/radicle.pub";
-
-      # settings = {
-      #   web.pinned.repositories = [
-      #     "rad:zNpNEwyLfo6z76EvGEr8LhCetqVD" # laplace
-      #   ];
-      #
-      #   node = {
-      #     seedingPolicy.default = "permissive";
-      #   };
-      # };
     };
   };
 }

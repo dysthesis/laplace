@@ -25,7 +25,7 @@ in {
         # Do not accept IP source route packets (we're not a router)
         "net.ipv4.conf.all.accept_source_route" = false;
         "net.ipv6.conf.all.accept_source_route" = false;
-        # Don't send ICMP redirects (again, we're on a router)
+        # Don't send ICMP redirects (again, we're not a router)
         "net.ipv4.conf.all.send_redirects" = false;
         "net.ipv4.conf.default.send_redirects" = false;
         # Refuse ICMP redirects (MITM mitigations)
@@ -37,9 +37,8 @@ in {
         "net.ipv6.conf.default.accept_redirects" = false;
         # Protects against SYN flood attacks
         "net.ipv4.tcp_syncookies" = true;
-        # Incomplete protection again TIME-WAIT assassination
+        # Incomplete protection against TIME-WAIT assassination
         "net.ipv4.tcp_rfc1337" = true;
-        # And other stuff
         "net.ipv4.conf.all.log_martians" = true;
         "net.ipv4.conf.default.log_martians" = true;
         "net.ipv4.icmp_echo_ignore_broadcasts" = true;
@@ -48,15 +47,13 @@ in {
         "net.ipv4.tcp_timestamps" = false;
 
         # TCP optimization
-        # TCP Fast Open is a TCP extension that reduces network latency by packing
-        # data in the sender’s initial TCP SYN. Setting 3 = enable TCP Fast Open for
-        # both incoming and outgoing connections:
+        # 3 = TCP Fast Open on both incoming and outgoing connections
         "net.ipv4.tcp_fastopen" = 3;
         # Bufferbloat mitigations + slight improvement in throughput & latency
         "net.ipv4.tcp_congestion_control" = "bbr";
         "net.core.default_qdisc" = "cake";
 
-        # Other stuff that I am too lazy to document
+        # buffer/backlog/conntrack sizing, taken as-is from the source above
         "net.core.optmem_max" = 65536;
         "net.core.rmem_default" = 1048576;
         "net.core.rmem_max" = 16777216;

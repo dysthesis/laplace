@@ -4,8 +4,8 @@
   ...
 }: {
   imports = [
-    inputs.nixos-hardware.nixosModules.common-cpu-amd # APU logic
-    inputs.nixos-hardware.nixosModules.common-gpu-amd # AMD GPU support
+    inputs.nixos-hardware.nixosModules.common-cpu-amd
+    inputs.nixos-hardware.nixosModules.common-gpu-amd
   ];
   config = {
     # Pregen-box overrides, deimos-only — loki keeps the pack's conservative
@@ -49,9 +49,7 @@
         };
       };
     };
-    # boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     laplace = {
-      # harden = ["kernel"];
       profiles = ["desktop"];
       hardware = {
         cpu = ["amd"];
@@ -82,7 +80,6 @@
       };
 
       bootloader = "systemd-boot";
-      # docker.enable = true;
 
       network = {
         bluetooth.enable = true;
@@ -126,12 +123,7 @@
         };
         llm = {
           enable = false;
-          # backend = "vllm";
           modelRegistry = {
-            # "qwen3.6-27b" = {
-            #   url = "https://huggingface.co/unsloth/Qwen3.6-27B-MTP-GGUF/resolve/main/Qwen3.6-27B-Q4_K_M.gguf";
-            #   sha256 = "sha256-p8vT7MDj+bMz7e5hrma8h+1xPF1JWHqDVYFHIu0yng8=";
-            # };
             "qwen3.6-35b-a3b" = {
               url = "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q6_K.gguf";
               sha256 = "sha256-SZNbBK2IPC89TaYfZbYJ1Efa1n0LCEU7kKuwmhuzVGQ=";
@@ -150,9 +142,6 @@
           webui.enable = false;
         };
       };
-
-      # Expose llama-cpp on the Podman bridge so Perplexica can reach it.
-      # services.llama-cpp.host = "0.0.0.0";
 
       sound = {
         enable = true;
@@ -180,8 +169,8 @@
 
     programs.steam = {
       enable = true;
-      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-      dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+      remotePlay.openFirewall = true;
+      dedicatedServer.openFirewall = true;
 
       extraCompatPackages = with pkgs; [
         proton-ge-bin

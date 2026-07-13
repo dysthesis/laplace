@@ -180,7 +180,6 @@ in {
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUPaVrhCJ8fDKDYCcIeICgCv6W+0GdGmMDrngIg1oKg demiurge@deimos"
     ];
 
-    # Real impermanence: tmpfs root, btrfs-backed persistent /nix + /nix/persist.
     mnemosyne.enable = true;
     fileSystems."/nix/persist".neededForBoot = true;
     disko.devices = {

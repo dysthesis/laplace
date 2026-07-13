@@ -34,7 +34,6 @@ in {
           flags = ["-af"];
         };
 
-        # Extra packages to be installed in the Podman wrapper
         extraPackages = with pkgs; [
           gvisor
         ];

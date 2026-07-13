@@ -29,15 +29,12 @@
   };
 
   # Server-admin mods, server-side only (never in the client zip, so no drift):
-  # Ledger = block logging + `/ledger rollback`; squaremap = server-rendered web
-  # map served at map.dysthesis.com. squaremap needs only fabric-api (in the pack).
-  # Ledger is PINNED to 1.2.8, NOT the newest 1.3.18-backport: 1.3.18 hard-requires
-  # fabric-language-kotlin >=1.13.4+kotlin.2.2.0, but the pack ships FLK 1.10.18 and
-  # bumping it would ripple through every other Kotlin mod (and drift from the
-  # client). 1.2.8 requires only FLK >=1.9.4, which the pack's 1.10.18 satisfies;
-  # its `breaks: cardboard` is moot (Cardboard isn't installed). If the pack's FLK
-  # is ever bumped past 1.13.4, move back to 1.3.18-backport. Hashes from:
-  #   nix store prefetch-file --hash-type sha512 <url>
+  # Ledger = block logging + `/ledger rollback`; squaremap = web map at
+  # map.dysthesis.com (needs only fabric-api, already in the pack).
+  # Ledger PINNED to 1.2.8, not 1.3.18-backport: 1.3.18 needs fabric-language-kotlin
+  # >=1.13.4 but the pack ships 1.10.18, and bumping FLK ripples through every other
+  # Kotlin mod (and drifts from the client). 1.2.8 needs only >=1.9.4. If the
+  # pack's FLK ever passes 1.13.4, move back to 1.3.18-backport.
   ledger = pkgs.fetchurl {
     url = "https://cdn.modrinth.com/data/LVN9ygNV/versions/pOxgWfwI/ledger-1.2.8.jar";
     hash = "sha512-gjCufvVJXdQ7brwZ+yErf/sQ3FcfxYbsx+LMgXeYnapBwQKsOG2CWGyDoLSLnbop8JX/pLjXjjTXFeJYMBF/jQ==";
@@ -47,11 +44,8 @@
     hash = "sha512-4cjgvrjJUtvgoJAtAQIHqwx3SovdOXE2kxaVIIHgO3f7Vm6q2rWRK6MSStMNW5QZfQ2T7Nvdl/hsO/QBDKI97g==";
   };
 
-  # The mod config as Nix data (discord-config.nix), rendered to
-  # config/Discord-Integration.toml. botToken/botChannel stay @VAR@ placeholders
-  # substituted at server start from the env file by nix-minecraft. The invite
-  # link is overridden here (not in discord-config.nix) because the file
-  # otherwise ships the mod's literal example URL, discord.gg/myserver.
+  # discord-config.nix rendered to TOML (see its header for the @VAR@ secret
+  # mechanism), with the mod's example invite URL overridden when one is set.
   discordIntegrationConfig =
     (pkgs.formats.toml {}).generate "Discord-Integration.toml"
     (recursiveUpdate (import ./discord-config.nix)
@@ -62,10 +56,9 @@
         };
       }));
 
-  # Bring the sparse squaremap config into the store as its own path (with proper
-  # context). A bare `./squaremap-config.yml` reference in the start-pre file-copy
-  # is otherwise a contextless flake-source path — nix warns it "will not have a
-  # correct store reference".
+  # builtins.path gives the config a proper store context; a bare
+  # ./squaremap-config.yml in the start-pre file-copy is contextless — nix
+  # warns it "will not have a correct store reference".
   squaremapConfig = builtins.path {
     path = ./squaremap-config.yml;
     name = "squaremap-config.yml";
@@ -215,20 +208,16 @@ in {
     # ever touching the store. Global option, but loki runs one server.
     services.minecraft-servers.environmentFile = mkIf cfg.discord.enable cfg.discord.environmentFile;
 
-    # nix-minecraft's unit hardening sets RestrictAddressFamilies without
-    # AF_NETLINK. glibc getaddrinfo probes interfaces over a netlink socket
-    # before resolving, so without it every outbound DNS lookup in the sandboxed
-    # JVM throws UnknownHostException — breaking both Mojang online-mode auth and
-    # the Discord bot's login. Add AF_NETLINK back; the rest of the hardening
-    # (no caps, PrivateDevices, etc.) is untouched.
+    # nix-minecraft's hardening omits AF_NETLINK, but glibc getaddrinfo probes
+    # interfaces over netlink before resolving — without it every DNS lookup in
+    # the JVM throws UnknownHostException, breaking Mojang auth and the Discord
+    # bot. Re-add it; the rest of the hardening is untouched.
     systemd.services."minecraft-server-retirement-home".serviceConfig.RestrictAddressFamilies =
       lib.mkForce ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
 
-    # --- World maintenance: 6-hourly btrfs snapshots + a nightly restart. ---
-    # Both drive the server over nix-minecraft's stdin socket (default runDir
-    # /run/minecraft + the "retirement-home" server name), mirroring the module's
-    # own ExecStop `echo stop > …stdin` idiom. Whole-VM PBS->B2 stays the coarse
-    # disaster-recovery tier; these snapshots are the fast in-guest rollback tier.
+    # World maintenance: 6-hourly btrfs snapshots + nightly restart, both driving
+    # the server via nix-minecraft's stdin socket (its own ExecStop idiom).
+    # Whole-VM PBS->B2 stays the disaster tier; these are the fast rollback tier.
     systemd.tmpfiles.rules = ["d /nix/.mc-snapshots 0700 root root -"];
 
     systemd.services.mc-world-snapshot = {
@@ -314,14 +303,11 @@ in {
           # Auth/whitelist stay enforced by online-mode + whitelist; this only
           # allows unsigned chat so No Chat Reports can strip reportable proofs.
           enforce-secure-profile = false;
-          # Defence-in-depth behind the tailnet `game` ACL: only accounts in
-          # whitelist.json may join, and enforce-whitelist also kicks any
-          # non-listed player still online on a /reload. whitelist.json lives at
-          # the data-dir root (NOT under the re-copied config/ tree), so
-          # `whitelist add <ign>` from the console persists across restarts.
-          # NOTE: enabling this with an empty list locks EVERYONE out (ops
-          # included) until you add them — run the adds from the console right
-          # after the first deploy; the console bypasses the whitelist.
+          # Defence-in-depth behind the tailnet `game` ACL. whitelist.json lives
+          # at the data-dir root (not the re-copied config/ tree), so console
+          # `whitelist add` persists. FOOTGUN: an empty list locks everyone out,
+          # ops included — add players from the console (it bypasses the
+          # whitelist) right after first deploy.
           white-list = true;
           enforce-whitelist = true;
           enable-rcon = false;
@@ -336,26 +322,22 @@ in {
           {
             config = "${serverPack}/config";
             "server-icon.png" = serverIcon;
-            # Moonlight loads this folder (path from moonlight-common.json's
-            # global_datapacks_folder) as a server-data pack source. It lives at
-            # the PACK root, so the config-tree copy above misses it — map it
-            # explicitly or the WooledBoots smithing fix and VillagersPlus
-            # numismatic trades silently vanish (that regression shipped once,
-            # with the 2026-07-07 packwiz migration).
+            # Moonlight loads this folder (global_datapacks_folder in
+            # moonlight-common.json) as a datapack source. It sits at the PACK
+            # root, so the config/ copy above misses it — unmapped, the
+            # WooledBoots and VillagersPlus fixes silently vanish (regression
+            # shipped with the 2026-07-07 packwiz migration).
             "moonlight-global-datapacks" = "${serverPack}/moonlight-global-datapacks";
-            # squaremap keeps its config in its OWN data dir (<datadir>/squaremap/),
-            # NOT the Fabric config/ dir — a config/squaremap/config.yml is silently
-            # ignored (that mistake shipped once). That dir sits outside the config/
-            # tree re-copied each start, so it (and tiles) already persist; we manage
-            # this file only to pin overrides: loopback bind, public web-address, and
-            # capped render threads so a fullrender stops dragging TPS. See
-            # squaremap-config.yml.
+            # squaremap reads <datadir>/squaremap/, NOT config/ — a
+            # config/squaremap/config.yml is silently ignored (shipped once).
+            # The dir already persists; this file is managed only to pin
+            # loopback bind, public web-address, and capped render threads
+            # (fullrender was dragging TPS).
             "squaremap/config.yml" = squaremapConfig;
           }
-          # Keyed after "config" so it lands in the dir copy, not under it: the
-          # whole config tree is re-copied each start, so the mod's own writes to
-          # this file never persist — we re-supply it (token substituted from
-          # environmentFile at ExecStartPre) every start instead.
+          # The config tree is re-copied each start, so the mod's own writes
+          # never persist — re-supply the file (token substituted at
+          # ExecStartPre) every start instead.
           // optionalAttrs cfg.discord.enable {
             "config/Discord-Integration.toml" = discordIntegrationConfig;
           };

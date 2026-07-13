@@ -24,7 +24,6 @@ in {
       enableGeoIP = false;
       settings = {
         Sandbox = true;
-        # Performance and security settings
         CookieAuthentication = true;
         AvoidDiskWrites = 1;
         HardwareAccel = 1;

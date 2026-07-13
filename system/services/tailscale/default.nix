@@ -21,20 +21,10 @@ in {
   config = mkIf cfg.enable {
     mnemosyne.dirs = ["/var/lib/tailscale"];
 
-    # Taken from https://wiki.nixos.org/wiki/Tailscale
     services = {
       tailscale = {
         enable = true;
         disableUpstreamLogging = true;
-        # Optionally refuse subnet routes advertised by tailnet peers. Without this, a
-        # peer advertising the local LAN routes it through the tunnel and blackholes
-        # LAN hosts (router, proxmox) when the advertiser drops.
-        #
-        # denyDNS keeps tailscaled out of the host's DNS. The runtime --accept-dns=false
-        # alone is not enough: the upstream tailscale module enables systemd-resolved
-        # (mkDefault true), whose 127.0.0.53/127.0.0.54 stubs hold tcp/53 and collide
-        # with a local resolver binding 0.0.0.0:53 (e.g. AdGuard). So also tear down the
-        # resolved unit; the host then resolves via networking.nameservers directly.
         extraSetFlags =
           optionals cfg.advertiseExitNode ["--advertise-exit-node"]
           ++ optionals cfg.denySubnetRoutes ["--accept-routes=false"]
@@ -42,6 +32,8 @@ in {
           ++ optionals (operatorUser != null) ["--operator=${operatorUser}"];
       };
 
+      # mkForce: the upstream tailscale module mkDefault-enables resolved, whose
+      # 127.0.0.53 stub would squat :53 (see the denyDNS option description).
       resolved.enable = mkIf cfg.denyDNS (mkForce false);
     };
 
@@ -51,9 +43,7 @@ in {
       nftables.enable = true;
       firewall = {
         enable = true;
-        # Always allow traffic from your Tailscale network
         trustedInterfaces = [config.services.tailscale.interfaceName];
-        # Allow the Tailscale UDP port through the firewall
         allowedUDPPorts = [config.services.tailscale.port];
         # Tailscale's asymmetric routing (and subnet-router/exit-node forwarding)
         # is dropped by strict reverse-path filtering, so relax it to "loose" on

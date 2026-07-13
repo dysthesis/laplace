@@ -1,7 +1,6 @@
 # Miniflux + SilverBullet + TaskChampion + Radicale host, running as a Proxmox guest. Generic VM concerns
 # (disk, impermanence, bootloader, virtio, qemuGuest, the archon admin user, the
-# VMA artifact) live in the `proxmox` profile; this module only declares the app
-# apps.
+# VMA artifact) live in the `proxmox` profile; this module only declares the apps.
 #
 # TLS terminates on the node-local Caddy. Apps bind loopback; only Caddy reaches
 # their raw ports, and :443 is tailnet-only via laplace.services.tailscale.
@@ -137,7 +136,7 @@ in {
   };
 
   environment.systemPackages = with pkgs; [
-    vim # for emergencies
-    git # for pulling Nix flakes
+    vim
+    git
   ];
 }

@@ -50,7 +50,7 @@
 
   sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/charon.yaml;
   environment.systemPackages = with pkgs; [
-    vim # for emergencies
-    git # for pulling Nix flakes
+    vim
+    git
   ];
 }

@@ -18,7 +18,6 @@ in {
       "/var/lib/postgresql"
     ];
 
-    # Tell sops-nix that this should be found in the default sops file.
     sops.secrets.miniflux_admin = {};
 
     services.miniflux = {

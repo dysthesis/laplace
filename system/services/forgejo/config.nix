@@ -23,8 +23,6 @@ in {
     inherit (config.services) forgejo;
     srv = forgejo.settings.server;
   in
-    # From https://wiki.nixos.org/wiki/Forgejo
-    #
     # No node-local reverse proxy or ACME here: TLS terminates at the edge on
     # portunus's Caddy, which gates git.dysthesis.com behind Anubis and proxies
     # to this host's raw HTTP_PORT over the VLAN40->VLAN70 pinhole. Forgejo
@@ -72,7 +70,6 @@ in {
             user = "git";
             name = "git";
           };
-          # Enable support for Git Large File Storage
           lfs.enable = true;
 
           # Logical dump (repos + DB + config) alongside the whole-VM PBS backups,
@@ -92,21 +89,18 @@ in {
           settings = {
             repository = {
               USE_COMPAT_SSH_URI = false;
-              # New repos default to private; opt one public deliberately.
               DEFAULT_PRIVATE = "private";
             };
             DEFAULT.APP_NAME = "Hephaestus";
 
             server = {
               DOMAIN = "git.dysthesis.com";
-              # You need to specify this to remove the port from URLs in the web UI.
               ROOT_URL = "https://${srv.DOMAIN}/";
               HTTP_PORT = 8080;
               SSH_USER = "git";
               SSH_PORT = lib.head config.services.openssh.ports;
             };
 
-            # You can temporarily allow registration to create an admin user.
             # Registration stays closed; anonymous viewing of *public* repos is
             # left ON (REQUIRE_SIGNIN_VIEW unset) so a repo can be shared by link.
             service = {
@@ -132,7 +126,6 @@ in {
               # Reject API tokens passed in the URL query string (they leak via
               # access logs and Referer headers).
               DISABLE_QUERY_AUTH_TOKEN = true;
-              # Force the (single) admin account to enrol 2FA.
               GLOBAL_TWO_FACTOR_REQUIREMENT = "admin";
             };
 
@@ -141,24 +134,12 @@ in {
             # https-ROOT_URL auto-detect. Force it true — the edge is HTTPS-only.
             session.COOKIE_SECURE = true;
 
-            # Don't disclose the exact Forgejo version in the page footer.
             other.SHOW_FOOTER_VERSION = false;
 
-            # Add support for actions, based on act: https://github.com/nektos/act
             actions = {
               ENABLED = true;
               DEFAULT_ACTIONS_URL = "github";
             };
-
-            # Sending emails is completely optional
-            # You can send a test email from the web UI at:
-            # Profile Picture > Site Administration > Configuration >  Mailer Configuration
-            # mailer = {
-            #   ENABLED = true;
-            #   SMTP_ADDR = "mail.example.com";
-            #   FROM = "noreply@${srv.DOMAIN}";
-            #   USER = "noreply@${srv.DOMAIN}";
-            # };
           };
         };
       };

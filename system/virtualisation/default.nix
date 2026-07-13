@@ -17,17 +17,12 @@ in {
       libvirtd = {
         enable = true;
 
-        # Maybe this is what was slowing down shutdowns
+        # host shutdowns were slow; suspected serial VM teardown
         parallelShutdown = 10;
         qemu = {
           package = pkgs.qemu_kvm;
           runAsRoot = true; # TODO figure out how to make it work when this is set to false.
           swtpm.enable = true;
-
-          # ovmf = {
-          #   enable = true;
-          #   packages = [ pkgs.OVMFFull.fd ];
-          # };
         };
 
         onBoot = "ignore";

@@ -70,7 +70,6 @@ in {
   };
 
   config = let
-    # list of users managed by ariadne
     users = attrNames (filterAttrs (_name: user: user.ariadne) config.users.users);
 
     ariadne-link = let
@@ -96,7 +95,6 @@ in {
           ExecStart = "${ariadne-link}";
         };
         environment = {
-          # epic systemd momento
           HOME = config.users.users.${user}.home;
         };
       };

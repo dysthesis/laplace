@@ -33,8 +33,6 @@ in
     font-size = ${toString fontSize}
     window-padding-x = ${toString padding}
     window-padding-y = ${toString padding}
-    # background-opacity = 0.75
-    # background-blur = true
     window-decoration = ${toString withDecorations}
     confirm-close-surface = false
     command = ${lib.getExe pkgs.configured.fish}
@@ -63,6 +61,5 @@ in
     selection-background = 7a7a7a
     selection-foreground = 0a0a0a
 
-    # Bindings
     keybind = ctrl+enter=unbind
   ''

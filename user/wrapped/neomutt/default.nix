@@ -15,8 +15,8 @@
 
   deps = [
     notmuch
-    pkgs.cacert # Essential for SSL certificate validation
-    pythonWithDeps # This adds the python interpreter with its libs to the PATH
+    pkgs.cacert # SSL certificate validation
+    pythonWithDeps
   ];
 in
   mkWrapper pkgs neomutt ''

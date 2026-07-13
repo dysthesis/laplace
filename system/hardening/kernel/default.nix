@@ -16,41 +16,30 @@
   cfg = config.laplace.harden;
 in {
   config = mkIf (elem "kernel" cfg) {
-    # This section is stolen from https://github.com/NotAShelf/nyx/blob/319b1f6fe4d09ff84d83d1f8fa0d04e0220dfed7/modules/core/common/system/security/kernel.nix#L57
+    # from https://github.com/NotAShelf/nyx/blob/319b1f6fe4d09ff84d83d1f8fa0d04e0220dfed7/modules/core/common/system/security/kernel.nix#L57
     security = {
       protectKernelImage = mkForce true; # disables hibernation
 
-      # Breaks virtd, wireguard and iptables by disallowing them from loading
-      # modules during runtime. You may enable this module if you wish, but do
-      # make sure that the necessary modules are loaded declaratively before
-      # doing so. Failing to add those modules may result in an unbootable system!
+      # off: breaks virtd, wireguard, iptables (they load modules at runtime);
+      # enabling without every needed module declared can make the system unbootable
       lockKernelModules = mkForce false;
 
-      # Force-enable the Page Table Isolation (PTI) Linux kernel feature
-      # helps mitigate Meltdown and prevent some KASLR bypasses.
+      # mitigates Meltdown and some KASLR bypasses
       forcePageTableIsolation = mkForce true;
 
-      # User namespaces are required for sandboxing. Better than nothing imo.
+      # required for sandboxing
       allowUserNamespaces = mkForce true;
 
-      # Disable unprivileged user namespaces, unless containers are enabled
-      # required by podman to run containers in rootless mode.
+      # podman rootless needs unprivileged userns
       unprivilegedUsernsClone = mkDefault true;
     };
 
     boot = {
       kernelPackages = mkDefault pkgs.linuxPackages_hardened; # BUG: causes kernel panic
       kernelParams = [
-        # Don't merge slabs
         "slab_nomerge"
-
-        # Overwrite free'd pages
-        "page_poison=1"
-
-        # Enable page allocator randomization
-        "page_alloc.shuffle=1"
-
-        # Disable debugfs
+        "page_poison=1" # overwrite freed pages
+        "page_alloc.shuffle=1" # randomise page allocator
         "debugfs=off"
       ];
 
@@ -84,17 +73,14 @@ in {
         "ufs"
       ];
 
-      # Setting these to mkForce since I think guaranteeing that hardening options
-      # apply when enabled is more important than anything else. Hardening should
-      # override all other options.
-      # Hide kptrs even for processes with CAP_SYSLOG
+      # mkForce: hardening, when enabled, should override everything else.
       kernel.sysctl = {
+        # hide kptrs even from CAP_SYSLOG
         "kernel.kptr_restrict" = mkOverride 500 2;
 
-        # Disable bpf() JIT (to eliminate spray attacks)
+        # no bpf() JIT (eliminates spray attacks)
         "net.core.bpf_jit_enable" = mkForce false;
 
-        # Disable ftrace debugging
         "kernel.ftrace_enabled" = mkForce false;
 
         # Enable strict reverse path filtering (that is, do not attempt to route

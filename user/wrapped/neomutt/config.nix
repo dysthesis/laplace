@@ -31,7 +31,6 @@ in
         set certificate_file = "$HOME/.cache/mutt/certificates"
         unset record
 
-        # G to get mail
         set editor = "nvim"
         set charset = "utf-8"
         set imap_authenticators="oauthbearer:xoauth2"
@@ -39,32 +38,31 @@ in
         set smtp_authenticators=''${imap_authenticators}
         set smtp_oauth_refresh_command=''${imap_oauth_refresh_command}
 
-        # settings
         set pager_index_lines = 10
-        set pager_context = 3                # show 3 lines of context
-        set pager_stop                       # stop at end of message
-        set menu_scroll                      # scroll menu
-        set tilde                            # use ~ to pad mutt
-        set move=no                          # don't move messages when marking as read
-        set mail_check = 30                  # check for new mail every 30 seconds
-        set imap_keepalive = 900             # 15 minutes
-        set sleep_time = 0                   # don't sleep when idle
-        set wait_key = no		                 # mutt won't ask "press key to continue"
-        set envelope_from                    # which from?
-        set edit_headers                     # show headers when composing
-        set fast_reply                       # skip to compose when replying
-        set askcc                            # ask for CC:
-        set fcc_attach                       # save attachments with the body
-        set forward_format = "Fwd: %s"       # format of subject when forwarding
-        set forward_decode                   # decode when forwarding
-        set forward_quote                    # include message in forwards
-        set mime_forward                     # forward attachments as part of body
-        set attribution = "On %d, %n wrote:" # format of quoting header
-        set reply_to                         # reply to Reply to: field
-        set reverse_name                     # reply as whomever it was to
-        set include                          # include message in replies
-        set text_flowed=yes                  # correct indentation for plain text
-        unset sig_dashes                     # no dashes before sig
+        set pager_context = 3
+        set pager_stop
+        set menu_scroll
+        set tilde        # pad short pages with ~
+        set move=no      # don't move read messages to mbox
+        set mail_check = 30
+        set imap_keepalive = 900 # 15 minutes
+        set sleep_time = 0
+        set wait_key = no # no "press key to continue"
+        set envelope_from
+        set edit_headers
+        set fast_reply   # skip straight to compose when replying
+        set askcc
+        set fcc_attach
+        set forward_format = "Fwd: %s"
+        set forward_decode
+        set forward_quote
+        set mime_forward # forward attachments inline, not as attachment
+        set attribution = "On %d, %n wrote:"
+        set reply_to
+        set reverse_name # reply as whichever address it was sent to
+        set include
+        set text_flowed=yes
+        unset sig_dashes
         unset markers
 
         # Sort by newest conversation first.
@@ -73,13 +71,10 @@ in
         set sort_re
         set sort = reverse-threads
         set sort_aux = last-date-received
-        # How we reply and quote emails.
         set reply_regexp = "^(([Rr][Ee]?(\[[0-9]+\])?: *)?(\[[^]]+\] *)?)*"
         set quote_regexp = "^( {0,4}[>|:#%]| {0,4}[a-z0-9]+[>|]+)+"
-        set send_charset = "utf-8:iso-8859-1:us-ascii" # send in utf-8
+        set send_charset = "utf-8:iso-8859-1:us-ascii"
 
-        #sidebar
-        # set sidebar_visible # comment to disable sidebar by default
         set sidebar_short_path
         set sidebar_folder_indent
         set sidebar_format = "%B %* [%?N?%N / ?%S]"
@@ -91,13 +86,8 @@ in
         set mail_check_stats
         set sleep_time = 0
 
-        # disable the help display
         set help = no
-
-        # move the status bar to the top
         set status_on_top = yes
-
-        # and show some useful status information there
         set status_format = "  %u %?p?  %p&?%?F?   %F&? %>  %m "
 
         set index_format  = "%4C %?X?& ?%S %.70s %> %L %D"
@@ -120,13 +110,10 @@ in
         bind attach	       l			view-attach
         bind browser,alias l			select-entry
         bind index				/			search
-        # Reply to all recipients
         bind index,pager 			R			group-reply
-        ## default binding for limit is l
+        # vim-style hjkl above shadows the default l/? /h bindings; relocate them
         bind index				?			limit
-        ## default binding for help is ?
         bind index,pager,attach			<F1>			help
-        ## default binding for header view (toggle-weed) is h
         bind pager				H			display-toggle-weed
         bind attach,index,pager 		\CD 			next-page
         bind attach,index,pager 		\CU 			previous-page
@@ -135,18 +122,16 @@ in
         set mailcap_path   = ${mailcap}
         auto_view text/html
 
-        # Default index colors:
         color index yellow default '.*'
         color index_author green default '.*'
         color index_number blue default
         color index_subject white default '.*'
 
-        # For new mail:
+        # ~N = new mail
         color index brightyellow black "~N"
         color index_author brightgreen black "~N"
         color index_subject brightwhite black "~N"
 
-        # Header colors:
         color header blue default ".*"
         color header brightmagenta default "^(From)"
         color header brightwhite default "^(Subject)"

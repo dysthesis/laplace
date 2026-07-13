@@ -10,7 +10,6 @@
     inherit (builtins) mapAttrs;
     lib = import ./nix/lib nixpkgs;
 
-    # Systems to support
     systems = [
       "aarch64-linux"
       "x86_64-linux"
@@ -55,9 +54,7 @@
             program = lib.getExe (import ./bench pkgs);
           };
         };
-      # for `nix fmt`
       formatter = pkgs: treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.wrapper;
-      # for `nix flake check`
       checks = pkgs:
         {
           formatting = treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
@@ -137,7 +134,6 @@
     # Supposedly faster Nix.
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
-    # Formatter for the whole codebase
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -185,7 +181,6 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Declarative disk management
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -218,7 +213,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Secrets management
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -74,7 +74,7 @@
   sops.secrets.action_runner.sopsFile = ../../system/secrets/talos.yaml;
 
   environment.systemPackages = with pkgs; [
-    vim # for emergencies
-    git # for pulling Nix flakes
+    vim
+    git
   ];
 }

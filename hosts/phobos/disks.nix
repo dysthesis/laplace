@@ -21,7 +21,6 @@ in {
           };
 
           luks = {
-            # Use the rest of the disk
             size = "100%";
             content = {
               type = "luks";
@@ -65,7 +64,6 @@ in {
       };
     };
 
-    # Make root and home impermanent
     nodev = let
       mountOptions = [
         "size=2G"

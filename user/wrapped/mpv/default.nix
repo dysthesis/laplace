@@ -25,7 +25,6 @@
         mpv-webm
         uosc
         ;
-      # inherit whisperSubs;
     };
   };
   config = pkgs.stdenv.mkDerivation (_finalAttrs: {

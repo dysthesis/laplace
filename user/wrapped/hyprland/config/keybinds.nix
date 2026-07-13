@@ -85,7 +85,6 @@ in {
     "XF86AudioRaiseVolume" = "wpctl set-volume @DEFAULT_AUDIO_SINK@ ${audioIncreaseDelta}%+";
     "XF86AudioLowerVolume" = "wpctl set-volume @DEFAULT_AUDIO_SINK@ ${audioIncreaseDelta}%-";
 
-    # backlight
     "XF86MonBrightnessUp" = "brightnessctl set ${brightnessIncreaseDelta}%+";
     "XF86MonBrightnessDown" = "brightnessctl set ${brightnessIncreaseDelta}%-";
   };

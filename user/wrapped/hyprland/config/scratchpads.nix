@@ -74,7 +74,6 @@
           cmd="''$2"
 
           windows=''$( windows_in "''$workspace_name" )
-          # If not on latest , check the edit history of this post
           if [ -z "''$windows" ];then
               ${hyprctl} dispatch "exec [workspace special:''$workspace_name] ''$cmd"
               else

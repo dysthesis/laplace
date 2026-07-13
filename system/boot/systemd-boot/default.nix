@@ -20,7 +20,7 @@ in {
         grub.enable = false;
 
         systemd-boot = {
-          # We might want to set this to false for Lanzaboote
+          # mkDefault so the secure-boot module can force this off for lanzaboote
           enable = mkDefault true;
           editor = false;
           consoleMode = "max";

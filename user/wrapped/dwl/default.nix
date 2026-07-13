@@ -323,7 +323,6 @@ in
         )
         config.laplace.hardware.monitors
       );
-      # Command vectors (argv)
       wlsunsetCmd = [
         "${pkgs.wlsunset}/bin/wlsunset"
         "-t"
@@ -343,7 +342,6 @@ in
       ];
       dunstCmd = ["${pkgs.configured.dunst}/bin/dunst"];
       wlrRandrCmd = [(lib.getExe pkgs.wlr-randr)] ++ wlrRandrArgs;
-      # yambarCmd = [(lib.getExe pkgs.configured.yambar)];
       importEnvCmd = [
         "systemctl"
         "import-environment"

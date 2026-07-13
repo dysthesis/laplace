@@ -75,9 +75,7 @@
             "-DGGML_LTO=1"
           ];
       }
-      //
-      # Use a fork that has turboquant, if we so require it.
-      mkIf' cfg.turboquant.enable rec {
+      // mkIf' cfg.turboquant.enable rec {
         pname = "llama-cpp-turboquant";
         version = "4d24ad87b8ed2ad160809af41930f1e04b83f234";
         src = pkgs.unstable.fetchFromGitHub {
@@ -112,10 +110,9 @@
       Restart = "on-failure";
       RestartSec = 300;
 
-      # for GPU acceleration
+      # GPU acceleration needs the device nodes
       PrivateDevices = false;
 
-      # hardening
       DynamicUser = true;
       CapabilityBoundingSet = "";
       RestrictAddressFamilies = [

@@ -1,8 +1,7 @@
 {lib, ...}: let
   inherit (lib.laplace.modules) importInDirectory;
 in {
-  # disable coredump that could be exploited later
-  # and also slow down the system when something crash
+  # coredumps are an info leak and slow crashes down
   systemd.coredump.enable = false;
   imports = importInDirectory ./.;
 }

@@ -48,7 +48,6 @@
     context.home.read=+home or +computer
     context.campus.read=+campus or +computer
 
-    # COMP3121 stuff
     alias.submit=modify wait:someday +submitted
     alias.resubmit=modify wait: -submitted
 
@@ -61,7 +60,6 @@
 
     rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,scheduled,due.today,due,blocked,blocking,recurring,tagged,uda.
 
-    # General decoration
     color.label=
     color.label.sort=
     color.alternate=on gray2
@@ -71,7 +69,6 @@
     color.error=white on red
     color.debug=color4
 
-    # Task state
     color.completed=
     color.deleted=
     color.active=rgb555 on rgb410
@@ -81,39 +78,31 @@
     color.blocked=white on color8
     color.blocking=black on color15
 
-    # Project
     color.project.none=
 
-    # Priority
     color.uda.priority.H=color255
     color.uda.priority.L=color245
     color.uda.priority.M=color250
 
-    # Tags
     color.tag.next=rgb440
     color.tag.none=
     color.tagged=
 
-    # Due
     color.due.today=rgb400
     color.due=color1
     color.overdue=color9
 
-    # Report: burndown
     color.burndown.done=on rgb010
     color.burndown.pending=on color9
     color.burndown.started=on color11
 
-    # Report: history
     color.history.add=color0 on rgb500
     color.history.delete=color0 on rgb550
     color.history.done=color0 on rgb050
 
-    # Report: summary
     color.summary.background=white on color0
     color.summary.bar=black on rgb141
 
-    # Command: calendar
     color.calendar.due.today=color15 on color1
     color.calendar.due=color0 on color1
     color.calendar.holiday=color0 on color11
@@ -123,12 +112,10 @@
     color.calendar.weekend=on color235
     color.calendar.weeknumber=rgb013
 
-    # Command: sync
     color.sync.added=rgb010
     color.sync.changed=color11
     color.sync.rejected=color9
 
-    # Command: undo
     color.undo.after=color2
     color.undo.before=color1
   '';
