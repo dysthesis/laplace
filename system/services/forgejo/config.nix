@@ -96,6 +96,7 @@ in {
             server = {
               DOMAIN = "git.dysthesis.com";
               ROOT_URL = "https://${srv.DOMAIN}/";
+              LANDING_PAGE = "explore";
               HTTP_PORT = 8080;
               SSH_USER = "git";
               SSH_PORT = lib.head config.services.openssh.ports;
