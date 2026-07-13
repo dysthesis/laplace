@@ -28,6 +28,12 @@ in {
       config.services.postgresql.dataDir
     ];
 
+    # Pin UID/GID: mediaLocation persists across root wipes, /etc/passwd
+    # doesn't, so dynamic allocation can reshuffle and strand the media dirs
+    # under a stale owner (bit mneme 2026-07). 997 matches mneme's live value.
+    users.users.immich.uid = 997;
+    users.groups.immich.gid = 997;
+
     services.immich = {
       enable = true;
       inherit (cfg) host mediaLocation port;
