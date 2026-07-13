@@ -134,6 +134,8 @@ in {
             # https-ROOT_URL auto-detect. Force it true — the edge is HTTPS-only.
             session.COOKIE_SECURE = true;
 
+            ui.DEFAULT_THEME = "minimal";
+
             other.SHOW_FOOTER_VERSION = false;
 
             actions = {
