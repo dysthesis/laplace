@@ -105,7 +105,10 @@ in {
       # Render the token into an EnvironmentFile (a string, so it is not copied to
       # the world-readable store) and feed it to Caddy's process.
       sops = {
-        secrets.${cfg.cloudflare.secretName}.sopsFile = cfg.cloudflare.sopsFile;
+        secrets.${cfg.cloudflare.secretName} = {
+          sopsFile = cfg.cloudflare.sopsFile;
+          restartUnits = ["caddy.service"];
+        };
         templates."caddy-cloudflare.env".content = "CF_API_TOKEN=${config.sops.placeholder.${cfg.cloudflare.secretName}}";
       };
       systemd.services.caddy.serviceConfig.EnvironmentFile =
