@@ -7,6 +7,7 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.20.1"];
+    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
   };
 
   systemd.network.networks."10-lan" = {
@@ -35,6 +36,20 @@
 
     zram.enable = true;
     services = {
+      telemetry = {
+        enable = true;
+        role = "exit";
+        metrics = {
+          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/charon/metrics";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+        journal = {
+          url = "https://telemetry.dysthesis.com:8444/charon/journald";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+      };
       tailscale = {
         enable = true;
         # ip_forward + ipv6 forwarding come bundled with this option.
@@ -48,7 +63,17 @@
     };
   };
 
-  sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/charon.yaml;
+  sops.secrets = {
+    beszel_agent_env.sopsFile = ../../system/secrets/charon.yaml;
+    telemetry_client_certificate = {
+      sopsFile = ../../system/secrets/charon.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+    telemetry_client_key = {
+      sopsFile = ../../system/secrets/charon.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+  };
   environment.systemPackages = with pkgs; [
     vim
     git

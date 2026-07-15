@@ -20,11 +20,22 @@
   # means group/socket-mode coupling for zero gain on a single-host hop.
   gitAnubis = "127.0.0.1:8923";
 in {
-  sops.secrets.cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
+  sops.secrets = {
+    cloudflare_ddns_token.sopsFile = ../../system/secrets/portunus.yaml;
+    telemetry_client_certificate = {
+      sopsFile = ../../system/secrets/portunus.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+    telemetry_client_key = {
+      sopsFile = ../../system/secrets/portunus.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+  };
   networking = {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.40.1"];
+    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
     firewall.allowedTCPPorts = [80 443];
     # nftables backend so the beszel agent's scoped :45876 rule (extraInputRules)
     # actually applies — it is a silent no-op on the iptables backend. portunus
@@ -58,6 +69,20 @@ in {
 
     zram.enable = true;
     services = {
+      telemetry = {
+        enable = true;
+        role = "edge";
+        metrics = {
+          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/portunus/metrics";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+        journal = {
+          url = "https://telemetry.dysthesis.com:8444/portunus/journald";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+      };
       # SSH/pull: portunus is in the DMZ and cannot reach the tailnet hub, so the
       # hub dials IN instead. portunus listens on :45876, scoped to mimir only;
       # OPNsense must also pass VLAN20 (mimir 10.0.20.83) -> 10.0.40.2:45876. KEY

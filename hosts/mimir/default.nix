@@ -27,12 +27,21 @@ in {
     radicale_htpasswd.sopsFile = ../../system/secrets/mimir.yaml;
     # wallabag's Symfony secret; add `wallabag_secret` to mimir.yaml (openssl rand -hex 32).
     wallabag_secret.sopsFile = ../../system/secrets/mimir.yaml;
+    telemetry_client_certificate = {
+      sopsFile = ../../system/secrets/mimir.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+    telemetry_client_key = {
+      sopsFile = ../../system/secrets/mimir.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
   };
 
   networking = {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.20.1"];
+    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
   };
 
   systemd.network.networks."10-lan" = {
@@ -63,6 +72,20 @@ in {
 
     services = {
       tailscale.enable = true;
+      telemetry = {
+        enable = true;
+        role = "apps";
+        metrics = {
+          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/mimir/metrics";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+        journal = {
+          url = "https://telemetry.dysthesis.com:8444/mimir/journald";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+      };
       miniflux.enable = true;
       silverbullet.enable = true;
       taskchampion.enable = true;

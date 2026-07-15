@@ -13,6 +13,8 @@
   adguardTailnetIp = nodes.hermes.ip; # AdGuard (also the tailnet resolver)
   mnemeTailnetIp = nodes.mneme.ip; # immich
   mimirTailnetIp = nodes.mimir.ip; # miniflux + silverbullet + radicale
+  argusTailnetIp = nodes.argus.ip; # Grafana
+  horosTailnetIp = nodes.horos.ip; # Uptime Kuma + ntfy
   lokiTailnetIp = nodes.loki.ip; # minecraft
 
   mullvadConnections = {
@@ -60,7 +62,17 @@
     // lib.optionalAttrs (publicKey != null) {inherit publicKey;}
     // lib.optionalAttrs (publicKeyFile != null) {inherit publicKeyFile;};
 in {
-  sops.secrets.mullvad_wg_key.sopsFile = ../../system/secrets/bifrost.yaml;
+  sops.secrets = {
+    mullvad_wg_key.sopsFile = ../../system/secrets/bifrost.yaml;
+    telemetry_client_certificate = {
+      sopsFile = ../../system/secrets/bifrost.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+    telemetry_client_key = {
+      sopsFile = ../../system/secrets/bifrost.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+  };
 
   services.headscale.package = inputs.headscale.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
@@ -69,6 +81,7 @@ in {
     useDHCP = false;
     nameservers = ["10.0.50.1"];
     hosts."10.0.40.2" = ["headscale.dysthesis.com"];
+    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
     # nftables backend. The firewall scoping below lives in extraInputRules, which
     # ONLY applies on the nftables firewall — on iptables it silently evaporates.
     # tailscale used to flip nftables on; now that bifrost is off the tailnet that
@@ -325,6 +338,21 @@ in {
               value = mimirTailnetIp;
             }
             {
+              name = "observe.${fqdn}";
+              type = "A";
+              value = argusTailnetIp;
+            }
+            {
+              name = "uptime.${fqdn}";
+              type = "A";
+              value = horosTailnetIp;
+            }
+            {
+              name = "ntfy.${fqdn}";
+              type = "A";
+              value = horosTailnetIp;
+            }
+            {
               name = "cal.${fqdn}";
               type = "A";
               value = mimirTailnetIp;
@@ -350,6 +378,20 @@ in {
               value = lokiTailnetIp;
             } # squaremap web map, same loki Caddy as mc.
           ];
+        };
+      };
+      telemetry = {
+        enable = true;
+        role = "control-plane";
+        metrics = {
+          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/bifrost/metrics";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+        journal = {
+          url = "https://telemetry.dysthesis.com:8444/bifrost/journald";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
         };
       };
       # SSH/pull: bifrost is off the tailnet (control VLAN50), so the hub dials IN.

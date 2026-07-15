@@ -152,6 +152,24 @@
             touch $out
           '';
 
+          telemetry-boot-persistence = let
+            talos = nixosConfigurations.talos.config;
+            ready = talos.systemd.services.telemetry-journal-ready;
+            vmagent = talos.systemd.services.vmagent;
+            journalUpload = talos.systemd.services.systemd-journal-upload;
+            scripts = pkgs.writeText "telemetry-boot-persistence-scripts" ''
+              ${talos.boot.initrd.systemd.services.make-source-of-persistent-dirs.script}
+              ${talos.system.activationScripts.script}
+            '';
+          in
+            pkgs.runCommand "telemetry-boot-persistence-check" {} ''
+              test ${lib.escapeShellArg (lib.boolToString ready.unitConfig.DefaultDependencies)} = false
+              test ${lib.escapeShellArg vmagent.unitConfig.RequiresMountsFor} = /var/cache/private/vmagent
+              test ${lib.escapeShellArg journalUpload.unitConfig.RequiresMountsFor} = /var/lib/private/systemd/journal-upload
+              grep -Fq /nix/persist/etc/machine-id ${scripts}
+              touch $out
+            '';
+
           observability-dashboards = let
             dashboards = ./system/services/observability/dashboards;
             vmalert = nixosConfigurations.argus.config.services.vmalert.package;

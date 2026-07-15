@@ -19,6 +19,7 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.80.1"];
+    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
     # nftables backend so the proxmox profile's :22 scoping (VLAN20-only)
     # actually applies — it is a silent no-op on the iptables backend. talos has
     # no tailscale (which would flip this on) and no Docker, so set it explicitly.
@@ -61,17 +62,43 @@
     # Remote Forgejo (server stays on hephaestus). A fresh registration token is
     # needed for the move anyway — the persisted .runner identity does not
     # migrate. Workflows say `runs-on: nix`, so they don't change.
-    services.forgejo-runner = {
-      enable = true;
-      url = "http://10.0.70.2:8080";
-      tokenFile = config.sops.secrets.action_runner.path;
+    services = {
+      forgejo-runner = {
+        enable = true;
+        url = "http://10.0.70.2:8080";
+        tokenFile = config.sops.secrets.action_runner.path;
+      };
+      telemetry = {
+        enable = true;
+        role = "ci-runner";
+        metrics = {
+          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/talos/metrics";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+        journal = {
+          url = "https://telemetry.dysthesis.com:8444/talos/journald";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+      };
     };
   };
 
   # Runner registration creds (TOKEN env line), sops-encrypted to this host's
   # age key. Secret wiring is inherently per-host (sops-nix per-host age key);
   # the runner logic itself lives in system/services/forgejo-runner.
-  sops.secrets.action_runner.sopsFile = ../../system/secrets/talos.yaml;
+  sops.secrets = {
+    action_runner.sopsFile = ../../system/secrets/talos.yaml;
+    telemetry_client_certificate = {
+      sopsFile = ../../system/secrets/talos.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+    telemetry_client_key = {
+      sopsFile = ../../system/secrets/talos.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+  };
 
   environment.systemPackages = with pkgs; [
     vim

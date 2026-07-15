@@ -58,7 +58,17 @@
 in {
   # dotenv (DISCORD_BOT_TOKEN + DISCORD_CHANNEL_ID) for the Discord bridge; fed
   # to the server's EnvironmentFile and substituted into the mod's TOML at start.
-  sops.secrets.discord_bot_env.sopsFile = ../../system/secrets/loki.yaml;
+  sops.secrets = {
+    discord_bot_env.sopsFile = ../../system/secrets/loki.yaml;
+    telemetry_client_certificate = {
+      sopsFile = ../../system/secrets/loki.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+    telemetry_client_key = {
+      sopsFile = ../../system/secrets/loki.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+  };
 
   networking = {
     useNetworkd = true;
@@ -66,6 +76,7 @@ in {
     # Local unbound first (caches + serves stale over the gateway's flaky DNS);
     # the gateway stays as a fallback so loki still resolves if unbound is down.
     nameservers = ["127.0.0.1" "10.0.60.1"];
+    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
   };
 
   # Local caching + serve-stale resolver. denyDNS (below) removed resolved's
@@ -96,11 +107,13 @@ in {
     };
   };
 
-  # VLAN 60, loki's own isolated segment (F10): the untrusted modpack box has no
-  # legitimate VLAN20 peer (game over tailscale0, Beszel pulled by mimir, DNS
-  # via local unbound -> VLAN60 gateway). LAN reach = gateway (DNS + NAT egress)
-  # + the workstation->:22 deploy pinhole; heimdall DROPs loki->VLAN20/30/40/50.
-  # The tailnet half of the containment is the SSOT `game` tag.
+  # VLAN 60, loki's own isolated segment
+  # the untrusted modpack box reaches only Argus on VLAN20 over the narrow TCP
+  # 8443/8444 telemetry exception (game over tailscale0, Beszel pulled by mimir,
+  # DNS via local unbound -> VLAN60 gateway). Other LAN reach = gateway (DNS +
+  # NAT egress) + the workstation -> :22 deploy pinhole; heimdall DROPs all other
+  # loki -> VLAN20/30/40/50 flows. The tailnet half of the containment is the
+  # SSOT `game` tag.
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
@@ -128,6 +141,20 @@ in {
     zram.enable = true;
 
     services = {
+      telemetry = {
+        enable = true;
+        role = "game";
+        metrics = {
+          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/loki/metrics";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+        journal = {
+          url = "https://telemetry.dysthesis.com:8444/loki/journald";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+      };
       tailscale = {
         enable = true;
         # Resolve via the VLAN60 gateway, not MagicDNS: the AdGuard-over-tunnel

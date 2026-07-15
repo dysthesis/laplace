@@ -3,7 +3,17 @@
   pkgs,
   ...
 }: {
-  sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/hermes.yaml;
+  sops.secrets = {
+    beszel_agent_env.sopsFile = ../../system/secrets/hermes.yaml;
+    telemetry_client_certificate = {
+      sopsFile = ../../system/secrets/hermes.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+    telemetry_client_key = {
+      sopsFile = ../../system/secrets/hermes.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+  };
   laplace = {
     profiles = ["proxmox"];
     proxmox = {
@@ -25,6 +35,20 @@
 
     services = {
       adguardhome.enable = true;
+      telemetry = {
+        enable = true;
+        role = "dns";
+        metrics = {
+          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/hermes/metrics";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+        journal = {
+          url = "https://telemetry.dysthesis.com:8444/hermes/journald";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+      };
       # WS/push: hermes is on the tailnet, so the agent dials OUT to the hub. The
       # hub binds loopback on mimir behind a tailnet-only Caddy, so the only way in
       # is https://status.dysthesis.com over tailscale0 — not mimir's :8090
@@ -68,6 +92,7 @@
     # NXDOMAIN. Pin it to mimir's tailnet IP; the agent reaches the hub's Caddy over
     # tailscale0 and the cert SNI still matches.
     hosts."100.64.0.8" = ["status.dysthesis.com"];
+    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
   };
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";

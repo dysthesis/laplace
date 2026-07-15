@@ -14,10 +14,22 @@
   pkgs,
   ...
 }: {
+  sops.secrets = {
+    telemetry_client_certificate = {
+      sopsFile = ../../system/secrets/hephaestus.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+    telemetry_client_key = {
+      sopsFile = ../../system/secrets/hephaestus.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+  };
+
   networking = {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["127.0.0.1" "10.0.70.1"];
+    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
     # nftables backend so the scoped :8080 rule (extraInputRules) actually applies
     # — it is a silent no-op on the iptables backend. hephaestus has no tailscale
     # (which would flip this on) and no Docker, so set it explicitly. The proxmox
@@ -62,7 +74,23 @@
 
     zram.enable = true;
 
-    services.forgejo.enable = true;
+    services = {
+      forgejo.enable = true;
+      telemetry = {
+        enable = true;
+        role = "git";
+        metrics = {
+          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/hephaestus/metrics";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+        journal = {
+          url = "https://telemetry.dysthesis.com:8444/hephaestus/journald";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+      };
+    };
   };
 
   environment.systemPackages = with pkgs; [

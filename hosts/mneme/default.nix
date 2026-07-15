@@ -3,7 +3,17 @@
   pkgs,
   ...
 }: {
-  sops.secrets.beszel_agent_env.sopsFile = ../../system/secrets/mneme.yaml;
+  sops.secrets = {
+    beszel_agent_env.sopsFile = ../../system/secrets/mneme.yaml;
+    telemetry_client_certificate = {
+      sopsFile = ../../system/secrets/mneme.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+    telemetry_client_key = {
+      sopsFile = ../../system/secrets/mneme.yaml;
+      restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
+    };
+  };
   laplace = {
     profiles = ["proxmox"];
     proxmox = {
@@ -23,6 +33,20 @@
     services = {
       immich.enable = true;
       tailscale.enable = true;
+      telemetry = {
+        enable = true;
+        role = "photos";
+        metrics = {
+          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/mneme/metrics";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+        journal = {
+          url = "https://telemetry.dysthesis.com:8444/mneme/journald";
+          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
+          keyFile = config.sops.secrets.telemetry_client_key.path;
+        };
+      };
       beszel.agent = {
         enable = true;
         hubUrl = "https://status.dysthesis.com";
@@ -46,6 +70,7 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.20.1"];
+    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
   };
 
   systemd.network.networks."10-lan" = {
