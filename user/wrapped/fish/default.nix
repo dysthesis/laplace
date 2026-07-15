@@ -180,8 +180,6 @@
 
       source ${starshipInit}
       source ${zoxideInit}
-
-      enable_transience
     '';
 in
   mkWrapper pkgs fish

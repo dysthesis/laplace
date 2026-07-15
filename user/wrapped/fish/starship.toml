@@ -1,88 +1,183 @@
 "$schema" = 'https://starship.rs/config-schema.json'
-
 add_newline = true
-
+palette = "lackluster"
 format = """
-$username$hostname$directory$git_branch$git_status$nix_shell$fill$rust$cmd_duration
-$status$character"""
+$username$hostname${env_var.IN_VMSHELL}$directory${custom.jj}$git_branch$git_commit$git_status$git_state$nix_shell$rust$python$nodejs$golang
+$jobs$sudo$character"""
+right_format = "$status$cmd_duration$time"
 
-palette = 'lackluster'
-
-[palettes.lackluster]
-fg = '#ffffff'
-luster = '#deeeed'
-lack = '#708090'
-orange = '#ffaa88'
-green = '#789978'
-blue = '#7788aa'
-red = '#d70000'
-gray5 = '#555555'
-gray6 = '#7a7a7a'
-
-[username]
-show_always = false            # renders only for root / non-default user
-format = '[$user](bold red)[@](gray5)'
-
-[hostname]
-ssh_only = true                # blue = not your machine
-format = '[$hostname](bold blue)  '
-
-[directory]
-style = 'bold fg'
-truncation_length = 3
-truncation_symbol = '…/'
-truncate_to_repo = true        # never truncate above the repo root
-read_only = ' 󰌾'
-read_only_style = 'orange'
-format = '[$path]($style)[$read_only]($read_only_style)  '
-
-[git_branch]
-symbol = ' '
-style = 'lack'
-format = '[$symbol$branch]($style) '
-
-[git_status]
-style = 'lack'
-format = '([$staged$modified$untracked$stashed$ahead_behind]($style))'
-staged = '[+$count ](orange)'
-modified = '[!$count ](orange)'
-untracked = '[?$count ](gray6)'
-stashed = '[*$count ](gray6)'
-ahead = '[⇡$count ](lack)'
-behind = '[⇣$count ](lack)'
-diverged = '[⇡$ahead_count⇣$behind_count ](orange)'
-conflicted = '[✖$count ](red)'
-
-[nix_shell]
-symbol = ' '
-style = 'lack'
-format = '[$symbol dev]($style) '
-
-[rust]
-symbol = ' '
-style = 'gray6'
-format = '[$symbol$version]($style) '
-
-[fill]
-symbol = ' '
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)" # the glance; the code itself shows on the right
+vimcmd_symbol = "[❮](bold gray8)"
 
 [cmd_duration]
-min_time = 2000
-style = 'orange'
-format = '[took $duration]($style) '
+min_time = 2000 # under 2s, "fast" is the whole answer
+style = "yellow"
+format = "[$duration]($style) "
+
+# ── jujutsu ──────────────────────────────────────────────────────────
+# gated, not polled: one fast `jj root` per prompt (--ignore-working-
+# copy = no snapshot, ~5ms); the full template runs only inside jj
+# repos. per-command VCS state earns its exec (the task counter did
+# not). colocated repos: git's @hash/counts still render as residue —
+# set git_commit.disabled / git_status.disabled if you go jj-primary.
+# needs jj >= 0.18 (raw_escape_sequence + \e strings).
+[custom.jj]
+disabled = false
+ignore_timeout = true
+when = "jj root --ignore-working-copy"
+shell = ["sh"]
+style = "gray5"
+symbol = "jj:"
+format = "[$symbol]($style) $output "
+command = '''
+jj log -r @ -n 1 --ignore-working-copy --no-graph --color always -T 'separate(" ",
+  raw_escape_sequence("\e[38;2;112;128;144m") ++ separate(" ", change_id.shortest(4), bookmarks) ++ raw_escape_sequence("\e[0m"),
+  if(conflict, raw_escape_sequence("\e[1;38;2;215;0;0m") ++ "=conflict" ++ raw_escape_sequence("\e[0m")),
+  if(divergent, raw_escape_sequence("\e[38;2;255;170;136m") ++ "divergent" ++ raw_escape_sequence("\e[0m")),
+  if(empty, raw_escape_sequence("\e[38;2;85;85;85m") ++ "(empty)" ++ raw_escape_sequence("\e[0m")),
+  if(description,
+    raw_escape_sequence("\e[38;2;122;122;122m") ++ "\"" ++ truncate_end(24, description.first_line(), "…") ++ "\"" ++ raw_escape_sequence("\e[0m"),
+    raw_escape_sequence("\e[38;2;85;85;85m") ++ "(no description)" ++ raw_escape_sequence("\e[0m")))'
+'''
+
+# ── optional: overdue taskwarrior count ──────────────────────────────
+# deliberately OFF. it would exec `task` on every prompt render — a
+# latency tax paid thousands of times a day for data that changes
+# hourly. a todo count belongs in a daily review, not on the hot path.
+# if you disagree: set disabled=false and add ${custom.task} to format.
+[custom.task]
+disabled = true
+when = true
+shell = ["sh"]
+command = 'c=$(task +OVERDUE count 2>/dev/null); [ "${c:-0}" -gt 0 ] && printf %s "$c"'
+style = "orange"
+format = "([⚑$output]($style) )"
+
+[directory]
+style = "gray9"
+repo_root_style = "bold white" # the repo is the signal…
+before_repo_root_style = "gray5" # …the ~/dev/ prefix is noise
+repo_root_format = "[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncate_to_repo = true
+truncation_length = 4
+truncation_symbol = "…/" # ellipsis over an icon: truncation must READ as truncation
+read_only = " " # fires in /nix/store, mounted media, other users' homes
+read_only_style = "orange"
+
+[env_var.IN_VMSHELL]
+format = "[vm:]($style) "
+style = "blue"
+
+[git_branch]
+symbol = " " # nf-dev-git_branch
+style = "lack"
+format = "[$symbol$branch(:$remote_branch)]($style) "
+
+[git_commit]
+only_detached = true # hash appears exactly when "what am I on?" is the question
+style = "gray6"
+format = "[@$hash]($style) "
+
+[git_state]
+style = "bold orange" # rebase/merge/bisect progress — visible when panic is near
+format = '[\($state( $progress_current/$progress_total)\)]($style) '
+
+[git_status]
+# order: urgency → working tree → index → untracked → stash → remote sync
+conflicted = "=$count "
+deleted = "×$count "
+renamed = "»$count "
+modified = "!$count "
+staged = "+$count "
+untracked = "?$count "
+stashed = "≡$count "
+ahead = "↑$count "
+behind = "↓$count "
+diverged = "↑$ahead_count↓$behind_count "
+format = '([$conflicted](bold red)[$deleted](red)[$renamed](gray8)[$modified](yellow)[$staged](green)[$untracked](gray6)[$stashed](gray5)[$ahead_behind](blue))'
+
+[golang]
+symbol = "󰟓 "
+style = "gray6"
+format = "[$symbol($version)]($style) "
+
+[hostname]
+ssh_only = true
+detect_env_vars = ["!IN_VMSHELL"]
+style = "orange" # remote = handle with care, not alarm
+format = "[$hostname]($style) "
+
+[jobs]
+symbol = "&" # the shell's own word for backgrounding
+style = "lack"
+symbol_threshold = 1
+number_threshold = 2 # "&" for one job, "&2" beyond
+format = "[$symbol$number]($style) "
+
+[nix_shell]
+symbol = " " # nf-linux-nixos
+style = "blue"
+heuristic = true # also catch `nix shell` (no IN_NIX_SHELL set)
+impure_msg = "" # impure is the flake default — saying it is noise
+pure_msg = "pure"
+unknown_msg = ""
+format = '[$symbol$state( $name)]($style) '
+
+[nodejs]
+symbol = " "
+style = "gray6"
+format = "[$symbol($version)]($style) "
+
+[palettes.lackluster]
+lack = "#708090"
+orange = "#ffaa88"
+yellow = "#abab77"
+green = "#789978"
+blue = "#7788aa"
+red = "#d70000"
+gray3 = "#2a2a2a"
+gray5 = "#555555"
+gray6 = "#7a7a7a"
+gray8 = "#cccccc"
+gray9 = "#dddddd"
+
+[python]
+symbol = " "
+style = "gray6"
+format = '[$symbol($version)( \($virtualenv\))]($style) '
+
+# runtime versions: reference info, read deliberately — never scanned. hence gray.
+[rust]
+symbol = " "
+style = "gray6"
+format = "[$symbol($version)]($style) "
 
 [status]
 disabled = false
-format = '[✗ $status ]($style)'
-style = 'red'
+symbol = "✗"
+style = "red"
+format = "[$symbol$status]($style) " # 101 = rust panic, 127 = not found, 130 = ^C
 
-[character]
-success_symbol = '[❯](green)'
-error_symbol = '[❯](red)'
-vimcmd_symbol = '[❮](lack)'
-
-[package]
-disabled = true
+[sudo]
+disabled = false # credentials cached → a key sits by the prompt char
+symbol = " " # nf-fa-key
+style = "orange"
+format = "[$symbol]($style)"
 
 [time]
-disabled = true
+disabled = false
+time_format = "%H:%M"
+style = "gray5" # scrollback forensics — silent until you need it
+format = "[$time]($style)"
+
+[username]
+# appears only when it deviates from the default: root, or over ssh.
+# (a local `sudo -i` shows a bare "root@" — rare enough to accept.)
+show_always = false
+detect_env_vars = ["!IN_VMSHELL"]
+style_user = "gray8"
+style_root = "bold red"
+format = "[$user]($style)[@](gray5)"
