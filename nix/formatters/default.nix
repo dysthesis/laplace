@@ -4,7 +4,11 @@ _: {
   # YAML and rewraps the base64 AGE blocks, churning every secret file with a
   # huge diff even though the ciphertext is unchanged. Exclude the dir from all
   # formatters.
-  settings.global.excludes = ["system/secrets/*"];
+  settings.global.excludes = [
+    "system/secrets/*"
+    # Vendored shader DSL includes non-JSON files with .json extensions.
+    "system/services/minecraft/retirement-home-packwiz/**"
+  ];
   programs = {
     alejandra.enable = true;
     deadnix.enable = true;
