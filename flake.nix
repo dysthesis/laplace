@@ -110,6 +110,22 @@
               touch $out
             '';
 
+          minecraft-runtime = let
+            runtime = pkgs.temurin-bin-17;
+            minecraft = nixosConfigurations.loki.config.laplace.services.minecraft.retirement-home;
+            server = nixosConfigurations.loki.config.services.minecraft-servers.servers.retirement-home;
+            # Preserve production Xmx for G1 ergonomics, but limit AlwaysPreTouch in CI.
+            smokeJvmOpts = builtins.replaceStrings ["-Xms${toString minecraft.memoryGb}G"] ["-Xms128M"] server.jvmOpts;
+          in
+            assert lib.versionAtLeast runtime.version "17.0.19";
+            assert lib.versionOlder runtime.version "18";
+              pkgs.runCommand "minecraft-runtime-check" {} ''
+                grep -Fq 'exec ${runtime}/bin/java ' ${server.package}/bin/minecraft-server
+                ${runtime}/bin/java ${smokeJvmOpts} -version >java-version 2>&1
+                grep -Fq 'Temurin-17.' java-version
+                touch $out
+              '';
+
           # Build-time half of PLAN §5 layer 4: gate the SSOT-rendered Headscale
           # policy and rendered service config against the same headscale binary
           # bifrost runs. configtest needs writable state paths, so the sandbox

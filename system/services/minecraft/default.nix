@@ -19,8 +19,8 @@
 
   serverPackage = pkgs.fabricServers.fabric-1_20_1.override {
     loaderVersion = "0.19.2"; # matches the packwiz Fabric loader version
-    # Keep Java 17 for Minecraft 1.20.1/mod compatibility; CE is currently Java 25.
-    jre_headless = pkgs.graalvmPackages.graalvm-oracle_17;
+    # Keep Java 17 for mod compatibility; Oracle's public GraalVM 17 is archived.
+    jre_headless = pkgs.temurin-bin-17;
   };
 
   # Discord to Minecraft chat bridge (server-only).
