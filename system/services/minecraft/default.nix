@@ -209,6 +209,11 @@ in {
     # ever touching the store. Global option, but loki runs one server.
     services.minecraft-servers.environmentFile = mkIf cfg.discord.enable cfg.discord.environmentFile;
 
+    # Spark's bundled async-profiler is native C++; expose its only missing
+    # runtime dependency without adding a host-wide library search path.
+    systemd.services."minecraft-server-retirement-home".environment.LD_LIBRARY_PATH =
+      lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib];
+
     # nix-minecraft's hardening omits AF_NETLINK, but glibc getaddrinfo probes
     # interfaces over netlink before resolving — without it every DNS lookup in
     # the JVM throws UnknownHostException, breaking Mojang auth and the Discord
