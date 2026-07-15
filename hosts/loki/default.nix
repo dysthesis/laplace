@@ -128,8 +128,8 @@ in {
     profiles = ["proxmox"];
     proxmox = {
       cores = 4; # MC main-tick thread + chunk-gen/GC workers
-      memory = 10240; # MiB, ballooning ceiling (10 GiB)
-      balloon = 8192; # MiB, ballooning floor (8 GiB)
+      memory = 12288; # MiB, 8 GiB heap plus 4 GiB non-heap/OS headroom
+      balloon = 0; # reclaim at the old 8 GiB floor caused zram/GC stalls
       diskSize = "64G"; # world + modpack; bump before a large chunk pregen
     };
 
@@ -178,8 +178,8 @@ in {
         autoStart = true; # dedicated host - the server is the point
         restart = "on-failure";
         openFirewall = false; # tailnet-only; players reach :25565 over tailscale0
-        # 8 GiB heap on the 12 GiB pinned guest (ballooning disabled
-        # imperatively in PVE) leaves ~4 GiB for JVM non-heap + OS + page cache.
+        # 8 GiB heap on the 12 GiB pinned guest leaves ~4 GiB for JVM non-heap +
+        # OS + page cache.
         # Chunky-pregen bench: zero swap, zero full GCs at 8 GiB. Before the pin
         # the guest sat at its 8 GiB balloon floor and this heap forced ~950k
         # pages/3h into zram — GC pauses faulting them back was the tell.
