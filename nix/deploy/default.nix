@@ -29,6 +29,8 @@
 
   # name -> LAN IP. Add/move a guest by editing this table.
   targets = {
+    argus = "10.0.20.84";
+    horos = "10.0.20.85";
     mneme = "10.0.20.81";
     hermes = "10.0.20.82";
     mimir = "10.0.20.83";

@@ -10,6 +10,8 @@
     phobos = "x86_64-linux"; # Laptop
     deimos = "x86_64-linux"; # PC
     chaos = "x86_64-linux"; # Installer ISO
+    argus = "x86_64-linux"; # Observability host on Proxmox
+    horos = "x86_64-linux"; # Uptime Kuma + ntfy host on Proxmox
     hephaestus = "x86_64-linux"; # Forgejo host on Proxmox
     talos = "x86_64-linux"; # Forgejo Actions runner on Proxmox
     hermes = "x86_64-linux"; # AdGuard Home

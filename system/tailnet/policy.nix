@@ -25,6 +25,16 @@ _: {
         ip6 = "fd7a:115c:a1e0::8";
         tags = ["apps" "monitor" "infra"];
       }; # miniflux/silverbullet/vikunja/radicale + beszel-hub
+      argus = {
+        ip = "100.64.0.34";
+        ip6 = "fd7a:115c:a1e0::22";
+        tags = ["observability" "infra"];
+      }; # VictoriaMetrics/VictoriaLogs/Grafana
+      horos = {
+        ip = "100.64.0.35";
+        ip6 = "fd7a:115c:a1e0::23";
+        tags = ["notifications" "infra"];
+      }; # Uptime Kuma/ntfy
       loki = {
         ip = "100.64.0.12";
         ip6 = "fd7a:115c:a1e0::c";
@@ -81,6 +91,46 @@ _: {
         ports = ["tcp/443"];
       }
       {
+        from = "workstation";
+        to = "observability";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "observability";
+        to = "notifications";
+        ports = ["tcp/443"];
+      } # Alertmanager -> ntfy/Kuma heartbeat
+      {
+        from = "notifications";
+        to = "observability";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "notifications";
+        to = "monitor";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "notifications";
+        to = "apps";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "notifications";
+        to = "photos";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "notifications";
+        to = "dns";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "notifications";
+        to = "game";
+        ports = ["tcp/443" "tcp/25565"];
+      }
+      {
         from = "monitor";
         to = "game";
         ports = ["tcp/45876"];
@@ -111,6 +161,11 @@ _: {
         ports = ["*"];
       } # exit-node egress
       {
+        from = "workstation";
+        to = "notifications";
+        ports = ["tcp/443"];
+      }
+      {
         from = "phone";
         to = "apps";
         ports = ["*"];
@@ -129,6 +184,16 @@ _: {
         from = "phone";
         to = "monitor";
         ports = ["*"];
+      }
+      {
+        from = "phone";
+        to = "observability";
+        ports = ["tcp/443"];
+      }
+      {
+        from = "phone";
+        to = "notifications";
+        ports = ["tcp/443"];
       }
       {
         from = "phone";

@@ -21,7 +21,7 @@
   # Tags that no untrusted source (a guest cohort, or the game node) may reach.
   # The negative invariants below enforce this; it is the §5 layer-4 check made
   # eval-time.
-  sensitiveTags = ["infra" "apps" "monitor" "exit" "workstation"];
+  sensitiveTags = ["infra" "apps" "monitor" "observability" "notifications" "exit" "workstation"];
 
   allTags = unique (concatMap (n: n.tags) (attrValues cfg.nodes));
   tagDefined = t: elem t allTags;

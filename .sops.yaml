@@ -10,6 +10,8 @@ keys:
   - &hephaestus age1y2zc9judmrtz58jqklf9qst3rfsyn4qpt27sqv74kmum5teacarqykts4t
   - &charon age18742z73g8qkp5nyul35hz4l4q4hnj2shje6n7p92ard80fspeq3sh7jamp
   - &talos age16ygpgyf73w7kzg4jd7lar5uwnwtgs9xst3445ql7s73cpumpv90sampfa7
+  - &argus age12qkf77hm25ttnaj0vx8ytxehykgu9xtg0607dx4425uckfxj2urq9ajd5g
+  - &horos age1r03w23wllhprln55a5r59qm446ycjsgv3mcmvud36wzx537nzgashawx8p
 creation_rules:
   - path_regex: system/secrets/portunus\.(yaml|json|env|ini)$
     key_groups:
@@ -65,6 +67,18 @@ creation_rules:
           - *deimos
           - *phobos
           - *talos
+  - path_regex: system/secrets/argus\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *argus
+  - path_regex: system/secrets/horos\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *deimos
+          - *phobos
+          - *horos
   # Catch-all MUST stay last: sops matches creation_rules first-match-wins, so
   # any per-host rule below this line is dead.
   - path_regex: system/secrets/[^/]+\.(yaml|json|env|ini)$
