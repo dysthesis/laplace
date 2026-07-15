@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: let
@@ -245,6 +246,17 @@ in {
       };
     };
   };
+
+  services.vmagent.prometheusConfig.scrape_configs = lib.mkAfter [
+    {
+      job_name = "minecraft";
+      scrape_interval = "15s";
+      scrape_timeout = "5s";
+      sample_limit = 5000;
+      label_limit = 40;
+      static_configs = [{targets = ["127.0.0.1:25585"];}];
+    }
+  ];
 
   environment.systemPackages = with pkgs; [
     vim
