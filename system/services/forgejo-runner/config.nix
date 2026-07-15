@@ -37,12 +37,13 @@ in {
     #   RestrictNamespaces      → nix/namespace friction; revisit once CI confirms safe
     #   MemoryMax (hard)        → risks killing a legit nix eval/build at a guessed line;
     #                             earlyoom (proxmox profile) is the real OOM backstop
+    #   MemoryHigh              → live 3G/4G thresholds forced valid CI into swap;
+    #                             earlyoom remains the measured backstop
     #
-    # simplification: MemoryHigh/CPUQuota/TasksMax are conservative figures sized
-    # to a 6 GiB ceiling, not measured. Tune (or drop) if legit CI is throttled.
+    # simplification: CPUQuota/TasksMax are conservative figures sized to a 6 GiB
+    # ceiling, not measured. Tune (or drop) if legit CI is throttled.
     # Unit name assumes a DNS-clean instanceName (no systemd-path escaping).
     systemd.services."gitea-runner-${cfg.instanceName}".serviceConfig = {
-      MemoryHigh = "3G";
       CPUQuota = "300%";
       TasksMax = 4096;
       ProtectKernelTunables = true;
