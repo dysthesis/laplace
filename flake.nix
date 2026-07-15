@@ -299,6 +299,84 @@
                           exp_annotations:
                             summary: Critically low free space on /logs
                             description: Act before the backend reaches its minimum-free reserve and rejects writes.
+                - name: fleet storage warning ignores pseudo-filesystems
+                  interval: 1m
+                  input_series:
+                    - series: 'node_filesystem_avail_bytes{host="loki",job="node-agent",device="/dev/vda3",fstype="btrfs",mountpoint="/nix/persist"}'
+                      values: "5368709120+0x20"
+                    - series: 'node_filesystem_size_bytes{host="loki",job="node-agent",device="/dev/vda3",fstype="btrfs",mountpoint="/nix/persist"}'
+                      values: "68719476736+0x20"
+                    - series: 'node_filesystem_avail_bytes{host="loki",job="node-agent",device="tmpfs",fstype="tmpfs",mountpoint="/"}'
+                      values: "0+0x20"
+                    - series: 'node_filesystem_size_bytes{host="loki",job="node-agent",device="tmpfs",fstype="tmpfs",mountpoint="/"}'
+                      values: "4294967296+0x20"
+                  alert_rule_test:
+                    - eval_time: 16m
+                      groupname: fleet-storage
+                      alertname: HostFilesystemLow
+                      exp_alerts:
+                        - exp_labels:
+                            device: /dev/vda3
+                            fstype: btrfs
+                            host: loki
+                            job: node-agent
+                            mountpoint: /nix/persist
+                            severity: warning
+                          exp_annotations:
+                            summary: Low free space on loki:/nix/persist
+                            description: Physical free space is below 10%; check snapshot retention and measured data growth.
+                    - eval_time: 16m
+                      groupname: fleet-storage
+                      alertname: HostFilesystemCritical
+                      exp_alerts: []
+                - name: fleet storage critical
+                  interval: 1m
+                  input_series:
+                    - series: 'node_filesystem_avail_bytes{host="argus",job="node-agent",device="/dev/sda1",fstype="ext4",mountpoint="/"}'
+                      values: "2147483648+0x20"
+                    - series: 'node_filesystem_size_bytes{host="argus",job="node-agent",device="/dev/sda1",fstype="ext4",mountpoint="/"}'
+                      values: "68719476736+0x20"
+                  alert_rule_test:
+                    - eval_time: 6m
+                      groupname: fleet-storage
+                      alertname: HostFilesystemCritical
+                      exp_alerts:
+                        - exp_labels:
+                            device: /dev/sda1
+                            fstype: ext4
+                            host: argus
+                            job: node-agent
+                            mountpoint: /
+                            severity: critical
+                          exp_annotations:
+                            summary: Critically low free space on argus:/
+                            description: Physical free space is below 5%; act before writes start failing.
+                - name: fleet storage fill trend
+                  interval: 1m
+                  input_series:
+                    - series: 'node_filesystem_avail_bytes{host="loki",job="node-agent",device="/dev/vda3",fstype="btrfs",mountpoint="/nix/persist"}'
+                      values: "17179869184-10485760x420"
+                    - series: 'node_filesystem_size_bytes{host="loki",job="node-agent",device="/dev/vda3",fstype="btrfs",mountpoint="/nix/persist"}'
+                      values: "68719476736+0x420"
+                  alert_rule_test:
+                    - eval_time: 90m
+                      groupname: fleet-storage
+                      alertname: HostFilesystemFillingUp
+                      exp_alerts: []
+                    - eval_time: 6h
+                      groupname: fleet-storage
+                      alertname: HostFilesystemFillingUp
+                      exp_alerts:
+                        - exp_labels:
+                            device: /dev/vda3
+                            fstype: btrfs
+                            host: loki
+                            job: node-agent
+                            mountpoint: /nix/persist
+                            severity: warning
+                          exp_annotations:
+                            summary: loki:/nix/persist predicted full within a day
+                            description: Physical free space is under 25% and its 6-hour trend crosses zero within 24 hours.
                 - name: stale alert overlaps absence alert
                   interval: 30s
                   input_series:

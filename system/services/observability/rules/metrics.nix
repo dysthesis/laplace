@@ -103,5 +103,49 @@
         })
         expectedHosts;
     }
+    {
+      # Free space and growth on real disks fleet-wide. statfs-backed
+      # node_filesystem_avail_bytes counts shared Btrfs snapshot/reflink extents
+      # once, so this measures physical bytes, unlike `du` over snapshots.
+      # simplification: per-snapshot exclusive attribution needs Btrfs qgroups
+      # (runtime cost, owner decision); fs-level physical free covers alerting.
+      name = "fleet-storage";
+      interval = "1m";
+      rules = let
+        avail = ''node_filesystem_avail_bytes{fstype=~"btrfs|ext4|vfat|xfs"}'';
+        ratio = "${avail} / node_filesystem_size_bytes";
+      in [
+        {
+          alert = "HostFilesystemLow";
+          expr = "${ratio} < 0.10";
+          for = "15m";
+          labels.severity = "warning";
+          annotations = {
+            summary = "Low free space on {{ $labels.host }}:{{ $labels.mountpoint }}";
+            description = "Physical free space is below 10%; check snapshot retention and measured data growth.";
+          };
+        }
+        {
+          alert = "HostFilesystemCritical";
+          expr = "${ratio} < 0.05";
+          for = "5m";
+          labels.severity = "critical";
+          annotations = {
+            summary = "Critically low free space on {{ $labels.host }}:{{ $labels.mountpoint }}";
+            description = "Physical free space is below 5%; act before writes start failing.";
+          };
+        }
+        {
+          alert = "HostFilesystemFillingUp";
+          expr = "(${ratio} < 0.25) and (predict_linear(${avail}[6h], 24 * 3600) < 0)";
+          for = "1h";
+          labels.severity = "warning";
+          annotations = {
+            summary = "{{ $labels.host }}:{{ $labels.mountpoint }} predicted full within a day";
+            description = "Physical free space is under 25% and its 6-hour trend crosses zero within 24 hours.";
+          };
+        }
+      ];
+    }
   ];
 }
