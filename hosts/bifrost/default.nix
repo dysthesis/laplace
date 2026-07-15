@@ -368,6 +368,11 @@ in {
               value = mimirTailnetIp;
             }
             {
+              name = "slides.${fqdn}";
+              type = "A";
+              value = mimirTailnetIp;
+            }
+            {
               name = "mc.${fqdn}";
               type = "A";
               value = lokiTailnetIp;

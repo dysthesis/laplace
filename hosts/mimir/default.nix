@@ -6,6 +6,7 @@
 # their raw ports, and :443 is tailnet-only via laplace.services.tailscale.
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -130,6 +131,18 @@ in {
         enable = true;
         email = "dysthesis@protonmail.com";
         openFirewall = false; # tailnet-only; :443 reached over tailscale0
+        # Static site straight out of the store — no darkhttpd unit (the slides
+        # flake's server wrapper would be a redundant loopback hop behind Caddy).
+        # tls block duplicated from cloudflare.proxies: that option only renders
+        # reverse_proxy vhosts, and one static site doesn't earn a new option.
+        virtualHosts."slides.dysthesis.com".extraConfig = ''
+          tls {
+            dns cloudflare {env.CF_API_TOKEN}
+            resolvers 1.1.1.1
+          }
+          root * ${inputs.slides.packages.${pkgs.stdenv.hostPlatform.system}.slides}
+          file_server
+        '';
         cloudflare = {
           enable = true;
           sopsFile = ../../system/secrets/mimir.yaml;
