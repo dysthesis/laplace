@@ -20,8 +20,8 @@
   mullvadConnections = {
     deimos = {
       registeredNodeKey = "nodekey:ddec812440a7cc7728567fe2f8d6d97f5b8411fba6593fe4cdb5035c09a6aa53";
-      ipv4MasqAddr = "10.168.137.252";
-      ipv6MasqAddr = "fc00:bbbb:bbbb:bb01:d:0:28:89fc";
+      ipv4MasqAddr = "10.150.18.14";
+      ipv6MasqAddr = "fc00:bbbb:bbbb:bb01:d:0:16:120e";
     };
     phobos = {
       registeredNodeKey = "nodekey:b3e3b7c895bd9ff16ab73d004ae85a42c7e3aa59b71145881493196119a40324";
