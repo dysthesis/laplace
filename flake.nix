@@ -107,6 +107,50 @@
                 --file ${nixosConfigurations.bifrost.config.laplace.services.headscale.acl.policyFile}
               touch $out
             '';
+
+          tailnet-reconcile = pkgs.runCommand "tailnet-reconcile-check" {nativeBuildInputs = [pkgs.jq];} ''
+            ssot='{
+              "alpha":{"ip":"100.64.0.1","ip6":"fd7a:115c:a1e0::1","tags":["infra","monitor"]},
+              "beta":{"ip":"100.64.0.2","ip6":"fd7a:115c:a1e0::2","tags":["infra"]}
+            }'
+            problems=$(jq -r --argjson ssot "$ssot" -f ${./system/tailnet/reconcile.jq} <<'JSON'
+            [
+              {
+                "name":"wrong-name",
+                "given_name":"alpha",
+                "ip_addresses":["100.64.0.9","fd7a:115c:a1e0::9"],
+                "tags":["tag:infra"]
+              },
+              {
+                "name":"gamma",
+                "given_name":"gamma",
+                "ip_addresses":["100.64.0.3","fd7a:115c:a1e0::3"],
+                "tags":["tag:game"]
+              },
+              {
+                "name":"guest",
+                "given_name":"guest",
+                "ip_addresses":["100.64.0.4","fd7a:115c:a1e0::4"],
+                "tags":[]
+              },
+              {
+                "name":"guest-copy",
+                "given_name":"guest",
+                "ip_addresses":["100.64.0.5","fd7a:115c:a1e0::5"],
+                "tags":[]
+              }
+            ]
+            JSON
+            )
+            expected=$(printf '%s\n' \
+              'TAG DRIFT alpha: live=infra ssot=infra,monitor' \
+              'ADDRESS DRIFT alpha: live=100.64.0.9,fd7a:115c:a1e0::9 ssot=100.64.0.1,fd7a:115c:a1e0::1' \
+              'MISSING from tailnet: beta' \
+              'UNEXPECTED tagged tailnet node: gamma' \
+              'DUPLICATE tailnet node identity: guest')
+            test "$problems" = "$expected"
+            touch $out
+          '';
         };
     }
     // {

@@ -128,16 +128,10 @@ tailnet-reconcile TARGET="root@10.0.50.2":
   set -eu
   ssot=$(nix eval --json '.#nixosConfigurations.bifrost.config.laplace.tailnet.nodes')
   live=$(ssh {{TARGET}} 'headscale nodes list --output json')
-  problems=$(printf '%s' "$live" | nix shell nixpkgs#jq -c jq -r --argjson ssot "$ssot" '
-    ($ssot | to_entries | map({key: .key, want: (.value.tags | sort)})) as $want
-    | (map({key: (.givenName // .name), value: ((.tags // []) | map(sub("^tag:"; "")) | sort)}) | from_entries) as $have
-    | [ $want[] | .key as $h | ($have[$h]) as $got
-        | if $got == null then "MISSING from tailnet: \($h)"
-          elif $got != .want then "DRIFT \($h): live=\($got|join(",")) ssot=\(.want|join(","))"
-          else empty end ]
-    | .[]')
+  problems=$(printf '%s' "$live" | nix shell nixpkgs#jq -c jq -r \
+    --argjson ssot "$ssot" -f system/tailnet/reconcile.jq)
   if [ -n "$problems" ]; then
-    printf 'tailnet tag reconcile FAILED (live Headscale tags != SSOT):\n%s\n' "$problems" >&2
+    printf 'tailnet reconcile FAILED (live Headscale state != SSOT):\n%s\n' "$problems" >&2
     exit 1
   fi
-  echo "tailnet tag reconcile OK: live tags == SSOT for all nodes"
+  echo "tailnet reconcile OK: live tagged nodes, addresses, and tags == SSOT"
