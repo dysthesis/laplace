@@ -19,6 +19,7 @@
     ;
   cfg = config.mnemosyne;
   persistPath = path: normalizePath "${cfg.persistDir}${path}";
+  machineIdPath = persistPath "/etc/machine-id";
   mkMounts = dirs:
     dirs
     |> map (path: {
@@ -87,7 +88,26 @@ in {
         RequiresMountsFor = "/sysroot${cfg.persistDir}";
       };
       serviceConfig.Type = "oneshot";
-      script = mkSourcePaths "/sysroot" cfg.dirs;
+      script = ''
+        ${mkSourcePaths "/sysroot" cfg.dirs}
+
+        mkdir -p /sysroot${cfg.persistDir}/etc /sysroot/etc
+        if [ ! -s /sysroot${machineIdPath} ]; then
+          uuid="$(cat /proc/sys/kernel/random/uuid)"
+          printf '%s\n' "''${uuid//-/}" > /sysroot${machineIdPath}
+          chmod 0444 /sysroot${machineIdPath}
+        fi
+        cp /sysroot${machineIdPath} /sysroot/etc/machine-id
+      '';
     };
+
+    # Preserve the current identity before the next boot starts from tmpfs.
+    system.activationScripts.mnemosyne-machine-id = ''
+      mkdir -p ${cfg.persistDir}/etc
+      if [ ! -s ${machineIdPath} ] && [ -s /etc/machine-id ]; then
+        cp /etc/machine-id ${machineIdPath}
+        chmod 0444 ${machineIdPath}
+      fi
+    '';
   };
 }
