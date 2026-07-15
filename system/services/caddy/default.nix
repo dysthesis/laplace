@@ -85,7 +85,7 @@ in {
       # per-host); bump both together when the caddy/plugin version changes.
       services.caddy.package = pkgs.caddy.withPlugins {
         plugins = ["github.com/caddy-dns/cloudflare@v0.2.4"];
-        hash = "sha256-hEHgAG0F0ozHRAPuxEqLyTATBrE+pajeXDiSNwniorg=";
+        hash = "sha256-7GoH8YLCoPmPExQxoga2FHB58zQDoZVf1BBwkVi0SsQ=";
       };
 
       # `resolvers 1.1.1.1` sends the ACME challenge lookups to a public resolver,
