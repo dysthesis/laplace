@@ -75,6 +75,41 @@
               touch $out
             '';
 
+          minecraft-maintenance = let
+            services = nixosConfigurations.loki.config.systemd.services;
+            snapshot = pkgs.writeText "mc-world-snapshot.sh" services.mc-world-snapshot.script;
+            restart = pkgs.writeText "mc-nightly-restart.sh" services.mc-nightly-restart.script;
+          in
+            pkgs.runCommand "minecraft-maintenance-check" {nativeBuildInputs = [pkgs.bash];} ''
+              bash -n ${snapshot}
+              bash -n ${restart}
+
+              trap_line=$(grep -nF 'trap restore_saves EXIT' ${snapshot} | cut -d: -f1)
+              armed_line=$(grep -nF 'saves_disabled=true' ${snapshot} | cut -d: -f1)
+              save_off_line=$(grep -nF "printf '%s\n' 'save-off' >&8" ${snapshot} | cut -d: -f1)
+              snapshot_line=$(grep -nF 'btrfs subvolume snapshot' ${snapshot} | cut -d: -f1)
+              restore_line=$(grep -nFx 'restore_saves' ${snapshot} | cut -d: -f1)
+              test "$trap_line" -lt "$save_off_line"
+              test "$armed_line" -lt "$save_off_line"
+              test "$save_off_line" -lt "$snapshot_line"
+              test "$snapshot_line" -lt "$restore_line"
+              grep -Fq "'save-on' >&8" ${snapshot}
+              grep -Fq '_SYSTEMD_INVOCATION_ID=$invocation_id' ${snapshot}
+              grep -Fq -- '--after-cursor="$cursor"' ${snapshot}
+              grep -Fq 'Automatic saving is now disabled' ${snapshot}
+              grep -Fq 'Saved the game$' ${snapshot}
+              grep -Fq 'data get storage $marker' ${snapshot}
+              grep -Fq 'Unable to save the game' ${snapshot}
+              test ${lib.escapeShellArg services.mc-world-snapshot.serviceConfig.TimeoutStartSec} = 5min
+              test ${lib.escapeShellArg services.mc-nightly-restart.serviceConfig.TimeoutStartSec} = 5min
+
+              for script in ${snapshot} ${restart}; do
+                grep -Fqx 'exec 9>"/run/lock/minecraft-maintenance.lock"' "$script"
+                grep -Fqx 'flock --exclusive 9' "$script"
+              done
+              touch $out
+            '';
+
           # Build-time half of PLAN §5 layer 4: gate the SSOT-rendered Headscale
           # policy and rendered service config against the same headscale binary
           # bifrost runs. configtest needs writable state paths, so the sandbox
