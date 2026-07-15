@@ -126,6 +126,18 @@
                 touch $out
               '';
 
+          minecraft-config-staging = let
+            services = nixosConfigurations.loki.config.systemd.services;
+            server = services."minecraft-server-retirement-home";
+            restart = pkgs.writeText "mc-nightly-restart.sh" services.mc-nightly-restart.script;
+          in
+            assert server.reloadIfChanged == false;
+            assert server.restartIfChanged == false;
+              pkgs.runCommand "minecraft-config-staging-check" {} ''
+                grep -Fqx 'systemctl try-restart "$unit"' ${restart}
+                touch $out
+              '';
+
           # Build-time half of PLAN §5 layer 4: gate the SSOT-rendered Headscale
           # policy and rendered service config against the same headscale binary
           # bifrost runs. configtest needs writable state paths, so the sandbox

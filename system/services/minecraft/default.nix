@@ -209,6 +209,11 @@ in {
     # ever touching the store. Global option, but loki runs one server.
     services.minecraft-servers.environmentFile = mkIf cfg.discord.enable cfg.discord.environmentFile;
 
+    # Stage service/config changes until a real restart. nix-minecraft's reload
+    # deletes managed files while the JVM stays running; enableReload below is
+    # retained only to keep its automatic restartIfChanged disabled as well.
+    systemd.services."minecraft-server-retirement-home".reloadIfChanged = lib.mkForce false;
+
     # Spark's bundled async-profiler is native C++; expose its only missing
     # runtime dependency without adding a host-wide library search path.
     systemd.services."minecraft-server-retirement-home".environment.LD_LIBRARY_PATH =
