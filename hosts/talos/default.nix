@@ -42,7 +42,7 @@
     proxmox = {
       cores = 4;
       memory = 6144; # MiB, ballooning ceiling (nix evals/builds burst)
-      balloon = 1024; # MiB, ballooning floor (an idle runner is tiny)
+      balloon = 6144; # MiB, fixed allocation required by representative Nix CI
       # simplification: 64G is a guess — the store grows with every CI build and
       # nothing GCs it yet. Upgrade path: nix.gc.automatic or a bigger disk once
       # `df` on real CI load says so.

@@ -59,7 +59,7 @@ in {
     proxmox = {
       cores = 1;
       memory = 1024; # MiB, ballooning ceiling
-      balloon = 512; # MiB, ballooning floor (caddy + ddclient + anubis; each is a small Go proc)
+      balloon = 1024; # MiB, fixed after 512 MiB caused swap pressure
       diskSize = "20G";
     };
     security = {
