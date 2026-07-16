@@ -63,6 +63,7 @@ in {
           configured.bibiman
           configured.bmm
           configured.helix
+          configured.pi
         ];
 
         dev = with pkgs; [

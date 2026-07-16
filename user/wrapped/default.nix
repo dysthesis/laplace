@@ -32,6 +32,10 @@
         inherit lib pkgs;
         inherit (inputs.read.packages.${system}) read;
       };
+      pi = callPackage ./pi {
+        inherit lib pkgs;
+        inherit (pkgs.unstable) pi-coding-agent;
+      };
       pass = callPackage ./pass {inherit lib pkgs;};
       lazygit = callPackage ./lazygit {
         inherit lib pkgs;
