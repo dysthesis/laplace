@@ -23,7 +23,7 @@ _: {
       mimir = {
         ip = "100.64.0.8";
         ip6 = "fd7a:115c:a1e0::8";
-        tags = ["apps" "monitor" "infra"];
+        tags = ["apps" "monitor" "infra" "rss"];
       }; # miniflux/silverbullet/vikunja/radicale + beszel-hub
       argus = {
         ip = "100.64.0.34";
@@ -228,6 +228,12 @@ _: {
           dns = ["udp/53"];
         };
       };
+
+      miniflux = {
+        users = ["mary"];
+        reach = {rss = ["tcp/80" "tcp/443"];};
+      };
+
       photos = {
         users = ["sheva"];
         reach = {
