@@ -8,7 +8,7 @@
   fontSize =
     if host == "phobos"
     then 5
-    else 9;
+    else 10;
   lineHeight = fontSize * 1.5;
   padding = 10;
   mkConfig = cfg:
@@ -20,7 +20,7 @@ in
     main = {
       term = "foot";
       shell = lib.getExe pkgs.configured.fish;
-      font = "JBMono Nerd Font:size=${toString fontSize}";
+      font = "IosevkaCadmus Nerd Font:size=${toString fontSize}";
       line-height = toString lineHeight;
       pad = "${toString padding}x${toString padding}";
       dpi-aware = "yes";

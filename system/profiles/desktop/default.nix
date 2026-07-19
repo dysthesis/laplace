@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  inputs,
   ...
 }: let
   inherit (lib) mkIf;
@@ -82,14 +83,16 @@ in {
       noto-fonts-color-emoji
       noto-fonts-cjk-sans
       terminus_font
-      jbcustom-nf
       literata
       et-book
       sf-pro
       georgia-fonts
       newcomputermodern
+
       nerd-fonts.jetbrains-mono
       nerd-fonts.iosevka
+      jbcustom-nf
+      inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font
     ];
     services = {
       # Interactive outbound-connection prompts need a GUI to answer them, so

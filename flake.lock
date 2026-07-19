@@ -374,6 +374,24 @@
     },
     "flake-parts_4": {
       "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib_2"
+      },
+      "locked": {
+        "lastModified": 1782949081,
+        "narHash": "sha256-vp6Y/Grm98ESt6ceOkWiHWyZRDV3J1RID4w+6NWK9yA=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "17c9d6cdfc60c64f4ee8d306f9bc0b4ccb51481e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_5": {
+      "inputs": {
         "nixpkgs-lib": [
           "nixpak",
           "nixpkgs"
@@ -393,7 +411,7 @@
         "type": "github"
       }
     },
-    "flake-parts_5": {
+    "flake-parts_6": {
       "inputs": {
         "nixpkgs-lib": [
           "poincare",
@@ -415,9 +433,9 @@
         "type": "github"
       }
     },
-    "flake-parts_6": {
+    "flake-parts_7": {
       "inputs": {
-        "nixpkgs-lib": "nixpkgs-lib_2"
+        "nixpkgs-lib": "nixpkgs-lib_3"
       },
       "locked": {
         "lastModified": 1782949081,
@@ -586,6 +604,27 @@
         "type": "github"
       }
     },
+    "iosevka-cadmus": {
+      "inputs": {
+        "flake-parts": "flake-parts_4",
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784467073,
+        "narHash": "sha256-nJc0obXrxykzZsXxqPzzd8JLjUg0ewwE+3LFmV0+6mU=",
+        "owner": "dysthesis",
+        "repo": "iosevka-cadmus",
+        "rev": "fe02b98a60675d4d50b0008858e6239ef150bd4b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dysthesis",
+        "repo": "iosevka-cadmus",
+        "type": "github"
+      }
+    },
     "iosevka-fontsource": {
       "flake": false,
       "locked": {
@@ -680,7 +719,7 @@
     },
     "neovim-nightly-overlay": {
       "inputs": {
-        "flake-parts": "flake-parts_5",
+        "flake-parts": "flake-parts_6",
         "neovim-src": "neovim-src",
         "nixpkgs": [
           "poincare",
@@ -800,7 +839,7 @@
     },
     "nixpak": {
       "inputs": {
-        "flake-parts": "flake-parts_4",
+        "flake-parts": "flake-parts_5",
         "hercules-ci-effects": "hercules-ci-effects",
         "nixpkgs": [
           "nixpkgs"
@@ -866,6 +905,21 @@
       }
     },
     "nixpkgs-lib_2": {
+      "locked": {
+        "lastModified": 1782614948,
+        "narHash": "sha256-ePjCwr1sNm9NYUqywL7QfK3JnlS015msC+eBu2zKlp8=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "db3f255737b94216eb71cce308e2912cf6bc2d7c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "type": "github"
+      }
+    },
+    "nixpkgs-lib_3": {
       "locked": {
         "lastModified": 1782614948,
         "narHash": "sha256-ePjCwr1sNm9NYUqywL7QfK3JnlS015msC+eBu2zKlp8=",
@@ -1199,6 +1253,7 @@
         "gungnir": "gungnir",
         "headscale": "headscale",
         "hister": "hister",
+        "iosevka-cadmus": "iosevka-cadmus",
         "lanzaboote": "lanzaboote",
         "mandelbrot": "mandelbrot",
         "nix-index-database": "nix-index-database",
@@ -1330,7 +1385,7 @@
     "slides": {
       "inputs": {
         "atkinson-fontsource": "atkinson-fontsource",
-        "flake-parts": "flake-parts_6",
+        "flake-parts": "flake-parts_7",
         "iosevka-fontsource": "iosevka-fontsource",
         "mermaid": "mermaid",
         "nixpkgs": [

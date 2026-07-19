@@ -80,7 +80,7 @@ in {
           [
             brightnessctl
             bash
-            calibre
+            # calibre
             bibata-cursors
             pwvucontrol
           ]
