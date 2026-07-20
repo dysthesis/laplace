@@ -94,6 +94,20 @@ in {
       jbcustom-nf
       inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font
     ];
+    fonts.fontconfig.localConf = ''
+      <?xml version="1.0"?>
+      <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+      <fontconfig>
+        <match target="font">
+          <test name="family" compare="eq">
+            <string>Iosevka Cadmus</string>
+          </test>
+          <edit name="hintstyle" mode="assign">
+            <const>hintfull</const>
+          </edit>
+        </match>
+      </fontconfig>
+    '';
     services = {
       # Interactive outbound-connection prompts need a GUI to answer them, so
       # opensnitch belongs to the desktop profile rather than the generic
