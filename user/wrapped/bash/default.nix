@@ -47,7 +47,9 @@
       ${startFish}
     '';
 in
-  mkWrapper pkgs pkgs.bash ''
-    wrapProgram $out/bin/bash \
-     --add-flags '--rcfile' --add-flags '${configuration}'
-  ''
+  mkWrapper pkgs pkgs.bash {
+    addFlags = [
+      "--rcfile"
+      configuration
+    ];
+  }

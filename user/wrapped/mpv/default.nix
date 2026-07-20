@@ -41,13 +41,10 @@
       '';
   });
 in
-  mkWrapper pkgs mpv ''
-    wrapProgram $out/bin/mpv \
-     --add-flags '--config-dir=${config}' \
-     --prefix PATH ":" ${
-      lib.makeBinPath [
-        pkgs.ffmpeg
-        pkgs.yt-dlp
-      ]
-    }
-  ''
+  mkWrapper pkgs mpv {
+    addFlags = ["--config-dir=${config}"];
+    binPath = [
+      pkgs.ffmpeg
+      pkgs.yt-dlp
+    ];
+  }

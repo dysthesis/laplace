@@ -11,9 +11,4 @@
   config = import ./config.nix {inherit lib delta gh writeShellScript;};
   configFile = pkgs.writers.writeYAML "config.yml" config;
 in
-  mkWrapper pkgs gh-dash
-  # sh
-  ''
-    wrapProgram $out/bin/gh-dash \
-      --add-flags "--config ${configFile}"
-  ''
+  mkWrapper pkgs gh-dash {addFlags = ["--config ${configFile}"];}

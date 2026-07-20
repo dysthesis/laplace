@@ -6,9 +6,7 @@
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
 in
-  mkWrapper pkgs read
-  # sh
-  ''
-    wrapProgram $out/bin/rd \
-      --set URLS "${./feeds}" \
-  ''
+  mkWrapper pkgs read {
+    program = "rd"; # wrapped binary is `rd`, not the package name
+    set.URLS = "${./feeds}";
+  }

@@ -124,11 +124,10 @@
     python3
   ];
 in
-  mkWrapper pkgs pkgs.taskwarrior3
-  # bash
-  ''
-    wrapProgram $out/bin/task \
-     --set TASKRC ${taskrc} \
-     --run 'sync="$HOME/.config/task/sync.conf"; if [ -r /run/secrets/taskwarrior_sync ]; then ${pkgs.coreutils}/bin/install -Dm600 /run/secrets/taskwarrior_sync "$sync"; elif [ ! -e "$sync" ]; then ${pkgs.coreutils}/bin/install -Dm600 /dev/null "$sync"; fi' \
-     --prefix PATH ":" "${lib.makeBinPath deps}"
-  ''
+  mkWrapper pkgs pkgs.taskwarrior3 {
+    set.TASKRC = taskrc;
+    binPath = deps;
+    # Stage the sops-managed client_id + encryption_secret into ~/.config on
+    # first run so the secret never lands in the Nix store.
+    run = [''sync="$HOME/.config/task/sync.conf"; if [ -r /run/secrets/taskwarrior_sync ]; then ${pkgs.coreutils}/bin/install -Dm600 /run/secrets/taskwarrior_sync "$sync"; elif [ ! -e "$sync" ]; then ${pkgs.coreutils}/bin/install -Dm600 /dev/null "$sync"; fi''];
+  }

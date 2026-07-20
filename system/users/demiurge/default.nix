@@ -110,11 +110,9 @@ in {
             gamemodeSupport = true;
           })
           tigervnc
-          (mkWrapper pkgs.unstable pkgs.unstable.obsidian ''
-            wrapProgram $out/bin/obsidian \
-            --prefix PATH : ${lib.makeBinPath (with pkgs.unstable; [
-              claude-code
-            ])} '')
+          (mkWrapper pkgs.unstable pkgs.unstable.obsidian {
+            binPath = with pkgs.unstable; [claude-code];
+          })
           unstable.claude-code
         ];
 

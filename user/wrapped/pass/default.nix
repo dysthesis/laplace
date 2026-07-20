@@ -11,9 +11,4 @@
   };
   inherit (lib.laplace.pkgs) mkWrapper;
 in
-  mkWrapper pkgs passBuild
-  # bash
-  ''
-    wrapProgram $out/bin/pass \
-      --set PASSWORD_STORE_DIR "/home/demiurge/.local/share/password-store"
-  ''
+  mkWrapper pkgs passBuild {set.PASSWORD_STORE_DIR = "/home/demiurge/.local/share/password-store";}

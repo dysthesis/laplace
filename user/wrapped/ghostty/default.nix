@@ -18,8 +18,7 @@
     configured.tmux
   ];
 in
-  mkWrapper pkgs pkgs.unstable.ghostty ''
-    wrapProgram $out/bin/ghostty \
-      --add-flags "--config-file=${cfg}" \
-      --prefix PATH ":" "${lib.makeBinPath deps}"
-  ''
+  mkWrapper pkgs pkgs.unstable.ghostty {
+    addFlags = ["--config-file=${cfg}"];
+    binPath = deps;
+  }

@@ -136,10 +136,7 @@
           |> lib.generators.toINI {}
           |> pkgs.writeText "fuzzel.ini";
       in
-        mkWrapper pkgs pkgs.fuzzel ''
-          wrapProgram $out/bin/fuzzel \
-            --add-flags "--config=${configFile}"
-        '';
+        mkWrapper pkgs pkgs.fuzzel {addFlags = ["--config=${configFile}"];};
       bemenu = callPackage ./bemenu {inherit pkgs config lib;};
       yambar = makeOverridable callPackage ./yambar {
         inherit pkgs lib;

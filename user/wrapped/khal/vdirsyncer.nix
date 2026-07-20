@@ -31,12 +31,5 @@
     username = "demiurge"
     password.fetch = ["command", "cat", "/run/secrets/khal_caldav"]
   '';
-  vdirsyncer = pkgs.unstable.vdirsyncer.overrideAttrs (o: {
-    meta = (o.meta or {}) // {mainProgram = "vdirsyncer";};
-  });
 in
-  mkWrapper pkgs.unstable vdirsyncer
-  # sh
-  ''
-    wrapProgram $out/bin/vdirsyncer --set VDIRSYNCER_CONFIG ${config}
-  ''
+  mkWrapper pkgs.unstable pkgs.unstable.vdirsyncer {set.VDIRSYNCER_CONFIG = config;}

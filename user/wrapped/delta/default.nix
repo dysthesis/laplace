@@ -17,9 +17,4 @@
     |> builtins.concatStringsSep " ";
   formattedFeatures = formatFeatures features;
 in
-  mkWrapper pkgs delta
-  # sh
-  ''
-    wrapProgram $out/bin/delta \
-      --set DELTA_FEATURES "${formattedFeatures}"
-  ''
+  mkWrapper pkgs delta {set.DELTA_FEATURES = formattedFeatures;}

@@ -27,8 +27,10 @@
     inherit (pkgs.unstable) fzf;
   };
 in
-  mkWrapper pkgs ytfzf ''
-    wrapProgram $out/bin/ytfzf \
-    --set PATH ${makeBinPath dependencies} \
-    --set XDG_CONFIG_HOME ${./config}
-  ''
+  # PATH is *replaced* (not prefixed): ytfzf shells out to a fixed toolset.
+  mkWrapper pkgs ytfzf {
+    set = {
+      PATH = makeBinPath dependencies;
+      XDG_CONFIG_HOME = "${./config}";
+    };
+  }

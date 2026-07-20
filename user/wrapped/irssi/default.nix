@@ -170,13 +170,7 @@
       };
     '';
   };
-  wrappedIrssi =
-    mkWrapper pkgs irssi
-    # sh
-    ''
-      wrapProgram $out/bin/irssi \
-        --add-flags "--config=${irssiConfig}"
-    '';
+  wrappedIrssi = mkWrapper pkgs irssi {addFlags = ["--config=${irssiConfig}"];};
 in
   writeShellScriptBin "irssi" ''
     ${config.programs.proxychains.package}/bin/proxychains4 ${wrappedIrssi}/bin/irssi

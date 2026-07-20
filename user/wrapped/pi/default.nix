@@ -26,18 +26,15 @@
   # PATH; kvm accel when /dev/kvm is RW, else TCG).
   gondolin = "${pi-coding-agent}/lib/node_modules/pi-monorepo/examples/extensions/gondolin";
 in
-  mkWrapper pkgs pi-coding-agent
-  # bash
-  ''
+  mkWrapper pkgs pi-coding-agent {
+    set.PI_TELEMETRY = "false";
+    binPath = [pkgs.qemu_kvm];
+    addFlags = ["-e ${gondolin}"];
     # pi treats the agent dir (PI_CODING_AGENT_DIR, default ~/.pi/agent) as a
     # single writable state root: settings.json, its .lock, sessions/, auth.json.
     # So it can't live in the store — seed our managed defaults on first run,
     # then leave the user's copy alone.
     # simplification: seed-once. Editing the Nix settings won't repropagate;
     # `rm ~/.pi/agent/settings.json` to re-seed.
-    wrapProgram $out/bin/pi \
-      --set PI_TELEMETRY "false" \
-      --prefix PATH : "${lib.makeBinPath [pkgs.qemu_kvm]}" \
-      --add-flags "-e ${gondolin}" \
-      --run 'dir="''${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"; [ -e "$dir/settings.json" ] || install -Dm644 ${settings} "$dir/settings.json"'
-  ''
+    run = [''dir="''${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"; [ -e "$dir/settings.json" ] || install -Dm644 ${settings} "$dir/settings.json"''];
+  }

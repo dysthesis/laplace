@@ -18,9 +18,4 @@
     sway = sway-unwrapped;
   };
 in
-  mkWrapper pkgs sway-unwrapped
-  # bash
-  ''
-    wrapProgram $out/bin/sway \
-      --add-flags "--config ${configFile}"
-  ''
+  mkWrapper pkgs sway-unwrapped {addFlags = ["--config ${configFile}"];}

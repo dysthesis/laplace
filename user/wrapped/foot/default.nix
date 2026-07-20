@@ -55,7 +55,4 @@
       ;
   };
 in
-  mkWrapper pkgs footPatched ''
-    wrapProgram $out/bin/foot \
-      --add-flags "--config=${configFile}"
-  ''
+  mkWrapper pkgs footPatched {addFlags = ["--config=${configFile}"];}

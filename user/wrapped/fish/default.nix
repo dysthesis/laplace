@@ -182,14 +182,15 @@
       source ${zoxideInit}
     '';
 in
-  mkWrapper pkgs fish
-  # bash
-  ''
-    wrapProgram $out/bin/fish \
-      --prefix XDG_DATA_DIRS : "${
-      lib.makeSearchPathOutput "out" "share" [
-        functionsDir
-        config
-      ]
-    }"
-  ''
+  # Prefixes XDG_DATA_DIRS (not PATH), so needs raw postBuild.
+  mkWrapper pkgs fish {
+    postBuild = ''
+      wrapProgram $out/bin/fish \
+        --prefix XDG_DATA_DIRS : "${
+        lib.makeSearchPathOutput "out" "share" [
+          functionsDir
+          config
+        ]
+      }"
+    '';
+  }

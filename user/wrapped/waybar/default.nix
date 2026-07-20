@@ -19,10 +19,9 @@
     monitors = nixosConfig.laplace.hardware.monitors or [];
   };
 in
-  mkWrapper pkgs pkgs.waybar
-  # sh
-  ''
-    wrapProgram $out/bin/waybar \
-      --add-flags "-c ${generated.json}" \
-      --add-flags "-s ${generated.css}"
-  ''
+  mkWrapper pkgs pkgs.waybar {
+    addFlags = [
+      "-c ${generated.json}"
+      "-s ${generated.css}"
+    ];
+  }

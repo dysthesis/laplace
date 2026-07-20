@@ -68,10 +68,11 @@
   ];
   flags' = flags |> map (flag: ''--add-flags "${flag}"'') |> concatStringsSep " ";
 in
-  mkWrapper pkgs bemenu
-  # sh
-  ''
-    for file in $out/bin/*; do
-      wrapProgram $file ${flags'}
-    done
-  ''
+  # Wraps every binary in the join (bemenu + bemenu-run), so needs raw postBuild.
+  mkWrapper pkgs bemenu {
+    postBuild = ''
+      for file in $out/bin/*; do
+        wrapProgram $file ${flags'}
+      done
+    '';
+  }

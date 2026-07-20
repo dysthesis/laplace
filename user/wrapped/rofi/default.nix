@@ -6,8 +6,5 @@
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
 in
-  mkWrapper pkgs rofi-wayland
-  # sh
-  ''
-    wrapProgram $out/bin/rofi
-  ''
+  # No flags: symlinkJoin only, purely to land rofi in the `configured` set.
+  mkWrapper pkgs rofi-wayland {}

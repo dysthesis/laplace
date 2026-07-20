@@ -78,7 +78,10 @@
 
   formatted = concatStringsSep " \\\n      " (map mkParam tokens);
 in
-  lib.laplace.pkgs.mkWrapper pkgs swaylock-effects ''
-    wrapProgram "$out/bin/swaylock" \
-      ${formatted}
-  ''
+  # Uses --add-flag (singular) for space-containing values, so needs raw postBuild.
+  lib.laplace.pkgs.mkWrapper pkgs swaylock-effects {
+    postBuild = ''
+      wrapProgram "$out/bin/swaylock" \
+        ${formatted}
+    '';
+  }

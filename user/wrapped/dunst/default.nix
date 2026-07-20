@@ -31,7 +31,4 @@
     ${toDunstIni cfg}
   '';
 in
-  mkWrapper pkgs pkgs.dunst ''
-    wrapProgram $out/bin/dunst \
-     --add-flags "-config ${dunstrc}"
-  ''
+  mkWrapper pkgs pkgs.dunst {addFlags = ["-config ${dunstrc}"];}

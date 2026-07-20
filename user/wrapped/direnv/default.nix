@@ -17,7 +17,4 @@
     cp ${direnvConfigFile} $out/direnv/direnv.toml
   '';
 in
-  mkWrapper pkgs.unstable direnv ''
-    wrapProgram $out/bin/direnv \
-      --set XDG_CONFIG_HOME "${direnvConfigDir}"
-  ''
+  mkWrapper pkgs.unstable direnv {set.XDG_CONFIG_HOME = direnvConfigDir;}

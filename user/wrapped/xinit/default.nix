@@ -38,11 +38,11 @@
       exec ${xmonad}/bin/xmonad-configured
     '';
 in
-  mkWrapper pkgs xinit ''
-    wrapProgram "$out/bin/startx" --set XINITRC ${xinitrc} --prefix PATH ":" "${
-      lib.makeBinPath [
-        inputs.mandelbrot.packages.${system}.xmobar
-        xinit
-      ]
-    }";
-  ''
+  mkWrapper pkgs xinit {
+    program = "startx"; # xinit's mainProgram is `xinit`; the wrapped binary is `startx`
+    set.XINITRC = xinitrc;
+    binPath = [
+      inputs.mandelbrot.packages.${system}.xmobar
+      xinit
+    ];
+  }

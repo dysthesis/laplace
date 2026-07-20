@@ -16,10 +16,7 @@
     cp ${configFile} $out/config.toml
   '';
 in
-  mkWrapper pkgs jjui
-  # sh
-  ''
-    wrapProgram $out/bin/jjui \
-      --set JJUI_CONFIG_DIR ${configDir} \
-      --prefix PATH : ${lib.makeBinPath [jujutsu]}
-  ''
+  mkWrapper pkgs jjui {
+    set.JJUI_CONFIG_DIR = configDir;
+    binPath = [jujutsu];
+  }

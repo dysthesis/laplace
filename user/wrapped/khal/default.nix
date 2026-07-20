@@ -28,15 +28,12 @@
     [default]
     timedelta = 5d
   '';
-  # Upstream khal carries no meta.mainProgram, which mkWrapper requires.
-  khal = pkgs.unstable.khal.overrideAttrs (o: {
-    meta = (o.meta or {}) // {mainProgram = "khal";};
-  });
 in
-  mkWrapper pkgs.unstable khal
-  # sh
-  ''
-    for bin in khal ikhal; do
-      wrapProgram $out/bin/$bin --add-flags "-c ${config}"
-    done
-  ''
+  # khal ships two binaries (khal + ikhal); wrap both, so this needs raw postBuild.
+  mkWrapper pkgs.unstable pkgs.unstable.khal {
+    postBuild = ''
+      for bin in khal ikhal; do
+        wrapProgram $out/bin/$bin --add-flags "-c ${config}"
+      done
+    '';
+  }
