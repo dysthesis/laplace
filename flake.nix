@@ -16,9 +16,6 @@
       "aarch64-darwin"
     ];
 
-    # The linux-hardened overlay is baked in here so `pkgs.linux_hardened` is
-    # available to the `packages` output and the boot-test check (hosts apply
-    # it separately via hosts/default.nix).
     forAllSystems = lib.laplace.forAllSystems {
       inherit systems;
       overlays = [self.overlays.linux-hardened];
@@ -33,11 +30,7 @@
     mapAttrs (_: forAllSystems)
     {
       devShells = pkgs: {default = import ./nix/shell pkgs;};
-      # The hardened kernel (`nix build .#linux-hardened`) and its on-demand
-      # QEMU boot test. The boot test lives here, not in `checks`, because it
-      # compiles the kernel — keeping it out of `nix flake check` leaves CI
-      # light. Verify the kernel boots explicitly with:
-      #   nix build .#linux-hardened-boot-test
+
       packages = pkgs:
         lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux
         {
@@ -46,7 +39,7 @@
         // lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
           linux-hardened-boot-test = import ./nix/tests/linux-hardened-boot.nix {inherit pkgs;};
         };
-      # Reproducible shell-startup benchmark: `nix run .#bench`. See bench/README.md.
+
       apps = pkgs:
         lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
           bench = {
@@ -666,7 +659,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Self-hosted web history search. Needs Go 1.26 → follow nixpkgs-unstable
+    # Hister needs Go 1.26, therefore nixpkgs should follow nixpkgs-unstable
     # (26.05 pin is too old), reusing the existing unstable input rather than a
     # third nixpkgs instance.
     hister = {
@@ -674,6 +667,7 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # Teaching slides
     slides = {
       url = "git+file:///home/demiurge/Documents/University/COMP6841_2026T2?ref=main";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
