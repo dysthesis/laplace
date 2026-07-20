@@ -13,7 +13,7 @@ in
     template-aliases."format_timestamp(timestamp)" = "timestamp.ago()";
     git.sign-on-push = true;
     signing = {
-      behaviour = "own";
+      behavior = "own";
       backend = "gpg";
       key = "6008B52F296392B0";
     };
