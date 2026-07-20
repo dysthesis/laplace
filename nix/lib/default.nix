@@ -21,7 +21,8 @@ nixpkgs.lib.extend (
     getModuleDirs = dir:
       dir
       |> getDirectories
-      |> builtins.filter (module: builtins.pathExists "${dir}/${module}/default.nix");
+      |> builtins.filter
+      (module: builtins.pathExists "${dir}/${module}/default.nix");
 
     # Import every immediate module subdirectory. Uses path concatenation
     # (not string interpolation) so imported modules stay within the flake
