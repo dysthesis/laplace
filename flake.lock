@@ -612,11 +612,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784518334,
-        "narHash": "sha256-fq8opfhgkpc5L0xCtDP14RUwjS3b90q73ej3mjGr7xM=",
+        "lastModified": 1784518608,
+        "narHash": "sha256-SihqGdKAu6f9bau5/cnajFI3VT3XkwX1C+UxY+/p2P8=",
         "owner": "dysthesis",
         "repo": "iosevka-cadmus",
-        "rev": "0a98222e39b1096cdbc5342115adf9b1b752e855",
+        "rev": "dfd8ce8558c5eb41970a6d1d7f0852c9fb5b3036",
         "type": "github"
       },
       "original": {
