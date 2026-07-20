@@ -8,7 +8,7 @@
   fontSize =
     if host == "phobos"
     then 5
-    else 10;
+    else 9.5;
   lineHeight = fontSize * 1.5;
   padding = 10;
   mkConfig = cfg:
