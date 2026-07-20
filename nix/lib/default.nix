@@ -139,9 +139,17 @@ nixpkgs.lib.extend (
         };
       };
 
-      # Wraps a binary (or list of binaries) with the given postBuild snippet,
-      # carrying through the original mainProgram.
-      pkgs.mkWrapper = pkgs: package: postBuild: let
+      # Wraps a binary (or list of binaries) with makeWrapper. `args` is either a
+      # raw postBuild snippet (escape hatch: multi-binary loops, substituteInPlace,
+      # `--add-flag`) or a spec attrset compiled into one `wrapProgram` call:
+      #   program  :: binary basename to wrap (default: meta.mainProgram)
+      #   addFlags :: [str]        -> one --add-flags each (runtime word-split)
+      #   set      :: { NAME=val; } -> --set NAME val
+      #   binPath  :: [pkg]        -> --prefix PATH ":" (makeBinPath …)
+      #   run      :: [str]        -> --run each (runs in the wrapper at runtime)
+      #   postBuild:: str          -> appended raw, after the generated wrapProgram
+      # Values are escaped with escapeShellArgs; no manual quoting needed.
+      pkgs.mkWrapper = pkgs: package: args: let
         target =
           if isList package
           then elemAt package 0
@@ -150,12 +158,26 @@ nixpkgs.lib.extend (
           if isList package
           then package
           else [package];
+        mainProgram = target.meta.mainProgram or (final.getName target);
+        spec =
+          if builtins.isString args
+          then {postBuild = args;}
+          else args;
+        wrapperArgs =
+          final.concatMap (f: ["--add-flags" f]) (spec.addFlags or [])
+          ++ final.concatLists (final.mapAttrsToList (n: v: ["--set" n v]) (spec.set or {}))
+          ++ final.optionals ((spec.binPath or []) != []) ["--prefix" "PATH" ":" (final.makeBinPath spec.binPath)]
+          ++ final.concatMap (c: ["--run" c]) (spec.run or []);
+        wrapLine =
+          final.optionalString (wrapperArgs != [])
+          "wrapProgram $out/bin/${spec.program or mainProgram} ${final.escapeShellArgs wrapperArgs}\n";
       in
         pkgs.symlinkJoin {
-          inherit paths postBuild;
-          name = "${target}-wrapped";
+          inherit paths;
+          postBuild = wrapLine + (spec.postBuild or "");
+          name = "${final.getName target}-wrapped";
           buildInputs = [pkgs.makeWrapper];
-          meta = {inherit (target.meta) mainProgram;};
+          meta = (target.meta or {}) // {inherit mainProgram;};
         };
 
       system = {
