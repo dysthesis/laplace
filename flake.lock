@@ -251,11 +251,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784610320,
-        "narHash": "sha256-MjvhdZf558gbJWuJXxZv18BsoFSkZs/cgWFgxL6dyZE=",
+        "lastModified": 1784610426,
+        "narHash": "sha256-ExiSBOxIoC6S8I6HtrqwGrnvxmCs1kRTQx4s9JHteBE=",
         "owner": "dysthesis",
         "repo": "dwl",
-        "rev": "d2a926a3cefba4d70ebd78f3eeec11d30df6b466",
+        "rev": "e0458de5d7f870fb56db863fb9079b6088494e85",
         "type": "github"
       },
       "original": {
