@@ -1395,11 +1395,11 @@
         "reveal-hugo": "reveal-hugo"
       },
       "locked": {
-        "lastModified": 1784067662,
-        "narHash": "sha256-eByB/DsbDOi4PuxXlzSZoo54l/AwoxyGRRMenTbiMIM=",
+        "lastModified": 1784674844,
+        "narHash": "sha256-Voz+Dsve6xXr/hJvg7jFFFNhBSe8ZDhe3MJFihZFw84=",
         "ref": "main",
-        "rev": "1a1b2264815cd4fcfc4a78c56c4990955b9d8ef5",
-        "revCount": 14,
+        "rev": "fec256d6a620d70a251b8bfdb2dabbbbc2e5566b",
+        "revCount": 16,
         "type": "git",
         "url": "file:///home/demiurge/Documents/University/COMP6841_2026T2"
       },
