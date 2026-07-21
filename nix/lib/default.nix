@@ -178,7 +178,9 @@ nixpkgs.lib.extend (
           postBuild = wrapLine + (spec.postBuild or "");
           name = "${final.getName target}-wrapped";
           buildInputs = [pkgs.makeWrapper];
-          meta = (target.meta or {}) // {inherit mainProgram;};
+          # symlinkJoin is single-output, so drop any extra outputs (e.g. man)
+          # the target advertises or buildEnv will deref a missing attribute.
+          meta = (target.meta or {}) // {inherit mainProgram; outputsToInstall = ["out"];};
         };
 
       system = {

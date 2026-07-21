@@ -21,7 +21,6 @@
       overlays = [self.overlays.linux-hardened];
     };
 
-
     treefmt =
       forAllSystems
       (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
@@ -31,8 +30,8 @@
     mapAttrs (_: forAllSystems)
     {
       devShells = pkgs: let
-		    nixpkgs-unstable = import inputs.nixpkgs-unstable {inherit (pkgs) system;};
-			in {default = import ./nix/shell nixpkgs-unstable;};
+        nixpkgs-unstable = import inputs.nixpkgs-unstable {inherit (pkgs) system;};
+      in {default = import ./nix/shell nixpkgs-unstable;};
 
       packages = pkgs:
         lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux
@@ -563,7 +562,10 @@
     # TODO: See if switching to unstable fixes
     # https://github.com/NixOS/nixpkgs/issues/222181
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs";
+
+    # Track the nixos-unstable *channel*, not raw master as only channel revs are
+    # fully built by Hydra -- we want to avoid building from source
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # Supposedly faster Nix.
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
@@ -578,8 +580,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Keep fork's own nixpkgs pin: it carries the Go toolchain revision used by
-    # this headscale fork.
+    # Keep fork's own nixpkgs pin, because it carries the Go toolchain revision
+    # used by this headscale fork.
     headscale.url = "github:dysthesis/headscale?ref=feat/wg-only-peers";
 
     # Neovim flake
@@ -647,16 +649,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Secrets
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # statusline for dwl, dwm
     status = {
       url = "github:dysthesis/status";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # for self-hosting minecraft server
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -676,6 +681,7 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    # custom, personal build of iosevka
     iosevka-cadmus = {
       url = "github:dysthesis/iosevka-cadmus";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

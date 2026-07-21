@@ -48,8 +48,10 @@ in {
 
     nixpkgs = {
       config = {
+        # mkWrapper renames derivations to "<name>-wrapped" but keeps the
+        # unfree meta.license, so match on the unwrapped name.
         allowUnfreePredicate = pkg:
-          builtins.elem (lib.getName pkg) [
+          builtins.elem (lib.removeSuffix "-wrapped" (lib.getName pkg)) [
             "claude-code"
             "graalvm-oracle"
             "minecraft-server"
