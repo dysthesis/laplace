@@ -103,7 +103,7 @@
         fontSize =
           if hostName == "phobos"
           then 13
-          else 11;
+          else 11.5;
         configFile =
           {
             main = {

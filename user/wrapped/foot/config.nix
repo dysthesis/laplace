@@ -8,9 +8,13 @@
   fontSize =
     if host == "phobos"
     then 5
-    else 10.5;
+    else 9.5;
+
   lineHeight = fontSize * 1.5;
   padding = 10;
+
+  # Render the config attribute set as an INI file, as is expected by foot.
+  # TODO: validate attribute set before rendering
   mkConfig = cfg:
     cfg
     |> lib.generators.toINI {}
