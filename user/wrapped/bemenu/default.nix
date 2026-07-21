@@ -37,8 +37,8 @@
 
   baseFont =
     if hostName == "phobos"
-    then 12.0
-    else 9.0;
+    then 12.5
+    else 9.5;
   fontLineRatio = 24.0 / 9.0;
   fontPaddingRatio = 8.0 / 9.0;
   baseLineH = baseFont * fontLineRatio;
