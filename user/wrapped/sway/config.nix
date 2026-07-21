@@ -137,7 +137,7 @@ in
       titlebar_border_thickness 0
       titlebar_padding 1
 
-      font JBMono Nerd Font ${toString fontSize}
+      font IosevkaCadmus Nerd Font ${toString fontSize}
 
       set $mod Mod4
       set $left h

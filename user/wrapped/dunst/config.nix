@@ -11,7 +11,7 @@ in {
     width = 300;
     height = "(0, 228)";
     offset = "(0, 15)";
-    font = "JBMono Nerd Font ${toString size}";
+    font = "IosevkaCadmus Nerd Font ${toString size}";
     corner_radius = size;
     origin = "top-center";
     notification_limit = 3;

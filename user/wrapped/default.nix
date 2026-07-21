@@ -108,7 +108,7 @@
           {
             main = {
               terminal = lib.getExe foot;
-              font = "JBMono Nerd Font:size=${toString fontSize}";
+              font = "IosevkaCadmus Nerd Font:size=${toString fontSize}";
               prompt = " ";
               layer = "overlay";
               lines = 12;

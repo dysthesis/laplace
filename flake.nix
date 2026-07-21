@@ -21,6 +21,7 @@
       overlays = [self.overlays.linux-hardened];
     };
 
+
     treefmt =
       forAllSystems
       (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
@@ -29,7 +30,9 @@
   in
     mapAttrs (_: forAllSystems)
     {
-      devShells = pkgs: {default = import ./nix/shell pkgs;};
+      devShells = pkgs: let
+		    nixpkgs-unstable = import inputs.nixpkgs-unstable {inherit (pkgs) system;};
+			in {default = import ./nix/shell nixpkgs-unstable;};
 
       packages = pkgs:
         lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux

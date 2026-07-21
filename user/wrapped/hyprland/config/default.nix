@@ -78,7 +78,7 @@ in
       "col.border_active" = "rgba(89b4faff)";
       "col.border_inactive" = "rgba(6c7086ff)";
       groupbar = {
-        font_family = "JBMono Nerd Font";
+        font_family = "IosevkaCadmus Nerd Font";
         font_size = 8;
         "col.active" = "rgba(89b4faff)";
         "col.inactive" = "rgba(6c7086ff)";
@@ -99,7 +99,7 @@ in
       disable_splash_rendering = true;
       force_default_wallpaper = 0;
       disable_hyprland_logo = true;
-      font_family = "JBMono Nerd Font";
+      font_family = "IosevkaCadmus Nerd Font";
 
       vfr = true;
       vrr = true;

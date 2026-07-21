@@ -53,7 +53,7 @@
     ''-z'' # fuzzy
     ''-i'' # ignorecase
     ''-p \" \"'' # prompt
-    ''--fn \"JBMono Nerd Font ${toString fontSize}\"''
+    ''--fn \"IosevkaCadmus Nerd Font ${toString fontSize}\"''
     ''-H \"${toString lineHeight}\"''
     ''--hp \"${toString hp}\"''
     ''--fb \"#000000\"''

@@ -89,9 +89,7 @@ in {
       georgia-fonts
       newcomputermodern
 
-      nerd-fonts.jetbrains-mono
       nerd-fonts.iosevka
-      jbcustom-nf
       inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font
     ];
     fonts.fontconfig.localConf = ''

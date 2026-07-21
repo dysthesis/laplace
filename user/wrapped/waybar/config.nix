@@ -203,7 +203,7 @@
         then 12
         else 10;
     in {
-      family = "JBMono Nerd Font";
+      family = "IosevkaCadmus Nerd Font";
       weight = "bold";
       inherit baseSize;
     };

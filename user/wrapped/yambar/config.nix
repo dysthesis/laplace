@@ -14,7 +14,7 @@ in
     white: &white ffffffff
     black: &black 000000ff
     orange: &orange ffa600ff
-    font: &font "JBMono Nerd Font:style=solid:size=12"
+    font: &font "IosevkaCadmus Nerd Font:style=solid:size=12"
     brightgreen: &brightgreen 789978ff
 
     bg_default: &bg_default

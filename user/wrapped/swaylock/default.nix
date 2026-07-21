@@ -12,7 +12,7 @@
     "--effect-blur"
     "7x5"
     "--font"
-    "JBMono Nerd Font"
+    "IosevkaCadmus Nerd Font"
     "--effect-vignette"
     "0.5:0.5"
     "--image"

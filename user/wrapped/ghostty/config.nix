@@ -14,7 +14,7 @@
 in
   pkgs.writeText "ghostty-config" ''
     adjust-cell-height = 20%
-    font-family = JetBrainsMono Nerd Font
+    font-family = IosevkaCadmus Nerd Font
     font-feature = calt
     font-feature = clig
     font-feature = liga
