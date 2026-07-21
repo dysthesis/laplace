@@ -1,5 +1,5 @@
 {
-  python313,
+  python314,
   fetchFromGitHub,
   rustPlatform,
   makeWrapper,
@@ -10,7 +10,7 @@
   ast-grep,
   ...
 }: let
-  pyPkgs = python313.pkgs;
+  pyPkgs = python314.pkgs;
 in
   pyPkgs.buildPythonApplication rec {
     pname = "headroom-ai";

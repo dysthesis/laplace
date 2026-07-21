@@ -50,14 +50,11 @@ in {
       config = {
         allowUnfreePredicate = pkg:
           builtins.elem (lib.getName pkg) [
-            "obsidian"
             "claude-code"
             "graalvm-oracle"
             "minecraft-server"
-            "open-webui"
             "steam"
             "steam-unwrapped"
-            "todoist-electron"
           ];
 
         rocmSupport = builtins.elem "amd" config.laplace.hardware.gpu;
