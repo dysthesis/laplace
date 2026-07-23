@@ -31,7 +31,7 @@
     {
       devShells = pkgs: let
         nixpkgs-unstable = import inputs.nixpkgs-unstable {inherit (pkgs) system;};
-      in {default = import ./nix/shell nixpkgs-unstable;};
+      in {default = import ./nix/shell inputs nixpkgs-unstable;};
 
       packages = pkgs:
         lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux
@@ -587,6 +587,11 @@
     # Neovim flake
     poincare = {
       url = "github:dysthesis/poincare";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    serena = {
+      url = "github:oraios/serena";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 

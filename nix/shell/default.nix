@@ -1,4 +1,4 @@
-pkgs: let
+inputs: pkgs: let
   headroom = pkgs.callPackage ./headroom.nix {};
 in
   pkgs.mkShell {
@@ -40,6 +40,7 @@ in
       defuddle
       nodejs
       headroom
+      inputs.serena.packages.${pkgs.system}.default
 
       packwiz # for modpack management
     ];

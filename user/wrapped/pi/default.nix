@@ -1,40 +1,57 @@
 {
   pkgs,
   lib,
-  pi-coding-agent,
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
-  settings = pkgs.writeText "settings.json" (builtins.toJSON {
-    defaultProvider = "openai";
-    defaultModel = "gpt-5.6-sol";
-    defaultThinkingLevel = "max";
-    hideThinkingBlock = true;
-    theme = "dark";
-    enableInstallTelemetry = false;
-    enableAnalytics = false;
-    compaction.enabled = false;
-    packages = [
-      "npm:@gotgenes/pi-anthropic-auth"
-    ];
+
+  # oh-my-pi (omp): a pi-mono fork shipped as a single Bun-compiled executable
+  # with the Rust natives embedded — not in nixpkgs. Fetch the prebuilt glibc
+  # release and autoPatchelf its interpreter/rpath. NEEDED is glibc-only
+  # (libc/ld/pthread/dl/m), so the default buildInputs suffice.
+  # dontStrip: the Bun bundle is appended after the ELF; stripping corrupts it.
+  omp = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
+    pname = "oh-my-pi";
+    version = "17.1.0";
+    src = pkgs.fetchurl {
+      url = "https://github.com/can1357/oh-my-pi/releases/download/v${finalAttrs.version}/omp-linux-x64";
+      hash = "sha256-b9cJ7qYm+SUDc3xcaZTWJIP4jdPfJFRELarxmChp0VQ=";
+    };
+    dontUnpack = true;
+    dontStrip = true;
+    nativeBuildInputs = [pkgs.autoPatchelfHook];
+    buildInputs = [pkgs.stdenv.cc.cc.lib];
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 $src $out/bin/omp
+      runHook postInstall
+    '';
+    meta.mainProgram = "omp";
   });
 
-  # Gondolin runs pi's tools inside a local micro-VM. Bundled example
-  # extension; its @earendil-works/gondolin dep resolves up-tree from pi's
-  # own node_modules, so `-e` at the in-store dir needs no npm install.
-  # Default VMM backend is QEMU (spawns qemu-system-x86_64 + qemu-img off
-  # PATH; kvm accel when /dev/kvm is RW, else TCG).
-  gondolin = "${pi-coding-agent}/lib/node_modules/pi-monorepo/examples/extensions/gondolin";
+  # omp reads ~/.omp/agent/config.yml; JSON is a valid YAML subset. Seed only
+  # the two prefs that map cleanly off the old pi config (same keys upstream).
+  # omp is complete out of the box otherwise — native Anthropic OAuth (the old
+  # @gotgenes/pi-anthropic-auth package is obsolete), 40+ providers resolved
+  # from env, terminal-detected theme.
+  config = pkgs.writeText "config.yml" (builtins.toJSON {
+    defaultThinkingLevel = "max";
+    hideThinkingBlock = true;
+  });
 in
-  mkWrapper pkgs pi-coding-agent {
-    set.PI_TELEMETRY = "false";
-    binPath = [pkgs.qemu_kvm];
-    addFlags = ["-e ${gondolin}"];
-    # pi treats the agent dir (PI_CODING_AGENT_DIR, default ~/.pi/agent) as a
-    # single writable state root: settings.json, its .lock, sessions/, auth.json.
-    # So it can't live in the store — seed our managed defaults on first run,
-    # then leave the user's copy alone.
-    # simplification: seed-once. Editing the Nix settings won't repropagate;
-    # `rm ~/.pi/agent/settings.json` to re-seed.
-    run = [''dir="''${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"; [ -e "$dir/settings.json" ] || install -Dm644 ${settings} "$dir/settings.json"''];
+  mkWrapper pkgs omp {
+    # omp shells out for its git-shaped tools (Bun.spawn ["git", …]).
+    binPath = [pkgs.git];
+    # Gondolin (pi-mono micro-VM extension) can't be carried over: omp's tools
+    # are native Rust in-process, so there is no JS tool execution left for the
+    # extension to redirect into a VM, and the compiled binary ships no
+    # node_modules for its @earendil-works/gondolin dep to resolve against.
+    # omp's own gate is approval mode; it defaults to `yolo` (auto-approve
+    # everything), so pin `write` — auto read+write, prompt on exec/bash/network
+    # /subagents. Per-session escape hatch: `omp --yolo`.
+    addFlags = ["--approval-mode=write"];
+    # pi's agent-dir state root (settings/sessions/auth) carries over as omp's.
+    # simplification: seed-once. Editing the Nix config won't repropagate;
+    # `rm ~/.omp/agent/config.yml` to re-seed.
+    run = [''dir="''${PI_CODING_AGENT_DIR:-$HOME/.omp/agent}"; [ -e "$dir/config.yml" ] || install -Dm644 ${config} "$dir/config.yml"''];
   }
