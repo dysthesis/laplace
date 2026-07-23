@@ -1,10 +1,27 @@
 {
   config,
   lib,
+  pkgs,
+  inputs,
   ...
 }: let
   inherit (lib) mkIf;
   cfg = config.laplace.services.forgejo;
+
+  # Personal Iosevka build (github:dysthesis/iosevka-cadmus). Static per-weight
+  # TTFs (Medium + Bold, no variable file), so the theme @font-face's each weight.
+  cadmus = inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font;
+  # Serve WOFF2, not the raw TTFs: Brotli cuts each ~4.4M face to ~1.4M over the
+  # wire. woff2_compress writes beside its input, so copy into $out then convert.
+  cadmusWoff2 =
+    pkgs.runCommand "iosevka-cadmus-woff2" {nativeBuildInputs = [pkgs.woff2];} ''
+      mkdir -p "$out"
+      for w in Medium MediumItalic Bold BoldItalic; do
+        cp ${cadmus}/share/fonts/truetype/IosevkaCadmusNerdFont-$w.ttf "$out/"
+        woff2_compress "$out/IosevkaCadmusNerdFont-$w.ttf"
+        rm "$out/IosevkaCadmusNerdFont-$w.ttf"
+      done
+    '';
 
   # Cheap, deploy-safe sandbox for the two module oneshots that ship with none
   # (forgejo-secrets generates SECRET_KEY et al.; forgejo-dump writes the backup
@@ -50,6 +67,20 @@ in {
         "Z '${forgejo.stateDir}/data' - ${forgejo.user} ${forgejo.group} - -"
         "Z '${forgejo.stateDir}/log' - ${forgejo.user} ${forgejo.group} - -"
         "Z '${forgejo.stateDir}/repositories' - ${forgejo.user} ${forgejo.group} - -"
+
+        # Custom "minimal" theme (see theme-minimal.css) + the fonts it
+        # @font-face's, served by Forgejo at /assets/ from customDir/public.
+        "d '${forgejo.stateDir}/custom/public' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "d '${forgejo.stateDir}/custom/public/assets' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "d '${forgejo.stateDir}/custom/public/assets/css' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "d '${forgejo.stateDir}/custom/public/assets/fonts' 0750 ${forgejo.user} ${forgejo.group} - -"
+        "L+ '${forgejo.stateDir}/custom/public/assets/css/theme-minimal.css' - - - - ${./theme-minimal.css}"
+        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-Medium.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-Medium.woff2"
+        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-MediumItalic.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-MediumItalic.woff2"
+        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-Bold.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-Bold.woff2"
+        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-BoldItalic.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-BoldItalic.woff2"
+        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/AtkinsonHyperlegibleNext-var.ttf' - - - - ${pkgs.atkinson-hyperlegible-next}/share/fonts/truetype/AtkinsonHyperlegibleNext[wght].ttf"
+        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/AtkinsonHyperlegibleNext-Italic-var.ttf' - - - - ${pkgs.atkinson-hyperlegible-next}/share/fonts/truetype/AtkinsonHyperlegibleNext-Italic[wght].ttf"
       ];
 
       # Backfill sandboxing on the module's two unsandboxed oneshots (see the
@@ -135,7 +166,12 @@ in {
             # https-ROOT_URL auto-detect. Force it true — the edge is HTTPS-only.
             session.COOKIE_SECURE = true;
 
-            ui.DEFAULT_THEME = "minimal";
+            # Sole theme = the custom dark skin (custom/public/assets/css/
+            # theme-minimal.css): forces dark for everyone, no auto/light.
+            ui = {
+              DEFAULT_THEME = "minimal";
+              THEMES = "minimal";
+            };
 
             other.SHOW_FOOTER_VERSION = false;
 

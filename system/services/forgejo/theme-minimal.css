@@ -1,0 +1,250 @@
+/* minimal.nvim (dark) skin over forgejo-dark.
+ * Palette source: minimal.nvim colors/minimal.lua (dark branch).
+ * forgejo-dark derives almost all UI colours from the --steel-* ladder via
+ * var() indirection, so remapping the ladder + the literal-valued vars below
+ * recolours the whole UI. Var names verified against forgejo-lts 15.0.3. */
+@import "theme-forgejo-dark.css";
+
+/* Fonts served from custom/public/assets/fonts (see config.nix). Iosevka Cadmus
+ * is a static per-weight build (Medium as normal 400, Bold 700), not variable. */
+@font-face {
+  font-family: "IosevkaCadmus Nerd Font";
+  src: url("/assets/fonts/IosevkaCadmusNerdFont-Medium.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IosevkaCadmus Nerd Font";
+  src: url("/assets/fonts/IosevkaCadmusNerdFont-MediumItalic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IosevkaCadmus Nerd Font";
+  src: url("/assets/fonts/IosevkaCadmusNerdFont-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IosevkaCadmus Nerd Font";
+  src: url("/assets/fonts/IosevkaCadmusNerdFont-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("/assets/fonts/AtkinsonHyperlegibleNext-var.ttf") format("truetype");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("/assets/fonts/AtkinsonHyperlegibleNext-Italic-var.ttf") format("truetype");
+  font-weight: 200 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --fonts-proportional: "Atkinson Hyperlegible Next", -apple-system, "Segoe UI", system-ui, "Noto Sans", Roboto, "Helvetica Neue", Arial;
+  --fonts-monospace: "IosevkaCadmus Nerd Font", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, var(--fonts-emoji);
+
+  /* Neutral ladder -> minimal.nvim grays (drives body/box/text/input/menu). */
+  --steel-900: #080808; /* gray1 */
+  --steel-850: #0f0f0f; /* statusline */
+  --steel-800: #101010; /* main_background */
+  --steel-750: #191919; /* gray2 / menu_background */
+  --steel-700: #202020; /* whitespace */
+  --steel-650: #2a2a2a; /* gray3 */
+  --steel-600: #3a3a3a; /* dim comment */
+  --steel-550: #444444; /* gray4 */
+  --steel-500: #555555; /* gray5 */
+  --steel-450: #666666; /* keyword */
+  --steel-400: #7a7a7a; /* gray6 */
+  --steel-350: #8e8e8e; /* param */
+  --steel-300: #9e9e9e; /* interpolated */
+  --steel-250: #aaaaaa; /* gray7 */
+  --steel-200: #bbbbbb; /* interpolated */
+  --steel-150: #cccccc; /* gray8 */
+  --steel-100: #dddddd; /* gray9 */
+
+  /* Primary: palette.blue #7788AA, hsl(220 23%) tint/shade ladder.
+   * dark-N = lighter tints, light-N = darker shades (forgejo-dark convention). */
+  --color-primary: #7788aa;
+  --color-primary-contrast: #000;
+  --color-primary-dark-1: #919fba;
+  --color-primary-dark-2: #919fba;
+  --color-primary-dark-3: #aab5ca;
+  --color-primary-dark-4: #aab5ca;
+  --color-primary-dark-5: #c3cbda;
+  --color-primary-dark-6: #c3cbda;
+  --color-primary-dark-7: #dce1e9;
+  --color-primary-light-1: #62769d;
+  --color-primary-light-2: #56688a;
+  --color-primary-light-3: #4b5977;
+  --color-primary-light-4: #3f4b64;
+  --color-primary-light-5: #3f4b64;
+  --color-primary-light-6: #333d52;
+  --color-primary-light-7: #333d52;
+  --color-primary-alpha-10: #7788aa19;
+  --color-primary-alpha-20: #7788aa33;
+  --color-primary-alpha-30: #7788aa4b;
+  --color-primary-alpha-40: #7788aa66;
+  --color-primary-alpha-50: #7788aa80;
+  --color-primary-alpha-60: #7788aa99;
+  --color-primary-alpha-70: #7788aab3;
+  --color-primary-alpha-80: #7788aacc;
+  --color-primary-alpha-90: #7788aae1;
+
+  /* Actions console */
+  --color-console-fg: #cccccc;
+  --color-console-fg-subtle: #7a7a7a;
+  --color-console-bg: #0f0f0f;
+  --color-console-border: #2a2a2a;
+  --color-console-active-bg: #3a3a3a;
+  --color-console-menu-bg: #191919;
+  --color-console-menu-border: #444444;
+
+  /* Hue palette (labels, buttons, calendars). minimal.nvim has few hues:
+   * red/orange/yellow/green/blue + lack/sage; violet+purple collapse to blue,
+   * pink to red, teal to lack, olive to sage — deliberate monochrome bias. */
+  --color-red: #d70000;
+  --color-red-light: #e13333;
+  --color-red-dark-1: #c00000;
+  --color-red-dark-2: #a80000;
+  --color-orange: #ffaa88;
+  --color-orange-light: #ffbb9f;
+  --color-orange-dark-1: #ff9970;
+  --color-orange-dark-2: #f08858;
+  --color-yellow: #abab77;
+  --color-yellow-light: #b9b98a;
+  --color-yellow-dark-1: #9c9c66;
+  --color-yellow-dark-2: #8d8d5c;
+  --color-olive: #7a8a7a;
+  --color-olive-light: #8a9a8a;
+  --color-olive-dark-1: #6d7d6d;
+  --color-olive-dark-2: #616f61;
+  --color-green: #789978;
+  --color-green-light: #86a686;
+  --color-green-dark-1: #6c8a6c;
+  --color-green-dark-2: #607a60;
+  --color-teal: #708090;
+  --color-teal-light: #8694a2;
+  --color-teal-dark-1: #62707f;
+  --color-teal-dark-2: #54616d;
+  --color-blue: #7788aa;
+  --color-blue-light: #919fba;
+  --color-blue-dark-1: #62769d;
+  --color-blue-dark-2: #56688a;
+  --color-violet: #7788aa;
+  --color-violet-light: #919fba;
+  --color-violet-dark-1: #62769d;
+  --color-violet-dark-2: #56688a;
+  --color-purple: #7788aa;
+  --color-purple-light: #919fba;
+  --color-purple-dark-1: #62769d;
+  --color-purple-dark-2: #56688a;
+  --color-pink: #d70000;
+  --color-pink-light: #e13333;
+  --color-pink-dark-1: #c00000;
+  --color-pink-dark-2: #a80000;
+  --color-black: #191919;
+  --color-black-light: #2a2a2a;
+  --color-black-dark-1: #101010;
+  --color-black-dark-2: #080808;
+  --color-gold: #abab77;
+
+  /* ANSI (Actions logs) = minimal.nvim terminal_color_* */
+  --color-ansi-black: #000000;
+  --color-ansi-red: #d70000;
+  --color-ansi-green: #789978;
+  --color-ansi-yellow: #abab77;
+  --color-ansi-blue: #7788aa;
+  --color-ansi-magenta: #ffaa88;
+  --color-ansi-cyan: #708090;
+  --color-ansi-bright-black: #2a2a2a;
+  --color-ansi-bright-red: #d70000;
+  --color-ansi-bright-green: #789978;
+  --color-ansi-bright-yellow: #ffaa88;
+  --color-ansi-bright-blue: #7788aa;
+  --color-ansi-bright-magenta: #ffaa88;
+  --color-ansi-bright-cyan: #708090;
+
+  /* Diff */
+  --color-diff-removed-word-bg: #4d1f1f;
+  --color-diff-added-word-bg: #2e4430;
+  --color-diff-removed-row-bg: #2a1414;
+  --color-diff-moved-row-bg: #3a3a22;
+  --color-diff-added-row-bg: #1a241a;
+  --color-diff-removed-row-border: #4d1f1f;
+  --color-diff-moved-row-border: #57573a;
+  --color-diff-added-row-border: #2e4430;
+
+  /* Alert boxes */
+  --color-error-border: #7a2020;
+  --color-error-bg: #4d1414;
+  --color-error-bg-active: #5f1a1a;
+  --color-error-bg-hover: #5f1a1a;
+  --color-error-text: #fce8e8;
+  --color-success-border: #4d664d;
+  --color-success-bg: #202a20;
+  --color-success-text: #c8dcc8;
+  --color-warning-border: #a67445;
+  --color-warning-bg: #4d3222;
+  --color-warning-text: #ffd9c8;
+  --color-info-border: #4b5977;
+  --color-info-bg: #262e3d;
+  --color-info-text: #dddddd;
+
+  /* Badges */
+  --color-red-badge: #d70000;
+  --color-red-badge-bg: #d7000022;
+  --color-red-badge-hover-bg: #d7000044;
+  --color-green-badge: #789978;
+  --color-green-badge-bg: #78997822;
+  --color-green-badge-hover-bg: #78997844;
+  --color-yellow-badge: #abab77;
+  --color-yellow-badge-bg: #abab7722;
+  --color-yellow-badge-hover-bg: #abab7744;
+  --color-orange-badge: #ffaa88;
+  --color-orange-badge-bg: #ffaa8822;
+  --color-orange-badge-hover-bg: #ffaa8844;
+
+  /* Misc literals */
+  --color-header-wrapper-transparent: #0f0f0f00;
+  --color-expand-button: #3a3a3a;
+  --color-indicator-active: #7788aa;
+  --color-indicator-active-20: #7788aa33;
+  --color-indicator-idle: #789978;
+  --color-indicator-idle-20: #7899781a;
+  --color-indicator-offline: #7a7a7a;
+  --color-indicator-offline-20: #7a7a7a1a;
+  /* Mute the oklch-derived graph/danger tints to fit the palette. */
+  --regular-chroma: 0.11;
+  --bg-chroma: 0.03;
+}
+
+/* Chroma (server-side code highlighting) -> minimal.nvim syntax mapping:
+ * near-monochrome; comments yellow, strings gray7, constants gray6,
+ * definitions lack, errors red. Overrides the gruvbox-ish defaults. */
+.chroma .c, .chroma .c1, .chroma .ch, .chroma .cm, .chroma .cs { color: #abab77; }
+.chroma .cp, .chroma .cpf { color: #cccccc; }
+.chroma .k, .chroma .kd, .chroma .kn, .chroma .kp, .chroma .kr, .chroma .kt, .chroma .nt { color: #cccccc; }
+.chroma .kc, .chroma .no, .chroma .bp, .chroma .m, .chroma .mb, .chroma .mf, .chroma .mh, .chroma .mi, .chroma .mo, .chroma .il { color: #7a7a7a; }
+.chroma .s, .chroma .s1, .chroma .s2, .chroma .sa, .chroma .sb, .chroma .sc, .chroma .sd, .chroma .sh, .chroma .si, .chroma .sx, .chroma .dl { color: #aaaaaa; }
+.chroma .sr, .chroma .se, .chroma .ss { color: #7a7a7a; }
+.chroma .n, .chroma .na, .chroma .nb, .chroma .nn, .chroma .nv, .chroma .nx, .chroma .vc, .chroma .vg, .chroma .vi { color: #cccccc; }
+.chroma .nf, .chroma .ni, .chroma .nc, .chroma .nd, .chroma .nl { color: #708090; }
+.chroma .ne, .chroma .gr, .chroma .gt { color: #d70000; }
+.chroma .o, .chroma .ow, .chroma .p { color: #7a7a7a; }
+.chroma .gh, .chroma .gu { color: #7788aa; }
+.chroma .ge, .chroma .gs { color: #cccccc; }
+.chroma .go, .chroma .gp { color: #7a7a7a; }
+.chroma .gd { color: #cccccc; background-color: #2a1414; }
+.chroma .gi { color: #cccccc; background-color: #1a241a; }
+.chroma .w { color: #3a3a3a; }
