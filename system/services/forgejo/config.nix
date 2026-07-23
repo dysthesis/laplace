@@ -93,6 +93,9 @@ in {
       services = {
         forgejo = {
           enable = true;
+          # Mainline, not LTS: zoekt code search (below) only exists from 16.0.0;
+          # the module default is forgejo-lts (15.x), which fatals on it.
+          package = pkgs.forgejo;
           inherit (cfg) stateDir;
           user = "git";
           group = "git";
@@ -123,6 +126,14 @@ in {
               DEFAULT_PRIVATE = "private";
             };
             DEFAULT.APP_NAME = "Hephaestus";
+
+            # In-process Zoekt code search (forgejo#8827, 16.0.0+): builds+queries
+            # shards under data/indexers/, no external daemon. simplification: shards
+            # grow the 128G disk; ceiling = disk, escape = trim repo types or move path.
+            indexer = {
+              REPO_INDEXER_ENABLED = true;
+              REPO_INDEXER_TYPE = "zoekt";
+            };
 
             server = {
               DOMAIN = "git.dysthesis.com";
