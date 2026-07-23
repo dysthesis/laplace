@@ -112,11 +112,6 @@ in {
             gamemodeSupport = true;
           })
           tigervnc
-          (mkWrapper pkgs.unstable pkgs.unstable.claude-code {
-            binPath = with pkgs.unstable; [
-              nodejs
-            ];
-          })
         ];
 
         system = with pkgs; [
