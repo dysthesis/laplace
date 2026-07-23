@@ -706,6 +706,8 @@ in {
             }
           }
         '';
+        # Upload-only listeners return tiny acknowledgements or errors, so unlike
+        # the browser-facing vhosts they deliberately do not encode responses.
         virtualHosts = {
           "${cfg.ingress.domain}:${toString cfg.ingress.metricsPort}".extraConfig = ''
             ${ingressTls}

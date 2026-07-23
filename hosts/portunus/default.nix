@@ -96,6 +96,8 @@ in {
         enable = true;
         virtualHosts = {
           ${headscaleHost}.extraConfig = ''
+            @notSSE not header Accept *text/event-stream*
+            encode @notSSE
             reverse_proxy http://${headscaleUpstream}
           '';
           # Caddy imposes no request-body cap (unlike nginx's 1M), so large git
@@ -105,6 +107,8 @@ in {
           # X-Forwarded-For on its own (verified live), and Anubis hard-500s
           # ("maybeReverseProxy") without a resolvable client IP.
           ${gitHost}.extraConfig = ''
+            @notSSE not header Accept *text/event-stream*
+            encode @notSSE
             reverse_proxy http://${gitAnubis} {
               header_up X-Real-Ip {client_ip}
               header_up X-Forwarded-For {client_ip}

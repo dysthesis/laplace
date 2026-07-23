@@ -59,7 +59,7 @@
     proxmox = {
       cores = 4;
       memory = 6144; # MiB, ballooning ceiling
-      balloon = 1024; # MiB, ballooning floor (Forgejo + Postgres working set)
+      balloon = 2048; # MiB, live trial floor after pressure at 1 GiB
       diskSize = "128G";
       # macAddress left as zeros; Proxmox assigns one on restore.
     };

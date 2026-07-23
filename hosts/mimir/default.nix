@@ -140,6 +140,8 @@ in {
             dns cloudflare {env.CF_API_TOKEN}
             resolvers 1.1.1.1
           }
+          @notSSE not header Accept *text/event-stream*
+          encode @notSSE
           root * ${inputs.slides.packages.${pkgs.stdenv.hostPlatform.system}.slides}
           file_server
         '';

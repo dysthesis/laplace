@@ -90,6 +90,7 @@ in {
 
       # `resolvers 1.1.1.1` sends the ACME challenge lookups to a public resolver,
       # bypassing the tailnet DNS (which only answers the internal names).
+      # Caddy 2.11 can buffer encoded SSE, so leave EventSource streams untouched.
       services.caddy.virtualHosts =
         mapAttrs (_host: upstream: {
           extraConfig = ''
@@ -97,6 +98,8 @@ in {
               dns cloudflare {env.CF_API_TOKEN}
               resolvers 1.1.1.1
             }
+            @notSSE not header Accept *text/event-stream*
+            encode @notSSE
             reverse_proxy ${upstream}
           '';
         })

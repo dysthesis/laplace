@@ -231,6 +231,8 @@ in {
             dns cloudflare {env.CF_API_TOKEN}
             resolvers 1.1.1.1
           }
+          @notSSE not header Accept *text/event-stream*
+          encode @notSSE
           route /packwiz/* {
             root * ${packwizSource}
             uri strip_prefix /packwiz

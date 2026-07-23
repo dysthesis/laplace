@@ -13,15 +13,14 @@
   cadmus = inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font;
   # Serve WOFF2, not the raw TTFs: Brotli cuts each ~4.4M face to ~1.4M over the
   # wire. woff2_compress writes beside its input, so copy into $out then convert.
-  cadmusWoff2 =
-    pkgs.runCommand "iosevka-cadmus-woff2" {nativeBuildInputs = [pkgs.woff2];} ''
-      mkdir -p "$out"
-      for w in Medium MediumItalic Bold BoldItalic; do
-        cp ${cadmus}/share/fonts/truetype/IosevkaCadmusNerdFont-$w.ttf "$out/"
-        woff2_compress "$out/IosevkaCadmusNerdFont-$w.ttf"
-        rm "$out/IosevkaCadmusNerdFont-$w.ttf"
-      done
-    '';
+  cadmusWoff2 = pkgs.runCommand "iosevka-cadmus-woff2" {nativeBuildInputs = [pkgs.woff2];} ''
+    mkdir -p "$out"
+    for w in Medium MediumItalic Bold BoldItalic; do
+      cp ${cadmus}/share/fonts/truetype/IosevkaCadmusNerdFont-$w.ttf "$out/"
+      woff2_compress "$out/IosevkaCadmusNerdFont-$w.ttf"
+      rm "$out/IosevkaCadmusNerdFont-$w.ttf"
+    done
+  '';
 
   # Cheap, deploy-safe sandbox for the two module oneshots that ship with none
   # (forgejo-secrets generates SECRET_KEY et al.; forgejo-dump writes the backup
@@ -56,7 +55,6 @@ in {
         "d '${forgejo.stateDir}' 0750 ${forgejo.user} ${forgejo.group} - -"
         "d '${forgejo.stateDir}/.ssh' 0700 ${forgejo.user} ${forgejo.group} - -"
         "d '${forgejo.stateDir}/custom' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/dump' 0750 ${forgejo.user} ${forgejo.group} - -"
         "d '${forgejo.stateDir}/data' 0750 ${forgejo.user} ${forgejo.group} - -"
         "d '${forgejo.stateDir}/data/tmp' 0750 ${forgejo.user} ${forgejo.group} - -"
         "d '${forgejo.stateDir}/log' 0750 ${forgejo.user} ${forgejo.group} - -"
@@ -108,16 +106,14 @@ in {
 
           # Logical dump (repos + DB + config) alongside the whole-VM PBS backups,
           # for Postgres-major-bump / logical-restore portability. Writes into the
-          # already persisted + PBS-covered stateDir/dump; tar.zst + short retention
-          # (PBS is the authoritative backup, this is insurance).
-          # simplification: age=3d is a conservative guess — size it to the repo
-          # corpus (du -sh stateDir/{repositories,data/lfs}); daily full-repo
-          # archives can balloon the 128G disk. Upgrade path for intra-day RPO:
-          # WAL archiving / pgBackRest (PITR).
+          # already persisted + PBS-covered stateDir/dump; PBS is authoritative.
+          # simplification: weekly full-repo copies with two-week retention suit
+          # major-upgrade portability. Upgrade path for shorter RPO: pgBackRest.
           dump = {
             enable = true;
             type = "tar.zst";
-            age = "3d";
+            interval = "weekly";
+            age = "14d";
           };
 
           settings = {
