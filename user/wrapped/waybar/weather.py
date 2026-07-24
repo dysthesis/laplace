@@ -119,17 +119,15 @@ def extract_forecast(args, xml_content):
         )
         precis_element = forecast_period.find('.//text[@type="precis"]')
 
-        if all(
-            [
-                max_temp_element is not None,
-                icon_code_element is not None,
-                precis_element is not None,
-            ]
-        ):
+        max_temp = max_temp_element.text if max_temp_element is not None else None
+        icon_code = icon_code_element.text if icon_code_element is not None else None
+        precis = precis_element.text if precis_element is not None else None
+
+        if max_temp is not None and icon_code is not None and precis is not None:
             return {
-                "temperature": max_temp_element.text,
-                "icon": map_icon_code_to_description(icon_code_element.text),
-                "precis": precis_element.text.rstrip("."),
+                "temperature": max_temp,
+                "icon": map_icon_code_to_description(icon_code),
+                "precis": precis.rstrip("."),
             }
 
     raise WeatherError("forecast XML did not contain expected forecast fields")
