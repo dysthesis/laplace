@@ -51,42 +51,44 @@ in {
         config.services.postgresql.dataDir
       ];
 
-      systemd.tmpfiles.rules = [
-        "d '${forgejo.stateDir}' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/.ssh' 0700 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/custom' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/data' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/data/tmp' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/log' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/repositories' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "Z '${forgejo.stateDir}/.ssh' - ${forgejo.user} ${forgejo.group} - -"
-        "Z '${forgejo.stateDir}/custom' - ${forgejo.user} ${forgejo.group} - -"
-        "Z '${forgejo.stateDir}/dump' - ${forgejo.user} ${forgejo.group} - -"
-        "Z '${forgejo.stateDir}/data' - ${forgejo.user} ${forgejo.group} - -"
-        "Z '${forgejo.stateDir}/log' - ${forgejo.user} ${forgejo.group} - -"
-        "Z '${forgejo.stateDir}/repositories' - ${forgejo.user} ${forgejo.group} - -"
+      systemd = {
+        tmpfiles.rules = [
+          "d '${forgejo.stateDir}' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "d '${forgejo.stateDir}/.ssh' 0700 ${forgejo.user} ${forgejo.group} - -"
+          "d '${forgejo.stateDir}/custom' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "d '${forgejo.stateDir}/data' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "d '${forgejo.stateDir}/data/tmp' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "d '${forgejo.stateDir}/log' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "d '${forgejo.stateDir}/repositories' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "Z '${forgejo.stateDir}/.ssh' - ${forgejo.user} ${forgejo.group} - -"
+          "Z '${forgejo.stateDir}/custom' - ${forgejo.user} ${forgejo.group} - -"
+          "Z '${forgejo.stateDir}/dump' - ${forgejo.user} ${forgejo.group} - -"
+          "Z '${forgejo.stateDir}/data' - ${forgejo.user} ${forgejo.group} - -"
+          "Z '${forgejo.stateDir}/log' - ${forgejo.user} ${forgejo.group} - -"
+          "Z '${forgejo.stateDir}/repositories' - ${forgejo.user} ${forgejo.group} - -"
 
-        # Custom "minimal" theme (see theme-minimal.css) + the fonts it
-        # @font-face's, served by Forgejo at /assets/ from customDir/public.
-        "d '${forgejo.stateDir}/custom/public' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/custom/public/assets' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/custom/public/assets/css' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "d '${forgejo.stateDir}/custom/public/assets/fonts' 0750 ${forgejo.user} ${forgejo.group} - -"
-        "L+ '${forgejo.stateDir}/custom/public/assets/css/theme-minimal.css' - - - - ${./theme-minimal.css}"
-        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-Medium.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-Medium.woff2"
-        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-MediumItalic.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-MediumItalic.woff2"
-        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-Bold.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-Bold.woff2"
-        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-BoldItalic.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-BoldItalic.woff2"
-        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/AtkinsonHyperlegibleNext-var.ttf' - - - - ${pkgs.atkinson-hyperlegible-next}/share/fonts/truetype/AtkinsonHyperlegibleNext[wght].ttf"
-        "L+ '${forgejo.stateDir}/custom/public/assets/fonts/AtkinsonHyperlegibleNext-Italic-var.ttf' - - - - ${pkgs.atkinson-hyperlegible-next}/share/fonts/truetype/AtkinsonHyperlegibleNext-Italic[wght].ttf"
-      ];
+          # Custom "minimal" theme (see theme-minimal.css) + the fonts it
+          # @font-face's, served by Forgejo at /assets/ from customDir/public.
+          "d '${forgejo.stateDir}/custom/public' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "d '${forgejo.stateDir}/custom/public/assets' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "d '${forgejo.stateDir}/custom/public/assets/css' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "d '${forgejo.stateDir}/custom/public/assets/fonts' 0750 ${forgejo.user} ${forgejo.group} - -"
+          "L+ '${forgejo.stateDir}/custom/public/assets/css/theme-minimal.css' - - - - ${./theme-minimal.css}"
+          "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-Medium.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-Medium.woff2"
+          "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-MediumItalic.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-MediumItalic.woff2"
+          "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-Bold.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-Bold.woff2"
+          "L+ '${forgejo.stateDir}/custom/public/assets/fonts/IosevkaCadmusNerdFont-BoldItalic.woff2' - - - - ${cadmusWoff2}/IosevkaCadmusNerdFont-BoldItalic.woff2"
+          "L+ '${forgejo.stateDir}/custom/public/assets/fonts/AtkinsonHyperlegibleNext-var.ttf' - - - - ${pkgs.atkinson-hyperlegible-next}/share/fonts/truetype/AtkinsonHyperlegibleNext[wght].ttf"
+          "L+ '${forgejo.stateDir}/custom/public/assets/fonts/AtkinsonHyperlegibleNext-Italic-var.ttf' - - - - ${pkgs.atkinson-hyperlegible-next}/share/fonts/truetype/AtkinsonHyperlegibleNext-Italic[wght].ttf"
+        ];
 
-      # Backfill sandboxing on the module's two unsandboxed oneshots (see the
-      # hardenOneshot note above). forgejo-secrets always exists; forgejo-dump only
-      # when dump.enable — guard it so toggling dump off never leaves a phantom unit.
-      systemd.services.forgejo-secrets.serviceConfig = hardenOneshot;
-      systemd.services.forgejo-dump.serviceConfig =
-        mkIf forgejo.dump.enable hardenOneshot;
+        # Backfill sandboxing on the module's two unsandboxed oneshots (see the
+        # hardenOneshot note above). forgejo-secrets always exists; forgejo-dump only
+        # when dump.enable — guard it so toggling dump off never leaves a phantom unit.
+        services.forgejo-secrets.serviceConfig = hardenOneshot;
+        services.forgejo-dump.serviceConfig =
+          mkIf forgejo.dump.enable hardenOneshot;
+      };
 
       services = {
         forgejo = {
