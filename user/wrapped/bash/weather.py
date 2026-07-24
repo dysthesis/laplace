@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from ftplib import FTP
 import xml.etree.ElementTree as ET
-import json
 import argparse
 import re
 
@@ -11,34 +10,27 @@ def download_xml_from_bom_ftp(args, filename):
         if args.debug:
             print("[-] Opening connection to BOM")
 
-        # Connect and Switch Directory
-        ftp = FTP("ftp.bom.gov.au")
-        ftp.login()
-        ftp.cwd("anon/gen/fwo")
+        with FTP("ftp.bom.gov.au") as ftp:
+            ftp.login()
+            ftp.cwd("anon/gen/fwo")
 
-        if args.debug:
-            print("[-] Starting download of latest observations")
+            if args.debug:
+                print("[-] Starting download of latest observations")
 
-        # Retrieve the file from the FTP server
-        xml_content = ""
+            xml_content = ""
 
-        def append_data(data):
-            nonlocal xml_content
-            xml_content += data.decode("utf-8")
+            def append_data(data):
+                nonlocal xml_content
+                xml_content += data.decode("utf-8")
 
-        ftp.retrbinary("RETR " + filename, append_data)
+            ftp.retrbinary("RETR " + filename, append_data)
 
         if args.debug:
             print("[+] Latest observations downloaded successfully!")
 
         return xml_content
-
     except Exception as e:
         print(f"[!] An error occurred while retrieving XML: {e}")
-
-    finally:
-        ftp.quit()
-
 
 def map_icon_code_to_description(icon_code):
     icon_mapping = {
@@ -79,22 +71,20 @@ def extract_forecast(args, xml_content):
         )
         precis_element = forecast_period.find('.//text[@type="precis"]')
 
-        if all(
-            [
-                max_temp_element is not None,
-                icon_code_element is not None,
-                precis_element is not None,
-            ]
-        ):
-            icon = map_icon_code_to_description(icon_code_element.text)
+        max_temp = max_temp_element.text if max_temp_element is not None else None
+        icon_code = icon_code_element.text if icon_code_element is not None else None
+        precis = precis_element.text if precis_element is not None else None
+
+        if max_temp is not None and icon_code is not None and precis is not None:
+            icon = map_icon_code_to_description(icon_code)
 
             if args.debug:
                 print("[+] Successfully extracted Temp, Precis and Icon Code")
 
             return {
-                "temperature": max_temp_element.text,
+                "temperature": max_temp,
                 "icon": icon,
-                "precis": precis_element.text.rstrip("."),
+                "precis": precis.rstrip("."),
             }
 
 
