@@ -27,8 +27,6 @@ random.seed(0xCAFE)  # deterministic CIs across reruns of the same data
 # rich is optional: pretty tables when present, plain text otherwise.
 try:
     from rich.console import Console
-    from rich.table import Table
-    from rich import box
     _con = Console()
     _RICH = True
 except Exception:  # pragma: no cover - rich absent
@@ -175,6 +173,9 @@ def cmd_summarize(paths, as_json):
         label = blob.get("label") or path
         sub = f"{blob.get('mode','')}/{blob.get('spawn_mode','')}"
         if _RICH:
+            from rich import box
+            from rich.table import Table
+
             t = Table(title=f"{label}  [{sub}]", box=box.SIMPLE_HEAVY,
                       title_style="bold cyan", header_style="bold")
             t.add_column("metric")
@@ -241,6 +242,9 @@ def cmd_compare(base_path, var_path, as_json):
     base_lbl = base.get("label") or base_path
     var_lbl = var.get("label") or var_path
     if _RICH:
+        from rich import box
+        from rich.table import Table
+
         t = Table(
             title=f"A/B  baseline=[cyan]{base_lbl}[/]  variant=[magenta]{var_lbl}[/]",
             box=box.SIMPLE_HEAVY, header_style="bold",

@@ -46,10 +46,7 @@ import fcntl
 
 # rich is optional: live progress bars when present, silent fallback otherwise.
 try:
-    from rich.progress import (
-        Progress, SpinnerColumn, BarColumn, TextColumn,
-        MofNCompleteColumn, TimeElapsedColumn, TimeRemainingColumn,
-    )
+    __import__("rich")
     _RICH = True
 except Exception:  # pragma: no cover - rich absent
     _RICH = False
@@ -373,7 +370,6 @@ def measure_first_command(args, env, step=None) -> list:
     """Spawn B: from a cold spawn, type a command immediately and time until it
     *executes* (its sentinel output appears). The sentinel comes from the env
     so the typed text and the executed output never collide."""
-    quiesce_s = args.quiesce_ms / 1000.0
     timeout_s = args.timeout_ms / 1000.0
     samples = []
     for _ in range(args.prompt_runs):
@@ -445,6 +441,15 @@ def collect(args, env, skip) -> dict:
     }
     if _RICH and sys.stderr.isatty():
         from rich.console import Console
+        from rich.progress import (
+            BarColumn,
+            MofNCompleteColumn,
+            Progress,
+            SpinnerColumn,
+            TextColumn,
+            TimeElapsedColumn,
+            TimeRemainingColumn,
+        )
         con = Console(stderr=True)
         title = args.label or args.shell.rsplit("/", 1)[-1]
         con.rule(f"[bold cyan]probe[/] {title}  "

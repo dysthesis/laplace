@@ -15,9 +15,6 @@ import sys
 
 try:
     from rich.console import Console
-    from rich.panel import Panel
-    from rich.table import Table
-    from rich import box
     _con = Console(stderr=True)
     _RICH = True
 except Exception:
@@ -33,6 +30,8 @@ def rule(text):
 
 def panel(title, body):
     if _RICH:
+        from rich.panel import Panel
+
         _con.print(Panel(body, title=f"[bold]{title}", border_style="cyan",
                          expand=False))
     else:
@@ -45,6 +44,9 @@ def kv(title, pairs):
         k, _, v = p.partition("=")
         items.append((k, v))
     if _RICH:
+        from rich import box
+        from rich.table import Table
+
         t = Table(box=box.MINIMAL, show_header=False, title=f"[bold]{title}",
                   title_style="bold cyan", title_justify="left")
         t.add_column(style="dim")
