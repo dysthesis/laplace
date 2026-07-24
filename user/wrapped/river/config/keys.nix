@@ -1,5 +1,5 @@
 {pkgs, ...}: let
-  inherit (builtins) concatStringsSep map;
+  inherit (builtins) concatStringsSep;
   inherit (pkgs.lib) getExe;
   rivercarro = getExe pkgs.rivercarro;
   binds-normal = [

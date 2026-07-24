@@ -13,7 +13,7 @@
   ];
   formatFeatures = features:
     features
-    |> builtins.map (feat: "+${feat}")
+    |> map (feat: "+${feat}")
     |> builtins.concatStringsSep " ";
   formattedFeatures = formatFeatures features;
 in

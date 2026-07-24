@@ -15,8 +15,8 @@
     mkIf
     mkDerivedConfig
     ;
+  inherit (builtins) attrNames listToAttrs;
 
-  inherit (builtins) map listToAttrs attrNames;
 in {
   options = {
     ariadne = mkOption {

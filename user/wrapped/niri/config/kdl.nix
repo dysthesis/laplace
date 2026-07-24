@@ -154,7 +154,7 @@
         ["comment"]
         (lib.attrByPath ["__comment"] null spec)
         spec;
-      extraBody = builtins.removeAttrs spec specialKeys;
+      extraBody = removeAttrs spec specialKeys;
       childrenFromBody = bodyToNodes (userBody // extraBody);
       rawChildren =
         lib.attrByPath
@@ -172,7 +172,7 @@
       name = nodeName;
       children = childNodes;
     }
-    else throw "KDL node spec must be an attrset, got ${builtins.toString spec}";
+    else throw "KDL node spec must be an attrset, got ${toString spec}";
 
   normaliseNodes = map normaliseNode;
 in {

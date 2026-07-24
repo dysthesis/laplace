@@ -48,7 +48,7 @@
       then let
         bezierAttrs = lib.filterAttrs (k: _: builtins.match "bezier" k != null) attrs;
         animationAttrs = lib.filterAttrs (k: _: builtins.match "animation" k != null) attrs;
-        otherAttrs = builtins.removeAttrs attrs (lib.attrNames bezierAttrs ++ lib.attrNames animationAttrs);
+        otherAttrs = removeAttrs attrs (lib.attrNames bezierAttrs ++ lib.attrNames animationAttrs);
         renderFields = lib.generators.toKeyValue {
           listsAsDuplicateKeys = true;
           inherit indent;
@@ -79,7 +79,7 @@
 
     importantFields = filterAttrs isImportantField allFields;
 
-    fields = builtins.removeAttrs allFields (mapAttrsToList (n: _: n) importantFields);
+    fields = removeAttrs allFields (mapAttrsToList (n: _: n) importantFields);
   in
     mkFields importantFields
     + concatStringsSep "\n" (mapAttrsToList mkSection sections)

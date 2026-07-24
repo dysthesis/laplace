@@ -107,7 +107,7 @@
   moduleEnabled = name: name != "" && !(elem name disabledModules);
   stripDisabled = builtins.filter moduleEnabled;
 
-  configuredModules = builtins.removeAttrs (generatedModules // weatherModules // settings.modules) disabledModules;
+  configuredModules = removeAttrs (generatedModules // weatherModules // settings.modules) disabledModules;
 
   modules =
     configuredModules

@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  inherit (builtins) isBool toString;
+  inherit (builtins) isBool;
   inherit
     (lib)
     boolToString

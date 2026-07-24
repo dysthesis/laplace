@@ -8,7 +8,6 @@
   inherit
     (builtins)
     typeOf
-    toString
     concatLists
     ;
   inputConfigs = {
