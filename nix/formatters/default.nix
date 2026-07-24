@@ -5,6 +5,10 @@ _: {
   # huge diff even though the ciphertext is unchanged. Exclude the dir from all
   # formatters.
   settings.global.excludes = [
+    ".claude/**"
+    ".serena/**"
+    ".tokensave/**"
+    "AGENTS.md"
     "system/secrets/*"
     # Vendored shader DSL includes non-JSON files with .json extensions.
     "system/services/minecraft/retirement-home-packwiz/**"
