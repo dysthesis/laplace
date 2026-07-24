@@ -155,145 +155,147 @@ in {
 
         wgOnly = {
           enable = true;
-          peers.mullvad-au-syd = mullvadPeer {
-            publicKeyFile = config.sops.secrets.mullvad_wg_key.path;
-            endpoint = "146.70.200.2:51820";
-            country = "Australia";
-            countryCode = "AU";
-            city = "Sydney";
-            cityCode = "syd";
-            latitude = -33.8688;
-            longitude = 151.2093;
-          };
-          peers.mullvad-au-mel = mullvadPeer {
-            publicKey = "ju0S2nDmiOrSm1H68SRTB4mtt2U8SKROprE83VCoF1Y=";
-            endpoint = "163.47.16.146:51820";
-            country = "Australia";
-            countryCode = "AU";
-            city = "Melbourne";
-            cityCode = "mel";
-            latitude = -37.815018;
-            longitude = 144.946014;
-          };
-          peers.mullvad-se-mma = mullvadPeer {
-            publicKey = "cwglRdgLQ4gMG36TIYlc5OIemLNrYs4UM1KTc8mnzxk=";
-            endpoint = "45.83.220.69:51820";
-            country = "Sweden";
-            countryCode = "SE";
-            city = "Malmö";
-            cityCode = "mma";
-            latitude = 55.607075;
-            longitude = 13.002716;
-          };
-          peers.mullvad-se-sto = mullvadPeer {
-            publicKey = "V5RUvv8xp3xYc9b/KoGjTL6EUEb2mTv+8egxuEvUAnc=";
-            endpoint = "89.37.63.10:51820";
-            country = "Sweden";
-            countryCode = "SE";
-            city = "Stockholm";
-            cityCode = "sto";
-            latitude = 59.3289;
-            longitude = 18.0649;
-          };
-          peers.mullvad-no-osl = mullvadPeer {
-            publicKey = "QXR6DwdWn2urvyVNt5pFulLuhkyeuTp2STwGgEQ6Ehw=";
-            endpoint = "141.98.253.5:51820";
-            country = "Norway";
-            countryCode = "NO";
-            city = "Oslo";
-            cityCode = "osl";
-            latitude = 59.916667;
-            longitude = 10.75;
-          };
-          peers.mullvad-no-svg = mullvadPeer {
-            publicKey = "kduYoE/b1mA2Pjszx1CzE4Lktsdc2zsUU8Relul2m2U=";
-            endpoint = "194.127.199.2:51820";
-            country = "Norway";
-            countryCode = "NO";
-            city = "Stavanger";
-            cityCode = "svg";
-            latitude = 58.964432;
-            longitude = 5.72625;
-          };
-          peers.mullvad-us-nyc = mullvadPeer {
-            publicKey = "OKyEPafS1lnUTWqtVeWElkTzcmkvLi9dncBHbSyFrH8=";
-            endpoint = "146.70.185.2:51820";
-            country = "USA";
-            countryCode = "US";
-            city = "New York, NY";
-            cityCode = "nyc";
-            latitude = 40.73061;
-            longitude = -73.935242;
-          };
-          peers.mullvad-us-was = mullvadPeer {
-            publicKey = "2AvJGG4MJfnJMRSR6kcha9FZMMkhJM/AtktI5DSESSI=";
-            endpoint = "185.213.193.127:51820";
-            country = "USA";
-            countryCode = "US";
-            city = "Washington DC";
-            cityCode = "was";
-            latitude = 38.889484;
-            longitude = -77.035278;
-          };
-          peers.mullvad-sg-sin = mullvadPeer {
-            publicKey = "sFHv/qzG7b6ds5pow+oAR3G5Wqp9eFbBD3BmEGBuUWU=";
-            endpoint = "138.199.60.2:51820";
-            country = "Singapore";
-            countryCode = "SG";
-            city = "Singapore";
-            cityCode = "sin";
-            latitude = 1.293056;
-            longitude = 103.855833;
-          };
-          peers.mullvad-id-jpu = mullvadPeer {
-            publicKey = "XYQvOrRqu8j521Hy/8+jGRDLZoSAssOvCectyKz350Y=";
-            endpoint = "129.227.46.130:51820";
-            country = "Indonesia";
-            countryCode = "ID";
-            city = "Jakarta";
-            cityCode = "jpu";
-            latitude = -6.17511;
-            longitude = 106.865036;
-          };
-          peers.mullvad-dk-cph = mullvadPeer {
-            publicKey = "egl+0TkpFU39F5O6r6+hIBMPQLOa8/t5CymOZV6CC3Y=";
-            endpoint = "45.129.56.67:51820";
-            country = "Denmark";
-            countryCode = "DK";
-            city = "Copenhagen";
-            cityCode = "cph";
-            latitude = 55.666667;
-            longitude = 12.583333;
-          };
-          peers.mullvad-fi-hel = mullvadPeer {
-            publicKey = "veLqpZazR9j/Ol2G8TfrO32yEhc1i543MCN8rpy1FBA=";
-            endpoint = "185.204.1.203:51820";
-            country = "Finland";
-            countryCode = "FI";
-            city = "Helsinki";
-            cityCode = "hel";
-            latitude = 60.192059;
-            longitude = 24.945831;
-          };
-          peers.mullvad-jp-osa = mullvadPeer {
-            publicKey = "uhbuY1A7g0yNu0lRhLTi020kYeAx34ED30BA5DQRHFo=";
-            endpoint = "194.114.136.3:51820";
-            country = "Japan";
-            countryCode = "JP";
-            city = "Osaka";
-            cityCode = "osa";
-            latitude = 34.672314;
-            longitude = 135.484802;
-          };
-          peers.mullvad-ch-zrh = mullvadPeer {
-            publicKey = "/iivwlyqWqxQ0BVWmJRhcXIFdJeo0WbHQ/hZwuXaN3g=";
-            endpoint = "193.32.127.66:51820";
-            country = "Switzerland";
-            countryCode = "CH";
-            city = "Zurich";
-            cityCode = "zrh";
-            latitude = 47.366667;
-            longitude = 8.55;
+          peers = {
+            mullvad-au-syd = mullvadPeer {
+              publicKeyFile = config.sops.secrets.mullvad_wg_key.path;
+              endpoint = "146.70.200.2:51820";
+              country = "Australia";
+              countryCode = "AU";
+              city = "Sydney";
+              cityCode = "syd";
+              latitude = -33.8688;
+              longitude = 151.2093;
+            };
+            mullvad-au-mel = mullvadPeer {
+              publicKey = "ju0S2nDmiOrSm1H68SRTB4mtt2U8SKROprE83VCoF1Y=";
+              endpoint = "163.47.16.146:51820";
+              country = "Australia";
+              countryCode = "AU";
+              city = "Melbourne";
+              cityCode = "mel";
+              latitude = -37.815018;
+              longitude = 144.946014;
+            };
+            mullvad-se-mma = mullvadPeer {
+              publicKey = "cwglRdgLQ4gMG36TIYlc5OIemLNrYs4UM1KTc8mnzxk=";
+              endpoint = "45.83.220.69:51820";
+              country = "Sweden";
+              countryCode = "SE";
+              city = "Malmö";
+              cityCode = "mma";
+              latitude = 55.607075;
+              longitude = 13.002716;
+            };
+            mullvad-se-sto = mullvadPeer {
+              publicKey = "V5RUvv8xp3xYc9b/KoGjTL6EUEb2mTv+8egxuEvUAnc=";
+              endpoint = "89.37.63.10:51820";
+              country = "Sweden";
+              countryCode = "SE";
+              city = "Stockholm";
+              cityCode = "sto";
+              latitude = 59.3289;
+              longitude = 18.0649;
+            };
+            mullvad-no-osl = mullvadPeer {
+              publicKey = "QXR6DwdWn2urvyVNt5pFulLuhkyeuTp2STwGgEQ6Ehw=";
+              endpoint = "141.98.253.5:51820";
+              country = "Norway";
+              countryCode = "NO";
+              city = "Oslo";
+              cityCode = "osl";
+              latitude = 59.916667;
+              longitude = 10.75;
+            };
+            mullvad-no-svg = mullvadPeer {
+              publicKey = "kduYoE/b1mA2Pjszx1CzE4Lktsdc2zsUU8Relul2m2U=";
+              endpoint = "194.127.199.2:51820";
+              country = "Norway";
+              countryCode = "NO";
+              city = "Stavanger";
+              cityCode = "svg";
+              latitude = 58.964432;
+              longitude = 5.72625;
+            };
+            mullvad-us-nyc = mullvadPeer {
+              publicKey = "OKyEPafS1lnUTWqtVeWElkTzcmkvLi9dncBHbSyFrH8=";
+              endpoint = "146.70.185.2:51820";
+              country = "USA";
+              countryCode = "US";
+              city = "New York, NY";
+              cityCode = "nyc";
+              latitude = 40.73061;
+              longitude = -73.935242;
+            };
+            mullvad-us-was = mullvadPeer {
+              publicKey = "2AvJGG4MJfnJMRSR6kcha9FZMMkhJM/AtktI5DSESSI=";
+              endpoint = "185.213.193.127:51820";
+              country = "USA";
+              countryCode = "US";
+              city = "Washington DC";
+              cityCode = "was";
+              latitude = 38.889484;
+              longitude = -77.035278;
+            };
+            mullvad-sg-sin = mullvadPeer {
+              publicKey = "sFHv/qzG7b6ds5pow+oAR3G5Wqp9eFbBD3BmEGBuUWU=";
+              endpoint = "138.199.60.2:51820";
+              country = "Singapore";
+              countryCode = "SG";
+              city = "Singapore";
+              cityCode = "sin";
+              latitude = 1.293056;
+              longitude = 103.855833;
+            };
+            mullvad-id-jpu = mullvadPeer {
+              publicKey = "XYQvOrRqu8j521Hy/8+jGRDLZoSAssOvCectyKz350Y=";
+              endpoint = "129.227.46.130:51820";
+              country = "Indonesia";
+              countryCode = "ID";
+              city = "Jakarta";
+              cityCode = "jpu";
+              latitude = -6.17511;
+              longitude = 106.865036;
+            };
+            mullvad-dk-cph = mullvadPeer {
+              publicKey = "egl+0TkpFU39F5O6r6+hIBMPQLOa8/t5CymOZV6CC3Y=";
+              endpoint = "45.129.56.67:51820";
+              country = "Denmark";
+              countryCode = "DK";
+              city = "Copenhagen";
+              cityCode = "cph";
+              latitude = 55.666667;
+              longitude = 12.583333;
+            };
+            mullvad-fi-hel = mullvadPeer {
+              publicKey = "veLqpZazR9j/Ol2G8TfrO32yEhc1i543MCN8rpy1FBA=";
+              endpoint = "185.204.1.203:51820";
+              country = "Finland";
+              countryCode = "FI";
+              city = "Helsinki";
+              cityCode = "hel";
+              latitude = 60.192059;
+              longitude = 24.945831;
+            };
+            mullvad-jp-osa = mullvadPeer {
+              publicKey = "uhbuY1A7g0yNu0lRhLTi020kYeAx34ED30BA5DQRHFo=";
+              endpoint = "194.114.136.3:51820";
+              country = "Japan";
+              countryCode = "JP";
+              city = "Osaka";
+              cityCode = "osa";
+              latitude = 34.672314;
+              longitude = 135.484802;
+            };
+            mullvad-ch-zrh = mullvadPeer {
+              publicKey = "/iivwlyqWqxQ0BVWmJRhcXIFdJeo0WbHQ/hZwuXaN3g=";
+              endpoint = "193.32.127.66:51820";
+              country = "Switzerland";
+              countryCode = "CH";
+              city = "Zurich";
+              cityCode = "zrh";
+              latitude = 47.366667;
+              longitude = 8.55;
+            };
           };
         };
 
