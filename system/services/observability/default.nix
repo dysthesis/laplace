@@ -275,314 +275,269 @@ in {
         }
       ];
 
-      services.victoriametrics = {
-        enable = true;
-        listenAddress = "127.0.0.1:8428";
-        stateDir = "victoriametrics";
-        retentionPeriod = "90d";
-        extraOptions = [
-          "-storage.minFreeDiskSpaceBytes=6GiB"
-          "-maxInsertRequestSize=16MiB"
-          "-maxLabelsPerTimeseries=40"
-          "-maxLabelValueLen=512"
-          "-influx.maxLineSize=256KiB"
-          "-influx.maxRequestSize=16MiB"
-        ];
-        prometheusConfig = {
-          global = {
-            scrape_interval = "30s";
-            scrape_timeout = "10s";
+      services = {
+        victoriametrics = {
+          enable = true;
+          listenAddress = "127.0.0.1:8428";
+          stateDir = "victoriametrics";
+          retentionPeriod = "90d";
+          extraOptions = [
+            "-storage.minFreeDiskSpaceBytes=6GiB"
+            "-maxInsertRequestSize=16MiB"
+            "-maxLabelsPerTimeseries=40"
+            "-maxLabelValueLen=512"
+            "-influx.maxLineSize=256KiB"
+            "-influx.maxRequestSize=16MiB"
+          ];
+          prometheusConfig = {
+            global = {
+              scrape_interval = "30s";
+              scrape_timeout = "10s";
+            };
+            scrape_configs =
+              [
+                (scrape "victoriametrics" "127.0.0.1:8428")
+                (scrape "victorialogs" "127.0.0.1:9428")
+                (scrape "grafana" "127.0.0.1:3000")
+                (scrape "alertmanager" "127.0.0.1:9093")
+                (scrape "vmalert-metrics" "127.0.0.1:8880")
+                (scrape "vmalert-logs" "127.0.0.1:8881")
+                (scrape "vmagent" "127.0.0.1:8429")
+                (scrape "node" "127.0.0.1:9100")
+                (scrape "blackbox" "127.0.0.1:9115")
+                {
+                  job_name = "blackbox-grafana";
+                  metrics_path = "/probe";
+                  params.module = ["http_2xx"];
+                  static_configs = [{targets = ["http://127.0.0.1:3000/api/health"];}];
+                  relabel_configs = [
+                    {
+                      source_labels = ["__address__"];
+                      target_label = "__param_target";
+                    }
+                    {
+                      source_labels = ["__param_target"];
+                      target_label = "instance";
+                    }
+                    {
+                      target_label = "__address__";
+                      replacement = "127.0.0.1:9115";
+                    }
+                  ];
+                }
+              ]
+              ++ mapAttrsToList (name: writer: scrape "vmagent-ingress-${name}" "127.0.0.1:${toString writer.metricsPort}") writers;
           };
-          scrape_configs =
-            [
-              (scrape "victoriametrics" "127.0.0.1:8428")
-              (scrape "victorialogs" "127.0.0.1:9428")
-              (scrape "grafana" "127.0.0.1:3000")
-              (scrape "alertmanager" "127.0.0.1:9093")
-              (scrape "vmalert-metrics" "127.0.0.1:8880")
-              (scrape "vmalert-logs" "127.0.0.1:8881")
-              (scrape "vmagent" "127.0.0.1:8429")
-              (scrape "node" "127.0.0.1:9100")
-              (scrape "blackbox" "127.0.0.1:9115")
+        };
+
+        victorialogs = {
+          enable = true;
+          listenAddress = "127.0.0.1:9428";
+          stateDir = "victorialogs";
+          extraOptions = [
+            "-retentionPeriod=30d"
+            "-retention.maxDiskSpaceUsageBytes=70GiB"
+            "-storage.minFreeDiskSpaceBytes=16GiB"
+            "-insert.maxFieldsPerLine=64"
+            "-insert.maxLineSizeBytes=256KiB"
+            "-journald.streamFields=source"
+            "-search.maxQueryDuration=30s"
+            "-search.maxQueryLen=16KiB"
+            "-search.maxQueryTimeRange=31d"
+          ];
+        };
+
+        grafana = {
+          enable = true;
+          declarativePlugins = [pkgs.grafanaPlugins.victoriametrics-logs-datasource];
+          settings = {
+            server = {
+              http_addr = "127.0.0.1";
+              http_port = 3000;
+              domain = cfg.frontend.domain;
+              root_url =
+                if cfg.frontend.enable
+                then "https://${cfg.frontend.domain}/"
+                else "http://127.0.0.1:3000/";
+              enforce_domain = cfg.frontend.enable;
+              enable_gzip = true;
+            };
+
+            security = {
+              admin_user = "admin";
+              admin_password = "$__file{/var/lib/grafana/bootstrap-admin-password}";
+              secret_key = "$__file{/var/lib/grafana/secret-key}";
+            };
+            users = {
+              allow_sign_up = false;
+              allow_org_create = false;
+            };
+            analytics = {
+              reporting_enabled = false;
+              check_for_updates = false;
+            };
+
+            dashboards.default_home_dashboard_path = "${./dashboards}/fleet.json";
+
+            metrics.enabled = true;
+          };
+          provision = {
+            enable = true;
+            datasources.settings = {
+              apiVersion = 1;
+              deleteDatasources = [
+                {
+                  name = "VictoriaMetrics";
+                  orgId = 1;
+                }
+                {
+                  name = "VictoriaLogs";
+                  orgId = 1;
+                }
+              ];
+              datasources = [
+                {
+                  name = "VictoriaMetrics";
+                  uid = "victoriametrics";
+                  type = "prometheus";
+                  access = "proxy";
+                  url = metricsUrl;
+                  isDefault = true;
+                  editable = false;
+                }
+                {
+                  name = "VictoriaLogs";
+                  uid = "victorialogs";
+                  type = "victoriametrics-logs-datasource";
+                  access = "proxy";
+                  url = logsUrl;
+                  editable = false;
+                }
+              ];
+            };
+            dashboards.settings = {
+              apiVersion = 1;
+              providers = [
+                {
+                  name = "Laplace";
+                  type = "file";
+                  disableDeletion = true;
+                  updateIntervalSeconds = 30;
+                  options.path = ./dashboards;
+                }
+              ];
+            };
+          };
+        };
+
+        prometheus.alertmanager = {
+          enable = true;
+          # URL comes from SOPS via envsubst; validate substituted config at start.
+          checkConfig = false;
+          listenAddress = "127.0.0.1";
+          port = 9093;
+          configuration = {
+            global.resolve_timeout = "5m";
+            route = {
+              receiver = "warnings";
+              group_by = ["alertname" "host"];
+              group_wait = "30s";
+              group_interval = "5m";
+              repeat_interval = "4h";
+              routes = [
+                {
+                  receiver = "dead-man";
+                  matchers = ["alertname = \"TelemetryPipelineDeadMan\""];
+                  group_wait = "0s";
+                  group_interval = "15s";
+                  repeat_interval = "30s";
+                }
+                {
+                  receiver = "critical";
+                  matchers = ["severity = \"critical\""];
+                }
+              ];
+            };
+            receivers = [
               {
-                job_name = "blackbox-grafana";
-                metrics_path = "/probe";
-                params.module = ["http_2xx"];
-                static_configs = [{targets = ["http://127.0.0.1:3000/api/health"];}];
-                relabel_configs = [
+                name = "dead-man";
+                webhook_configs = [
                   {
-                    source_labels = ["__address__"];
-                    target_label = "__param_target";
-                  }
-                  {
-                    source_labels = ["__param_target"];
-                    target_label = "instance";
-                  }
-                  {
-                    target_label = "__address__";
-                    replacement = "127.0.0.1:9115";
+                    url = "$UPTIME_KUMA_PUSH_URL";
+                    send_resolved = false;
                   }
                 ];
               }
-            ]
-            ++ mapAttrsToList (name: writer: scrape "vmagent-ingress-${name}" "127.0.0.1:${toString writer.metricsPort}") writers;
+              {
+                name = "warnings";
+                webhook_configs = [
+                  {
+                    url = "https://ntfy.dysthesis.com/alerts?template=alertmanager&priority=high&tags=warning";
+                    send_resolved = true;
+                    http_config.authorization = {
+                      type = "Bearer";
+                      credentials = "$NTFY_ALERTMANAGER_TOKEN";
+                    };
+                  }
+                ];
+              }
+              {
+                name = "critical";
+                webhook_configs = [
+                  {
+                    url = "https://ntfy.dysthesis.com/alerts?template=alertmanager&priority=max&tags=rotating_light";
+                    send_resolved = true;
+                    http_config.authorization = {
+                      type = "Bearer";
+                      credentials = "$NTFY_ALERTMANAGER_TOKEN";
+                    };
+                  }
+                ];
+              }
+            ];
+            inhibit_rules = [
+              {
+                source_matchers = ["alertname = \"TelemetryHostStale\""];
+                target_matchers = ["severity = \"warning\""];
+                equal = ["host"];
+              }
+            ];
+          };
         };
-      };
 
-      services.victorialogs = {
-        enable = true;
-        listenAddress = "127.0.0.1:9428";
-        stateDir = "victorialogs";
-        extraOptions = [
-          "-retentionPeriod=30d"
-          "-retention.maxDiskSpaceUsageBytes=70GiB"
-          "-storage.minFreeDiskSpaceBytes=16GiB"
-          "-insert.maxFieldsPerLine=64"
-          "-insert.maxLineSizeBytes=256KiB"
-          "-journald.streamFields=source"
-          "-search.maxQueryDuration=30s"
-          "-search.maxQueryLen=16KiB"
-          "-search.maxQueryTimeRange=31d"
-        ];
-      };
-
-      systemd.services.victoriametrics.unitConfig = {
-        RequiresMountsFor = cfg.metricsMount;
-        ConditionPathIsMountPoint = cfg.metricsMount;
-      };
-      systemd.services.victorialogs.unitConfig = {
-        RequiresMountsFor = cfg.logsMount;
-        ConditionPathIsMountPoint = cfg.logsMount;
-      };
-
-      services.grafana = {
-        enable = true;
-        declarativePlugins = [pkgs.grafanaPlugins.victoriametrics-logs-datasource];
-        settings = {
-          server = {
-            http_addr = "127.0.0.1";
-            http_port = 3000;
-            domain = cfg.frontend.domain;
-            root_url =
-              if cfg.frontend.enable
-              then "https://${cfg.frontend.domain}/"
-              else "http://127.0.0.1:3000/";
-            enforce_domain = cfg.frontend.enable;
-            enable_gzip = true;
+        vmalert.instances = {
+          metrics = {
+            enable = true;
+            settings = {
+              "datasource.url" = metricsUrl;
+              "notifier.url" = [alertmanagerUrl];
+              "httpListenAddr" = "127.0.0.1:8880";
+              "remoteRead.url" = metricsUrl;
+              "remoteWrite.url" = metricsUrl;
+            };
+            rules = import ./rules/metrics.nix {inherit (cfg) expectedHosts;};
           };
-
-          security = {
-            admin_user = "admin";
-            admin_password = "$__file{/var/lib/grafana/bootstrap-admin-password}";
-            secret_key = "$__file{/var/lib/grafana/secret-key}";
+          logs = {
+            enable = true;
+            settings = {
+              "datasource.url" = logsUrl;
+              "notifier.url" = [alertmanagerUrl];
+              "httpListenAddr" = "127.0.0.1:8881";
+              "remoteRead.url" = metricsUrl;
+              "remoteWrite.url" = metricsUrl;
+              "rule.defaultRuleType" = "vlogs";
+            };
+            rules = import ./rules/logs.nix;
           };
-          users = {
-            allow_sign_up = false;
-            allow_org_create = false;
-          };
-          analytics = {
-            reporting_enabled = false;
-            check_for_updates = false;
-          };
-
-          dashboards.default_home_dashboard_path = "${./dashboards}/fleet.json";
-
-          metrics.enabled = true;
         };
-        provision = {
+
+        prometheus.exporters.blackbox = {
           enable = true;
-          datasources.settings = {
-            apiVersion = 1;
-            deleteDatasources = [
-              {
-                name = "VictoriaMetrics";
-                orgId = 1;
-              }
-              {
-                name = "VictoriaLogs";
-                orgId = 1;
-              }
-            ];
-            datasources = [
-              {
-                name = "VictoriaMetrics";
-                uid = "victoriametrics";
-                type = "prometheus";
-                access = "proxy";
-                url = metricsUrl;
-                isDefault = true;
-                editable = false;
-              }
-              {
-                name = "VictoriaLogs";
-                uid = "victorialogs";
-                type = "victoriametrics-logs-datasource";
-                access = "proxy";
-                url = logsUrl;
-                editable = false;
-              }
-            ];
-          };
-          dashboards.settings = {
-            apiVersion = 1;
-            providers = [
-              {
-                name = "Laplace";
-                type = "file";
-                disableDeletion = true;
-                updateIntervalSeconds = 30;
-                options.path = ./dashboards;
-              }
-            ];
-          };
+          listenAddress = "127.0.0.1";
+          port = 9115;
+          configFile = blackboxConfig;
+          openFirewall = false;
         };
-      };
-
-      # Bootstrap files stay local and random while Argus SOPS enrolment is
-      # pending. Replace these file-provider paths with SOPS files before exposing
-      # the frontend; changing secret-key later requires Grafana key rotation.
-      systemd.services.grafana.preStart = lib.mkBefore ''
-        umask 077
-        test -s /var/lib/grafana/secret-key || ${pkgs.openssl}/bin/openssl rand -hex 32 > /var/lib/grafana/secret-key
-        test -s /var/lib/grafana/bootstrap-admin-password || ${pkgs.openssl}/bin/openssl rand -hex 24 > /var/lib/grafana/bootstrap-admin-password
-      '';
-
-      systemd.services.observability-notification-test = {
-        description = "Observability notification test sentinel";
-        wantedBy = ["multi-user.target"];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-          ExecStart = "${pkgs.coreutils}/bin/true";
-        };
-      };
-
-      services.prometheus.alertmanager = {
-        enable = true;
-        # URL comes from SOPS via envsubst; validate substituted config at start.
-        checkConfig = false;
-        listenAddress = "127.0.0.1";
-        port = 9093;
-        configuration = {
-          global.resolve_timeout = "5m";
-          route = {
-            receiver = "warnings";
-            group_by = ["alertname" "host"];
-            group_wait = "30s";
-            group_interval = "5m";
-            repeat_interval = "4h";
-            routes = [
-              {
-                receiver = "dead-man";
-                matchers = ["alertname = \"TelemetryPipelineDeadMan\""];
-                group_wait = "0s";
-                group_interval = "15s";
-                repeat_interval = "30s";
-              }
-              {
-                receiver = "critical";
-                matchers = ["severity = \"critical\""];
-              }
-            ];
-          };
-          receivers = [
-            {
-              name = "dead-man";
-              webhook_configs = [
-                {
-                  url = "$UPTIME_KUMA_PUSH_URL";
-                  send_resolved = false;
-                }
-              ];
-            }
-            {
-              name = "warnings";
-              webhook_configs = [
-                {
-                  url = "https://ntfy.dysthesis.com/alerts?template=alertmanager&priority=high&tags=warning";
-                  send_resolved = true;
-                  http_config.authorization = {
-                    type = "Bearer";
-                    credentials = "$NTFY_ALERTMANAGER_TOKEN";
-                  };
-                }
-              ];
-            }
-            {
-              name = "critical";
-              webhook_configs = [
-                {
-                  url = "https://ntfy.dysthesis.com/alerts?template=alertmanager&priority=max&tags=rotating_light";
-                  send_resolved = true;
-                  http_config.authorization = {
-                    type = "Bearer";
-                    credentials = "$NTFY_ALERTMANAGER_TOKEN";
-                  };
-                }
-              ];
-            }
-          ];
-          inhibit_rules = [
-            {
-              source_matchers = ["alertname = \"TelemetryHostStale\""];
-              target_matchers = ["severity = \"warning\""];
-              equal = ["host"];
-            }
-          ];
-        };
-      };
-
-      systemd.services.alertmanager.preStart = lib.mkAfter ''
-        ${config.services.prometheus.alertmanager.package}/bin/amtool check-config /tmp/alert-manager-substituted.yaml
-      '';
-
-      services.vmalert.instances = {
-        metrics = {
-          enable = true;
-          settings = {
-            "datasource.url" = metricsUrl;
-            "notifier.url" = [alertmanagerUrl];
-            "httpListenAddr" = "127.0.0.1:8880";
-            "remoteRead.url" = metricsUrl;
-            "remoteWrite.url" = metricsUrl;
-          };
-          rules = import ./rules/metrics.nix {inherit (cfg) expectedHosts;};
-        };
-        logs = {
-          enable = true;
-          settings = {
-            "datasource.url" = logsUrl;
-            "notifier.url" = [alertmanagerUrl];
-            "httpListenAddr" = "127.0.0.1:8881";
-            "remoteRead.url" = metricsUrl;
-            "remoteWrite.url" = metricsUrl;
-            "rule.defaultRuleType" = "vlogs";
-          };
-          rules = import ./rules/logs.nix;
-        };
-      };
-
-      systemd.services.vmalert-metrics = {
-        after = ["victoriametrics.service" "alertmanager.service"];
-        requires = ["victoriametrics.service" "alertmanager.service"];
-      };
-      systemd.services.vmalert-logs = {
-        after = ["victorialogs.service" "victoriametrics.service" "alertmanager.service"];
-        requires = ["victorialogs.service" "victoriametrics.service" "alertmanager.service"];
-      };
-      systemd.services.victoriametrics.wants = ["vmalert-metrics.service" "vmalert-logs.service"];
-      systemd.services.victorialogs.wants = ["vmalert-logs.service"];
-      systemd.services.grafana = {
-        after = ["systemd-tmpfiles-setup.service" "victoriametrics.service" "victorialogs.service"];
-        wants = ["victoriametrics.service" "victorialogs.service"];
-      };
-
-      services.prometheus.exporters.blackbox = {
-        enable = true;
-        listenAddress = "127.0.0.1";
-        port = 9115;
-        configFile = blackboxConfig;
-        openFirewall = false;
       };
 
       mnemosyne.dirs = [
@@ -591,31 +546,81 @@ in {
         "/var/backups/grafana"
       ];
 
-      systemd.tmpfiles.rules = [
-        "d /var/lib/grafana 0750 grafana grafana -"
-        "d /var/backups/grafana 0700 grafana grafana -"
-      ];
-      systemd.services.grafana-sqlite-backup = {
-        description = "Coherent Grafana SQLite backup for PBS";
-        after = ["grafana.service"];
-        serviceConfig = {
-          Type = "oneshot";
-          User = "grafana";
-          Group = "grafana";
-          UMask = "0077";
+      systemd = {
+        tmpfiles.rules = [
+          "d /var/lib/grafana 0750 grafana grafana -"
+          "d /var/backups/grafana 0700 grafana grafana -"
+        ];
+        services = {
+          victoriametrics = {
+            unitConfig = {
+              RequiresMountsFor = cfg.metricsMount;
+              ConditionPathIsMountPoint = cfg.metricsMount;
+            };
+            wants = ["vmalert-metrics.service" "vmalert-logs.service"];
+          };
+          victorialogs = {
+            unitConfig = {
+              RequiresMountsFor = cfg.logsMount;
+              ConditionPathIsMountPoint = cfg.logsMount;
+            };
+            wants = ["vmalert-logs.service"];
+          };
+          grafana = {
+            # Bootstrap files stay local and random while Argus SOPS enrolment is
+            # pending. Replace these file-provider paths with SOPS files before exposing
+            # the frontend; changing secret-key later requires Grafana key rotation.
+            preStart = lib.mkBefore ''
+              umask 077
+              test -s /var/lib/grafana/secret-key || ${pkgs.openssl}/bin/openssl rand -hex 32 > /var/lib/grafana/secret-key
+              test -s /var/lib/grafana/bootstrap-admin-password || ${pkgs.openssl}/bin/openssl rand -hex 24 > /var/lib/grafana/bootstrap-admin-password
+            '';
+            after = ["systemd-tmpfiles-setup.service" "victoriametrics.service" "victorialogs.service"];
+            wants = ["victoriametrics.service" "victorialogs.service"];
+          };
+          observability-notification-test = {
+            description = "Observability notification test sentinel";
+            wantedBy = ["multi-user.target"];
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+              ExecStart = "${pkgs.coreutils}/bin/true";
+            };
+          };
+          alertmanager.preStart = lib.mkAfter ''
+            ${config.services.prometheus.alertmanager.package}/bin/amtool check-config /tmp/alert-manager-substituted.yaml
+          '';
+          vmalert-metrics = {
+            after = ["victoriametrics.service" "alertmanager.service"];
+            requires = ["victoriametrics.service" "alertmanager.service"];
+          };
+          vmalert-logs = {
+            after = ["victorialogs.service" "victoriametrics.service" "alertmanager.service"];
+            requires = ["victorialogs.service" "victoriametrics.service" "alertmanager.service"];
+          };
+          grafana-sqlite-backup = {
+            description = "Coherent Grafana SQLite backup for PBS";
+            after = ["grafana.service"];
+            serviceConfig = {
+              Type = "oneshot";
+              User = "grafana";
+              Group = "grafana";
+              UMask = "0077";
+            };
+            script = ''
+              rm -f /var/backups/grafana/grafana.db.tmp
+              ${pkgs.sqlite}/bin/sqlite3 /var/lib/grafana/data/grafana.db ".backup '/var/backups/grafana/grafana.db.tmp'"
+              mv /var/backups/grafana/grafana.db.tmp /var/backups/grafana/grafana.db
+            '';
+          };
         };
-        script = ''
-          rm -f /var/backups/grafana/grafana.db.tmp
-          ${pkgs.sqlite}/bin/sqlite3 /var/lib/grafana/data/grafana.db ".backup '/var/backups/grafana/grafana.db.tmp'"
-          mv /var/backups/grafana/grafana.db.tmp /var/backups/grafana/grafana.db
-        '';
-      };
-      systemd.timers.grafana-sqlite-backup = {
-        wantedBy = ["timers.target"];
-        timerConfig = {
-          OnCalendar = "daily";
-          Persistent = true;
-          RandomizedDelaySec = "30m";
+        timers.grafana-sqlite-backup = {
+          wantedBy = ["timers.target"];
+          timerConfig = {
+            OnCalendar = "daily";
+            Persistent = true;
+            RandomizedDelaySec = "30m";
+          };
         };
       };
     }
