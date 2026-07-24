@@ -3,9 +3,9 @@
     (lib)
     mapAttrsToList
     mapAttrs
-    map
     foldl
     ;
+  mapList = lib.map;
   inherit
     (builtins)
     concatLists
@@ -26,7 +26,7 @@
   mkRules = rules:
     rules
     |> mapAttrs (_key: value: mapAttrsToList mkSingleConfig value)
-    |> mapAttrsToList (key: value: map (val: "-${key} ${val}") value)
+    |> mapAttrsToList (key: value: mapList (val: "-${key} ${val}") value)
     |> concatLists;
 in
   mkRules rules

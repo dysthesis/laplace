@@ -6,12 +6,12 @@
 }: let
   inherit
     (lib)
-    map
     mkIf
     mkDefault
     mkMerge
     forEach
     ;
+  mapList = lib.map;
   inherit
     (lib.strings)
     concatStringsSep
@@ -22,7 +22,7 @@
   machineIdPath = persistPath "/etc/machine-id";
   mkMounts = dirs:
     dirs
-    |> map (path: {
+    |> mapList (path: {
       "${path}" = {
         device = persistPath path;
         fsType = "none";
