@@ -126,8 +126,8 @@
             server = services."minecraft-server-retirement-home";
             restart = pkgs.writeText "mc-nightly-restart.sh" services.mc-nightly-restart.script;
           in
-            assert server.reloadIfChanged == false;
-            assert server.restartIfChanged == false;
+            assert !server.reloadIfChanged;
+            assert !server.restartIfChanged;
               pkgs.runCommand "minecraft-config-staging-check" {} ''
                 grep -Fqx 'systemctl try-restart "$unit"' ${restart}
                 touch $out
