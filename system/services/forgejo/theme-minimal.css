@@ -16,7 +16,8 @@
 }
 @font-face {
   font-family: "IosevkaCadmus Nerd Font";
-  src: url("/assets/fonts/IosevkaCadmusNerdFont-MediumItalic.woff2") format("woff2");
+  src: url("/assets/fonts/IosevkaCadmusNerdFont-MediumItalic.woff2")
+    format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -30,7 +31,8 @@
 }
 @font-face {
   font-family: "IosevkaCadmus Nerd Font";
-  src: url("/assets/fonts/IosevkaCadmusNerdFont-BoldItalic.woff2") format("woff2");
+  src: url("/assets/fonts/IosevkaCadmusNerdFont-BoldItalic.woff2")
+    format("woff2");
   font-weight: 700;
   font-style: italic;
   font-display: swap;
@@ -44,15 +46,21 @@
 }
 @font-face {
   font-family: "Atkinson Hyperlegible Next";
-  src: url("/assets/fonts/AtkinsonHyperlegibleNext-Italic-var.ttf") format("truetype");
+  src: url("/assets/fonts/AtkinsonHyperlegibleNext-Italic-var.ttf")
+    format("truetype");
   font-weight: 200 800;
   font-style: italic;
   font-display: swap;
 }
 
 :root {
-  --fonts-proportional: "Atkinson Hyperlegible Next", -apple-system, "Segoe UI", system-ui, "Noto Sans", Roboto, "Helvetica Neue", Arial;
-  --fonts-monospace: "IosevkaCadmus Nerd Font", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, var(--fonts-emoji);
+  --fonts-proportional:
+    "Atkinson Hyperlegible Next", -apple-system, "Segoe UI", system-ui,
+    "Noto Sans", Roboto, "Helvetica Neue", Arial;
+  --fonts-monospace:
+    "IosevkaCadmus Nerd Font", ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace,
+    var(--fonts-emoji);
 
   /* Neutral ladder -> minimal.nvim grays (drives body/box/text/input/menu). */
   --steel-900: #080808; /* gray1 */
@@ -232,19 +240,104 @@
 /* Chroma (server-side code highlighting) -> minimal.nvim syntax mapping:
  * near-monochrome; comments yellow, strings gray7, constants gray6,
  * definitions lack, errors red. Overrides the gruvbox-ish defaults. */
-.chroma .c, .chroma .c1, .chroma .ch, .chroma .cm, .chroma .cs { color: #abab77; }
-.chroma .cp, .chroma .cpf { color: #cccccc; }
-.chroma .k, .chroma .kd, .chroma .kn, .chroma .kp, .chroma .kr, .chroma .kt, .chroma .nt { color: #cccccc; }
-.chroma .kc, .chroma .no, .chroma .bp, .chroma .m, .chroma .mb, .chroma .mf, .chroma .mh, .chroma .mi, .chroma .mo, .chroma .il { color: #7a7a7a; }
-.chroma .s, .chroma .s1, .chroma .s2, .chroma .sa, .chroma .sb, .chroma .sc, .chroma .sd, .chroma .sh, .chroma .si, .chroma .sx, .chroma .dl { color: #aaaaaa; }
-.chroma .sr, .chroma .se, .chroma .ss { color: #7a7a7a; }
-.chroma .n, .chroma .na, .chroma .nb, .chroma .nn, .chroma .nv, .chroma .nx, .chroma .vc, .chroma .vg, .chroma .vi { color: #cccccc; }
-.chroma .nf, .chroma .ni, .chroma .nc, .chroma .nd, .chroma .nl { color: #708090; }
-.chroma .ne, .chroma .gr, .chroma .gt { color: #d70000; }
-.chroma .o, .chroma .ow, .chroma .p { color: #7a7a7a; }
-.chroma .gh, .chroma .gu { color: #7788aa; }
-.chroma .ge, .chroma .gs { color: #cccccc; }
-.chroma .go, .chroma .gp { color: #7a7a7a; }
-.chroma .gd { color: #cccccc; background-color: #2a1414; }
-.chroma .gi { color: #cccccc; background-color: #1a241a; }
-.chroma .w { color: #3a3a3a; }
+.chroma .c,
+.chroma .c1,
+.chroma .ch,
+.chroma .cm,
+.chroma .cs {
+  color: #abab77;
+}
+.chroma .cp,
+.chroma .cpf {
+  color: #cccccc;
+}
+.chroma .k,
+.chroma .kd,
+.chroma .kn,
+.chroma .kp,
+.chroma .kr,
+.chroma .kt,
+.chroma .nt {
+  color: #cccccc;
+}
+.chroma .kc,
+.chroma .no,
+.chroma .bp,
+.chroma .m,
+.chroma .mb,
+.chroma .mf,
+.chroma .mh,
+.chroma .mi,
+.chroma .mo,
+.chroma .il {
+  color: #7a7a7a;
+}
+.chroma .s,
+.chroma .s1,
+.chroma .s2,
+.chroma .sa,
+.chroma .sb,
+.chroma .sc,
+.chroma .sd,
+.chroma .sh,
+.chroma .si,
+.chroma .sx,
+.chroma .dl {
+  color: #aaaaaa;
+}
+.chroma .sr,
+.chroma .se,
+.chroma .ss {
+  color: #7a7a7a;
+}
+.chroma .n,
+.chroma .na,
+.chroma .nb,
+.chroma .nn,
+.chroma .nv,
+.chroma .nx,
+.chroma .vc,
+.chroma .vg,
+.chroma .vi {
+  color: #cccccc;
+}
+.chroma .nf,
+.chroma .ni,
+.chroma .nc,
+.chroma .nd,
+.chroma .nl {
+  color: #708090;
+}
+.chroma .ne,
+.chroma .gr,
+.chroma .gt {
+  color: #d70000;
+}
+.chroma .o,
+.chroma .ow,
+.chroma .p {
+  color: #7a7a7a;
+}
+.chroma .gh,
+.chroma .gu {
+  color: #7788aa;
+}
+.chroma .ge,
+.chroma .gs {
+  color: #cccccc;
+}
+.chroma .go,
+.chroma .gp {
+  color: #7a7a7a;
+}
+.chroma .gd {
+  color: #cccccc;
+  background-color: #2a1414;
+}
+.chroma .gi {
+  color: #cccccc;
+  background-color: #1a241a;
+}
+.chroma .w {
+  color: #3a3a3a;
+}
