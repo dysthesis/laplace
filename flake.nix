@@ -30,7 +30,7 @@
     mapAttrs (_: forAllSystems)
     {
       devShells = pkgs: let
-        nixpkgs-unstable = import inputs.nixpkgs-unstable {inherit (pkgs) system;};
+        nixpkgs-unstable = import inputs.nixpkgs-unstable {system = pkgs.stdenv.hostPlatform.system;};
       in {default = import ./nix/shell inputs nixpkgs-unstable;};
 
       packages = pkgs:
