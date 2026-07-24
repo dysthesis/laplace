@@ -288,6 +288,10 @@
 in
   inputs.dwl.packages.${system}.default.override {
     enableXWayland = true;
+    xorg = {
+      inherit (pkgs) libxcb;
+      xcbutilwm = pkgs.libxcb-wm;
+    };
     extraPathPackages = with pkgs; [
       configured.tmux
       configured.zk
