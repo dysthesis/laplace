@@ -1,4 +1,3 @@
-# Adapted from https://github.com/sioodmy/dotfiles/blob/1c692cbf6af349a568eb6ca2213eefbc42c43f39/modules/staypls/default.nix
 {
   config,
   lib,

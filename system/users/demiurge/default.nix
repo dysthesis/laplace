@@ -94,9 +94,6 @@ in {
             configured.bemenu
             configured.foot
           ];
-        # xorg session packages (gungnir's st/dmenu/xsecurelock) moved to
-        # system/display/servers/xorg/sessions/xmonad.
-
         applications = with pkgs; [
           configured.zotero
           unstable.signal-desktop

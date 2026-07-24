@@ -54,8 +54,7 @@
   );
 in {
   config = mkIf (elem "desktop" cfg) {
-    # Desktop-only firewall surface (moved off laplace.security.firewall so
-    # servers don't inherit it): the Zotero LAN sync/discovery port.
+    # Zotero LAN sync and discovery.
     networking.firewall = {
       allowedTCPPorts = [23319]; # zotero
       allowedUDPPorts = [23319]; # zotero

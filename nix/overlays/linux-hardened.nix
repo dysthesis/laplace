@@ -1,9 +1,6 @@
 # linux-hardened kernel overlay.
 #
-# nixpkgs dropped its own `linux_hardened` (removed 2025-10-01, lack of
-# maintenance), so this overlay is now the sole source of a hardened kernel
-# here. We take nixpkgs' plain `linux_7_1` build recipe and layer the upstream
-# linux-hardened patch + the curated hardening config (../linux-hardened/
+# Applies the upstream linux-hardened patch and local config to linux_7_1.
 # config.nix) on top.
 #
 # The hardened patch is cut against one exact upstream tarball, so its hunks

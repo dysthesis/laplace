@@ -18,9 +18,7 @@
   histerHost = "search.dysthesis.com";
 in {
   sops.secrets = {
-    # miniflux_admin lives in mimir's own sops file (moved out of the shared
-    # secrets.yaml); the miniflux module declares the secret against the default
-    # file, so repoint it.
+    # The Miniflux module otherwise uses the shared secret file.
     miniflux_admin.sopsFile = ../../system/secrets/mimir.yaml;
     # beszel agent's KEY + mimir's per-system TOKEN, consumed as the agent's
     # EnvironmentFile below.

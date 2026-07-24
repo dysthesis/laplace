@@ -1,5 +1,4 @@
-# PHP (with wallabag's extensions) + uwsgi (php plugin), vendored and adapted
-# from https://github.com/gdamjan/wallabag-service (build.nix).
+# PHP and uWSGI package definitions from gdamjan/wallabag-service.
 #
 # Upstream wraps these in `pkgs.portableService` and serves the uwsgi protocol
 # on a unix socket (/run/wallabag.sock) for nginx to proxy. This repo fronts

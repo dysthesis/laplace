@@ -1,4 +1,3 @@
-# Based on the linux-hardened configuration formerly carried by nixpkgs.
 {
   stdenv,
   lib,

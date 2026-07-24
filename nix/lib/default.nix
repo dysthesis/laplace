@@ -1,6 +1,3 @@
-# Flake-local library, formerly sourced from the `nixpressions` flake.
-# Only the helpers this configuration actually uses are kept here, exposed
-# under the `laplace` namespace.
 nixpkgs:
 nixpkgs.lib.extend (
   final: _prev: let

@@ -207,10 +207,6 @@ bar:
                           { text:  , foreground: *brightgreen, font: *font }
                 - string: { text: " {capacity}%", font: *font } #, right-margin: 5}
 
-            #    - script:
-            #        path: ~/docs/scripts/yams-kbd.sh
-            #        args: []
-            #        content: {string: {text: "{kbd}"}}
     - clock:
         time-format: "%H:%M"
         date-format: "%d.%m.%Y"

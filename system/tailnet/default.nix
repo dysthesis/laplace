@@ -1,14 +1,5 @@
-# Single source of truth for the tailnet — the "frontend" the §5 topology audit
-# (PLAN.md) describes. This file is the SCHEMA + VALIDATION half: the
-# laplace.tailnet option types (the trust-boundary input validation) and
-# checkTailnet (referential integrity + the negative security invariants). The
-# DATA those options carry — nodes, the role->role reachability matrix, guest
-# cohorts — lives in ./policy.nix, kept apart from the mechanism that processes it.
-#
-# The renderers consume the merged config: ./firewall.nix (per-node nftables) on
-# every tailnet host, ./headscale.nix (the ACL) on bifrost. One dataset, no drift;
-# imported fleet-wide (via system/ -> importInDirectory) since a node cannot read
-# a peer's `config` at eval, and each consumer filters by hostName.
+# Tailnet schema and validation. policy.nix holds data; firewall.nix and
+# headscale.nix render host-specific rules from the merged config.
 {
   lib,
   config,
@@ -18,9 +9,7 @@
   inherit (builtins) attrNames head elemAt length match;
   cfg = config.laplace.tailnet;
 
-  # Tags that no untrusted source (a guest cohort, or the game node) may reach.
-  # The negative invariants below enforce this; it is the §5 layer-4 check made
-  # eval-time.
+  # Untrusted roles must not reach these tags.
   sensitiveTags = ["infra" "apps" "monitor" "observability" "notifications" "exit" "workstation"];
 
   allTags = unique (concatMap (n: n.tags) (attrValues cfg.nodes));

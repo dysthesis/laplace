@@ -476,11 +476,9 @@ in {
             # Moonlight loads this folder (global_datapacks_folder in
             # moonlight-common.json) as a datapack source. It sits at the PACK
             # root, so the config/ copy above misses it — unmapped, the
-            # WooledBoots and VillagersPlus fixes silently vanish (regression
-            # shipped with the 2026-07-07 packwiz migration).
+            # These packs are required by WooledBoots and VillagersPlus.
             "moonlight-global-datapacks" = "${serverPack}/moonlight-global-datapacks";
-            # squaremap reads <datadir>/squaremap/, NOT config/ — a
-            # config/squaremap/config.yml is silently ignored (shipped once).
+            # squaremap reads <datadir>/squaremap/, not config/.
             # The dir already persists; this file is managed only to pin
             # loopback bind, public web-address, and capped render threads
             # (fullrender was dragging TPS).

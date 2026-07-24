@@ -82,16 +82,9 @@ in {
     nameservers = ["10.0.50.1"];
     hosts."10.0.40.2" = ["headscale.dysthesis.com"];
     hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
-    # nftables backend. The firewall scoping below lives in extraInputRules, which
-    # ONLY applies on the nftables firewall — on iptables it silently evaporates.
-    # tailscale used to flip nftables on; now that bifrost is off the tailnet that
-    # coupling is gone, so set it explicitly or headscale's :8080 accept disappears
-    # and the control plane is firewalled to :22 only. No Docker here, so it's safe.
+    # extraInputRules only works with nftables.
     nftables.enable = true;
-    # bifrost lives on its own control VLAN50 (F2/§4 Option A). headscale :8080 is
-    # reachable only from portunus (10.0.40.2, still in VLAN40), which terminates TLS
-    # for headscale.dysthesis.com and reverse-proxies to 10.0.50.2:8080 across the
-    # single heimdall VLAN40->VLAN50 pinhole.
+    # Only portunus may reach Headscale across VLAN40 to VLAN50.
     firewall = {
       # Headplane is a management UI, so do NOT trust tailscale0 wholesale. Open
       # only :443  on the tailnet.

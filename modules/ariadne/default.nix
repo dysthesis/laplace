@@ -1,4 +1,3 @@
-# Originally yoinked from https://github.com/sioodmy/dotfiles/blob/main/modules/homix/default.nix
 {
   config,
   lib,

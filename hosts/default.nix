@@ -36,7 +36,6 @@
   # identical set into its (pre-evaluated) meta.nixpkgs - one source of truth.
   overlays = [
     self.overlays.linux-hardened
-    # Flake-local font packages (formerly from nixpressions).
     (import ../nix/pkgs)
     (import ../nix/overlays/unstable.nix inputs)
     inputs.nix-minecraft.overlay

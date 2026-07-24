@@ -1,8 +1,7 @@
 # Hister — self-hosted web history search. Same shape as mimir's other tenants
 # (miniflux/wallabag/silverbullet): single Go binary on loopback, node-local
 # Caddy terminates TLS, :443 tailnet-only. Semantic search is an optional CPU
-# llama.cpp embedding sidecar (stock nixpkgs `services.llama-cpp`, NOT the
-# ROCm-flavoured `laplace.services.llm` — see PLAN.md rejected alternatives).
+# Uses nixpkgs services.llama-cpp instead of the ROCm service.
 {
   config,
   lib,

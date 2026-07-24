@@ -133,17 +133,8 @@
                 touch $out
               '';
 
-          # Build-time half of PLAN §5 layer 4: gate the SSOT-rendered Headscale
-          # policy and rendered service config against the same headscale binary
-          # bifrost runs. configtest needs writable state paths, so the sandbox
-          # copies the rendered config and rewrites only /var/lib + /run paths to
-          # $TMPDIR. toJSON guarantees well-formed HuJSON, but only the control
-          # plane catches semantic faults (undefined tag/alias, empty group). The
-          # eval-time checkTailnet invariants
-          # (system/tailnet/default.nix) already fire fleet-wide; this is the
-          # remaining check the build sandbox CAN run (no network/db needed).
-          # Runtime tag reconcile (gotcha 4) is `just tailnet-reconcile`, not a
-          # check here — the sandbox has no network.
+          # configtest needs writable state, so the sandbox redirects it to $TMPDIR.
+          # checkTailnet covers static rules; reconciliation needs network access.
           headscale-policy = let
             headscalePackage = nixosConfigurations.bifrost.config.services.headscale.package;
           in

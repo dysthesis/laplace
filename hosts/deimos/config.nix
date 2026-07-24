@@ -14,10 +14,7 @@
       # The pack's c2me config disables parallel worldgen (see
       # c2me-pregen.toml for the reasoning).
       files."config/c2me.toml" = ./c2me-pregen.toml;
-      # Pregen ticks legitimately run tens of seconds (c2me mid-tick chunk
-      # tasks), so any CPU competition (a kernel build, say) can push one past
-      # 60 s and the vanilla watchdog kills the server — that's the
-      # 2026-07-04 11:02 crash. No players here to protect; disable it.
+      # World generation can exceed the watchdog limit; this host has no players.
       serverProperties.max-tick-time = -1;
     };
 
