@@ -151,26 +151,32 @@ in {
         };
       };
 
-      systemd.services.systemd-journal-upload.serviceConfig.LoadCredential = optionals (cfg.journal.keyFile != null) [
-        "client_key:${cfg.journal.keyFile}"
-        "client_certificate:${cfg.journal.certificateFile}"
-      ];
-      systemd.services.systemd-journal-upload.unitConfig.RequiresMountsFor = "/var/lib/private/systemd/journal-upload";
-      systemd.services.telemetry-journal-ready = {
-        description = "Prepare persistent journal permissions";
-        requiredBy = ["systemd-journald.service"];
-        before = ["systemd-journald.service"];
-        unitConfig = {
-          DefaultDependencies = false;
-          RequiresMountsFor = "/var/log/journal";
+      systemd = {
+        services = {
+          systemd-journal-upload = {
+            serviceConfig.LoadCredential = optionals (cfg.journal.keyFile != null) [
+              "client_key:${cfg.journal.keyFile}"
+              "client_certificate:${cfg.journal.certificateFile}"
+            ];
+            unitConfig.RequiresMountsFor = "/var/lib/private/systemd/journal-upload";
+          };
+          telemetry-journal-ready = {
+            description = "Prepare persistent journal permissions";
+            requiredBy = ["systemd-journald.service"];
+            before = ["systemd-journald.service"];
+            unitConfig = {
+              DefaultDependencies = false;
+              RequiresMountsFor = "/var/log/journal";
+            };
+            serviceConfig.Type = "oneshot";
+            script = ''
+              chown root:systemd-journal /var/log/journal
+              chmod 2755 /var/log/journal
+            '';
+          };
         };
-        serviceConfig.Type = "oneshot";
-        script = ''
-          chown root:systemd-journal /var/log/journal
-          chmod 2755 /var/log/journal
-        '';
+        tmpfiles.rules = ["d /var/log/journal 2755 root systemd-journal -"];
       };
-      systemd.tmpfiles.rules = ["d /var/log/journal 2755 root systemd-journal -"];
 
       mnemosyne.dirs = [
         "/var/log/journal"
@@ -229,12 +235,16 @@ in {
           ];
       };
 
-      systemd.services.vmagent.serviceConfig.LoadCredential = optionals (cfg.metrics.keyFile != null) [
-        "client_key:${cfg.metrics.keyFile}"
-        "client_certificate:${cfg.metrics.certificateFile}"
-      ];
-      systemd.services.vmagent.serviceConfig.MemoryMax = "128M";
-      systemd.services.vmagent.unitConfig.RequiresMountsFor = "/var/cache/private/vmagent";
+      systemd.services.vmagent = {
+        serviceConfig = {
+          LoadCredential = optionals (cfg.metrics.keyFile != null) [
+            "client_key:${cfg.metrics.keyFile}"
+            "client_certificate:${cfg.metrics.certificateFile}"
+          ];
+          MemoryMax = "128M";
+        };
+        unitConfig.RequiresMountsFor = "/var/cache/private/vmagent";
+      };
 
       mnemosyne.dirs = ["/var/cache/private/vmagent"];
     })
