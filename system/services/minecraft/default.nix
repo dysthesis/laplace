@@ -212,206 +212,214 @@ in {
     # Stage service/config changes until a real restart. nix-minecraft's reload
     # deletes managed files while the JVM stays running; enableReload below is
     # retained only to keep its automatic restartIfChanged disabled as well.
-    systemd.services."minecraft-server-retirement-home".reloadIfChanged = lib.mkForce false;
+    systemd = {
+      tmpfiles.rules = ["d /nix/.mc-snapshots 0700 root root -"];
+      services = {
+        "minecraft-server-retirement-home" = {
+          reloadIfChanged = lib.mkForce false;
 
-    # Spark's bundled async-profiler is native C++; expose its only missing
-    # runtime dependency without adding a host-wide library search path.
-    systemd.services."minecraft-server-retirement-home".environment.LD_LIBRARY_PATH =
-      lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib];
+          # Spark's bundled async-profiler is native C++; expose its only missing
+          # runtime dependency without adding a host-wide library search path.
+          environment.LD_LIBRARY_PATH =
+            lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib];
 
-    # nix-minecraft's hardening omits AF_NETLINK, but glibc getaddrinfo probes
-    # interfaces over netlink before resolving — without it every DNS lookup in
-    # the JVM throws UnknownHostException, breaking Mojang auth and the Discord
-    # bot. Re-add it; the rest of the hardening is untouched.
-    systemd.services."minecraft-server-retirement-home".serviceConfig.RestrictAddressFamilies =
-      lib.mkForce ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
+          # nix-minecraft's hardening omits AF_NETLINK, but glibc getaddrinfo probes
+          # interfaces over netlink before resolving — without it every DNS lookup in
+          # the JVM throws UnknownHostException, breaking Mojang auth and the Discord
+          # bot. Re-add it; the rest of the hardening is untouched.
+          serviceConfig.RestrictAddressFamilies =
+            lib.mkForce ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
+        };
 
-    # World maintenance: 6-hourly btrfs snapshots + nightly restart, both driving
-    # the server via nix-minecraft's stdin socket (its own ExecStop idiom).
-    # simplification: one host-wide lock serialises all Minecraft maintenance;
-    # split it per server if this host ever runs independent instances.
-    # Whole-VM PBS->B2 stays the disaster tier; these are the fast rollback tier.
-    systemd.tmpfiles.rules = ["d /nix/.mc-snapshots 0700 root root -"];
+        # World maintenance: 6-hourly btrfs snapshots + nightly restart, both driving
+        # the server via nix-minecraft's stdin socket (its own ExecStop idiom).
+        # simplification: one host-wide lock serialises all Minecraft maintenance;
+        # split it per server if this host ever runs independent instances.
+        # Whole-VM PBS->B2 stays the disaster tier; these are the fast rollback tier.
 
-    systemd.services.mc-world-snapshot = {
-      description = "Quiesce saves + read-only btrfs snapshot of the world";
-      path = [pkgs.btrfs-progs pkgs.coreutils pkgs.util-linux];
-      serviceConfig = {
-        Type = "oneshot";
-        TimeoutStartSec = "5min";
-      };
-      script = ''
-        exec 9>"${minecraftMaintenanceLock}"
-        flock --exclusive 9
+        mc-world-snapshot = {
+          description = "Quiesce saves + read-only btrfs snapshot of the world";
+          path = [pkgs.btrfs-progs pkgs.coreutils pkgs.util-linux];
+          serviceConfig = {
+            Type = "oneshot";
+            TimeoutStartSec = "5min";
+          };
+          script = ''
+            exec 9>"${minecraftMaintenanceLock}"
+            flock --exclusive 9
 
-        unit=minecraft-server-retirement-home.service
-        saves_disabled=false
-        restore_saves() {
-          if [ "$saves_disabled" = true ]; then
-            if ! (trap "" PIPE; printf '%s\n' 'save-on' >&8); then
-              echo "failed to deliver save-on to $unit" >&2
-              return 1
-            fi
+            unit=minecraft-server-retirement-home.service
             saves_disabled=false
-          fi
-        }
-        trap restore_saves EXIT
+            restore_saves() {
+              if [ "$saves_disabled" = true ]; then
+                if ! (trap "" PIPE; printf '%s\n' 'save-on' >&8); then
+                  echo "failed to deliver save-on to $unit" >&2
+                  return 1
+                fi
+                saves_disabled=false
+              fi
+            }
+            trap restore_saves EXIT
 
-        journal_cursor() {
-          journalctl --lines=0 --show-cursor --quiet --no-pager | sed -n 's/^-- cursor: //p'
-        }
-        wait_for_server_log() {
-          cursor=$1
-          pattern=$2
-          description=$3
-          attempts=0
-          until journalctl \
-            --unit="$unit" \
-            "_SYSTEMD_INVOCATION_ID=$invocation_id" \
-            --after-cursor="$cursor" \
-            --grep="$pattern" \
-            --quiet \
-            --no-pager \
-            >/dev/null; do
-            attempts=$((attempts + 1))
-            if [ "$attempts" -ge 60 ]; then
-              echo "$description was not confirmed within 60 seconds; snapshot aborted" >&2
-              return 1
+            journal_cursor() {
+              journalctl --lines=0 --show-cursor --quiet --no-pager | sed -n 's/^-- cursor: //p'
+            }
+            wait_for_server_log() {
+              cursor=$1
+              pattern=$2
+              description=$3
+              attempts=0
+              until journalctl \
+                --unit="$unit" \
+                "_SYSTEMD_INVOCATION_ID=$invocation_id" \
+                --after-cursor="$cursor" \
+                --grep="$pattern" \
+                --quiet \
+                --no-pager \
+                >/dev/null; do
+                attempts=$((attempts + 1))
+                if [ "$attempts" -ge 60 ]; then
+                  echo "$description was not confirmed within 60 seconds; snapshot aborted" >&2
+                  return 1
+                fi
+                sleep 1
+              done
+            }
+
+            server_state=$(systemctl show --property=ActiveState --value "$unit")
+            case "$server_state" in
+              active)
+                main_pid=$(systemctl show --property=MainPID --value "$unit")
+                invocation_id=$(systemctl show --property=InvocationID --value "$unit")
+                if [ -z "$invocation_id" ] || [ ! -p "/proc/$main_pid/fd/0" ]; then
+                  echo "$unit is active but its invocation or stdin FIFO is unavailable; refusing an unquiesced snapshot" >&2
+                  exit 1
+                fi
+
+                cursor=$(journal_cursor)
+                if [ -z "$cursor" ]; then
+                  echo "could not establish a journal cursor before disabling saves" >&2
+                  exit 1
+                fi
+
+                # Hold the validated pipe itself: reopening its pathname in the exit
+                # trap could create a regular file if the socket disappears.
+                exec 8>"/proc/$main_pid/fd/0"
+                saves_disabled=true
+                printf '%s\n' 'save-off' >&8
+                wait_for_server_log \
+                  "$cursor" \
+                  '^\[[0-9]{2}:[0-9]{2}:[0-9]{2}\] \[Server thread/INFO\]: (Automatic saving is now disabled|Saving is already turned off)$' \
+                  'save-off'
+
+                # The save-off acknowledgement is a command-queue barrier. A new
+                # cursor now makes the following completion causal to this flush.
+                cursor=$(journal_cursor)
+                if [ -z "$cursor" ]; then
+                  echo "could not establish a journal cursor before flushing saves" >&2
+                  exit 1
+                fi
+                marker="laplace:snapshot_$invocation_id-$main_pid-$(date +%s)"
+                printf '%s\n%s\n' \
+                  'save-all flush' \
+                  "data get storage $marker" \
+                  >&8
+                # simplification: fail safely after 60 seconds; raise this ceiling
+                # only if measured flush times show that the world needs longer.
+                wait_for_server_log \
+                  "$cursor" \
+                  '^\[[0-9]{2}:[0-9]{2}:[0-9]{2}\] \[Server thread/INFO\]: Saved the game$' \
+                  'save-all flush'
+                wait_for_server_log \
+                  "$cursor" \
+                  "^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}\\] \\[Server thread/INFO\\]: Storage $marker has the following contents:" \
+                  'post-flush command barrier'
+                if journalctl \
+                  --unit="$unit" \
+                  "_SYSTEMD_INVOCATION_ID=$invocation_id" \
+                  --after-cursor="$cursor" \
+                  --grep='Unable to save the game \(is there enough disk space\?\)$' \
+                  --quiet \
+                  --no-pager \
+                  >/dev/null; then
+                  echo "save-all flush reported failure; snapshot aborted" >&2
+                  exit 1
+                fi
+                ;;
+              inactive | failed)
+                ;;
+              *)
+                echo "$unit is $server_state; refusing a snapshot during a state transition" >&2
+                exit 1
+                ;;
+            esac
+
+            current_state=$(systemctl show --property=ActiveState --value "$unit")
+            if [ "$server_state" = active ]; then
+              current_main_pid=$(systemctl show --property=MainPID --value "$unit")
+              current_invocation_id=$(systemctl show --property=InvocationID --value "$unit")
+              if [ "$current_state" != active ] || [ "$current_main_pid" != "$main_pid" ] || [ "$current_invocation_id" != "$invocation_id" ]; then
+                echo "$unit changed invocation after its save barrier; snapshot aborted" >&2
+                exit 1
+              fi
+            elif [ "$current_state" != "$server_state" ]; then
+              echo "$unit changed from $server_state to $current_state; snapshot aborted" >&2
+              exit 1
             fi
-            sleep 1
-          done
-        }
+            # @persist is a btrfs subvol (proxmox profile); snapshot it to a sibling
+            # dir on @nix (same filesystem). simplification: snapshots the WHOLE
+            # persist subvol, not just the world — cheap CoW; upgrade = carve the world
+            # into its own subvol. Ceiling: local only, shares the 64G guest disk with
+            # the store; upgrade = `btrfs send` to another host.
+            btrfs subvolume snapshot -r /nix/persist "/nix/.mc-snapshots/mc-$(date +%Y%m%d-%H%M%S)"
+            restore_saves
+            trap - EXIT
+            # keep the newest 24 (timestamped names sort chronologically)
+            ls -1dr /nix/.mc-snapshots/mc-* 2>/dev/null | tail -n +25 | while read -r snap; do
+              btrfs subvolume delete "$snap"
+            done
+          '';
+        };
 
-        server_state=$(systemctl show --property=ActiveState --value "$unit")
-        case "$server_state" in
-          active)
+        mc-nightly-restart = {
+          description = "Nightly Minecraft restart (modded memory-leak hygiene)";
+          path = [pkgs.coreutils pkgs.util-linux];
+          serviceConfig = {
+            Type = "oneshot";
+            TimeoutStartSec = "5min";
+          };
+          script = ''
+            exec 9>"${minecraftMaintenanceLock}"
+            flock --exclusive 9
+
+            unit=minecraft-server-retirement-home.service
             main_pid=$(systemctl show --property=MainPID --value "$unit")
-            invocation_id=$(systemctl show --property=InvocationID --value "$unit")
-            if [ -z "$invocation_id" ] || [ ! -p "/proc/$main_pid/fd/0" ]; then
-              echo "$unit is active but its invocation or stdin FIFO is unavailable; refusing an unquiesced snapshot" >&2
-              exit 1
+            if [ -p "/proc/$main_pid/fd/0" ]; then
+              exec 8>"/proc/$main_pid/fd/0"
+              printf '%s\n' 'say Nightly restart in 60s' >&8
+              sleep 60
             fi
-
-            cursor=$(journal_cursor)
-            if [ -z "$cursor" ]; then
-              echo "could not establish a journal cursor before disabling saves" >&2
-              exit 1
-            fi
-
-            # Hold the validated pipe itself: reopening its pathname in the exit
-            # trap could create a regular file if the socket disappears.
-            exec 8>"/proc/$main_pid/fd/0"
-            saves_disabled=true
-            printf '%s\n' 'save-off' >&8
-            wait_for_server_log \
-              "$cursor" \
-              '^\[[0-9]{2}:[0-9]{2}:[0-9]{2}\] \[Server thread/INFO\]: (Automatic saving is now disabled|Saving is already turned off)$' \
-              'save-off'
-
-            # The save-off acknowledgement is a command-queue barrier. A new
-            # cursor now makes the following completion causal to this flush.
-            cursor=$(journal_cursor)
-            if [ -z "$cursor" ]; then
-              echo "could not establish a journal cursor before flushing saves" >&2
-              exit 1
-            fi
-            marker="laplace:snapshot_$invocation_id-$main_pid-$(date +%s)"
-            printf '%s\n%s\n' \
-              'save-all flush' \
-              "data get storage $marker" \
-              >&8
-            # simplification: fail safely after 60 seconds; raise this ceiling
-            # only if measured flush times show that the world needs longer.
-            wait_for_server_log \
-              "$cursor" \
-              '^\[[0-9]{2}:[0-9]{2}:[0-9]{2}\] \[Server thread/INFO\]: Saved the game$' \
-              'save-all flush'
-            wait_for_server_log \
-              "$cursor" \
-              "^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}\\] \\[Server thread/INFO\\]: Storage $marker has the following contents:" \
-              'post-flush command barrier'
-            if journalctl \
-              --unit="$unit" \
-              "_SYSTEMD_INVOCATION_ID=$invocation_id" \
-              --after-cursor="$cursor" \
-              --grep='Unable to save the game \(is there enough disk space\?\)$' \
-              --quiet \
-              --no-pager \
-              >/dev/null; then
-              echo "save-all flush reported failure; snapshot aborted" >&2
-              exit 1
-            fi
-            ;;
-          inactive | failed)
-            ;;
-          *)
-            echo "$unit is $server_state; refusing a snapshot during a state transition" >&2
-            exit 1
-            ;;
-        esac
-
-        current_state=$(systemctl show --property=ActiveState --value "$unit")
-        if [ "$server_state" = active ]; then
-          current_main_pid=$(systemctl show --property=MainPID --value "$unit")
-          current_invocation_id=$(systemctl show --property=InvocationID --value "$unit")
-          if [ "$current_state" != active ] || [ "$current_main_pid" != "$main_pid" ] || [ "$current_invocation_id" != "$invocation_id" ]; then
-            echo "$unit changed invocation after its save barrier; snapshot aborted" >&2
-            exit 1
-          fi
-        elif [ "$current_state" != "$server_state" ]; then
-          echo "$unit changed from $server_state to $current_state; snapshot aborted" >&2
-          exit 1
-        fi
-        # @persist is a btrfs subvol (proxmox profile); snapshot it to a sibling
-        # dir on @nix (same filesystem). simplification: snapshots the WHOLE
-        # persist subvol, not just the world — cheap CoW; upgrade = carve the world
-        # into its own subvol. Ceiling: local only, shares the 64G guest disk with
-        # the store; upgrade = `btrfs send` to another host.
-        btrfs subvolume snapshot -r /nix/persist "/nix/.mc-snapshots/mc-$(date +%Y%m%d-%H%M%S)"
-        restore_saves
-        trap - EXIT
-        # keep the newest 24 (timestamped names sort chronologically)
-        ls -1dr /nix/.mc-snapshots/mc-* 2>/dev/null | tail -n +25 | while read -r snap; do
-          btrfs subvolume delete "$snap"
-        done
-      '';
-    };
-    systemd.timers.mc-world-snapshot = {
-      wantedBy = ["timers.target"];
-      timerConfig = {
-        OnCalendar = "*-*-* 00/6:00:00";
-        Persistent = true;
+            # try-restart restarts only if already running, so a deliberate stop stays
+            # stopped; ExecStop pipes `stop` to the socket for a clean save.
+            systemctl try-restart "$unit"
+          '';
+        };
       };
-    };
-
-    systemd.services.mc-nightly-restart = {
-      description = "Nightly Minecraft restart (modded memory-leak hygiene)";
-      path = [pkgs.coreutils pkgs.util-linux];
-      serviceConfig = {
-        Type = "oneshot";
-        TimeoutStartSec = "5min";
-      };
-      script = ''
-        exec 9>"${minecraftMaintenanceLock}"
-        flock --exclusive 9
-
-        unit=minecraft-server-retirement-home.service
-        main_pid=$(systemctl show --property=MainPID --value "$unit")
-        if [ -p "/proc/$main_pid/fd/0" ]; then
-          exec 8>"/proc/$main_pid/fd/0"
-          printf '%s\n' 'say Nightly restart in 60s' >&8
-          sleep 60
-        fi
-        # try-restart restarts only if already running, so a deliberate stop stays
-        # stopped; ExecStop pipes `stop` to the socket for a clean save.
-        systemctl try-restart "$unit"
-      '';
-    };
-    systemd.timers.mc-nightly-restart = {
-      wantedBy = ["timers.target"];
-      timerConfig = {
-        OnCalendar = "05:00";
-        Persistent = true;
+      timers = {
+        mc-world-snapshot = {
+          wantedBy = ["timers.target"];
+          timerConfig = {
+            OnCalendar = "*-*-* 00/6:00:00";
+            Persistent = true;
+          };
+        };
+        mc-nightly-restart = {
+          wantedBy = ["timers.target"];
+          timerConfig = {
+            OnCalendar = "05:00";
+            Persistent = true;
+          };
+        };
       };
     };
 
