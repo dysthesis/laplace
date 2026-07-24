@@ -1,3 +1,5 @@
 .direnv/
 core
 result
+.serena/
+AGENTS.md
