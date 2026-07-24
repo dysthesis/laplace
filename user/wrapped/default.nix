@@ -35,6 +35,10 @@
       pi = callPackage ./pi {
         inherit lib pkgs;
       };
+      serena = callPackage ./serena {
+        inherit pkgs;
+        serena = inputs.serena.packages.${system}.default;
+      };
       pass = callPackage ./pass {inherit lib pkgs;};
       lazygit = callPackage ./lazygit {
         inherit lib pkgs;

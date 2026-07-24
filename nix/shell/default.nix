@@ -1,5 +1,8 @@
 inputs: pkgs: let
   headroom = pkgs.callPackage ./headroom.nix {};
+  serena = pkgs.callPackage ../../user/wrapped/serena {
+    serena = inputs.serena.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  };
 in
   pkgs.mkShell {
     name = "Poincare";
@@ -40,7 +43,8 @@ in
       defuddle
       nodejs
       headroom
-      inputs.serena.packages.${pkgs.system}.default
+      serena
+      rtk
 
       packwiz # for modpack management
     ];
