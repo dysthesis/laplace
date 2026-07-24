@@ -6,7 +6,6 @@
   ...
 }: let
   inherit (lib) mkIf;
-  inherit (lib.laplace.pkgs) mkWrapper;
   inherit (builtins) elem filter hasAttr;
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
