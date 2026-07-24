@@ -180,7 +180,12 @@ nixpkgs.lib.extend (
           buildInputs = [pkgs.makeWrapper];
           # symlinkJoin is single-output, so drop any extra outputs (e.g. man)
           # the target advertises or buildEnv will deref a missing attribute.
-          meta = (target.meta or {}) // {inherit mainProgram; outputsToInstall = ["out"];};
+          meta =
+            (target.meta or {})
+            // {
+              inherit mainProgram;
+              outputsToInstall = ["out"];
+            };
         };
 
       system = {
