@@ -1,16 +1,5 @@
 #!/usr/bin/env python3
-# ---------------------------------------------------------------------------
-# ui.py - tiny rich-backed status renderer driven by shell-bench.sh, so the
-# bash orchestrator gets consistent banners/rules without inlining python.
-# Falls back to plain stderr text when rich is unavailable; the harness never
-# hard-depends on it.
-#
-#   ui.py rule  "text"
-#   ui.py panel "title" "body"
-#   ui.py kv    "title" k1=v1 k2=v2 ...
-#
-# Everything renders to stderr so it never pollutes JSON on stdout.
-# ---------------------------------------------------------------------------
+# Rich status output with plain-text fallback; always writes to stderr.
 import sys
 
 try:

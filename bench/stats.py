@@ -1,18 +1,7 @@
 #!/usr/bin/env python3
-# ---------------------------------------------------------------------------
-# stats.py - robust aggregation and A/B comparison for pty-probe output.
-#
-# Shell-startup distributions are right-skewed (occasional GC pauses, scheduler
-# stalls, page-cache misses), so the headline is the MEDIAN with a MAD spread
-# and tail percentiles, not the mean. Confidence intervals come from a
-# nonparametric bootstrap; A/B significance from the Mann-Whitney U test. No
-# numpy/scipy - stdlib only, so it runs from the pinned python3 with no closure.
-#
-#   stats.py summarize a.json [b.json ...]      per-file, per-metric table
-#   stats.py compare baseline.json variant.json  delta + bootstrap CI + MWU
-#
-# Add --json for machine-readable output.
-# ---------------------------------------------------------------------------
+# Robust shell-latency summaries and A/B comparisons.
+# Use median, MAD, tail percentiles, bootstrap intervals, and Mann-Whitney U.
+# Stdlib only; --json emits machine-readable output.
 from __future__ import annotations
 
 import argparse

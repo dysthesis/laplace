@@ -32,13 +32,11 @@
     version = "0.0.1";
 
     src = ./config;
-    buildPhase =
-      # sh
-      ''
-        mkdir -p $out/
-        cp -r $src/* $out/
-        cp ${low1kParsed} $out/input.conf
-      '';
+    buildPhase = ''
+      mkdir -p $out/
+      cp -r $src/* $out/
+      cp ${low1kParsed} $out/input.conf
+    '';
   });
 in
   mkWrapper pkgs mpv {

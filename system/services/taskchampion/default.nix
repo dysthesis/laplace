@@ -17,7 +17,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # stateVersion < 26.05 ⇒ the module runs as a static `taskchampion` user with
+    # stateVersion below 26.05 uses a static taskchampion user with
     # a plain (non-private) StateDirectory, so persist that, not /var/lib/private.
     mnemosyne.dirs = ["/var/lib/taskchampion-sync-server"];
 

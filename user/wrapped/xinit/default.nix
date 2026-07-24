@@ -13,7 +13,6 @@
 
   xinitrc = with pkgs;
     writeText ".xinitrc"
-    # sh
     ''
       # turn off Display Power Management Service (DPMS)
       xset -dpms

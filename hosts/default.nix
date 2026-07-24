@@ -31,21 +31,17 @@
   ];
   extraModules = [inputs.determinate.nixosModules.default];
 
-  # Stable nixpkgs by default, with unstable reachable via `pkgs.unstable` plus
-  # the flake-local packages. Exposed below so the colmena hive bakes the
-  # identical set into its (pre-evaluated) meta.nixpkgs - one source of truth.
+  # Colmena and nixosConfigurations share this package set.
   overlays = [
     self.overlays.linux-hardened
     (import ../nix/pkgs)
     (import ../nix/overlays/unstable.nix inputs)
     inputs.nix-minecraft.overlay
-    # Bound switch-to-configuration so a hung activation self-recovers instead
-    # of spinning forever on the lock (see the file for the upstream bug).
+    # Bound hung activations so they release the deployment lock.
     (import ../nix/overlays/stc-timeout.nix)
   ];
 
-  # mkSystem-arg builder, shared so `nixosConfigurations` and the `colmena` hive
-  # (which needs the raw module list, not a built system) stay one source of truth.
+  # Shared inputs for nixosConfigurations and Colmena.
   mkArgs = hostname: system: {
     inherit
       system
@@ -54,8 +50,7 @@
       inputs
       extraModules
       ;
-    # BUG: wifi breaks when importing the hardened.nix profile, but not when
-    # setting the same options manually.
+    # hardened.nix breaks Wi-Fi; equivalent manual options do not.
     nixosProfiles = ["minimal"];
     specialArgs = {inherit lib;};
     config = {

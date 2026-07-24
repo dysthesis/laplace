@@ -8,11 +8,9 @@
   inherit (lib) mkIf;
   cfg = config.laplace.services.forgejo;
 
-  # Personal Iosevka build (github:dysthesis/iosevka-cadmus). Static per-weight
-  # TTFs (Medium + Bold, no variable file), so the theme @font-face's each weight.
+  # Static Iosevka faces need separate Medium and Bold font files.
   cadmus = inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font;
-  # Serve WOFF2, not the raw TTFs: Brotli cuts each ~4.4M face to ~1.4M over the
-  # wire. woff2_compress writes beside its input, so copy into $out then convert.
+  # Convert copied TTFs to smaller WOFF2 files.
   cadmusWoff2 = pkgs.runCommand "iosevka-cadmus-woff2" {nativeBuildInputs = [pkgs.woff2];} ''
     mkdir -p "$out"
     for w in Medium MediumItalic Bold BoldItalic; do
@@ -22,11 +20,7 @@
     done
   '';
 
-  # Cheap, deploy-safe sandbox for the two module oneshots that ship with none
-  # (forgejo-secrets generates SECRET_KEY et al.; forgejo-dump writes the backup
-  # archive). ProtectSystem="full" (not "strict") keeps /var and /run writable, so
-  # neither the customDir secret write nor the Postgres-socket dump needs per-unit
-  # ReadWritePaths bookkeeping — while /usr, /boot and /etc still go read-only.
+  # Harden Forgejo oneshots while leaving /var and /run writable.
   hardenOneshot = {
     ProtectSystem = "full";
     ProtectHome = true;
@@ -39,12 +33,8 @@ in {
     inherit (config.services) forgejo;
     srv = forgejo.settings.server;
   in
-    # No node-local reverse proxy or ACME here: TLS terminates at the edge on
-    # portunus's Caddy, which gates git.dysthesis.com behind Anubis and proxies
-    # to this host's raw HTTP_PORT over the VLAN40->VLAN70 pinhole. Forgejo
-    # serves plain HTTP on :8080, and the hephaestus firewall scopes that port
-    # to portunus + the talos runner only. SSH_PORT is the system openssh port,
-    # already scoped to VLAN20 by the proxmox profile.
+    # Portunus terminates TLS and proxies port 8080; only it and talos may connect.
+    # System SSH remains VLAN20-only.
     mkIf cfg.enable {
       mnemosyne.dirs = [
         forgejo.stateDir
@@ -67,8 +57,7 @@ in {
           "Z '${forgejo.stateDir}/log' - ${forgejo.user} ${forgejo.group} - -"
           "Z '${forgejo.stateDir}/repositories' - ${forgejo.user} ${forgejo.group} - -"
 
-          # Custom "minimal" theme (see theme-minimal.css) + the fonts it
-          # @font-face's, served by Forgejo at /assets/ from customDir/public.
+          # Serve the custom theme and fonts from customDir/public.
           "d '${forgejo.stateDir}/custom/public' 0750 ${forgejo.user} ${forgejo.group} - -"
           "d '${forgejo.stateDir}/custom/public/assets' 0750 ${forgejo.user} ${forgejo.group} - -"
           "d '${forgejo.stateDir}/custom/public/assets/css' 0750 ${forgejo.user} ${forgejo.group} - -"
@@ -82,9 +71,7 @@ in {
           "L+ '${forgejo.stateDir}/custom/public/assets/fonts/AtkinsonHyperlegibleNext-Italic-var.ttf' - - - - ${pkgs.atkinson-hyperlegible-next}/share/fonts/truetype/AtkinsonHyperlegibleNext-Italic[wght].ttf"
         ];
 
-        # Backfill sandboxing on the module's two unsandboxed oneshots (see the
-        # hardenOneshot note above). forgejo-secrets always exists; forgejo-dump only
-        # when dump.enable — guard it so toggling dump off never leaves a phantom unit.
+        # Harden only oneshots that exist in this configuration.
         services.forgejo-secrets.serviceConfig = hardenOneshot;
         services.forgejo-dump.serviceConfig =
           mkIf forgejo.dump.enable hardenOneshot;
@@ -93,8 +80,7 @@ in {
       services = {
         forgejo = {
           enable = true;
-          # Mainline, not LTS: zoekt code search (below) only exists from 16.0.0;
-          # the module default is forgejo-lts (15.x), which fatals on it.
+          # Zoekt requires Forgejo 16 or newer.
           package = pkgs.forgejo;
           inherit (cfg) stateDir;
           user = "git";
@@ -106,11 +92,8 @@ in {
           };
           lfs.enable = true;
 
-          # Logical dump (repos + DB + config) alongside the whole-VM PBS backups,
-          # for Postgres-major-bump / logical-restore portability. Writes into the
-          # already persisted + PBS-covered stateDir/dump; PBS is authoritative.
-          # simplification: weekly full-repo copies with two-week retention suit
-          # major-upgrade portability. Upgrade path for shorter RPO: pgBackRest.
+          # Weekly logical dumps aid major-version restores; VM backups remain primary.
+          # simplification: use pgBackRest if a shorter recovery point is needed.
           dump = {
             enable = true;
             type = "tar.zst";
@@ -125,9 +108,7 @@ in {
             };
             DEFAULT.APP_NAME = "Hephaestus";
 
-            # In-process Zoekt code search (forgejo#8827, 16.0.0+): builds+queries
-            # shards under data/indexers/, no external daemon. simplification: shards
-            # grow the 128G disk; ceiling = disk, escape = trim repo types or move path.
+            # simplification: Zoekt shards share the guest disk; limit repos or move them if needed.
             indexer = {
               REPO_INDEXER_ENABLED = true;
               REPO_INDEXER_TYPE = "zoekt";
@@ -142,41 +123,30 @@ in {
               SSH_PORT = lib.head config.services.openssh.ports;
             };
 
-            # Registration stays closed; anonymous viewing of *public* repos is
-            # left ON (REQUIRE_SIGNIN_VIEW unset) so a repo can be shared by link.
+            # Keep registration closed but public repositories readable.
             service = {
               DISABLE_REGISTRATION = true;
               # Don't leak the admin's email in commit-author / API views.
               DEFAULT_KEEP_EMAIL_PRIVATE = true;
             };
 
-            # TLS terminates at portunus (10.0.40.2); Forgejo speaks plain HTTP on
-            # :8080. Requests traverse TWO proxies on portunus (Caddy, then the
-            # Anubis gate), but Anubis flattens X-Forwarded-For and strips its
-            # own loopback hop before proxying on, so exactly ONE proxy hop is
-            # visible here and XFF arrives as just "<client>".
-            # REVERSE_PROXY_LIMIT stays at its default (1 = exactly one proxy hop).
+            # Anubis flattens the proxy chain, so Forgejo sees one trusted hop.
             security = {
               REVERSE_PROXY_TRUSTED_PROXIES = "10.0.40.2/32";
-              # Local-account password policy. PASSWORD_COMPLEXITY is a comma-joined
-              # string, never a Nix list (the ini generator aborts on a list value).
+              # PASSWORD_COMPLEXITY must be a comma-separated string.
               MIN_PASSWORD_LENGTH = 12;
               PASSWORD_COMPLEXITY = "lower,upper,digit,spec";
               PASSWORD_HASH_ALGO = "argon2"; # memory-hard; applies to newly-set passwords
               LOGIN_REMEMBER_DAYS = 7;
-              # Reject API tokens passed in the URL query string (they leak via
-              # access logs and Referer headers).
+              # URL query tokens leak through logs and Referer headers.
               DISABLE_QUERY_AUTH_TOKEN = true;
               GLOBAL_TWO_FACTOR_REQUIREMENT = "admin";
             };
 
-            # The NixOS module declares COOKIE_SECURE as a typed leaf defaulting to
-            # false, so it is ALWAYS written to app.ini and pre-empts Forgejo's own
-            # https-ROOT_URL auto-detect. Force it true — the edge is HTTPS-only.
+            # The module overrides Forgejo's HTTPS detection, so force secure cookies.
             session.COOKIE_SECURE = true;
 
-            # Sole theme = the custom dark skin (custom/public/assets/css/
-            # theme-minimal.css): forces dark for everyone, no auto/light.
+            # Force the custom dark theme.
             ui = {
               DEFAULT_THEME = "minimal";
               THEMES = "minimal";

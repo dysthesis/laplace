@@ -16,7 +16,6 @@
   cfg = config.laplace.harden;
 in {
   config = mkIf (elem "kernel" cfg) {
-    # from https://github.com/NotAShelf/nyx/blob/319b1f6fe4d09ff84d83d1f8fa0d04e0220dfed7/modules/core/common/system/security/kernel.nix#L57
     security = {
       protectKernelImage = mkForce true; # disables hibernation
 
@@ -49,7 +48,7 @@ in {
         "netrom"
         "rose"
 
-        # Old or rare or insufficiently audited filesystems
+        # Rare or weakly audited filesystems.
         "adfs"
         "affs"
         "bfs"
@@ -94,8 +93,7 @@ in {
         # Ignore broadcast ICMP (mitigate SMURF)
         "net.ipv4.icmp_echo_ignore_broadcasts" = mkForce true;
 
-        # Ignore incoming ICMP redirects (note: default is needed to ensure that the
-        # setting is applied to interfaces added after the sysctls are set)
+        # Apply ICMP redirect policy to current and future interfaces.
         "net.ipv4.conf.all.accept_redirects" = mkForce false;
         "net.ipv4.conf.all.secure_redirects" = mkForce false;
         "net.ipv4.conf.default.accept_redirects" = mkForce false;

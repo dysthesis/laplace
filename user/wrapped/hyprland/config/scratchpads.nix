@@ -46,24 +46,19 @@
       if acc == ''''
       then "if"
       else "elif";
-  in
-    # sh
-    ''
-      ${acc}
-      ${ifStatement} [ "''$1" = "${curr.name}" ]; then
-        toggle_scratchpad ''$1 "${curr.cmd}"
-    '';
+  in ''
+    ${acc}
+    ${ifStatement} [ "''$1" = "${curr.name}" ]; then
+      toggle_scratchpad ''$1 "${curr.cmd}"
+  '';
 
-  conditional =
-    # sh
-    ''
-      ${foldr mkCondition '''' scratchpads}
-      fi
-    '';
+  conditional = ''
+    ${foldr mkCondition '''' scratchpads}
+    fi
+  '';
 
   script =
     writeShellScriptBin "scratchpad"
-    # sh
     ''
       windows_in(){
       ${hyprctl} clients -j | ${getExe pkgs.jq} ".[] | select(.workspace.name == \"special:''$1\" )"

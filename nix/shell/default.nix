@@ -10,7 +10,7 @@ in
       nil
       nixd
       alejandra
-      # FIXME: remove on new release of statix
+      # Temporary Statix compatibility override.
       (statix.overrideAttrs (_o: rec {
         src = fetchFromGitHub {
           owner = "oppiliappan";
@@ -29,10 +29,7 @@ in
       npins
       sops
       rsync
-      # Push-deploy the Proxmox guests (`just deploy`). simplification: uses the
-      # raw `colmena` flake output via nixpkgs' CLI rather than the colmena flake
-      # input + makeHive; add the input if hermetic `nix run`/`flake check` eval is
-      # wanted.
+      # simplification: uses nixpkgs Colmena; add its flake for hermetic evaluation.
       colmena
 
       bash-language-server

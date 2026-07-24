@@ -15,7 +15,6 @@
     typeOf
     ;
 
-  # From https://github.com/sioodmy/dotfiles/blob/eff14559c24c23038f78e2a960dc82e8e2df583f/system/wayland/desktop/wrapped/river/init.nix
   # river does not support zwp_idle_inhibit_manager_v1 protocol,
   # so instead I used this oneliner combined with swayidle
   idle = x: ''"sh -c \"${getExe pkgs.playerctl} status || ${x}\""'';

@@ -1,4 +1,3 @@
-# From https://github.com/sioodmy/dotfiles/blob/main/user/wrapped/zathura/default.nix
 {
   pkgs,
   lib,

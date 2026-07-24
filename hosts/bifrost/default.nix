@@ -7,8 +7,7 @@
 }: let
   fqdn = "dysthesis.com";
   subdomain = "headscale";
-  # Addresses come from the fleet-wide SSOT (system/tailnet); this host only
-  # references the four nodes it fronts.
+  # Fleet tailnet addresses.
   inherit (config.laplace.tailnet) nodes;
   adguardTailnetIp = nodes.hermes.ip; # AdGuard (also the tailnet resolver)
   mnemeTailnetIp = nodes.mneme.ip; # immich
@@ -86,17 +85,10 @@ in {
     nftables.enable = true;
     # Only portunus may reach Headscale across VLAN40 to VLAN50.
     firewall = {
-      # Headplane is a management UI, so do NOT trust tailscale0 wholesale. Open
-      # only :443  on the tailnet.
-      #
-      # Must keep "lo": the firewall module's loopback accept is built from this
-      # list, and dropping it makes the resolved stub (127.0.0.53) unreachable,
-      # breaking DNS for c-ares clients like nix (glibc/NSS still works via
-      # D-Bus).
+      # Expose the Headplane UI only on tailnet port 443.
+      # Keep loopback trusted or c-ares cannot reach resolved on 127.0.0.53.
       trustedInterfaces = lib.mkForce ["lo"];
-      # portunus (10.0.40.2) is the only host that proxies to headscale :8080. The
-      # :22 scoping (VLAN20-only, excludes the DMZ) now comes from the proxmox
-      # profile fleet-wide, so it is not repeated here.
+      # Only portunus proxies Headscale on port 8080.
       extraInputRules = ''
         ip saddr 10.0.40.2/32 tcp dport ${toString config.laplace.services.headscale.port} accept
       '';
@@ -137,13 +129,7 @@ in {
         fqdn = "${subdomain}.${fqdn}";
         baseDomain = "tailnet.${fqdn}";
 
-        # Headscale runs allow-all until this loads, then flips to default-deny.
-        # The whole policy is derived fleet-wide from the SSOT
-        # (system/tailnet/headscale.nix): flows -> rules (tag->tag:port), guests
-        # -> groups, node tags -> tagOwners, exit -> autoApprovers. This host only
-        # flips it on; the hand-written groups/rules/tagOwners that used to live
-        # here are gone (the SSOT renderer supersedes them, incl. the tag:phone
-        # parity hook and the broad autoApprovers=group:admin, now tag:exit = F5).
+        # Load the fleet-rendered policy before Headscale accepts traffic.
         acl.enable = true;
 
         wgOnly = {
@@ -296,11 +282,7 @@ in {
           override_local_dns = true;
           nameservers.global = [adguardTailnetIp];
 
-          # MagicDNS records. each *.dysthesis.com name resolves to the tailnet
-          # IP of the node that now fronts that app with its own Caddy. The
-          # names are bare *.dysthesis.com that are only resolvable _inside_ the
-          # Tailnet, so the tailscale client answers these explicit records and
-          # off-tailnet gets NXDOMAIN from public DNS.
+          # Resolve internal app names to their tailnet frontends.
           extra_records = [
             {
               name = "immich.${fqdn}";
@@ -394,10 +376,7 @@ in {
           keyFile = config.sops.secrets.telemetry_client_key.path;
         };
       };
-      # SSH/pull: bifrost is off the tailnet (control VLAN50), so the hub dials IN.
-      # It listens on :45876, scoped to mimir only; OPNsense must pass VLAN20
-      # (mimir 10.0.20.83) -> 10.0.50.2:45876. KEY is the hub's PUBLIC key (same
-      # string as portunus / the old WS env files), so no sops.
+      # Mimir pulls metrics through a scoped VLAN rule; the agent stores its public key.
       beszel.agent = {
         enable = true;
         key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINq5YPgIMrkCV4JIl0DEihMUE/G3z480LbAun0TapjbO";

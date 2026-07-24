@@ -8,16 +8,10 @@
   ddnsHost = "portunus.${fqdn}";
   headscaleHost = "headscale.${fqdn}";
   headscaleUpstream = "10.0.50.2:8080";
-  # Forgejo on hephaestus, VLAN70. Same edge-TLS split as headscale: Caddy here
-  # terminates TLS and reverse-proxies across the VLAN40->VLAN70 pinhole (OPNsense
-  # must pass it). git.dysthesis.com is a CNAME to ddnsHost in Cloudflare, so it
-  # follows the ddclient A record automatically — do NOT add it to ddclient.
+  # Caddy proxies Forgejo across VLAN40 to VLAN70. Its CNAME follows ddclient.
   gitHost = "git.${fqdn}";
   gitUpstream = "10.0.70.2:8080";
-  # Anubis (PoW anti-scraper gate) sits between Caddy and Forgejo. Loopback TCP
-  # rather than the module's default unix socket: the socket lands in
-  # /run/anubis owned by the anubis DynamicUser, and teaching caddy to connect
-  # means group/socket-mode coupling for zero gain on a single-host hop.
+  # Loopback TCP avoids Unix socket ownership coupling with DynamicUser.
   gitAnubis = "127.0.0.1:8923";
 in {
   sops.secrets = {
@@ -37,9 +31,7 @@ in {
     nameservers = ["10.0.40.1"];
     hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
     firewall.allowedTCPPorts = [80 443];
-    # nftables backend so the beszel agent's scoped :45876 rule (extraInputRules)
-    # actually applies — it is a silent no-op on the iptables backend. portunus
-    # has no tailscale (which would flip this on), and no Docker, so set it here.
+    # Beszel's scoped extraInputRules requires nftables.
     nftables.enable = true;
   };
 
@@ -59,7 +51,7 @@ in {
     proxmox = {
       cores = 1;
       memory = 1024; # MiB, ballooning ceiling
-      balloon = 1024; # MiB, fixed after 512 MiB caused swap pressure
+      balloon = 1024; # MiB, fixed to avoid swap pressure
       diskSize = "20G";
     };
     security = {
@@ -83,10 +75,8 @@ in {
           keyFile = config.sops.secrets.telemetry_client_key.path;
         };
       };
-      # SSH/pull: portunus is in the DMZ and cannot reach the tailnet hub, so the
-      # hub dials IN instead. portunus listens on :45876, scoped to mimir only;
-      # OPNsense must also pass VLAN20 (mimir 10.0.20.83) -> 10.0.40.2:45876. KEY
-      # is the hub's PUBLIC key (same string as the WS env files), so no sops.
+      # Mimir pulls metrics from this DMZ host through a scoped VLAN rule.
+      # The agent stores only the hub's public key.
       beszel.agent = {
         enable = true;
         key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINq5YPgIMrkCV4JIl0DEihMUE/G3z480LbAun0TapjbO";
@@ -100,12 +90,7 @@ in {
             encode @notSSE
             reverse_proxy http://${headscaleUpstream}
           '';
-          # Caddy imposes no request-body cap (unlike nginx's 1M), so large git
-          # pushes over HTTPS pass through without extra config. Forgejo is
-          # gated behind Anubis (below), which proxies on to hephaestus.
-          # header_up is NOT optional: this caddy sends neither X-Real-Ip nor
-          # X-Forwarded-For on its own (verified live), and Anubis hard-500s
-          # ("maybeReverseProxy") without a resolvable client IP.
+          # Anubis returns 500 without a client IP header.
           ${gitHost}.extraConfig = ''
             @notSSE not header Accept *text/event-stream*
             encode @notSSE
@@ -119,21 +104,13 @@ in {
     };
   };
 
-  # Anti-scraper gate for the public Forgejo UI: Caddy -> Anubis -> hephaestus.
-  # The default bot rules only challenge browser-ish (Mozilla) user agents and
-  # block known AI scrapers; git's UA ("git/2.x") matches neither, but pin an
-  # explicit ALLOW so clone/push over HTTPS can never regress into an
-  # interstitial if upstream's defaults change. The talos runner bypasses this
-  # entirely (direct VLAN pinhole to hephaestus).
+  # Browser traffic passes through Anubis; git clients bypass challenges.
   services.anubis.instances.git = {
     settings = {
       BIND = gitAnubis;
       BIND_NETWORK = "tcp";
       TARGET = "http://${gitUpstream}";
-      # Anubis rewrites X-Forwarded-For before proxying: it appends its own
-      # remote (caddy's loopback, always stripped again) and by default strips
-      # private addresses too — which would erase LAN clients and leave Forgejo
-      # attributing them all to portunus. Keep private IPs in the chain.
+      # Preserve private client IPs when Anubis rewrites X-Forwarded-For.
       XFF_STRIP_PRIVATE = false;
     };
     policy.extraBots = [
@@ -152,8 +129,7 @@ in {
     username = "token";
     passwordFile = config.sops.secrets.cloudflare_ddns_token.path;
     zone = fqdn;
-    # headscaleHost is a CNAME to ddnsHost in Cloudflare, so it follows this
-    # A record automatically; managing it here would clash with the CNAME.
+    # headscaleHost is a CNAME; only manage its target here.
     domains = [ddnsHost];
     usev6 = "";
     interval = "5min";
@@ -162,8 +138,7 @@ in {
     '';
   };
 
-  # Work around nixpkgs#350408: DynamicUser sometimes is not visible to NSS
-  # when ddclient's ExecStartPre resolves $USER for install --owner.
+  # Avoid nixpkgs#350408: DynamicUser may be absent from NSS in ExecStartPre.
   users.groups.ddclient = {};
   users.users.ddclient = {
     isSystemUser = true;

@@ -9,12 +9,7 @@
   cfg = config.laplace.display;
   enabled = elem "xorg" cfg.servers && cfg.xorg.session == "xmonad";
   hostSystem = pkgs.stdenv.hostPlatform.system;
-  # If this session breaks again, mark it `broken` in ../../default.nix AND
-  # gate this whole payload off: everything contributed here gets forced
-  # during config evaluation (users-groups forces package lists while
-  # collecting assertions; the bash wrapper forces sessionCommand), which
-  # would preempt the selector's broken-member assertion with an opaque
-  # eval error.
+  # If broken, gate this payload too; its values are forced before selector assertions.
 in {
   config = lib.mkIf enabled {
     laplace.display.xorg.sessionCommand = "${pkgs.configured.xinit}/bin/startx";

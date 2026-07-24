@@ -1,17 +1,6 @@
-# Repacks a raw disk image into a Proxmox VMA backup archive (vzdump-*.vma.zst),
-# restorable with `qmrestore`.
-#
-# nixpkgs' `proxmox-image.nix` would normally produce the VMA, but its image
-# builder (`nixos/lib/make-disk-image.nix`) asserts `partitionTableType != "none"
-# -> fsType == "ext4"` and copies the system into a single root partition via
-# `cptofs`. That cannot express our tmpfs-root + btrfs (`/nix`, `/nix/persist`)
-# layout for impermanence. So disko builds the raw image and we reuse only
-# the final VMA packaging step here.
-#
-# The `vma` tool is published solely as a patch atop upstream QEMU; the
-# derivation below is lifted verbatim from nixpkgs' proxmox-image.nix and pinned.
-# If the PVE patch/QEMU pin drifts upstream, refresh it from
-# nixos/modules/virtualisation/proxmox-image.nix.
+# Repack a disko raw image as a Proxmox VMA archive.
+# nixpkgs proxmox-image cannot express tmpfs-root plus Btrfs impermanence.
+# Refresh the pinned VMA tool from proxmox-image.nix when its QEMU patch changes.
 {
   lib,
   runCommand,

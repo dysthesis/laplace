@@ -6,10 +6,7 @@
   inherit (lib.laplace.pkgs) mkWrapper;
   inherit (pkgs) writeText;
 
-  # No secret lands in the Nix store: the Radicale password is fetched at runtime
-  # from the sops-managed /run/secrets/khal_caldav (declared in system/secrets,
-  # owner = demiurge). `username` is the Radicale htpasswd account; change it here
-  # if it isn't "demiurge".
+  # Fetch the Radicale password from SOPS at runtime, outside the store.
   config = writeText "vdirsyncer-config" ''
     [general]
     status_path = "~/.local/share/vdirsyncer/status/"

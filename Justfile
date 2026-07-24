@@ -70,20 +70,15 @@ clean:
 proxmox HOST:
   nix build .#nixosConfigurations.{{HOST}}.config.system.build.proxmoxVMA
 
-# Push-deploy the Proxmox guests. `just deploy` does all of them; pass extra
-# colmena args through, e.g. `just deploy --on bifrost`. Deploy reach-critical
-# guests (bifrost/portunus/horos/hermes) one at a time.
+# Deploy Proxmox guests; handle reach-critical hosts one at a time.
 deploy *ARGS:
   colmena apply --on @proxmox {{ARGS}}
 
 deploy-one HOST *ARGS:
   colmena apply --on {{HOST}} {{ARGS}}
 
-# Generate (idempotent) a persisted sops age key on a host and print its public
-# recipient for .sops.yaml. TARGET is an ssh destination, e.g. root@10.0.20.81.
-# The path matches sops.age.keyFile in system/secrets - under /nix/persist so it
-# survives impermanence (/etc/secrets would not). Add the printed age1... line to
-# .sops.yaml, then `sops` the secret so this host can decrypt it.
+# Create a persisted SOPS age key and print its recipient.
+# Add the recipient to .sops.yaml before encrypting host secrets.
 age-key TARGET:
   #!/usr/bin/env sh
   set -eu
@@ -98,14 +93,12 @@ age-key TARGET:
     nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -y "$f"
   '
 
-# Send a console command to the Retirement Home server (needs doas: the
-# stdin FIFO is minecraft:minecraft 660).
+# Send a server command through the protected stdin FIFO.
 mc +CMD:
   printf '%s\n' "{{CMD}}" | doas tee {{retirement_home_stdin}} >/dev/null
 
-# Kick off a Chunky pregen around 0,0. Output lands in the server log, not
-# here — `just pregen-status` for a snapshot, `just pregen-watch` to follow.
-# WORLD selects the dimension, e.g. minecraft:the_nether / minecraft:the_end.
+# Start Chunky pregen at 0,0; WORLD selects the dimension.
+# Read progress with pregen-status or pregen-watch.
 pregen-start RADIUS="5000" WORLD="minecraft:overworld": (mc ("chunky world " + WORLD)) (mc "chunky center 0 0") (mc ("chunky radius " + RADIUS)) (mc "chunky start")
 
 pregen-pause: (mc "chunky pause")

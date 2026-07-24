@@ -1,12 +1,7 @@
-/* minimal.nvim (dark) skin over forgejo-dark.
- * Palette source: minimal.nvim colors/minimal.lua (dark branch).
- * forgejo-dark derives almost all UI colours from the --steel-* ladder via
- * var() indirection, so remapping the ladder + the literal-valued vars below
- * recolours the whole UI. Var names verified against forgejo-lts 15.0.3. */
+/* Map Forgejo's palette to minimal.nvim dark colours. */
 @import "theme-forgejo-dark.css";
 
-/* Fonts served from custom/public/assets/fonts (see config.nix). Iosevka Cadmus
- * is a static per-weight build (Medium as normal 400, Bold 700), not variable. */
+/* Static Iosevka Medium 400 and Bold 700 faces. */
 @font-face {
   font-family: "IosevkaCadmus Nerd Font";
   src: url("/assets/fonts/IosevkaCadmusNerdFont-Medium.woff2") format("woff2");
@@ -62,7 +57,7 @@
     Monaco, Consolas, "Liberation Mono", "Courier New", monospace,
     var(--fonts-emoji);
 
-  /* Neutral ladder -> minimal.nvim grays (drives body/box/text/input/menu). */
+  /* Neutral UI palette. */
   --steel-900: #080808; /* gray1 */
   --steel-850: #0f0f0f; /* statusline */
   --steel-800: #101010; /* main_background */
@@ -81,8 +76,7 @@
   --steel-150: #cccccc; /* gray8 */
   --steel-100: #dddddd; /* gray9 */
 
-  /* Primary: palette.blue #7788AA, hsl(220 23%) tint/shade ladder.
-   * dark-N = lighter tints, light-N = darker shades (forgejo-dark convention). */
+  /* Blue tint and shade ladder. */
   --color-primary: #7788aa;
   --color-primary-contrast: #000;
   --color-primary-dark-1: #919fba;
@@ -118,9 +112,7 @@
   --color-console-menu-bg: #191919;
   --color-console-menu-border: #444444;
 
-  /* Hue palette (labels, buttons, calendars). minimal.nvim has few hues:
-   * red/orange/yellow/green/blue + lack/sage; violet+purple collapse to blue,
-   * pink to red, teal to lack, olive to sage — deliberate monochrome bias. */
+  /* Limited hue palette: map related colours to the nearest available hue. */
   --color-red: #d70000;
   --color-red-light: #e13333;
   --color-red-dark-1: #c00000;
@@ -167,7 +159,7 @@
   --color-black-dark-2: #080808;
   --color-gold: #abab77;
 
-  /* ANSI (Actions logs) = minimal.nvim terminal_color_* */
+  /* Actions log ANSI colours. */
   --color-ansi-black: #000000;
   --color-ansi-red: #d70000;
   --color-ansi-green: #789978;
@@ -237,9 +229,7 @@
   --bg-chroma: 0.03;
 }
 
-/* Chroma (server-side code highlighting) -> minimal.nvim syntax mapping:
- * near-monochrome; comments yellow, strings gray7, constants gray6,
- * definitions lack, errors red. Overrides the gruvbox-ish defaults. */
+/* Server-side syntax colours. */
 .chroma .c,
 .chroma .c1,
 .chroma .ch,

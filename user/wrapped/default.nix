@@ -175,7 +175,7 @@
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
       khal = callPackage ./khal {inherit lib pkgs;};
       vdirsyncer = callPackage ./khal/vdirsyncer.nix {inherit lib pkgs;};
-      # Last working version for taskwarrior2
+      # Taskwarrior 2 compatibility pin.
       taskwarrior-tui2 = callPackage ./taskwarrior-tui {inherit lib pkgs;};
       zen = guiPackage (
         callPackage ./zen {

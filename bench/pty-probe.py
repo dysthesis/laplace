@@ -1,32 +1,7 @@
 #!/usr/bin/env python3
-# ---------------------------------------------------------------------------
-# pty-probe.py - interactive-shell latency probe over a pseudo-terminal.
-#
-# zsh-bench (https://github.com/romkatv/zsh-bench) is the reference for *what*
-# to measure, but it only drives zsh. This re-implements its four perceptual
-# metrics for an ARBITRARY shell binary (fish, bash, ...) by doing what
-# zsh-bench does: allocate a PTY, exec the shell in it, inject keystrokes, and
-# timestamp the shell's reactions.
-#
-#   first_prompt_lag   spawn -> first prompt fully painted
-#   first_command_lag  spawn -> first interactive command starts executing
-#   command_lag        Enter on an empty line -> next prompt painted
-#   input_lag          one keypress -> that character echoed on the line
-#   input_lag_longbuf  same, but with a long line already typed (stresses the
-#                      per-keystroke full-buffer re-highlight that fish does)
-#
-# Stdlib only. Emits raw per-sample measurements as JSON on stdout; aggregation
-# and statistics live in stats.py so the raw data can be re-analysed later.
-#
-# Heuristics (documented because they are the load-bearing approximations):
-#   * "prompt is ready" = output has arrived and then gone quiet for
-#     --quiesce-ms, OR an optional --prompt-regex matched. Quiescence is robust
-#     across prompts; the regex is a tighter confirmation when you know the
-#     prompt's tail (e.g. starship's character module).
-#   * first_command uses a random sentinel passed via the environment so the
-#     *typed* command text ($BPROBE_MARK) differs from the *executed* output
-#     (the random value), making the two unambiguous in the byte stream.
-# ---------------------------------------------------------------------------
+# PTY latency probe for arbitrary interactive shells.
+# A prompt is ready after its regex matches or output stays quiet.
+# First-command probes use an environment sentinel distinct from echoed input.
 from __future__ import annotations
 
 import argparse
@@ -51,8 +26,7 @@ try:
 except Exception:  # pragma: no cover - rich absent
     _RICH = False
 
-# CSI / OSC / lone control-byte stripper, so matching ignores colour + cursor
-# moves that prompts emit. Kept deliberately broad.
+# Strip terminal control sequences before matching prompts.
 _ANSI = re.compile(
     rb"\x1b\[[0-9;?]*[ -/]*[@-~]"      # CSI ... final
     rb"|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)"  # OSC ... BEL/ST
@@ -65,12 +39,7 @@ def strip_ansi(b: bytes) -> bytes:
     return _ANSI.sub(b"", b)
 
 
-# Terminal capability/status queries that fish and starship emit at startup and
-# then BLOCK on, reading stdin for the reply. A dumb PTY has no emulator on the
-# far end, so without canned answers the shell consumes our keystrokes as the
-# (malformed) reply and never reaches its line editor. We answer like a minimal
-# real terminal would. (DA1/DA2, CPR/DSR, OSC 10/11 colour, XTVERSION,
-# XTGETTCAP, kitty keyboard flags.)
+# Reply to terminal queries so shells do not consume probe keystrokes as answers.
 _QUERY = re.compile(
     rb"\x1b\[(?:0)?c"                       # DA1
     rb"|\x1b\[>(?:0)?c"                     # DA2
@@ -135,12 +104,8 @@ class Pty:
         # Fix the window size deterministically (prompt width depends on it).
         winsz = struct.pack("HHHH", self.rows, self.cols, 0, 0)
         fcntl.ioctl(self.fd, termios.TIOCSWINSZ, winsz)
-        # Raw mode: kill kernel echo/canonical processing so we time the SHELL's
-        # rendered echo (syntax highlight, autosuggest), not the instant kernel
-        # echo that races it before the line editor takes over. Caveat:
-        # readline samples the termios ECHO flag at startup and suppresses its
-        # own rendered echo when it is off, so for readline shells (bash) raw
-        # mode must stay off (--no-raw) or every keystroke probe times out.
+        # Raw mode measures shell-rendered echo, not kernel echo.
+        # Readline needs --no-raw because it suppresses echo when ECHO starts off.
         if self.raw:
             try:
                 tty.setraw(self.fd)
@@ -312,7 +277,6 @@ def measure_spawn_metrics(args, env, step=None) -> dict:
         p = Pty(_argv(args), env, args.cols, args.rows,
                 raw=not args.no_raw).spawn()
         try:
-            # ---- first_prompt --------------------------------------------
             def first_pred(stripped):
                 return regex.search(stripped) is not None if regex else False
 
@@ -324,15 +288,8 @@ def measure_spawn_metrics(args, env, step=None) -> dict:
                 continue
             out["first_prompt_lag_ms"].append((t_event - p.t0) * 1000.0)
 
-            # ---- command_lag: Enter on an empty line ---------------------
-            # Measure send -> the redraw settling (full prompt painted), not the
-            # first prompt glyph, so the cheap transient-prompt char doesn't
-            # mask starship's real per-Enter render cost. The render arrives in
-            # bursts (transient repaint, clear, full prompt) whose internal
-            # gaps reach ~90 ms here, so the quiesce window must comfortably
-            # exceed them or the sample randomly clocks an intermediate burst.
-            # Use the same window as first_prompt; t_ready is the last byte's
-            # time, so the wait itself does not inflate the number.
+            # Measure the settled full prompt, not a transient first glyph.
+            # Use first_prompt's quiet window; t_ready records the last byte.
             for _i in range(args.inner_iters):
                 _drain(p, quiet_s=0.05, cap_s=1.0)
                 t_send = time.monotonic()
@@ -342,15 +299,12 @@ def measure_spawn_metrics(args, env, step=None) -> dict:
                 )
                 out["command_lag_ms"].append((t_ready - t_send) * 1000.0)
 
-            # ---- input_lag: single keypress echo -------------------------
             charset = b"abcdefghijklmnopqrstuvwxyz"
             for i in range(args.inner_iters):
                 c = charset[i % len(charset):i % len(charset) + 1]
                 out["input_lag_ms"].append(_keystroke_lag(p, c, timeout_s))
 
-            # ---- input_lag_longbuf: echo under a long, highlighted line --
-            # fish re-highlights the whole buffer per keystroke; a long line is
-            # the worst case the second write-up warns about.
+            # Long input exposes Fish's per-key full-buffer highlighting cost.
             p.write(b"echo " + b"x" * args.longbuf_len)
             _drain(p)
             for i in range(args.inner_iters):

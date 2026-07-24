@@ -2,7 +2,6 @@
   inherit (pkgs) writeText;
 in
   writeText "config.yml"
-  # yaml
   ''
     highlight: &highlight fabd2fff
     textcolor: &textcolor d0d0d0ff

@@ -1,4 +1,3 @@
-# stolen from https://github.com/diniamo/niqspkgs/blob/544c3b2c69fd1b5ab3407e7b35c76060801a8bcf/pkgs/bibata-hyprcursor/default.nix
 
 from sys import argv
 import os

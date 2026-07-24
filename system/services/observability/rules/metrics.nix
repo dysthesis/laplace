@@ -104,11 +104,8 @@
         expectedHosts;
     }
     {
-      # Free space and growth on real disks fleet-wide. statfs-backed
-      # node_filesystem_avail_bytes counts shared Btrfs snapshot/reflink extents
-      # once, so this measures physical bytes, unlike `du` over snapshots.
-      # simplification: per-snapshot exclusive attribution needs Btrfs qgroups
-      # (runtime cost, owner decision); fs-level physical free covers alerting.
+      # statfs counts shared Btrfs extents once, so alerts track physical free space.
+      # simplification: per-snapshot attribution would require costly qgroups.
       name = "fleet-storage";
       interval = "1m";
       rules = let

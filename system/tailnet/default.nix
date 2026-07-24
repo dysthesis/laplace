@@ -15,9 +15,7 @@
   allTags = unique (concatMap (n: n.tags) (attrValues cfg.nodes));
   tagDefined = t: elem t allTags;
 
-  # Port grammar: "*" (all), or "<proto>/<port>" with proto in {tcp,udp} and
-  # port an int or "lo-hi" range. The renderers (later) reuse this same grammar;
-  # for now it only gates the checker.
+  # Ports are *, or tcp/udp with one port or an inclusive range.
   portOk = s:
     s
     == "*"
@@ -41,8 +39,7 @@
     else nodesWithTag from;
   flowHasGameSource = f: any (n: elem "game" n.tags) (flowSourceNodes f.from);
 
-  # checkTailnet — referential integrity + the negative security invariants,
-  # wired into assertions so a typo or a policy regression fails eval, fleet-wide.
+  # Reject invalid references and unsafe reachability during evaluation.
   flowAsserts =
     concatMap (f: [
       {
@@ -93,8 +90,7 @@
     }
   ];
 in {
-  # policy.nix = the data; firewall.nix + headscale.nix = the enforcement backends
-  # (per-node nftables / the headscale ACL). All three consume the schema below.
+  # policy.nix feeds nftables and Headscale renderers.
   imports = [./policy.nix ./firewall.nix ./headscale.nix];
 
   options.laplace.tailnet = {
@@ -178,7 +174,5 @@ in {
     };
   };
 
-  # The data lives in ./policy.nix; this is the validation half — the negative
-  # security invariants and referential integrity, read off the merged config.
   config.assertions = flowAsserts ++ guestAsserts ++ uniqAsserts;
 }

@@ -45,7 +45,6 @@ in
   runCommandLocal "${helixUnwrapped.name}-wrapped" {
     nativeBuildInputs = [pkgs.makeWrapper];
   }
-  # bash
   ''
     cp -r ${helixUnwrapped} $out
     chmod -R u+w $out

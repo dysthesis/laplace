@@ -11,10 +11,7 @@
   dataDir = "/var/lib/headplane";
   cookieSecret = "${dataDir}/cookie_secret";
 
-  # Headplane refuses to start without a 32-character cookie secret. It is a
-  # single-host session-signing key with no need to be shared across machines,
-  # so generate it locally on first start and persist it via mnemosyne rather
-  # than onboarding this host into sops for one local secret.
+  # Generate and persist the required local cookie key; it need not enter SOPS.
   genCookieSecret = pkgs.writeShellScript "headplane-gen-cookie-secret" ''
     set -eu
     if [ ! -s "${cookieSecret}" ]; then

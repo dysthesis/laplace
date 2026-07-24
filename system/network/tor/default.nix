@@ -20,7 +20,7 @@ in {
       enable = true;
       torsocks.enable = true;
       openFirewall = true;
-      # Disable GeoIP to prevent the Tor client from estimating the locations of Tor nodes it connects to
+      # Disable relay location estimates.
       enableGeoIP = false;
       settings = {
         Sandbox = true;
@@ -39,8 +39,7 @@ in {
       package = pkgs.proxychains-ng;
 
       proxyDNS = true;
-      # NOTE: We use mkForce here because by default, a tor proxy is already
-      # configured, but it uses the outdated "socks4" instead of "socks5"
+      # Override the default SOCKS4 proxy with SOCKS5.
       proxies = lib.mkForce {
         tor = {
           enable = true;

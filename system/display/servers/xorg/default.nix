@@ -25,8 +25,7 @@ in {
     })
   ];
 
-  # Set by the selected session module; the bash wrapper execs this on
-  # VT1 login instead of hardcoding startx.
+  # Selected Xorg command for VT1 login.
   options.laplace.display.xorg.sessionCommand = lib.mkOption {
     type = lib.types.nullOr lib.types.str;
     default = null;

@@ -1,8 +1,5 @@
-# DiscordIntegration-Fabric config as Nix data, rendered to
-# config/Discord-Integration.toml via pkgs.formats.toml. botToken/botChannel are
-# @VAR@ placeholders substituted at server start from the sops env file by
-# nix-minecraft, so neither enters the store. Field docs:
-# https://wiki.erdbeerbaerlp.de/dcintegration.
+# Discord config with runtime-substituted token and channel placeholders.
+# Field reference: https://wiki.erdbeerbaerlp.de/dcintegration.
 {
   general = {
     botToken = "@DISCORD_BOT_TOKEN@";
@@ -125,7 +122,7 @@
         color = 15548997; # #ed4245
       };
     };
-    # dark red, not the mod's default black: black bars vanish on dark theme
+    # Dark red remains visible on dark themes.
     deathMessage = {
       asEmbed = true;
       colorHexCode = "#992d22";
@@ -142,7 +139,7 @@
       colorHexCode = "#fee75c";
       customJSON = "";
     };
-    # plain text: webhook already shows name + avatar, embed per chat line is clutter
+    # Webhooks already show name and avatar.
     chatMessages = {
       generateUniqueColors = true;
       asEmbed = false;
@@ -188,7 +185,7 @@
     serverName = "Retirement Home";
     useServerNameForRcon = true;
     useServerNameForConsole = true;
-    # %randomUUID% defeats discord's avatar cache; tydiumcraft resolves both java and bedrock skins
+    # randomUUID bypasses avatar cache; tydiumcraft supports Java and Bedrock.
     playerAvatarURL = "https://api.tydiumcraft.net/v1/players/skin?uuid=%uuid%&type=avatar&randomuuid=%randomUUID%";
     webhookName = "MC_DC_INTEGRATION";
   };

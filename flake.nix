@@ -55,9 +55,7 @@
           formatting = treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
         }
         // lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
-          # Each selected compositor/session module contributes its own
-          # validation via laplace.display.checkCommands, so this check
-          # follows compositor swaps without edits here.
+          # Selected sessions provide their own validation commands.
           desktop-stack = let
             validateHost = name: host:
               lib.optionalString (host.config.laplace.display.checkCommands != []) ''
@@ -541,8 +539,6 @@
 
       inherit nixosConfigurations;
 
-      # Push-deploy hive for the Proxmox guests: `colmena apply --on @proxmox`
-      # (or `just deploy`). See nix/deploy.
       colmena = import ./nix/deploy {
         inherit self inputs lib;
         inherit (hosts) nodeModules overlays;
@@ -550,15 +546,11 @@
     };
 
   inputs = {
-    # TODO: See if switching to unstable fixes
-    # https://github.com/NixOS/nixpkgs/issues/222181
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
-    # Track the nixos-unstable *channel*, not raw master as only channel revs are
-    # fully built by Hydra -- we want to avoid building from source
+    # Channel revisions have Hydra substitutes; raw master may not.
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # Supposedly faster Nix.
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
     treefmt-nix = {
@@ -571,11 +563,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Keep fork's own nixpkgs pin, because it carries the Go toolchain revision
-    # used by this headscale fork.
+    # This fork needs the Go toolchain from its own nixpkgs pin.
     headscale.url = "github:dysthesis/headscale?ref=feat/wg-only-peers";
 
-    # Neovim flake
     poincare = {
       url = "github:dysthesis/poincare";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -591,23 +581,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Suckless suite (st, dmenu, xsecurelock) for the xorg session.
-    # NOTE: gungnir's `packages` output currently fails to evaluate under
-    # Determinate Nix. The xorg path in system/users/demiurge is lazy and
-    # unused (no host enables it), so this stays dormant until gungnir is
-    # fixed upstream; restoring the input only resolves the dangling ref.
+    # gungnir fails under Determinate Nix, but no host enables Xorg.
     gungnir = {
       url = "github:dysthesis/gungnir";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # XMonad flake
     mandelbrot = {
       url = "github:dysthesis/mandelbrot";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # tmux flake
     daedalus = {
       url = "github:dysthesis/daedalus";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -618,66 +602,55 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Secure boot
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # For some reason, this browser isn't in nixpkgs
+    # Not in nixpkgs.
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Hardware QOL stuff for the Framework laptop
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
-    # Sandboxing utility
     nixpak = {
       url = "github:nixpak/nixpak";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Needed for comma
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Secrets
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # statusline for dwl, dwm
     status = {
       url = "github:dysthesis/status";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # for self-hosting minecraft server
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Hister needs Go 1.26, therefore nixpkgs should follow nixpkgs-unstable
-    # (26.05 pin is too old), reusing the existing unstable input rather than a
-    # third nixpkgs instance.
+    # Hister needs Go 1.26 from nixpkgs-unstable.
     hister = {
       url = "github:asciimoo/hister";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Teaching slides
     slides = {
       url = "git+file:///home/demiurge/Documents/University/COMP6841_2026T2?ref=main";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # custom, personal build of iosevka
     iosevka-cadmus = {
       url = "github:dysthesis/iosevka-cadmus";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

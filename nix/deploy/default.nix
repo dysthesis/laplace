@@ -1,28 +1,12 @@
-# Colmena hive for the Proxmox guests.
-#
-# Reuses each host's module list (hosts/default.nix `nodeModules`) so there is
-# one source of truth; Colmena owns the nixosSystem call to inject its
-# `deployment` namespace.
-#
-# Deploy with `colmena apply --on @proxmox` (or `just deploy`). Targets are LAN
-# IPs, NOT tailnet MagicDNS names, by design: a switch that disrupts
-# tailscale/DNS on a proxy or headscale guest must not be able to sever the very
-# path you are deploying over. Deploy reach-critical guests (bifrost, portunus,
-# hermes) one at a time and keep the Proxmox noVNC console open.
-#
-# Connects as root over SSH (key-only, restricted to the infra VLANs in
-# system/profiles/proxmox), so the closure is received and switch-to-configuration
-# runs without interactive escalation - doas stays password-prompting for humans.
-#
-# hephaestus is on VLAN70 (10.0.70.2); reach it only after the VMA image is
-# restored and the guest is up, or `colmena apply --on @proxmox` fails on it.
+# Colmena reuses each host's modules and package overlays.
+# Deploy by LAN IP so tailnet or DNS changes cannot cut the deployment path.
+# Root SSH is key-only and VLAN-scoped; deploy critical guests one at a time.
 {
   self,
   inputs,
   lib,
   nodeModules,
-  # Shared overlay list from hosts/default.nix, baked into meta.nixpkgs so the
-  # deployed pkgs match `nixosConfigurations` exactly.
+  # Match nixosConfigurations package overlays.
   overlays,
 }: let
   inherit (lib) mapAttrs;
@@ -47,8 +31,7 @@
     deployment = {
       inherit targetHost;
       targetUser = "root";
-      # Build on the workstation and copy the closure; the guests are 1-2 GiB
-      # tmpfs-root VMs that would thrash building their own system.
+      # Build locally; small tmpfs-root guests would thrash.
       buildOnTarget = false;
       tags = ["proxmox"];
     };
@@ -56,14 +39,11 @@
 in
   {
     meta = {
-      # Recent Colmena (flakes) requires a pre-evaluated pkgs set here, so bake in
-      # the same overlays nixosConfigurations get (passed from hosts/default.nix).
       nixpkgs = import inputs.nixpkgs.outPath {
         system = "x86_64-linux";
         inherit overlays;
       };
-      # The host modules read `self`, `inputs`, and the extended `lib` (laplace.*)
-      # as specialArgs, exactly as mkSystem passes them.
+      # Match mkSystem specialArgs.
       specialArgs = {inherit self inputs lib;};
     };
   }

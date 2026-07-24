@@ -1,9 +1,6 @@
 _: {
   projectRootFile = "flake.nix";
-  # sops-encrypted secrets must never be reformatted: prettier re-indents the
-  # YAML and rewraps the base64 AGE blocks, churning every secret file with a
-  # huge diff even though the ciphertext is unchanged. Exclude the dir from all
-  # formatters.
+  # Formatting rewrites encrypted SOPS payloads; exclude all secret files.
   settings.global.excludes = [
     ".claude/**"
     ".serena/**"

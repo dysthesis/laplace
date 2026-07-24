@@ -1,21 +1,16 @@
 {
   lib,
-  # The `aliases` attrset from the jj wrapper's config (via its passthru),
-  # so jj subcommands are defined in exactly one place.
+  # Reuse wrapper aliases as the command source.
   jjAliases,
 }: let
   inherit (lib) concatMapStringsSep mapAttrsToList;
 
-  # jj aliases surfaced as jjui actions. Each listed alias gets a key in the
-  # `revisions` scope; at invocation every `@` in the alias arguments is
-  # substituted with the selected revision's change id, so the action targets
-  # the revision under the cursor rather than the working copy.
+  # Actions replace @ in alias arguments with the selected change ID.
   bindKeys = {
     tug = "T";
   };
 
-  # NOTE: alias arguments are spliced into Lua string literals verbatim;
-  # fine for the current aliases (no quotes or backslashes).
+  # Alias arguments enter Lua literals raw; keep them free of quotes and backslashes.
   mkAction = name: key: let
     argList = concatMapStringsSep ", " (arg: ''"${arg}"'') jjAliases.${name};
   in {

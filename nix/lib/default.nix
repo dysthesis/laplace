@@ -12,28 +12,20 @@ nixpkgs.lib.extend (
     getDirectories = dir: getItemsOfType dir "directory";
     getFiles = dir: getItemsOfType dir "regular";
 
-    # Immediate subdirectories that are modules (have a default.nix), so
-    # non-module data directories (e.g. assets) can live alongside modules
-    # without being imported or becoming selectable enum members.
+    # Select only child directories with default.nix.
     getModuleDirs = dir:
       dir
       |> getDirectories
       |> builtins.filter
       (module: builtins.pathExists "${dir}/${module}/default.nix");
 
-    # Import every immediate module subdirectory. Uses path concatenation
-    # (not string interpolation) so imported modules stay within the flake
-    # source tree and their relative paths resolve correctly.
+    # Path addition preserves flake context and relative imports.
     importInDirectory = dir:
       dir
       |> getModuleDirs
       |> map (module: dir + "/${module}");
 
-    # The module list + specialArgs that compose a host, factored out of
-    # `mkSystem` so Colmena can consume the same modules (it must own the
-    # nixosSystem call itself to inject its `deployment` namespace). One source
-    # of truth for both `nixosConfigurations` and the `colmena` hive. See
-    # nix/deploy and hosts/default.nix.
+    # Shared module list and specialArgs for nixosConfigurations and Colmena.
     mkSystemModules = {
       self,
       system,
@@ -80,22 +72,9 @@ nixpkgs.lib.extend (
       modules = {
         inherit importInDirectory;
 
-        # Declarative "selector" module: derive an enum from the names of the
-        # immediate subdirectories of `dir`, expose it as the option at the
-        # attribute path `option`, and import every child (each child gates
-        # itself on this option via `mkIf`). Collapses the repeated
-        # getDirectories + mkOption + importInDirectory boilerplate.
-        #
-        #   option   :: attr-path segments, e.g. ["laplace" "hardware" "cpu"]
-        #   multiple :: true  -> listOf (enum members), default []
-        #               false -> enum members, explicit `default` required
-        #   extra    :: extra enum members beyond the subdir names, e.g. ["none"]
-        #   broken   :: member name -> reason; the member stays selectable (so
-        #               the reason is discoverable) but selecting it trips an
-        #               assertion at eval instead of silently misbehaving
-        #   active   :: config -> bool; gates the broken assertions so a broken
-        #               *default* on a feature the host never enables (e.g. an
-        #               xorg session on a wayland-only host) does not fail
+        # Imports child modules and exposes their names as an enum option.
+        # multiple selects a list; extra adds names; broken maps names to errors.
+        # active gates broken-member checks for disabled features.
         mkSelector = {
           dir,
           option,
@@ -137,16 +116,9 @@ nixpkgs.lib.extend (
         };
       };
 
-      # Wraps a binary (or list of binaries) with makeWrapper. `args` is either a
-      # raw postBuild snippet (escape hatch: multi-binary loops, substituteInPlace,
-      # `--add-flag`) or a spec attrset compiled into one `wrapProgram` call:
-      #   program  :: binary basename to wrap (default: meta.mainProgram)
-      #   addFlags :: [str]        -> one --add-flags each (runtime word-split)
-      #   set      :: { NAME=val; } -> --set NAME val
-      #   binPath  :: [pkg]        -> --prefix PATH ":" (makeBinPath …)
-      #   run      :: [str]        -> --run each (runs in the wrapper at runtime)
-      #   postBuild:: str          -> appended raw, after the generated wrapProgram
-      # Values are escaped with escapeShellArgs; no manual quoting needed.
+      # Wrap one or more binaries. args may be raw postBuild or a wrapper spec.
+      # Spec keys: program, addFlags, set, binPath, run, and postBuild.
+      # Values are escaped with escapeShellArgs.
       pkgs.mkWrapper = pkgs: package: args: let
         target =
           if isList package
@@ -175,8 +147,7 @@ nixpkgs.lib.extend (
           postBuild = wrapLine + (spec.postBuild or "");
           name = "${final.getName target}-wrapped";
           buildInputs = [pkgs.makeWrapper];
-          # symlinkJoin is single-output, so drop any extra outputs (e.g. man)
-          # the target advertises or buildEnv will deref a missing attribute.
+          # symlinkJoin cannot dereference extra package outputs.
           meta =
             (target.meta or {})
             // {

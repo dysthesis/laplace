@@ -88,12 +88,11 @@ bar:
                     ~carrier: { empty: {} }
                     carrier:
                       map:
-                        default: {
+                        default:
+                          {
                             string: { text: , font: *font, foreground: *grey },
-                          } #"suche nach Signal...", foreground: *grey}}
+                          }
                         conditions:
-                          #state == up && ipv4 != "": {string: {text: "verbunden"}} #, right-margin: 5}}
-                          #state == up && ipv6 != "": {string: {text: "verbunden"}} #, right-margin: 5}}
                           state == down:
                             {
                               string:
@@ -103,12 +102,11 @@ bar:
                                   foreground: *grey,
                                 },
                             }
-                          #state == down: {string: {text: , font: *font, foreground: *grey}}
                           state == up:
                             map:
                               default:
                                 - string: { text: , font: *font }
-                                - string: { text: " {ssid}", font: *font } #{dl-speed:mb}/{ul-speed:mb} Mb/s"}
+                                - string: { text: " {ssid}", font: *font }
 
                               conditions:
                                 ipv4 == "":
@@ -168,7 +166,7 @@ bar:
                       - string: { text: " ", font: *font }
                       - string:
                           { text: " ", foreground: *brightgreen, font: *font }
-                - string: { text: " {capacity}% {estimate}", font: *font } #, right-margin: 5}
+                - string: { text: " {capacity}% {estimate}", font: *font }
         content:
           map:
             conditions:
@@ -178,10 +176,10 @@ bar:
                 <<: *discharging
               state == charging:
                 - string: { text: , foreground: *brightgreen, font: *font }
-                - string: { text: " {capacity}% {estimate}", font: *font } #, right-margin: 5}
+                - string: { text: " {capacity}% {estimate}", font: *font }
               state == full:
                 - string: { text: , foreground: *brightgreen, font: *font }
-                - string: { text: " {capacity}%", font: *font } #, right-margin: 5}
+                - string: { text: " {capacity}%", font: *font }
               state == "not charging":
                 - ramp:
                     tag: capacity
@@ -205,7 +203,7 @@ bar:
                           { text:  , foreground: *brightgreen, font: *font }
                       - string:
                           { text:  , foreground: *brightgreen, font: *font }
-                - string: { text: " {capacity}%", font: *font } #, right-margin: 5}
+                - string: { text: " {capacity}%", font: *font }
 
     - clock:
         time-format: "%H:%M"

@@ -1,7 +1,4 @@
-# Packages the shell benchmark harness with its tools pinned, so `nix run
-# .#bench` is fully reproducible regardless of what is on the caller's PATH.
-# `nix` itself is inherited from the caller (the script shells out to it to
-# build the artifacts under test).
+# Pin benchmark tools; inherit Nix itself to build tested artefacts.
 pkgs: let
   inherit (pkgs) lib;
   # rich powers the progress bars + result tables in pty-probe.py / stats.py.

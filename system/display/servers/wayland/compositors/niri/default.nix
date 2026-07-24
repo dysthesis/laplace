@@ -64,9 +64,7 @@ in {
       useNautilus = false;
     };
 
-    # niri's session companions live here as systemd user services; the other
-    # compositors spawn theirs from their own configs, so keeping these
-    # niri-gated prevents duplicate daemons after a compositor swap.
+    # Gate Niri's user services to avoid duplicates after compositor changes.
     systemd.user.services =
       {
         waybar = sessionService "Waybar status bar" (getExe pkgs.configured.waybar);

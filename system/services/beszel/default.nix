@@ -1,15 +1,6 @@
-# Beszel server monitoring: a lightweight hub (web dashboard, PocketBase-backed)
-# and a per-host agent, in either of Beszel's two connection directions:
-#
-#   - WS / push (hubUrl + environmentFile): the agent dials OUT to the hub with a
-#     KEY + TOKEN the hub minted. For hosts that can reach the hub (tailnet/LAN).
-#   - SSH / pull (key + trustedHubs): the agent LISTENS; the hub dials IN with its
-#     private key and pulls metrics. The agent holds only the hub's PUBLIC key — no
-#     token, no sops. For hosts the hub must reach but that must not reach inward,
-#     e.g. a DMZ box: the connection runs trusted→untrusted, never the reverse.
-#
-# KEY + TOKEN are minted by the hub on first boot (Add System / Settings → Tokens).
-# The hub itself binds loopback; a node-local Caddy fronts it.
+# WS mode: agents push with a KEY and TOKEN.
+# SSH mode: the hub pulls with public-key auth from hosts that must not reach it.
+# The hub binds loopback behind Caddy.
 {
   config,
   lib,
@@ -38,7 +29,7 @@ in {
     agent = {
       enable = mkEnableOption "Beszel agent (per-host metrics reporter)";
 
-      # --- WS / push mode: the agent dials OUT to the hub. ---
+      # Agent pushes to hub.
       hubUrl = mkOption {
         type = types.nullOr types.str;
         default = null;
@@ -58,7 +49,7 @@ in {
         '';
       };
 
-      # --- SSH / pull mode: the hub dials IN; the agent listens. ---
+      # Hub pulls from agent.
       key = mkOption {
         type = types.nullOr types.str;
         default = null;
@@ -94,13 +85,9 @@ in {
 
   config = mkMerge [
     (mkIf cfg.hub.enable {
-      # Real dir is /var/lib/private/beszel-hub (DynamicUser + StateDirectory),
-      # with /var/lib/beszel-hub symlinked to it. Persist the real one: it holds
-      # the PocketBase DB — users, configured systems, and the hub's own SSH key.
-      # Lose it and every reboot wipes the account and the key agents trust.
+      # Persist DynamicUser's private directory; it holds accounts and the hub SSH key.
       mnemosyne.dirs = ["/var/lib/private/beszel-hub"];
 
-      # Binds 127.0.0.1:8090 by default; the node's own Caddy fronts TLS.
       services.beszel.hub = {
         enable = true;
         environment = optionalAttrs (cfg.hub.appUrl != null) {
@@ -120,7 +107,7 @@ in {
         services.beszel.agent.enable = true;
       }
 
-      # WS / push: the agent dials the hub outbound, so nothing inbound to open.
+      # Push mode needs no inbound port.
       (mkIf (cfg.agent.hubUrl != null) {
         assertions = [
           {
@@ -135,9 +122,7 @@ in {
         };
       })
 
-      # SSH / pull: the hub dials in; the agent listens, scoped to the hub's IP
-      # only. Never openFirewall on an exposed box — KEY auth is the lock, the
-      # scoped rule is the bolt.
+      # Pull mode accepts only the hub IP.
       (mkIf (cfg.agent.key != null) {
         assertions = [
           {
@@ -145,9 +130,7 @@ in {
             message = "laplace.services.beszel.agent SSH mode (key set) needs trustedHubs — the hub's source IP(s); without it the host firewall drops the hub and the agent is unreachable.";
           }
           {
-            # extraInputRules lives only in the nftables firewall; on the iptables
-            # backend it is a silent no-op, leaving the listen port unreachable.
-            # Fail loudly rather than ship a dead scoping rule.
+            # Pull-mode scoping requires nftables extraInputRules.
             assertion = !config.networking.firewall.enable || config.networking.firewall.backend == "nftables";
             message = "laplace.services.beszel.agent SSH mode emits a scoped nftables input rule, but this host's firewall backend is iptables, where networking.firewall.extraInputRules is ignored — the listen port would be left unreachable. Set networking.nftables.enable = true (safe without Docker).";
           }
@@ -157,20 +140,12 @@ in {
           environment = {
             KEY = cfg.agent.key;
             LISTEN = cfg.agent.listen;
-            # The agent keeps its own SSH host key (.key) here. Without a persistent
-            # dir the key is ephemeral — regenerated each restart — so the hub's
-            # pinned fingerprint breaks on every deploy and the system shows "Down"
-            # even though the listen port is reachable.
+            # Persist the agent SSH key or the hub's pinned fingerprint breaks.
             DATA_DIR = "/var/lib/beszel-agent";
           };
         };
 
-        # Make DATA_DIR real, writable under ProtectSystem=strict, and stable. The
-        # static beszel-agent user already exists (for the dbus systemd-monitoring
-        # policy), so run as it (DynamicUser off) to keep StateDirectory at a
-        # deterministic /var/lib path rather than the DynamicUser /var/lib/private
-        # indirection. Persist it so the host key — and thus the fingerprint —
-        # survives reboots under impermanence.
+        # Use a static user and persisted StateDirectory for a stable SSH key path.
         systemd.services.beszel-agent.serviceConfig = {
           DynamicUser = mkForce false;
           StateDirectory = "beszel-agent";

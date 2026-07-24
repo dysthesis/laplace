@@ -1,8 +1,5 @@
 # shellcheck shell=bash
-# ---------------------------------------------------------------------------
-# lib.sh - helpers for shell-bench.sh: artifact resolution, provenance capture,
-# environment isolation, and ablation-config generation. Sourced, not executed.
-# ---------------------------------------------------------------------------
+# Shared benchmark helpers; sourced by shell-bench.sh.
 
 log() { printf '\033[1;34m::\033[0m %s\n' "$*" >&2; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$*" >&2; }
@@ -40,9 +37,7 @@ find_fish_user_config() {
     return 1
 }
 
-# Capture machine + build provenance as JSON. Reproducibility depends on this
-# being honest about what we could NOT control (governor, load, dirty tree).
-# Usage: capture_provenance OUTFILE KEY=VAL ...   (extra pairs appended)
+# Record machine, build, and uncontrolled conditions as JSON.
 capture_provenance() {
     local out="$1"
     shift
@@ -81,17 +76,12 @@ capture_provenance() {
       targets:$extra}' >"$out"
 }
 
-# Build an ablated fish config dir: copy the real vendor_conf.d files into a
-# fresh tree and comment out every line matching an (extended) regex, so the
-# unwrapped fish can be pointed at it via XDG_DATA_DIRS. Echoes the new
-# share dir to stdout.
-# Usage: gen_ablation_config OUTDIR USER_CONFIG_SRC LOADPLUGIN_SRC REGEX
+# Build a Fish config with regex-matched init lines disabled. Prints its share path.
 gen_ablation_config() {
     local outdir="$1" cfg="$2" loadplugin="$3" regex="$4"
     local vd="$outdir/share/fish/vendor_conf.d"
     mkdir -p "$vd"
-    # `[[ ... ]] && cp` would abort the whole script under set -e when the
-    # config has no load_plugin.fish (it is optional).
+    # Avoid && under set -e when the optional config is absent.
     if [[ -f $loadplugin ]]; then cp "$loadplugin" "$vd/load_plugin.fish"; fi
     # Prefix matching lines with a comment marker; leave everything else intact.
     # \x01 as the s/// delimiter: the regexes contain `|` alternations.

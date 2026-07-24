@@ -567,9 +567,7 @@ in {
             wants = ["vmalert-logs.service"];
           };
           grafana = {
-            # Bootstrap files stay local and random while Argus SOPS enrolment is
-            # pending. Replace these file-provider paths with SOPS files before exposing
-            # the frontend; changing secret-key later requires Grafana key rotation.
+            # Keep bootstrap secrets local until Argus has SOPS; rotate Grafana keys after changes.
             preStart = lib.mkBefore ''
               umask 077
               test -s /var/lib/grafana/secret-key || ${pkgs.openssl}/bin/openssl rand -hex 32 > /var/lib/grafana/secret-key
@@ -711,8 +709,7 @@ in {
             }
           }
         '';
-        # Upload-only listeners return tiny acknowledgements or errors, so unlike
-        # the browser-facing vhosts they deliberately do not encode responses.
+        # Upload endpoints return tiny responses; skip encoding.
         virtualHosts = {
           "${cfg.ingress.domain}:${toString cfg.ingress.metricsPort}".extraConfig = ''
             ${ingressTls}
@@ -779,8 +776,7 @@ in {
             ++ mapAttrsToList (name: writer: "telemetry_${name}_certificate:${writer.certificateFile}") writers;
         };
 
-      # simplification: per-source, per-signal token buckets cap wire bytes.
-      # Disable compression so journal wire bytes also bound decoded input.
+      # simplification: token buckets cap wire bytes; disable compression to cap decoded input.
       networking.nftables.tables.telemetry-ingress = {
         family = "inet";
         content = ''

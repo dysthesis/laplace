@@ -1,8 +1,4 @@
-# Forgejo Actions runner (forgejo-runner), a sibling of the forgejo server module
-# rather than a sub-option of it — the same client/server split this repo already
-# uses for tailscale/headscale. It is deliberately decoupled from the server's
-# lifecycle: the intended end-state is a dedicated VLAN'd runner VM that talks to a
-# *remote* Forgejo, i.e. `forgejo-runner.enable = true` with `forgejo.enable = false`.
+# Forgejo runner client, independent from the server lifecycle and host.
 {
   config,
   lib,

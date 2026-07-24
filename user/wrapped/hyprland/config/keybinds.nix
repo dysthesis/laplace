@@ -12,8 +12,7 @@
   numWorkspaces = 10;
   audioIncreaseDelta = toString 5;
   brightnessIncreaseDelta = toString 5;
-  # From fufexan
-  # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
+  # Mod selects workspaces; Mod+Shift moves windows.
   workspaces = builtins.concatLists (
     builtins.genList (
       x: let

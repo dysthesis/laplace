@@ -6,7 +6,7 @@
 }:
 rustPlatform.buildRustPackage rec {
   pname = "taskwarrior-tui";
-  # Last working version with taskwarrior 2
+  # Taskwarrior 2 compatibility pin.
   version = "0.25.4";
   src = fetchFromGitHub {
     owner = "kdheepak";
@@ -17,7 +17,7 @@ rustPlatform.buildRustPackage rec {
   cargoHash = "sha256-HLygJDtea2E8m3KG8IvJBEH69Bi6Ojm+d21904ISpys=";
   nativeBuildInputs = [installShellFiles];
 
-  # Because there's a test that requires terminal access
+  # Tests require a TTY.
   doCheck = false;
 
   postInstall = ''

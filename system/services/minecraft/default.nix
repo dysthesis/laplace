@@ -10,8 +10,7 @@
   cfg = config.laplace.services.minecraft.retirement-home;
   minecraftMaintenanceLock = "/run/lock/minecraft-maintenance.lock";
 
-  # PackWiz source; loki serves the same tree to clients at /packwiz, so client
-  # and server resolve from one manifest.
+  # Server and clients share this PackWiz manifest.
   packwizSource = builtins.path {
     path = ./retirement-home-packwiz;
     name = "retirement-home-packwiz";
@@ -23,19 +22,13 @@
     jre_headless = pkgs.temurin-bin-17;
   };
 
-  # Discord to Minecraft chat bridge (server-only).
   discordIntegration = pkgs.fetchurl {
     url = "https://cdn.modrinth.com/data/rbJ7eS5V/versions/WLOprDDs/dcintegration-fabric-3.0.7-1.20.1.jar";
     hash = "sha512-RyPz/8Dv76Y9Scrhglo+w8vO+B3bd5ZfouYdDp17ho6gNydLVI2m9fU7K92eo0qB6scaOp0Hb2qC9u29QhoKvw==";
   };
 
-  # Server-admin mods, server-side only (never in the client zip, so no drift):
-  # Ledger = block logging + `/ledger rollback`; squaremap = web map at
-  # map.dysthesis.com (needs only fabric-api, already in the pack).
-  # Ledger PINNED to 1.2.8, not 1.3.18-backport: 1.3.18 needs fabric-language-kotlin
-  # >=1.13.4 but the pack ships 1.10.18, and bumping FLK ripples through every other
-  # Kotlin mod (and drifts from the client). 1.2.8 needs only >=1.9.4. If the
-  # pack's FLK ever passes 1.13.4, move back to 1.3.18-backport.
+  # Server-only admin mods. Ledger 1.2.8 matches the bundled Kotlin runtime;
+  # upgrade Ledger after fabric-language-kotlin reaches 1.13.4.
   ledger = pkgs.fetchurl {
     url = "https://cdn.modrinth.com/data/LVN9ygNV/versions/pOxgWfwI/ledger-1.2.8.jar";
     hash = "sha512-gjCufvVJXdQ7brwZ+yErf/sQ3FcfxYbsx+LMgXeYnapBwQKsOG2CWGyDoLSLnbop8JX/pLjXjjTXFeJYMBF/jQ==";
@@ -45,8 +38,7 @@
     hash = "sha512-4cjgvrjJUtvgoJAtAQIHqwx3SovdOXE2kxaVIIHgO3f7Vm6q2rWRK6MSStMNW5QZfQ2T7Nvdl/hsO/QBDKI97g==";
   };
 
-  # discord-config.nix rendered to TOML (see its header for the @VAR@ secret
-  # mechanism), with the mod's example invite URL overridden when one is set.
+  # Render TOML with runtime secret placeholders and optional invite URL.
   discordIntegrationConfig =
     (pkgs.formats.toml {}).generate "Discord-Integration.toml"
     (recursiveUpdate (import ./discord-config.nix)
@@ -57,9 +49,7 @@
         };
       }));
 
-  # builtins.path gives the config a proper store context; a bare
-  # ./squaremap-config.yml in the start-pre file-copy is contextless — nix
-  # warns it "will not have a correct store reference".
+  # builtins.path preserves the config's store context.
   squaremapConfig = builtins.path {
     path = ./squaremap-config.yml;
     name = "squaremap-config.yml";
@@ -204,38 +194,27 @@ in {
 
     mnemosyne.dirs = [cfg.dataDir];
 
-    # nix-minecraft substitutes @VAR@ in managed text `files` from this env at
-    # ExecStartPre, so the bot token reaches Discord-Integration.toml without
-    # ever touching the store. Global option, but loki runs one server.
+    # Substitute Discord secrets at start without copying them to the store.
     services.minecraft-servers.environmentFile = mkIf cfg.discord.enable cfg.discord.environmentFile;
 
-    # Stage service/config changes until a real restart. nix-minecraft's reload
-    # deletes managed files while the JVM stays running; enableReload below is
-    # retained only to keep its automatic restartIfChanged disabled as well.
+    # Avoid reload deleting managed files while the JVM still runs.
     systemd = {
       tmpfiles.rules = ["d /nix/.mc-snapshots 0700 root root -"];
       services = {
         "minecraft-server-retirement-home" = {
           reloadIfChanged = lib.mkForce false;
 
-          # Spark's bundled async-profiler is native C++; expose its only missing
-          # runtime dependency without adding a host-wide library search path.
+          # Supply async-profiler's native dependency only to this service.
           environment.LD_LIBRARY_PATH =
             lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib];
 
-          # nix-minecraft's hardening omits AF_NETLINK, but glibc getaddrinfo probes
-          # interfaces over netlink before resolving — without it every DNS lookup in
-          # the JVM throws UnknownHostException, breaking Mojang auth and the Discord
-          # bot. Re-add it; the rest of the hardening is untouched.
+          # Keep AF_NETLINK: glibc needs it before DNS resolution.
           serviceConfig.RestrictAddressFamilies =
             lib.mkForce ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
         };
 
-        # World maintenance: 6-hourly btrfs snapshots + nightly restart, both driving
-        # the server via nix-minecraft's stdin socket (its own ExecStop idiom).
-        # simplification: one host-wide lock serialises all Minecraft maintenance;
-        # split it per server if this host ever runs independent instances.
-        # Whole-VM PBS->B2 stays the disaster tier; these are the fast rollback tier.
+        # Serialise snapshots and clean restarts through the server stdin socket.
+        # simplification: one host lock is enough while only one instance runs.
 
         mc-world-snapshot = {
           description = "Quiesce saves + read-only btrfs snapshot of the world";
@@ -302,8 +281,7 @@ in {
                   exit 1
                 fi
 
-                # Hold the validated pipe itself: reopening its pathname in the exit
-                # trap could create a regular file if the socket disappears.
+                # Hold the pipe FD so cleanup cannot recreate its path as a file.
                 exec 8>"/proc/$main_pid/fd/0"
                 saves_disabled=true
                 printf '%s\n' 'save-off' >&8
@@ -312,8 +290,7 @@ in {
                   '^\[[0-9]{2}:[0-9]{2}:[0-9]{2}\] \[Server thread/INFO\]: (Automatic saving is now disabled|Saving is already turned off)$' \
                   'save-off'
 
-                # The save-off acknowledgement is a command-queue barrier. A new
-                # cursor now makes the following completion causal to this flush.
+                # save-off acknowledgement is the queue barrier for this flush.
                 cursor=$(journal_cursor)
                 if [ -z "$cursor" ]; then
                   echo "could not establish a journal cursor before flushing saves" >&2
@@ -324,8 +301,7 @@ in {
                   'save-all flush' \
                   "data get storage $marker" \
                   >&8
-                # simplification: fail safely after 60 seconds; raise this ceiling
-                # only if measured flush times show that the world needs longer.
+                # simplification: fail after 60 seconds; raise only from measured flushes.
                 wait_for_server_log \
                   "$cursor" \
                   '^\[[0-9]{2}:[0-9]{2}:[0-9]{2}\] \[Server thread/INFO\]: Saved the game$' \
@@ -366,11 +342,8 @@ in {
               echo "$unit changed from $server_state to $current_state; snapshot aborted" >&2
               exit 1
             fi
-            # @persist is a btrfs subvol (proxmox profile); snapshot it to a sibling
-            # dir on @nix (same filesystem). simplification: snapshots the WHOLE
-            # persist subvol, not just the world — cheap CoW; upgrade = carve the world
-            # into its own subvol. Ceiling: local only, shares the 64G guest disk with
-            # the store; upgrade = `btrfs send` to another host.
+            # Snapshot the whole persisted subvolume on the same Btrfs disk.
+            # simplification: split or send the world subvolume if local disk becomes limiting.
             btrfs subvolume snapshot -r /nix/persist "/nix/.mc-snapshots/mc-$(date +%Y%m%d-%H%M%S)"
             restore_saves
             trap - EXIT
@@ -399,8 +372,7 @@ in {
               printf '%s\n' 'say Nightly restart in 60s' >&8
               sleep 60
             fi
-            # try-restart restarts only if already running, so a deliberate stop stays
-            # stopped; ExecStop pipes `stop` to the socket for a clean save.
+            # try-restart preserves deliberate stops; ExecStop saves through stdin.
             systemctl try-restart "$unit"
           '';
         };
@@ -451,14 +423,8 @@ in {
           view-distance = cfg.viewDistance;
           simulation-distance = cfg.simulationDistance;
           online-mode = true;
-          # Auth/whitelist stay enforced by online-mode + whitelist; this only
-          # allows unsigned chat so No Chat Reports can strip reportable proofs.
-          enforce-secure-profile = false;
-          # Defence-in-depth behind the tailnet `game` ACL. whitelist.json lives
-          # at the data-dir root (not the re-copied config/ tree), so console
-          # `whitelist add` persists. FOOTGUN: an empty list locks everyone out,
-          # ops included — add players from the console (it bypasses the
-          # whitelist) right after first deploy.
+          # Keep online auth and whitelist; allow unsigned chat for No Chat Reports.
+          # whitelist.json persists at the data root. An empty list locks out all players.
           white-list = true;
           enforce-whitelist = true;
           enable-rcon = false;
@@ -473,20 +439,12 @@ in {
           {
             config = "${serverPack}/config";
             "server-icon.png" = serverIcon;
-            # Moonlight loads this folder (global_datapacks_folder in
-            # moonlight-common.json) as a datapack source. It sits at the PACK
-            # root, so the config/ copy above misses it — unmapped, the
-            # These packs are required by WooledBoots and VillagersPlus.
+            # Moonlight loads required datapacks from the pack root, not config/.
             "moonlight-global-datapacks" = "${serverPack}/moonlight-global-datapacks";
-            # squaremap reads <datadir>/squaremap/, not config/.
-            # The dir already persists; this file is managed only to pin
-            # loopback bind, public web-address, and capped render threads
-            # (fullrender was dragging TPS).
+            # squaremap reads its data directory; pin bind address and render limits.
             "squaremap/config.yml" = squaremapConfig;
           }
-          # The config tree is re-copied each start, so the mod's own writes
-          # never persist — re-supply the file (token substituted at
-          # ExecStartPre) every start instead.
+          # Recreate the runtime-secret config after each config-tree reset.
           // optionalAttrs cfg.discord.enable {
             "config/Discord-Integration.toml" = discordIntegrationConfig;
           };

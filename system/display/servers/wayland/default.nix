@@ -16,8 +16,7 @@ in {
     })
   ];
 
-  # Set by the selected compositor module; the bash wrapper execs this on
-  # VT1 login instead of hardcoding a compositor.
+  # Selected compositor command for VT1 login.
   options.laplace.display.wayland.sessionCommand = lib.mkOption {
     type = lib.types.nullOr lib.types.str;
     default = null;

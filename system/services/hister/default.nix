@@ -1,7 +1,4 @@
-# Hister — self-hosted web history search. Same shape as mimir's other tenants
-# (miniflux/wallabag/silverbullet): single Go binary on loopback, node-local
-# Caddy terminates TLS, :443 tailnet-only. Semantic search is an optional CPU
-# Uses nixpkgs services.llama-cpp instead of the ROCm service.
+# Tailnet-only Hister service with optional CPU embeddings.
 {
   config,
   lib,
@@ -54,38 +51,24 @@ in {
   config = mkIf cfg.enable {
     mnemosyne.dirs = [dataDir];
 
-    # No app.access_token: with an empty token hister leaves every endpoint
-    # unauthenticated (server.go registerEndpoints wraps nothing, createHandler
-    # sets Authenticated=true). The instance is single-user and reachable only
-    # over the tailnet (:443 via node-local Caddy, tailscale-gated), so the
-    # token would add a password prompt with no security gain — worse with
-    # cookie-wiping browsers that drop the session every restart. Re-add auth by
-    # setting an `app.access_token` (via environmentFile, secret-safe) if this
-    # ever leaves the tailnet.
+    # Tailnet access is the auth boundary; an app token adds no isolation here.
+    # Add a secret access_token before exposing Hister elsewhere.
     services.hister = {
       enable = true;
-      # Deliberately NOT using upstream `port`/`dataDir` options: the settings
-      # block is the single source. Upstream `port` only adds firewall +
-      # CAP_NET_BIND_SERVICE handling we don't want (loopback + Caddy). Upstream
-      # `dataDir` would swap StateDirectory for a bare ReadWritePaths that isn't
-      # auto-created; StateDirectory=hister (dataDir=null) makes the dir for us.
+      # Keep settings authoritative; upstream port opens the firewall and dataDir
+      # replaces auto-created StateDirectory with a bare path.
       settings =
         {
-          # Set app.directory explicitly rather than leaning on the binary's
-          # system-user permission-error fallback (config.go:590): with
-          # StateDirectory=hister this path exists and is writable, so
-          # MkdirAll succeeds on the first try, no scary warning log.
+          # Use the writable StateDirectory directly; avoid the permission fallback.
           app.directory = dataDir;
           server = {
             address = "127.0.0.1:${toString cfg.port}";
             base_url = "https://${cfg.domain}";
             database = "db.sqlite3"; # relative to app.directory
           };
-          # crawler.backend left at its `http` default; chromedp is a per-crawl
-          # CLI decision later (separate process, server unit stays hardened).
+          # Keep chromedp as a separate per-crawl process.
         }
-        # optionalAttrs, not a nested mkIf: mkIf inside a freeform-YAML value
-        # would render its {_type="if";...} wrapper into the config.
+        # nested mkIf would leak its wrapper into freeform YAML.
         // optionalAttrs cfg.embedding.enable {
           semantic_search = {
             enable = true;
@@ -101,9 +84,7 @@ in {
         };
     };
 
-    # Plain CPU llama.cpp (stock nixpkgs module). ~146 MB Q8_0 GGUF, declaratively
-    # fetched. `--embedding` (singular) is the correct flag for this llama.cpp —
-    # confirmed against laplace's own llm module, which serves nomic the same way.
+    # Serve the pinned embedding model with the CPU llama.cpp module.
     services.llama-cpp = mkIf cfg.embedding.enable {
       enable = true;
       host = "127.0.0.1";
@@ -121,9 +102,7 @@ in {
       ];
     };
 
-    # Order the server after the embedder so first-boot captures can embed;
-    # `wants` (not `requires`) so hister still starts + keyword-searches if the
-    # embedder is down.
+    # Start after the embedder, but allow keyword search when it is down.
     systemd = {
       services = {
         hister = mkIf cfg.embedding.enable {
@@ -141,26 +120,20 @@ in {
             Type = "oneshot";
             User = config.services.hister.user;
             Group = config.services.hister.group;
-            # No EnvironmentFile: the server is tokenless (see above), so the import
-            # CLI needs no credential — only HISTER_CONFIG for the server address.
+            # Tokenless imports need only HISTER_CONFIG.
             StateDirectory = "hister/datasets"; # -> /var/lib/hister/datasets
             PrivateTmp = true;
           };
           environment = {
-            # Reuse the exact store-rendered config the server runs with, so the CLI
-            # client resolves server.address identically (the upstream module sets
-            # HISTER_CONFIG here whenever settings != {}).
+            # Reuse the server's rendered config for the CLI address.
             HISTER_CONFIG = config.systemd.services.hister.environment.HISTER_CONFIG;
           };
           script = ''
             set -euo pipefail
             cd ${datasetDir}
             for name in ${lib.escapeShellArgs cfg.datasets}; do
-              # simplification: no per-dataset checksum — TLS to hister.org is the
-              # trust anchor; upgrade path is pinning sha256 once upstream publishes
-              # them. Datasets are mutated in place upstream ~monthly, so ETag makes
-              # unchanged weekly re-runs a no-op (304 -> empty tmp -> skip import),
-              # which also sidesteps re-import churn.
+              # simplification: trust TLS until upstream publishes checksums.
+              # ETag makes unchanged weekly downloads no-ops.
               if curl -fsSL \
                   --etag-compare "$name.etag" --etag-save "$name.etag" \
                   -o "$name.json.7z.tmp" \

@@ -8,10 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check flake inputs
-        # Run flake-checker via nix instead of the DeterminateSystems action: the
-        # action downloads a prebuilt binary and node spawns it, which dies with
-        # EACCES on the host-backend runner. nix runs it from the store (correct
-        # interpreter + exec bit). Same tool, no foreign binary download.
+        # Run flake-checker from Nix; the downloaded action binary gets EACCES here.
         run: nix run --extra-experimental-features 'nix-command flakes' nixpkgs#flake-checker
   check-expressions:
     name: Check flake expressions
@@ -21,13 +18,8 @@ jobs:
       # nix is already on the runner (host backend, hostPackages); no install step.
       # nix-command + flakes + pipe-operators are enabled explicitly because the
       # flake uses |> and the host's nix.conf may not have any of them on.
-      #
-      # simplification: retry up to 3x. The runner has no persisted nix cache (job
-      # HOME is an ephemeral act tmpdir), so every run re-downloads all flakehub
-      # input tarballs; a single truncated download then fails the whole job. Retry
-      # re-fetches the failed input. Ceiling: still flaky under sustained network
-      # trouble. Durable upgrade: persist XDG_CACHE_HOME on the runner so inputs
-      # aren't refetched each run (also kills the ~8min fetch time).
+      # simplification: retry three times because ephemeral cache downloads can truncate.
+      # Persist XDG_CACHE_HOME if network failures or fetch time become costly.
       - run: |
           for attempt in 1 2 3; do
             nix flake check --all-systems \

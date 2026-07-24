@@ -6,9 +6,7 @@ die-on-term = true
 
 env = WALLABAG_DATA=@dataDir@
 
-# Serve HTTP on loopback so the host Caddy can reverse-proxy here. Upstream
-# (gdamjan/wallabag-service) instead exposes the uwsgi protocol on a unix socket
-# for nginx; Caddy speaks no uwsgi, hence http-socket.
+# Caddy needs loopback HTTP; it cannot proxy the uWSGI protocol.
 http-socket = 127.0.0.1:@port@
 
 mime-file = @mimeTypes@
@@ -16,8 +14,7 @@ site-root = @siteRoot@
 chdir = %(site-root)
 
 static-check = %(site-root)
-# web/ is a symlink farm into the read-only store; uwsgi's static server rejects
-# symlink targets whose realpath escapes the docroot, so whitelist the store.
+# Allow static symlinks into the Nix store.
 static-safe = /nix/store
 static-index = index.html
 static-skip-ext = .php

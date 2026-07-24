@@ -81,10 +81,7 @@ in
 
     pythonRelaxDeps = [
       "litellm"
-      # 0.32.0 pins click>=8.3.3 for PYSEC-2026-2132 (command injection in
-      # click.edit()); nixpkgs has 8.3.1. headroom never calls click.edit()
-      # (verified: only the pyproject comment references it), so the CLI API it
-      # does use is unchanged across the patch bump — relax to nixpkgs' click.
+      # headroom never calls vulnerable click.edit; its CLI works with nixpkgs 8.3.1.
       "click"
     ];
 

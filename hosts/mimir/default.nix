@@ -1,9 +1,4 @@
-# Miniflux + SilverBullet + TaskChampion + Radicale host, running as a Proxmox guest. Generic VM concerns
-# (disk, impermanence, bootloader, virtio, qemuGuest, the archon admin user, the
-# VMA artifact) live in the `proxmox` profile; this module only declares the apps.
-#
-# TLS terminates on the node-local Caddy. Apps bind loopback; only Caddy reaches
-# their raw ports, and :443 is tailnet-only via laplace.services.tailscale.
+# Application guest. Caddy fronts loopback services on tailnet-only port 443.
 {
   config,
   inputs,
@@ -20,11 +15,9 @@ in {
   sops.secrets = {
     # The Miniflux module otherwise uses the shared secret file.
     miniflux_admin.sopsFile = ../../system/secrets/mimir.yaml;
-    # beszel agent's KEY + mimir's per-system TOKEN, consumed as the agent's
-    # EnvironmentFile below.
+    # Beszel KEY and TOKEN environment file.
     beszel_agent_env.sopsFile = ../../system/secrets/mimir.yaml;
     radicale_htpasswd.sopsFile = ../../system/secrets/mimir.yaml;
-    # wallabag's Symfony secret; add `wallabag_secret` to mimir.yaml (openssl rand -hex 32).
     wallabag_secret.sopsFile = ../../system/secrets/mimir.yaml;
     telemetry_client_certificate = {
       sopsFile = ../../system/secrets/mimir.yaml;
@@ -99,8 +92,7 @@ in {
         enable = true;
         domain = histerHost;
         embedding.enable = true;
-        # Reference doc corpora pulled + imported weekly. Trim to taste; slugs
-        # are the full set from https://hister.org/datasets bar powershell.
+        # Weekly reference corpora from hister.org/datasets.
         datasets = [
           "go-stdlib"
           "rust-docs"
@@ -116,8 +108,7 @@ in {
           enable = true;
           appUrl = "https://${beszelHost}";
         };
-        # Colocated with the hub: dial it direct on loopback, skipping Caddy/TLS
-        # and the tailnet round-trip. KEY + TOKEN come from the sops env file.
+        # Use loopback because agent and hub share this host.
         agent = {
           enable = true;
           hubUrl = "http://localhost:8090";
@@ -129,10 +120,8 @@ in {
         enable = true;
         email = "dysthesis@protonmail.com";
         openFirewall = false; # tailnet-only; :443 reached over tailscale0
-        # Static site straight out of the store — no darkhttpd unit (the slides
-        # flake's server wrapper would be a redundant loopback hop behind Caddy).
-        # tls block duplicated from cloudflare.proxies: that option only renders
-        # reverse_proxy vhosts, and one static site doesn't earn a new option.
+        # Serve store files directly; no extra HTTP service.
+        # cloudflare.proxies only renders reverse proxies.
         virtualHosts."slides.dysthesis.com".extraConfig = ''
           tls {
             dns cloudflare {env.CF_API_TOKEN}
@@ -163,9 +152,7 @@ in {
   services = {
     miniflux.config = {
       LISTEN_ADDR = lib.mkForce "127.0.0.1:8087";
-      # Miniflux bakes BASE_URL into absolute links + cookie scope, so it must
-      # match the public origin Caddy serves, not the module's bare-localhost
-      # default.
+      # BASE_URL controls absolute links and cookie scope; use the public origin.
       BASE_URL = lib.mkForce "https://${minifluxHost}";
     };
     silverbullet.listenAddress = lib.mkForce "127.0.0.1";

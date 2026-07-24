@@ -46,22 +46,20 @@
     "Super Down send-layout-cmd ${rivercarro} 'main-location bottom'"
     "Super Left send-layout-cmd ${rivercarro} 'main-location left'"
   ];
-in
-  # sh
-  ''
+in ''
 
-     ${concatStringsSep "\n" (map (bind: "riverctl map normal ${bind}") binds-normal)}
+   ${concatStringsSep "\n" (map (bind: "riverctl map normal ${bind}") binds-normal)}
 
-    riverctl map-pointer normal Super BTN_LEFT move-view
-    riverctl map-pointer normal Super BTN_RIGHT resize-view
+  riverctl map-pointer normal Super BTN_LEFT move-view
+  riverctl map-pointer normal Super BTN_RIGHT resize-view
 
-    for i in $(seq 1 9)
-    do
-        tags=$((1 << ($i - 1)))
+  for i in $(seq 1 9)
+  do
+      tags=$((1 << ($i - 1)))
 
-        riverctl map normal Super $i spawn "${getExe pkgs.river-bnf} $tags"
-        riverctl map normal Super+Shift $i set-view-tags $tags
-        riverctl map normal Super+Control $i toggle-focused-tags $tags
-        riverctl map normal Super+Shift+Control $i toggle-view-tags $tags
-    done
-  ''
+      riverctl map normal Super $i spawn "${getExe pkgs.river-bnf} $tags"
+      riverctl map normal Super+Shift $i set-view-tags $tags
+      riverctl map normal Super+Control $i toggle-focused-tags $tags
+      riverctl map normal Super+Shift+Control $i toggle-view-tags $tags
+  done
+''

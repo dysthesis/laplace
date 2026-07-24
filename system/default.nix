@@ -14,17 +14,13 @@ in {
       {
         GH_TELEMETRY = "false";
         DO_NOT_TRACK = "true";
-        # EDITOR is set everywhere, but getExe bakes a store path into the
-        # closure: only desktops pull the full poincare/neovim; servers fall back
-        # to vim (already shipped "for emergencies"), keeping zen-beta and the
-        # neovim plugin set out of headless system closures.
+        # Servers use Vim to avoid pulling the desktop Neovim closure.
         EDITOR = lib.getExe (
           if isDesktop
           then inputs.poincare.packages.${system}.default
           else pkgs.vim
         );
       }
-      # A GUI browser only where there is a GUI.
       // lib.optionalAttrs isDesktop {
         BROWSER = lib.getExe pkgs.configured.zen;
       };

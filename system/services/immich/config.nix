@@ -7,10 +7,7 @@
   cfg = config.laplace.services.immich;
 in {
   config = mkIf cfg.enable {
-    # Tailnet-only: bind to the tailnet but never add the port to the firewall.
-    # laplace.services.tailscale marks tailscale0 as a trusted interface, so
-    # tailnet peers reach `host:port` while the default firewall blocks LAN and
-    # public traffic.
+    # Bind to the trusted tailnet interface without opening a firewall port.
     assertions = [
       {
         assertion = config.laplace.services.tailscale.enable;
@@ -18,30 +15,22 @@ in {
       }
     ];
 
-    # Persist uploaded media and the Postgres cluster across ephemeral-root
-    # wipes. The machine-learning model cache (/var/cache/immich) is left
-    # unpersisted on purpose.
-    # simplification: ML models re-download on first use after a wipe; persist
-    # /var/cache/immich too if that latency ever matters.
+    # Persist media and PostgreSQL, but let replaceable ML models redownload.
+    # simplification: persist /var/cache/immich if first-use latency matters.
     mnemosyne.dirs = [
       cfg.mediaLocation
       config.services.postgresql.dataDir
     ];
 
-    # Pin UID/GID: mediaLocation persists across root wipes, /etc/passwd
-    # doesn't, so dynamic allocation can reshuffle and strand the media dirs
-    # under a stale owner (bit mneme 2026-07). 997 matches mneme's live value.
+    # Pin UID and GID so persisted media ownership survives root resets.
     users.users.immich.uid = 997;
     users.groups.immich.gid = 997;
 
     services.immich = {
       enable = true;
       inherit (cfg) host mediaLocation port;
-      # Exposure is gated by the tailscale-trusted interface, not an open port.
       openFirewall = false;
-      # database (createDB), redis, and machine-learning default to on. The DB
-      # talks over the local /run/postgresql unix socket, so no secretsFile is
-      # required. settings stays null = fully configurable from the web admin UI.
+      # Local PostgreSQL uses peer auth; leave app settings mutable in the UI.
     };
   };
 }

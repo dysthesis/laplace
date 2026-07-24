@@ -32,17 +32,11 @@
     autopair
   ];
 
-  # `tool init | source` forks the tool on every shell start only to produce
-  # text that is a pure function of the tool's store path. Capture that text
-  # once at build time and `source` it as a plain file instead: identical
-  # bytes reach the parser, but a read replaces a fork+exec (and, for
-  # starship, the mktemp/cat/rm trio its psub-based shim would spawn).
+  # Build tool init scripts once instead of forking on every shell start.
   starshipInit = pkgs.runCommand "starship-init.fish" {} ''
     HOME="$TMPDIR" ${lib.getExe starship} init fish --print-full-init > $out
   '';
-  # The generated script ends in `alias cd=__zoxide_z`, which costs an
-  # `echo … | source` round-trip at startup; expand it to the exact function
-  # definition fish's `alias` would build.
+  # Expand zoxide's alias at build time to avoid runtime source.
   zoxideInit = pkgs.runCommand "zoxide-init.fish" {} ''
     HOME="$TMPDIR" ${lib.getExe zoxide} init fish --cmd cd \
       | sed "s|^alias cd=__zoxide_z\$|function cd --wraps=__zoxide_z --description 'alias cd=__zoxide_z'\n    __zoxide_z \$argv\nend|" \
@@ -52,10 +46,7 @@
     HOME="$TMPDIR" ${lib.getExe direnv} hook fish > $out
   '';
 
-  # Plugin function/completion paths, resolved at build time instead of
-  # stat'ing every directory on every shell start. vendor_conf.d is
-  # deliberately not sourced, matching the behaviour of the load_plugin
-  # function this replaces.
+  # Resolve plugin function and completion paths at build time; skip vendor_conf.d.
   pluginPaths = pkgs.runCommand "fish-plugin-paths.fish" {} ''
     touch $out
     for p in ${concatStringsSep " " (map toString plugins)}; do
@@ -69,8 +60,7 @@
     done
   '';
 
-  # Functions that used to be parsed inline at every startup, now autoloaded
-  # on first use via fish's vendor_functions.d mechanism.
+  # Autoload functions on first use.
   functionsDir = pkgs.runCommand "fish-vendor-functions" {} ''
     install -Dm444 ${./functions/pushd.fish} $out/share/fish/vendor_functions.d/pushd.fish
     install -Dm444 ${./functions/popd.fish} $out/share/fish/vendor_functions.d/popd.fish
@@ -105,10 +95,7 @@
     }
     // ezaAliases;
 
-  # fish's `alias` builtin assembles each function and feeds it through
-  # `echo … | source` at every startup. Run `alias` once at build time (so its
-  # exact wrapping/description/`command` semantics are preserved) and source
-  # the resulting function definitions directly.
+  # Generate alias functions once at build time.
   aliasesFile = let
     gen = pkgs.writeText "gen-aliases.fish" ''
       ${concatStringsSep "\n" (mapAttrsToList (name: value: "alias ${escapeShellArg name} ${escapeShellArg value}") aliases)}
@@ -119,9 +106,7 @@
       HOME="$TMPDIR" XDG_RUNTIME_DIR="$TMPDIR" ${lib.getExe fish} --no-config ${gen} > $out
     '';
 
-  # The Radicale collection that TaskDroid mirrors Taskwarrior into; excluded
-  # from the startup agenda since those events duplicate the `task next` list
-  # above. Stable as long as the Radicale collection isn't recreated.
+  # Exclude TaskDroid's duplicate events; collection ID changes after recreation.
   taskMirrorCalendar = "08dc09ab-c6bf-1a74-8019-003a57d72f37";
 
   deps = with pkgs;
@@ -136,7 +121,6 @@
 
   config =
     writeTextDir "${vendorConf}/user_config.fish"
-    # fish
     ''
       source ${pluginPaths}
 

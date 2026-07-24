@@ -1,9 +1,5 @@
-# Exposes `pkgs.unstable`: nixpkgs-unstable evaluated for the host platform,
-# inheriting the stable nixpkgs `config`. Use `pkgs.unstable.<pkg>` to reach a
-# newer package without switching the whole system off the stable channel.
-#
-# Carries a mistral-common pin (see below) required by the unstable transformers
-# package; drop it once nixpkgs-unstable ships mistral-common >= 1.11.
+# Exposes host-platform pkgs.unstable with stable nixpkgs config.
+# Pin mistral-common until nixpkgs-unstable reaches 1.11.
 inputs: final: _prev: {
   unstable = import inputs.nixpkgs-unstable {
     system = final.stdenv.hostPlatform.system;
@@ -14,8 +10,7 @@ inputs: final: _prev: {
           (unstablePrev.pythonPackagesExtensions or [])
           ++ [
             (_pythonFinal: pythonPrev: {
-              # transformers 5.5 imports ReasoningEffort from mistral-common;
-              # nixpkgs currently has 1.8.8, which lacks that symbol.
+              # transformers 5.5 needs ReasoningEffort, absent in 1.8.8.
               mistral-common = pythonPrev.mistral-common.overridePythonAttrs (old: rec {
                 version = "1.11.1";
                 src = unstableFinal.fetchFromGitHub {

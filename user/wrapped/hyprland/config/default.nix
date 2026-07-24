@@ -40,8 +40,7 @@
       if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
         eval $(dbus-launch --exit-with-session --sh-syntax)
       fi
-      ## https://bbs.archlinux.org/viewtopic.php?id=224652
-      # Need QT theme for syncthing tray
+      # Syncthing tray needs the Qt theme.
       systemctl import-environment --user DISPLAY WAYLAND_DISPLAY XDG_SESSION_TYPE DBUS_SESSION_BUS_ADDRESS \
         QT_QPA_PLATFORMTHEME PATH XCURSOR_SIZE XCURSOR_THEME
 

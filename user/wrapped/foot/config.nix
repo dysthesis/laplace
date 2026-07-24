@@ -13,8 +13,7 @@
   lineHeight = fontSize * 1.5;
   padding = 10;
 
-  # Render the config attribute set as an INI file, as is expected by foot.
-  # TODO: validate attribute set before rendering
+  # Foot expects INI.
   mkConfig = cfg:
     cfg
     |> lib.generators.toINI {}

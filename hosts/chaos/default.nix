@@ -25,14 +25,10 @@ in {
       isoImage.edition = "chaos";
       laplace = {
         profiles = ["desktop"];
-        # Installer ISO uses the stock kernel; the hardened profile is marked
-        # panic-prone in system/hardening/kernel.
+        # The hardened kernel is panic-prone on the installer.
         harden = [];
       };
-      # Lock root on the ISO. chaos is gated out of sops (system/secrets), so it
-      # cannot decrypt a password secret; admin is via the nixos user (Calamares
-      # autologin + SSH keys below). Set initialPassword here if an emergency
-      # root login is ever wanted.
+      # The ISO cannot decrypt SOPS; keep root locked and use the nixos account.
       users.users.root = {
         hashedPassword = mkForce null;
         initialHashedPassword = mkForce null;
@@ -55,8 +51,7 @@ in {
       ];
     }
     (lib.foldr (
-        # recursiveUpdate, not //: a shallow merge would replace the whole users
-        # attr each step and clobber the previously-set user's keys.
+        # A shallow merge would discard keys for earlier users.
         curr: acc: recursiveUpdate acc {users.users.${curr}.openssh.authorizedKeys.keys = keys;}
       ) {}
       users);

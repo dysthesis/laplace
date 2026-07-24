@@ -4,16 +4,11 @@
   pkgs,
   ...
 }: let
-  # Single source of truth: the GPG key used for both commit signing and the
-  # gitattributes `encrypt` filter below. (Previously `${config.user.signingKey}`,
-  # which referenced a `config` arg this module doesn't take -> eval error.)
+  # Shared GPG key for commit signing and the encrypt filter.
   signingKey = "6008B52F296392B0";
 in
-  # Workstation-only (demiurge hosts). This module writes /etc/gitconfig, which
-  # EVERY git on the host reads — including Forgejo's server-side git on
-  # hephaestus, where `commit.gpgsign` (no secret key in the service's keyring)
-  # 500'd PR merges and `diff.external = difft` (not on the service PATH) 500'd
-  # PR diff views. Headless guests must not inherit a human's git identity.
+  # Workstations only: system Git config would break Forgejo with a human identity
+  # and unavailable desktop helpers.
   lib.mkIf (lib.elem "demiurge" config.laplace.users) {
     environment.systemPackages = with pkgs; [
       cloudflared
@@ -22,11 +17,7 @@ in
     programs.git = {
       enable = true;
       lfs.enable = true;
-      # Build git with the libsecret credential helper so HTTPS tokens (e.g. the
-      # Forgejo PAT for git.dysthesis.com) live in the desktop keyring, not plaintext.
-      # The override ships git-credential-libsecret in $out/bin, so `helper = libsecret`
-      # (set in config below) resolves on PATH. Needs a running Secret Service
-      # (gnome-keyring / KWallet / KeePassXC), else the helper no-ops and git prompts.
+      # Build libsecret support so HTTPS tokens stay in the desktop keyring.
       package = pkgs.git.override {withLibsecret = true;};
       config = {
         init.defaultBranch = "main";

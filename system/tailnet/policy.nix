@@ -1,12 +1,4 @@
-# The tailnet policy DATA: node identity (addresses + role tags), the role->role
-# reachability matrix, and the guest cohorts. Pure values for the laplace.tailnet
-# options whose SCHEMA + validation live in ./default.nix; the renderers
-# (firewall.nix, headscale.nix) and checkTailnet consume it. Data and the
-# mechanism that processes it are kept apart on purpose.
-#
-# Identical on every host (a node cannot read a peer's `config` at eval, so this
-# is a plain constant imported fleet-wide, not cross-node config); each consumer
-# filters by `config.networking.hostName`. Confirmed against `headscale nodes list`.
+# Tailnet nodes, role flows, and guest cohorts. Renderers filter this shared data by host.
 _: {
   laplace.tailnet = {
     nodes = {
@@ -64,11 +56,10 @@ _: {
         ip = "100.64.0.7";
         ip6 = "fd7a:115c:a1e0::7";
         tags = ["phone"];
-      }; # tag:phone (old phone)
+      }; # retired phone
     };
 
-    # a popped phone keeps mesh reach (the old `device` is the weak link; prefer
-    # deleting it).
+    # Delete retired phones; keeping them preserves mesh access.
     flows = [
       {
         from = "*";
@@ -224,7 +215,7 @@ _: {
           "chris"
         ];
         reach = {
-          game = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"]; # Java + Simple Voice Chat + modpack (mc.) + web map (map.), both :443
+          game = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"]; # Minecraft, voice chat, downloads, and map
           dns = ["udp/53"];
         };
       };

@@ -63,15 +63,12 @@ in
             sloth.xdgPicturesDir
             "/run/dbus/system_bus_socket"
             "/etc/resolv.conf"
-            # Portal helper for file access
             (envSuffix "XDG_RUNTIME_DIR" "/doc")
-            # GTK/Font configuration
             (sloth.concat' sloth.xdgConfigHome "/gtk-3.0")
             (sloth.concat' sloth.xdgConfigHome "/gtk-4.0")
             (sloth.concat' sloth.xdgConfigHome "/fontconfig")
           ];
           rw = [
-            # Runtime paths for various services
             (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/pipewire-0")
             (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/speech-dispatcher")
             (sloth.concat' (sloth.env "XDG_RUNTIME_DIR") "/gnupg")
@@ -79,10 +76,8 @@ in
             (envSuffix "XDG_RUNTIME_DIR" "/at-spi/bus")
             (envSuffix "XDG_RUNTIME_DIR" "/gvfsd")
 
-            # User directories
             sloth.xdgDownloadDir
 
-            # Application-specific config and cache
             (sloth.concat' sloth.xdgConfigHome "/vesktop")
             # Electron profile still lives under the legacy VencordDesktop name
             (sloth.concat' sloth.xdgConfigHome "/VencordDesktop")
@@ -92,7 +87,6 @@ in
               sloth.xdgCacheHome
             ]
 
-            # Bind Wayland socket correctly
             (sloth.concat [
               (sloth.env "XDG_RUNTIME_DIR")
               "/"
@@ -104,12 +98,10 @@ in
 
         env = {
           ELECTRON_OZONE_PLATFORM_HINT = "wayland";
-          # Share system mime database and icons for better integration
           XDG_DATA_DIRS = lib.makeSearchPath "share" [
             pkgs.adwaita-icon-theme
             pkgs.shared-mime-info
           ];
-          # Make cursors work
           XCURSOR_PATH = lib.concatStringsSep ":" [
             "${pkgs.adwaita-icon-theme}/share/icons"
             "${pkgs.adwaita-icon-theme}/share/pixmaps"

@@ -8,8 +8,7 @@
     inputs.nixos-hardware.nixosModules.common-gpu-amd
   ];
   config = {
-    # Pregen-box overrides, deimos-only — loki keeps the pack's conservative
-    # settings while players are on it.
+    # Deimos-only pregen overrides; Loki keeps the pack defaults.
     services.minecraft-servers.servers.retirement-home = {
       # The pack's c2me config disables parallel worldgen (see
       # c2me-pregen.toml for the reasoning).

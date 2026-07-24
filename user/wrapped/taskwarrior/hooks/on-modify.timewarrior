@@ -30,13 +30,6 @@ import json
 import subprocess
 import sys
 
-# Hook should extract all the following for use as Timewarrior tags:
-#   UUID
-#   Project
-#   Tags
-#   Description
-#   UDAs
-
 try:
     input_stream = sys.stdin.buffer
 except AttributeError:
@@ -44,7 +37,6 @@ except AttributeError:
 
 
 def extract_tags_from(json_obj):
-    # Extract attributes for use as tags.
     tags = [json_obj['description']]
 
     if 'project' in json_obj:
@@ -52,9 +44,7 @@ def extract_tags_from(json_obj):
 
     if 'tags' in json_obj:
         if type(json_obj['tags']) is str:
-            # Usage of tasklib (e.g. in taskpirate) converts the tag list into a string
-            # If this is the case, convert it back into a list first
-            # See https://github.com/tbabej/taskpirate/issues/11
+            # tasklib may serialise tags as CSV; taskpirate#11.
             tags.extend(json_obj['tags'].split(','))
         else:
             tags.extend(json_obj['tags'])
@@ -74,11 +64,9 @@ def main(old, new):
 
     start_or_stop = ''
 
-    # Started task.
     if 'start' in new and 'start' not in old:
         start_or_stop = 'start'
 
-    # Stopped task.
     elif ('start' not in new or 'end' in new) and 'start' in old:
         start_or_stop = 'stop'
 
@@ -87,7 +75,6 @@ def main(old, new):
 
         subprocess.call(['timew', start_or_stop] + tags + [':yes'])
 
-    # Modifications to task other than start/stop
     elif 'start' in new and 'start' in old:
         old_tags = extract_tags_from(old)
         new_tags = extract_tags_from(new)

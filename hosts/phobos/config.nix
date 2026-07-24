@@ -7,11 +7,7 @@
         denySubnetRoutes = true;
       };
       harden = [
-        # "kernel"
-        # Keep malloc hardening enabled here. Zen already ships with
-        # --enable-replace-malloc, but on this AMD laptop it still needs the
-        # wrapper-side Zink workaround in user/wrapped/zen.
-        # "malloc"
+        # Zen needs its Zink workaround with global malloc hardening on this AMD GPU.
       ];
       profiles = ["desktop"];
       hardware = {

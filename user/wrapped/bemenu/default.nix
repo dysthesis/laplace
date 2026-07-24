@@ -6,7 +6,6 @@
 }: let
   bemenu = pkgs.bemenu.overrideAttrs (_old: {
     patches = [
-      # PR 432: adds fuzzy finding via the '-z' flag
       (pkgs.fetchpatch {
         url = "https://patch-diff.githubusercontent.com/raw/Cloudef/bemenu/pull/432.patch";
         hash = "sha256-x9y16hmqjzHhs0RzKUTytP+NgAfXNcBVDmMOSWcXL1s=";
@@ -49,10 +48,10 @@
   hp = lib.max 1 (round (baseHP * scale));
 
   flags = [
-    "-b" # bottom
-    ''-z'' # fuzzy
-    ''-i'' # ignorecase
-    ''-p \" \"'' # prompt
+    "-b"
+    ''-z''
+    ''-i''
+    ''-p \" \"''
     ''--fn \"IosevkaCadmus Nerd Font ${toString fontSize}\"''
     ''-H \"${toString lineHeight}\"''
     ''--hp \"${toString hp}\"''

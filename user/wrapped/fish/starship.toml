@@ -8,21 +8,16 @@ right_format = "$status$cmd_duration$time"
 
 [character]
 success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)" # the glance; the code itself shows on the right
+error_symbol = "[❯](bold red)" # status code appears on the right
 vimcmd_symbol = "[❮](bold gray8)"
 
 [cmd_duration]
-min_time = 2000 # under 2s, "fast" is the whole answer
+min_time = 2000 # hide commands under 2 seconds
 style = "yellow"
 format = "[$duration]($style) "
 
-# ── jujutsu ──────────────────────────────────────────────────────────
-# gated, not polled: one fast `jj root` per prompt (--ignore-working-
-# copy = no snapshot, ~5ms); the full template runs only inside jj
-# repos. per-command VCS state earns its exec (the task counter did
-# not). colocated repos: git's @hash/counts still render as residue —
-# set git_commit.disabled / git_status.disabled if you go jj-primary.
-# needs jj >= 0.18 (raw_escape_sequence + \e strings).
+# Run the full template only inside jj repos; jj root skips snapshots.
+# Disable Git modules for jj-primary repos. Requires jj 0.18 or newer.
 [custom.jj]
 disabled = false
 ignore_timeout = true
@@ -42,11 +37,7 @@ jj log -r @ -n 1 --ignore-working-copy --no-graph --color always -T 'separate(" 
     raw_escape_sequence("\e[38;2;85;85;85m") ++ "(no description)" ++ raw_escape_sequence("\e[0m")))'
 '''
 
-# ── optional: overdue taskwarrior count ──────────────────────────────
-# deliberately OFF. it would exec `task` on every prompt render — a
-# latency tax paid thousands of times a day for data that changes
-# hourly. a todo count belongs in a daily review, not on the hot path.
-# if you disagree: set disabled=false and add ${custom.task} to format.
+# Disabled: running task on every prompt costs more than its hourly data merits.
 [custom.task]
 disabled = true
 when = true
@@ -57,13 +48,13 @@ format = "([⚑$output]($style) )"
 
 [directory]
 style = "gray9"
-repo_root_style = "bold white" # the repo is the signal…
-before_repo_root_style = "gray5" # …the ~/dev/ prefix is noise
+repo_root_style = "bold white" # emphasise repository name
+before_repo_root_style = "gray5" # dim parent path
 repo_root_format = "[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
 format = "[$path]($style)[$read_only]($read_only_style) "
 truncate_to_repo = true
 truncation_length = 4
-truncation_symbol = "…/" # ellipsis over an icon: truncation must READ as truncation
+truncation_symbol = "…/" # explicit truncation marker
 read_only = " " # fires in /nix/store, mounted media, other users' homes
 read_only_style = "orange"
 
@@ -82,11 +73,11 @@ style = "gray6"
 format = "[@$hash]($style) "
 
 [git_state]
-style = "bold orange" # rebase/merge/bisect progress — visible when panic is near
+style = "bold orange" # highlight risky VCS operations
 format = '[\($state( $progress_current/$progress_total)\)]($style) '
 
 [git_status]
-# order: urgency → working tree → index → untracked → stash → remote sync
+# Order: urgency, working tree, index, untracked, stash, remote.
 conflicted = "=$count "
 deleted = "×$count "
 renamed = "»$count "
@@ -121,7 +112,7 @@ format = "[$symbol$number]($style) "
 symbol = " " # nf-linux-nixos
 style = "blue"
 heuristic = true # also catch `nix shell` (no IN_NIX_SHELL set)
-impure_msg = "" # impure is the flake default — saying it is noise
+impure_msg = "" # hide the default impure state
 pure_msg = "pure"
 unknown_msg = ""
 format = '[$symbol$state( $name)]($style) '
@@ -149,7 +140,7 @@ symbol = " "
 style = "gray6"
 format = '[$symbol($version)( \($virtualenv\))]($style) '
 
-# runtime versions: reference info, read deliberately — never scanned. hence gray.
+# Runtime versions are reference data; keep them dim.
 [rust]
 symbol = " "
 style = "gray6"
@@ -162,7 +153,7 @@ style = "red"
 format = "[$symbol$status]($style) " # 101 = rust panic, 127 = not found, 130 = ^C
 
 [sudo]
-disabled = false # credentials cached → a key sits by the prompt char
+disabled = false # show cached credentials near the prompt
 symbol = " " # nf-fa-key
 style = "orange"
 format = "[$symbol]($style)"
@@ -170,12 +161,12 @@ format = "[$symbol]($style)"
 [time]
 disabled = false
 time_format = "%H:%M"
-style = "gray5" # scrollback forensics — silent until you need it
+style = "gray5" # dim until needed in scrollback
 format = "[$time]($style)"
 
 [username]
 # appears only when it deviates from the default: root, or over ssh.
-# (a local `sudo -i` shows a bare "root@" — rare enough to accept.)
+# A local sudo login may show only root@.
 show_always = false
 detect_env_vars = ["!IN_VMSHELL"]
 style_user = "gray8"

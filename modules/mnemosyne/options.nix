@@ -29,9 +29,9 @@ in {
       type = listOf str;
       description = "List of mount options for the persisted directories";
       default = [
-        "bind" # We want to bind-mount the paths
-        "X-fstrim.notrim" # We don't need to trim bind mounts
-        "x-gvfs-hide" # We want to hide the mounts from file managers
+        "bind" # bind mount
+        "X-fstrim.notrim" # skip bind-mount trim
+        "x-gvfs-hide" # hide from file managers
       ];
     };
   };

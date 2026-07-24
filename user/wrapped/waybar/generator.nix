@@ -223,7 +223,6 @@
     inherit (model.theme) font;
   in
     pkgs.writeText "waybar-style.css"
-    # css
     ''
             * {
                 border: none;

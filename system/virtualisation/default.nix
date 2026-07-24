@@ -17,11 +17,10 @@ in {
       libvirtd = {
         enable = true;
 
-        # host shutdowns were slow; suspected serial VM teardown
         parallelShutdown = 10;
         qemu = {
           package = pkgs.qemu_kvm;
-          runAsRoot = true; # TODO figure out how to make it work when this is set to false.
+          runAsRoot = true;
           swtpm.enable = true;
         };
 
@@ -40,8 +39,7 @@ in {
       qemu
     ];
 
-    # this allows libvirt to use pulseaudio socket
-    # which is useful for virt-manager
+    # Let virt-manager guests use the PulseAudio socket.
     services.pulseaudio.extraConfig = ''
       load-module module-native-protocol-unix auth-group=qemu-libvirtd socket=/tmp/pulse-socket
     '';

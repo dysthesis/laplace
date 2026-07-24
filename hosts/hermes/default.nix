@@ -19,7 +19,7 @@
     proxmox = {
       cores = 1;
       memory = 2048; # MiB, ballooning ceiling
-      balloon = 384; # MiB, ballooning floor (AdGuard idles ~150 MiB; headroom for filter lists/query log)
+      balloon = 384; # MiB, AdGuard plus filter and log headroom
       diskSize = "64G";
     };
 
@@ -49,10 +49,7 @@
           keyFile = config.sops.secrets.telemetry_client_key.path;
         };
       };
-      # WS/push: hermes is on the tailnet, so the agent dials OUT to the hub. The
-      # hub binds loopback on mimir behind a tailnet-only Caddy, so the only way in
-      # is https://status.dysthesis.com over tailscale0 — not mimir's :8090
-      # (loopback) nor its LAN :443 (tailscale0-only).
+      # Push metrics to the tailnet-only hub through its Caddy endpoint.
       beszel.agent = {
         enable = true;
         hubUrl = "https://status.dysthesis.com";
@@ -60,13 +57,11 @@
       };
       tailscale = {
         enable = true;
-        # AdGuard owns 0.0.0.0:53 here; keep tailscaled from pulling in
-        # systemd-resolved and squatting tcp/53 via its loopback stubs.
+        # AdGuard owns port 53; do not start resolved.
         denyDNS = true;
       };
 
-      # AdGuard's own TLS frontend (no central proxy). adguard.dysthesis.com
-      # resolves to hermes now and is reached over the tailnet (admin-only via ACL).
+      # Serve AdGuard TLS directly on the admin-only tailnet route.
       caddy = {
         enable = true;
         email = "dysthesis@protonmail.com";
@@ -80,17 +75,13 @@
     };
   };
 
-  # AdGuard owns 0.0.0.0:80 (its web UI); stop Caddy from also grabbing :80 for
-  # HTTP->HTTPS redirects. DNS-01 needs no :80, so Caddy listens on :443 only.
+  # AdGuard owns port 80; DNS-01 lets Caddy use only port 443.
   services.caddy.globalConfig = "auto_https disable_redirects";
   networking = {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.20.1"];
-    # tailscale runs with denyDNS here (AdGuard owns :53), so MagicDNS can't
-    # resolve the tailnet-only hub name and the system resolver (10.0.20.1) returns
-    # NXDOMAIN. Pin it to mimir's tailnet IP; the agent reaches the hub's Caddy over
-    # tailscale0 and the cert SNI still matches.
+    # denyDNS disables MagicDNS, so pin the hub name to mimir's tailnet IP.
     hosts."100.64.0.8" = ["status.dysthesis.com"];
     hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
   };

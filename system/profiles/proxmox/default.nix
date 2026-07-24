@@ -1,7 +1,4 @@
-# Impermanence is real here: `/` is tmpfs, with `/nix` and `/nix/persist` on a
-# btrfs disk (the deimos pattern, minus LUKS/@home/@swap and using BIOS boot).
-# State is kept declaratively via `mnemosyne` (see [[mnemosyne-persist-mount-coupling]]:
-# `/nix/persist` is a real `neededForBoot` mount, which `mnemosyne` requires).
+# Proxmox guests use a tmpfs root and persistent Btrfs /nix.
 {
   config,
   lib,
@@ -72,20 +69,16 @@ in {
       }
     ];
 
-    # Default admin identity. mkDefault so a host that sets `laplace.users`
-    # replaces it wholesale (rather than concatenating a duplicate); a guest with
-    # a different admin just declares its own list.
+    # mkDefault lets a guest replace the admin list without duplication.
     laplace.users = mkDefault ["archon"];
 
-    # seabios + grub (legacy). disko's EF02 partition sets boot.loader.grub.devices
-    # to /dev/vda, so we only pick the bootloader and disable EFI vars (no ESP).
+    # SeaBIOS uses GRUB on disko's EF02 partition; no EFI variables.
     laplace.bootloader = mkDefault "grub";
 
     boot = {
       loader.efi.canTouchEfiVariables = mkForce false;
 
-      # virtio guest essentials, inlined rather than importing the upstream
-      # qemu-guest profile so the whole module stays gated behind `enabled`.
+      # Inline guest options so cfg.enabled gates all of them.
       initrd = {
         availableKernelModules = [
           "virtio_pci"
@@ -107,72 +100,40 @@ in {
         "console=tty1"
       ];
     };
-    # `/` is already tmpfs (RAM), so the global boot.tmp.useTmpfs (a *second*
-    # tmpfs for /tmp, default 50% of RAM) is redundant here and doubles the
-    # RAM-backed-write surface. Force it off so /tmp rides the root tmpfs and is
-    # bounded by rootTmpfsSize, not its own half-of-RAM cap.
+    # Root is already tmpfs; a second /tmp tmpfs would bypass rootTmpfsSize.
     boot.tmp.useTmpfs = mkForce false;
 
     services = {
       qemuGuest.enable = true;
 
-      # The journal lives on the tmpfs root: mnemosyne does not persist /var/log,
-      # so with no /var/log/journal directory journald keeps logs in /run (RAM).
-      # The default volatile cap scales with /run (~10% of RAM), which on the
-      # larger guests is tens of MiB of RAM spent on logs. Pin a deterministic
-      # ceiling instead. (If /var/log/journal is ever persisted to btrfs, switch
-      # this to SystemMaxUse, which governs the persistent store.)
+      # The volatile journal consumes RAM; cap it independent of guest size.
+      # Use SystemMaxUse if /var/log/journal becomes persistent.
       journald.extraConfig = "RuntimeMaxUse=32M";
 
-      # Backstop for the tightened ballooning floors: when the host reclaims a
-      # guest down near its floor and a burst (git gc, Chromium archive, ML run,
-      # a /tmp filler) pushes it over, earlyoom kills the offender early instead
-      # of letting the guest stall in a livelock. It watches free RAM *and* zram
-      # swap, so balloon deflation alone (reclaimable cache) does not trip it.
+      # Kill bursty offenders before a ballooned guest stalls in memory pressure.
       earlyoom.enable = mkDefault true;
 
       openssh = {
-        # sshd MUST stay resident, NOT socket-activated, on these headless guests.
-        # A switch-to-configuration hang (the STC job-wait loops have no timeout and
-        # spin forever if the systemd dbus transport drops mid-switch - see the
-        # `timeout`-wrapped STC overlay in nix/overlays/stc-timeout.nix) or memory
-        # pressure can leave sshd.socket with no listener, stranding the guest with
-        # no recovery path but the Proxmox console. A resident sshd.service survives
-        # both. The few MiB `startWhenNeeded` saved are not worth losing remote
-        # access to a headless VM - that trade cost mimir/horos/mneme a deploy.
+        # Keep sshd resident; socket activation can lose its listener during failed switches.
         startWhenNeeded = mkDefault false;
 
-        # Central push-deploy connects as root over the admin/deploy VLAN and runs
-        # switch-to-configuration directly, so the closure activates without
-        # interactive escalation. Root SSH stays disabled globally
-        # (system/default.nix forces PermitRootLogin "no"); this Match re-permits it
-        # *key-only* from VLAN20. VLAN40/DMZ is deliberately excluded so a guest
-        # with the deploy key cannot root-SSH into peers if firewall scoping is absent.
-        # doas keeps prompting for interactive use - unweakened.
+        # Permit key-only root deployment from VLAN20; keep interactive doas prompts.
         extraConfig = ''
           Match Address 10.0.20.0/24
             PermitRootLogin prohibit-password
         '';
 
-        # The global default (system/default.nix) opens :22 on every interface, so
-        # a popped node can reach sshd on every peer over the tailnet. Close that on
-        # the fleet and let the scoped rule below be the sole :22 opening. Gated on
-        # nftables: extraInputRules silently evaporates on the iptables backend, so
-        # without nftables this pair would drop :22 entirely (lockout) — an iptables
-        # guest keeps the open default instead.
+        # Close global SSH before adding the VLAN20-only rule.
+        # Keep the default open on iptables, where extraInputRules cannot replace it.
         openFirewall = mkIf config.networking.nftables.enable (mkForce false);
       };
     };
 
-    # Scope :22 to the VLAN20 admin/deploy source only. VLAN20-only deliberately
-    # excludes the DMZ (VLAN40): a sacrificial DMZ neighbour must not reach a
-    # guest's sshd. Generalises the former bifrost-only F7 scoping to every
-    # nftables guest. (Merges with any host's own extraInputRules — it is lines.)
+    # Limit SSH to VLAN20; DMZ neighbours must not reach guest administration.
     networking.firewall.extraInputRules = mkIf config.networking.nftables.enable ''
       ip saddr 10.0.20.0/24 tcp dport 22 accept
     '';
 
-    # Receive closures pushed by the central deployer (Colmena, `just deploy`).
     nix.settings.trusted-users = ["root" "@wheel"];
     users.users.root.openssh.authorizedKeys.keys = [
       # Workstation deploy keys (mirror archon's; rotate together).
@@ -232,8 +193,7 @@ in {
       };
     };
 
-    # Proxmox VMA artifact: disko raw image repacked via PVE's vma tool.
-    # Build with `nix build .#nixosConfigurations.<host>.config.system.build.proxmoxVMA`.
+    # Repack the disko image as a Proxmox VMA.
     system.build.proxmoxVMA = pkgs.proxmox-vma {
       rawImage = config.system.build.diskoImages;
       baseName = "vzdump-qemu-${hostName}";

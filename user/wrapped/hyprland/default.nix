@@ -26,8 +26,6 @@
     replicate
     ;
 
-  # From:
-  #   https://github.com/sioodmy/dotfiles/blob/d82f7db5080d0ff4d4920a11378e08df365aeeec/user/wrapped/hypr/tohyprconf.nix
   indentLevel = 0;
   importantPrefixes = ["$"];
   initialIndent = concatStrings (replicate indentLevel "  ");

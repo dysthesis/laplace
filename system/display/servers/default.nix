@@ -11,9 +11,7 @@
     })
   ];
 
-  # Shell snippets contributed by the selected session modules; the flake's
-  # desktop-stack check concatenates these per host, so swapping compositors
-  # automatically swaps what gets validated.
+  # Selected sessions contribute their own validation commands.
   options.laplace.display.checkCommands = lib.mkOption {
     type = lib.types.listOf lib.types.lines;
     default = [];

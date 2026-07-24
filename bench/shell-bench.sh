@@ -1,17 +1,6 @@
 #!/usr/bin/env bash
-# ---------------------------------------------------------------------------
-# shell-bench.sh - standardised, reproducible shell-startup benchmark for this
-# flake. Benchmarks the EXACT Nix-built artifacts (not whatever is on $PATH),
-# captures provenance, and reports the metrics that actually correlate with
-# perceived latency (after zsh-bench), not the misleading `time shell -i -c
-# exit` floor.
-#
-# Tiers:  T0 provenance | T1 coarse floor (hyperfine) | T2 perceptual metrics
-#         (PTY harness) | T3 attribution (fish --profile-startup + ablation) |
-#         T4 syscall/exec accounting (strace) | T5 A/B compare.
-#
-# Run `bench/shell-bench.sh --help`. Designed to be driven via `nix run .#bench`.
-# ---------------------------------------------------------------------------
+# Reproducible shell-startup benchmark using exact Nix-built artefacts.
+# Measures coarse, perceptual, attribution, syscall, and A/B tiers.
 set -euo pipefail
 
 HERE="${BENCH_LIB:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
@@ -22,7 +11,6 @@ STATS="$HERE/stats.py"
 UI="$HERE/ui.py"
 ui() { python3 "$UI" "$@" || true; } # rich status banners (stderr), best-effort
 
-# ---- defaults --------------------------------------------------------------
 FLAKE="."
 HOST="$(hostname 2>/dev/null || echo unknown)"
 TARGETS="fish,bash,devshell"
@@ -70,7 +58,6 @@ EOF
     exit "${1:-0}"
 }
 
-# ---- arg parsing -----------------------------------------------------------
 while [[ $# -gt 0 ]]; do
     case "$1" in
     --flake)
@@ -169,11 +156,8 @@ merge_pty() {
               .[$k] = ((.[$k] // []) + $x.samples[$k]))))}' "$@" >"$out"
 }
 
-# ---- environment regimes ---------------------------------------------------
-# Echoes `env` assignments for the chosen mode. Isolated = clean HOME + a fresh
-# tmpfs XDG_RUNTIME_DIR (so fish's tmpfs-redirected config starts empty and
-# reproducible) while keeping the real PATH (the shell still needs to exec
-# starship/zoxide/task/git). In-situ = the real session, untouched.
+# Isolated mode uses clean HOME and XDG_RUNTIME_DIR but keeps executable PATH.
+# In-situ mode leaves the session unchanged.
 mk_runenv() {
     local mode="$1"
     case "$mode" in
@@ -194,7 +178,6 @@ mk_runenv() {
     esac
 }
 
-# ---- tiers -----------------------------------------------------------------
 # T1: coarse floor. Labelled clearly so nobody mistakes it for the headline.
 tier_coarse() {
     local label="$1" shellbin="$2" login="$3"
@@ -259,9 +242,7 @@ tier_profile_fish() {
     fi
 }
 
-# T3b: ablation - rebuild the fish config minus each suspect line, measure the
-# delta. Cross-validates the profiler: the profiler says X costs Y in isolation;
-# ablation shows X's true cost including its second-order effects.
+# Ablation measures each init line's full cost, including second-order effects.
 tier_ablation_fish() {
     local label="$1" wrapped="$2" unwrapped_bin="$3"
     shift 3
@@ -281,9 +262,7 @@ tier_ablation_fish() {
     loadplugin="$(find "${dds//:/ }" -name load_plugin.fish 2>/dev/null | head -1 || true)"
     log "  config: $cfg"
 
-    # Suspects worth ablating: name -> extended-regex matching the init line(s).
-    # Each regex must match both the historical runtime form (`tool init |
-    # source`) and the baked form (`source /nix/store/…-tool-init.fish`).
+    # Each suspect regex matches runtime and build-time init forms.
     local -a names=(dbus task_startup zoxide starship_init direnv transience plugins)
     local -a regexes=(
         'dbus-update-activation-environment'
@@ -295,8 +274,7 @@ tier_ablation_fish() {
         'load_plugin |fish-plugin-paths'
     )
 
-    # Baseline: reconstructed config, nothing ablated (regex matches nothing), run
-    # via the SAME unwrapped binary, so deltas isolate exactly the removed line.
+    # Baseline uses the same binary with a regex that matches nothing.
     local base_share base_json
     base_share="$(gen_ablation_config "$OUTDIR/abl/_baseline" "$cfg" "$loadplugin" '$^')"
     [[ $DRYRUN == 1 ]] && return 0
@@ -331,8 +309,7 @@ tier_ablation_fish() {
     done
 }
 
-# T4: syscall / exec accounting. Each `tool init`, `task`, dbus round-trip is a
-# fork+exec; counting them explains where startup wall-time goes.
+# Count fork and exec calls behind startup time.
 tier_syscall() {
     local label="$1" shellbin="$2" login="$3"
     shift 3
@@ -353,7 +330,6 @@ tier_syscall() {
     fi
 }
 
-# ---- A/B mode --------------------------------------------------------------
 run_ab() {
     local a="$1" b="$2"
     ui rule "A/B compare (interleaved)"
@@ -385,7 +361,6 @@ if [[ ${#AB[@]} -eq 2 ]]; then
     exit 0
 fi
 
-# ---- resolve artifacts -----------------------------------------------------
 log "Resolving Nix artifacts for host '$HOST' from flake '$FLAKE' ..."
 FISH_WRAP=""
 FISH_UNWRAP=""
@@ -407,7 +382,6 @@ capture_provenance "$OUTDIR/provenance.json" \
     "flake=${FLAKE}" "host=${HOST}"
 log "Provenance -> $OUTDIR/provenance.json"
 
-# ---- main sweep ------------------------------------------------------------
 IFS=',' read -ra MODE_LIST <<<"$MODES"
 IFS=',' read -ra SPAWN_LIST <<<"$SPAWNS"
 
@@ -421,7 +395,6 @@ for mode in "${MODE_LIST[@]}"; do
         declare -a RUNENV
         mapfile -t RUNENV < <(mk_runenv "$mode")
 
-        # ---- fish ----
         if has_target fish && [[ -n "$FISH_WRAP$DRYRUN" ]]; then
             fb="${FISH_WRAP:-/dry}/bin/fish"
             lbl="fish.${local_tag}"
@@ -435,15 +408,13 @@ for mode in "${MODE_LIST[@]}"; do
             fi
         fi
 
-        # ---- bash: pure (BASH_NO_FISH=1) AND real handoff (execs fish) ----
         if has_target bash && [[ -n "$BASH_WRAP$DRYRUN" ]]; then
             bb="${BASH_WRAP:-/dry}/bin/bash"
             # pure bash
             declare -a BENV_PURE=("${RUNENV[@]}" "BASH_NO_FISH=1")
             lbl="bash-pure.${local_tag}"
             want_tier coarse && tier_coarse "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
-            # --no-raw: readline suppresses its own echo if termios ECHO is off at
-            # startup, which would make every input_lag sample a 10 s timeout.
+            # Readline needs terminal ECHO enabled for input-lag probes.
             want_tier metrics && BENCH_PROBE_EXTRA=--no-raw \
                 tier_metrics "$lbl" "$bb" "$login" "" "${BENV_PURE[@]}"
             want_tier syscall && tier_syscall "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
@@ -456,7 +427,6 @@ for mode in "${MODE_LIST[@]}"; do
     done
 done
 
-# ---- devshell (coarse only; its 'startup' is nix-eval-bound, not rc-bound) --
 if has_target devshell && want_tier coarse && [[ $DRYRUN == 0 ]]; then
     log "T1 coarse: devshell (nix develop ${FLAKE}#default --command true) [warm]"
     pin hyperfine --warmup "$WARMUP" --runs "$WARMUP" --shell=none \

@@ -1,4 +1,4 @@
-# clone of builtin popd, counterpart of the pushd in this directory
+# Keeps DIRSTACK in sync with pushd.
 
 function popd --description "Pop directory from the stack and cd to it"
     if count $argv >/dev/null

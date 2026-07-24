@@ -23,11 +23,7 @@
     phpIni = "${build.php}/lib/php.ini";
   };
 
-  # Front controller. Caddy terminates TLS and dials wallabag on loopback;
-  # without trusting that proxy Symfony reads the request as plain http and emits
-  # http redirects + non-Secure cookies, breaking login over the https-only
-  # tailnet. Symfony 4 removed `framework.trusted_proxies`, so it must be set on
-  # the Request here. Replaces the package's web/app.php (see preStart).
+  # Trust loopback Caddy so Symfony emits HTTPS links and secure cookies.
   appPhp = pkgs.writeText "wallabag-app.php" ''
     <?php
 
@@ -50,10 +46,7 @@
     $kernel->terminate($request, $response);
   '';
 
-  # Everything wallabag's parameters.yml needs bar `secret`, which is appended at
-  # runtime from the sops credential so it never lands in the Nix store. The
-  # package's config.yml imports parameters.yml *relatively*, so this copy in
-  # $WALLABAG_DATA naturally overrides the package's defaults.
+  # Append the SOPS secret at runtime; relative import makes this file override defaults.
   paramsHead = pkgs.writeText "wallabag-parameters-head.yml" ''
     parameters:
         database_driver: pdo_pgsql
@@ -96,16 +89,9 @@
     export WALLABAG_DATA=${dataDir}
     src=${build.wallabag}
 
-    # wallabag reads its config from $WALLABAG_DATA and resolves %kernel.project_dir%
-    # there too, so the data dir must mirror the package as a project root. Rebuild
-    # it as a symlink farm each boot (cheap; repoints automatically on upgrade);
-    # only app/config (our parameters.yml), web/ (our front controller), var/ and
-    # data/ are real and writable.
-    # simplification: symlink farm keyed on the package store path; the package
-    # can't write outside var//data/ (image download to web/assets is off).
-    # app/ and web/ are pure symlink-farm + our two files, so wipe and rebuild
-    # them each boot (self-heals a stale symlink-vs-dir from an earlier layout);
-    # real state (var/, data/, markers) lives outside them.
+    # Mirror the package as a symlink farm because Wallabag treats WALLABAG_DATA
+    # as its project root. Rebuild app/ and web/; keep var/ and data/ writable.
+    # simplification: package writes outside var/ and data/ are disabled.
     rm -rf ${dataDir}/app ${dataDir}/web
     mkdir -p ${dataDir}/app/config ${dataDir}/web ${dataDir}/var ${dataDir}/data/db
     for e in "$src"/*; do
@@ -151,10 +137,7 @@
       php "$console" doctrine:migrations:migrate --no-interaction --env=prod
     fi
 
-    # wallabag:install --no-interaction does NOT create the admin, so do it
-    # explicitly (login: wallabag / password: wallabag — CHANGE IT after first
-    # login). simplification: that password is wallabag's well-known public
-    # default, not a secret, so it's fine in the unit; it must be changed.
+    # Installer omits the admin; create its public default login and change it at once.
     if [ ! -e ${dataDir}/.wallabag-admin ]; then
       if php "$console" fos:user:create --super-admin --env=prod \
            ${cfg.adminUser} ${cfg.adminEmail} wallabag; then
@@ -256,9 +239,7 @@ in {
         User = user;
         Group = user;
         StateDirectory = "wallabag";
-        # The state dir, which systemd creates before ExecStartPre. Not web/ —
-        # that is built by ExecStartPre, but systemd chdirs here first. uwsgi
-        # chdirs to the site-root itself (ini `chdir`).
+        # systemd creates the state dir before ExecStartPre, unlike web/.
         WorkingDirectory = dataDir;
         Environment = ["WALLABAG_DATA=${dataDir}"];
         LoadCredential = ["secret:${config.sops.secrets.wallabag_secret.path}"];

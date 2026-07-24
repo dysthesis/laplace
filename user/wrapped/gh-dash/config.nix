@@ -49,14 +49,12 @@
   keybindings = let
     create-issue =
       writeShellScript "create-issue"
-      # sh
       ''
         ${lib.getExe gh} issue create --editor
       '';
 
     create-pr =
       writeShellScript "create-pr"
-      # sh
       ''
         ${lib.getExe gh} pr create --editor
       '';
