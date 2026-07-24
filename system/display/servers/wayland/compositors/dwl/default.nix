@@ -11,7 +11,7 @@
   system = pkgs.stdenv.hostPlatform.system;
 in {
   config = lib.mkIf enabled {
-    laplace.display.wayland.sessionCommand = "${lib.getExe inputs.status.packages.${system}.default} | ${lib.getExe' pkgs.configured.dwl "dwl"}";
+    laplace.display.wayland.sessionCommand = "${lib.getExe' inputs.status.packages.${system}.default "status"} | ${lib.getExe' pkgs.configured.dwl "dwl"}";
     laplace.display.checkCommands = [
       ''
         test -x ${lib.getExe' pkgs.configured.dwl "dwl"}
