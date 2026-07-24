@@ -102,14 +102,6 @@ in {
         };
     };
 
-    # Order the server after the embedder so first-boot captures can embed;
-    # `wants` (not `requires`) so hister still starts + keyword-searches if the
-    # embedder is down.
-    systemd.services.hister = mkIf cfg.embedding.enable {
-      after = ["llama-cpp.service"];
-      wants = ["llama-cpp.service"];
-    };
-
     # Plain CPU llama.cpp (stock nixpkgs module). ~146 MB Q8_0 GGUF, declaratively
     # fetched. `--embedding` (singular) is the correct flag for this llama.cpp —
     # confirmed against laplace's own llm module, which serves nomic the same way.
@@ -130,57 +122,69 @@ in {
       ];
     };
 
-    systemd.services.hister-datasets = mkIf (cfg.datasets != []) {
-      description = "Pull + import hister datasets";
-      after = ["hister.service" "network-online.target"];
-      requires = ["hister.service"];
-      wants = ["network-online.target"];
-      path = [pkgs.curl pkgs.coreutils];
-      serviceConfig = {
-        Type = "oneshot";
-        User = config.services.hister.user;
-        Group = config.services.hister.group;
-        # No EnvironmentFile: the server is tokenless (see above), so the import
-        # CLI needs no credential — only HISTER_CONFIG for the server address.
-        StateDirectory = "hister/datasets"; # -> /var/lib/hister/datasets
-        PrivateTmp = true;
-      };
-      environment = {
-        # Reuse the exact store-rendered config the server runs with, so the CLI
-        # client resolves server.address identically (the upstream module sets
-        # HISTER_CONFIG here whenever settings != {}).
-        HISTER_CONFIG = config.systemd.services.hister.environment.HISTER_CONFIG;
-      };
-      script = ''
-        set -euo pipefail
-        cd ${datasetDir}
-        for name in ${lib.escapeShellArgs cfg.datasets}; do
-          # simplification: no per-dataset checksum — TLS to hister.org is the
-          # trust anchor; upgrade path is pinning sha256 once upstream publishes
-          # them. Datasets are mutated in place upstream ~monthly, so ETag makes
-          # unchanged weekly re-runs a no-op (304 -> empty tmp -> skip import),
-          # which also sidesteps re-import churn.
-          if curl -fsSL \
-              --etag-compare "$name.etag" --etag-save "$name.etag" \
-              -o "$name.json.7z.tmp" \
-              "https://hister.org/data/$name.json.7z"; then
-            if [ -s "$name.json.7z.tmp" ]; then
-              mv -f "$name.json.7z.tmp" "$name.json.7z"
-              ${lib.getExe config.services.hister.package} import "$name.json.7z"
-            else
-              rm -f "$name.json.7z.tmp" # 304 Not Modified: nothing new
-            fi
-          fi
-        done
-      '';
-    };
+    # Order the server after the embedder so first-boot captures can embed;
+    # `wants` (not `requires`) so hister still starts + keyword-searches if the
+    # embedder is down.
+    systemd = {
+      services = {
+        hister = mkIf cfg.embedding.enable {
+          after = ["llama-cpp.service"];
+          wants = ["llama-cpp.service"];
+        };
 
-    systemd.timers.hister-datasets = mkIf (cfg.datasets != []) {
-      wantedBy = ["timers.target"];
-      timerConfig = {
-        OnCalendar = "weekly";
-        Persistent = true;
-        RandomizedDelaySec = "1h";
+        hister-datasets = mkIf (cfg.datasets != []) {
+          description = "Pull + import hister datasets";
+          after = ["hister.service" "network-online.target"];
+          requires = ["hister.service"];
+          wants = ["network-online.target"];
+          path = [pkgs.curl pkgs.coreutils];
+          serviceConfig = {
+            Type = "oneshot";
+            User = config.services.hister.user;
+            Group = config.services.hister.group;
+            # No EnvironmentFile: the server is tokenless (see above), so the import
+            # CLI needs no credential — only HISTER_CONFIG for the server address.
+            StateDirectory = "hister/datasets"; # -> /var/lib/hister/datasets
+            PrivateTmp = true;
+          };
+          environment = {
+            # Reuse the exact store-rendered config the server runs with, so the CLI
+            # client resolves server.address identically (the upstream module sets
+            # HISTER_CONFIG here whenever settings != {}).
+            HISTER_CONFIG = config.systemd.services.hister.environment.HISTER_CONFIG;
+          };
+          script = ''
+            set -euo pipefail
+            cd ${datasetDir}
+            for name in ${lib.escapeShellArgs cfg.datasets}; do
+              # simplification: no per-dataset checksum — TLS to hister.org is the
+              # trust anchor; upgrade path is pinning sha256 once upstream publishes
+              # them. Datasets are mutated in place upstream ~monthly, so ETag makes
+              # unchanged weekly re-runs a no-op (304 -> empty tmp -> skip import),
+              # which also sidesteps re-import churn.
+              if curl -fsSL \
+                  --etag-compare "$name.etag" --etag-save "$name.etag" \
+                  -o "$name.json.7z.tmp" \
+                  "https://hister.org/data/$name.json.7z"; then
+                if [ -s "$name.json.7z.tmp" ]; then
+                  mv -f "$name.json.7z.tmp" "$name.json.7z"
+                  ${lib.getExe config.services.hister.package} import "$name.json.7z"
+                else
+                  rm -f "$name.json.7z.tmp" # 304 Not Modified: nothing new
+                fi
+              fi
+            done
+          '';
+        };
+      };
+
+      timers.hister-datasets = mkIf (cfg.datasets != []) {
+        wantedBy = ["timers.target"];
+        timerConfig = {
+          OnCalendar = "weekly";
+          Persistent = true;
+          RandomizedDelaySec = "1h";
+        };
       };
     };
   };
