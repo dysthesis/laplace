@@ -64,10 +64,6 @@ find_pdf_for_item() {
         return 0
     elif [[ ${#hits[@]} -gt 1 ]]; then
 
-        local preview='echo {}'
-        if command -v pdftotext >/dev/null 2>&1; then
-            preview='pdftotext -l 1 -layout {} - | sed -n "1,80p"'
-        fi
         local choice
         if choice=$(
             printf '%s\n' "${hits[@]}" |
