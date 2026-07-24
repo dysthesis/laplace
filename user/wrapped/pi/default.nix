@@ -1,9 +1,11 @@
 {
+  callPackage,
   pkgs,
   lib,
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
+  minimalTheme = callPackage ./theme.nix {inherit pkgs;};
 
   # Package the prebuilt glibc OMP binary with autoPatchelf.
   # Do not strip: Bun appends its bundle after the ELF.
@@ -30,6 +32,7 @@
   config = pkgs.writeText "config.yml" (builtins.toJSON {
     defaultThinkingLevel = "max";
     hideThinkingBlock = true;
+    theme.dark = "minimal";
   });
 in
   mkWrapper pkgs omp {
@@ -38,6 +41,12 @@ in
     # Pin write mode: approve file access, prompt for execution and network access.
     # Use omp --yolo only per session.
     addFlags = ["--approval-mode=write"];
-    # simplification: seed once; remove config.yml to apply later Nix changes.
-    run = [''dir="''${PI_CODING_AGENT_DIR:-$HOME/.omp/agent}"; [ -e "$dir/config.yml" ] || install -Dm644 ${config} "$dir/config.yml"''];
+    # simplification: seed user-editable files once; delete one to apply later Nix changes.
+    run = [
+      ''
+        dir="''${PI_CODING_AGENT_DIR:-$HOME/.omp/agent}"
+        [ -e "$dir/config.yml" ] || install -Dm644 ${config} "$dir/config.yml"
+        [ -e "$dir/themes/minimal.json" ] || install -Dm644 ${minimalTheme} "$dir/themes/minimal.json"
+      ''
+    ];
   }
