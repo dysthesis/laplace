@@ -223,7 +223,11 @@ tier_metrics() {
     [[ $login == 1 ]] && probeargs+=(--login)
     [[ -n $regex ]] && probeargs+=(--prompt-regex "$regex")
     # Per-call extras, e.g. BENCH_PROBE_EXTRA=--no-raw for readline shells.
-    [[ -n ${BENCH_PROBE_EXTRA:-} ]] && probeargs+=(${BENCH_PROBE_EXTRA})
+    if [[ -n ${BENCH_PROBE_EXTRA:-} ]]; then
+        local -a extra_probe_args
+        read -r -a extra_probe_args <<<"$BENCH_PROBE_EXTRA"
+        probeargs+=("${extra_probe_args[@]}")
+    fi
     log "T2 metrics: $label"
     [[ $DRYRUN == 1 ]] && return 0
     pin env "${runenv[@]}" python3 "$PROBE" "${probeargs[@]}" >"$out" ||

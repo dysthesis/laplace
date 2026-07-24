@@ -24,8 +24,8 @@ resolve_store() {
 # Print the XDG_DATA_DIRS that the wrapped fish bakes in (via wrapProgram).
 fish_xdg_data_dirs() {
     local wrapped="$1"
-    "${wrapped}/bin/fish" --no-config -c 'printf "%s\n" $XDG_DATA_DIRS' 2>/dev/null ||
-        "${wrapped}/bin/fish" -c 'printf "%s\n" $XDG_DATA_DIRS'
+    "${wrapped}/bin/fish" --no-config -c "printf '%s\n' \"\$XDG_DATA_DIRS\"" 2>/dev/null ||
+        "${wrapped}/bin/fish" -c "printf '%s\n' \"\$XDG_DATA_DIRS\""
 }
 
 # Find the generated user_config.fish across a colon/space list of data dirs.
