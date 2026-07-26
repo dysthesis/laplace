@@ -64,7 +64,7 @@
     (pkgs.fetchPackwizModpack {
       src = packwizSource;
       side = "server";
-      packHash = "sha256-CbqAq2RTmZsjHsbUGFuMMkJ8C/6T9vuw7BNz+fNrBMM=";
+      packHash = "sha256-zEevmNiEMnJ0foab52x3LCc+SArDYLEey41udaegyac=";
     }).addFiles ({
         "mods/ledger-1.2.8.jar" = ledger;
         "mods/squaremap-fabric-mc1.20.1-1.2.0.jar" = squaremap;

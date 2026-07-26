@@ -41,7 +41,6 @@ in
       nodejs
       headroom
       serena
-      rtk
 
       packwiz # for modpack management
     ];
