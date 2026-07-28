@@ -10,7 +10,7 @@
   cfg = config.laplace.tailnet;
 
   # Untrusted roles must not reach these tags.
-  sensitiveTags = ["infra" "apps" "monitor" "observability" "notifications" "exit" "workstation"];
+  sensitiveTags = ["infra" "apps" "monitor" "observability" "notifications" "exit" "workstation" "reader"];
 
   allTags = unique (concatMap (n: n.tags) (attrValues cfg.nodes));
   tagDefined = t: elem t allTags;

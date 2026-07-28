@@ -247,6 +247,29 @@ in {
           "@@||paisa.fyi^$important"
           "@@||mccd.space^$important"
           "@@||notes.hella.cheap^$important"
+
+          # Miniflux feed hosts false-positived by the blocklists above. The
+          # .boats/.lol/.icu ones are collateral from HaGeZi's abused-TLD list;
+          # the rest come from a filter the UI added and Nix does not declare.
+          "@@||0pointer.net^$important"
+          "@@||agner.org^$important"
+          "@@||bunniestudios.com^$important"
+          "@@||chipsandcheese.com^$important"
+          "@@||determinate.systems^$important"
+          "@@||filippo.io^$important"
+          "@@||gingerbill.org^$important"
+          "@@||goldstein.lol^$important"
+          "@@||goose.icu^$important"
+          "@@||hnrss.org^$important"
+          "@@||justine.lol^$important"
+          "@@||mechanical-sympathy.blogspot.com^$important"
+          "@@||mitchellh.com^$important"
+          "@@||muratbuffalo.blogspot.com^$important"
+          "@@||projectzero.google^$important"
+          "@@||seangoedecke.com^$important"
+          "@@||without.boats^$important"
+          "@@||xeiaso.net^$important"
+          "@@||xn--gckvb8fzb.com^$important"
           ""
         ];
 

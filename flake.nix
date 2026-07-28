@@ -640,12 +640,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Hister needs Go 1.26 from nixpkgs-unstable.
-    hister = {
-      url = "github:asciimoo/hister";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     slides = {
       url = "git+file:///home/demiurge/Documents/University/COMP6841_2026T2?ref=main";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

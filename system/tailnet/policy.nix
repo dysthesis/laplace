@@ -16,7 +16,7 @@ _: {
         ip = "100.64.0.8";
         ip6 = "fd7a:115c:a1e0::8";
         tags = ["apps" "monitor" "infra" "rss"];
-      }; # miniflux/silverbullet/vikunja/radicale + beszel-hub
+      }; # miniflux/silverbullet/karakeep/vikunja/radicale + beszel-hub
       argus = {
         ip = "100.64.0.34";
         ip6 = "fd7a:115c:a1e0::22";
@@ -57,6 +57,11 @@ _: {
         ip6 = "fd7a:115c:a1e0::7";
         tags = ["phone"];
       }; # retired phone
+      kobo = {
+        ip = "100.64.0.38";
+        ip6 = "fd7a:115c:a1e0::26";
+        tags = ["reader"];
+      }; # e-reader; owner-only device, no services of its own
     };
 
     # Delete retired phones; keeping them preserves mesh access.
@@ -156,6 +161,24 @@ _: {
         to = "notifications";
         ports = ["tcp/443"];
       }
+      {
+        from = "workstation";
+        to = "reader";
+        ports = ["*"];
+      } # ssh/rsync/http to the e-reader; it runs no gate of its own
+      {
+        from = "reader";
+        to = "apps";
+        ports = ["tcp/443"];
+      } # karakeep
+      {
+        from = "reader";
+        to = "rss";
+        ports = [
+          "tcp/443"
+          "tcp/8087" # miniflux port
+        ];
+      } # miniflux
       {
         from = "phone";
         to = "apps";

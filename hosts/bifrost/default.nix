@@ -106,7 +106,7 @@ in {
   };
 
   laplace = {
-    harden = ["malloc" "kernel"];
+    harden = ["malloc"];
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
@@ -335,12 +335,7 @@ in {
               value = mimirTailnetIp;
             }
             {
-              name = "search.${fqdn}";
-              type = "A";
-              value = mimirTailnetIp;
-            }
-            {
-              name = "wallabag.${fqdn}";
+              name = "read.${fqdn}";
               type = "A";
               value = mimirTailnetIp;
             }

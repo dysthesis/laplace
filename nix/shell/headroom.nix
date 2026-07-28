@@ -42,10 +42,21 @@ in
     ];
 
     postPatch = ''
+      substituteInPlace headroom/cli/wrap.py \
+        --replace-fail \
+          'cmd = [sys.executable, "-m", "headroom.cli", "proxy", "--port", str(port)]' \
+          'cmd = [os.environ.get("HEADROOM_EXECUTABLE", "headroom"), "proxy", "--port", str(port)]'
+
       substituteInPlace headroom/proxy/models.py \
-        --replace-fail 'from dataclasses import InitVar, dataclass, field' $'from dataclasses import InitVar, dataclass, field\nimport os' \
-        --replace-fail 'from headroom.providers.registry import ProviderApiOverrides' $'from headroom.providers.registry import ProviderApiOverrides\n\n\ndef _env_int_or_none(name: str) -> int | None:\n    raw = os.environ.get(name, "").strip()\n    if not raw:\n        return None\n    try:\n        return int(raw)\n    except ValueError:\n        return None' \
-        --replace-fail 'compression_max_workers: int | None = None' 'compression_max_workers: int | None = field(default_factory=lambda: _env_int_or_none("HEADROOM_COMPRESSION_MAX_WORKERS"))'
+        --replace-fail \
+          'from dataclasses import InitVar, dataclass, field' \
+          $'from dataclasses import InitVar, dataclass, field\nimport os' \
+        --replace-fail \
+          'from headroom.providers.registry import ProviderApiOverrides' \
+          $'from headroom.providers.registry import ProviderApiOverrides\n\n\ndef _env_int_or_none(name: str) -> int | None:\n    raw = os.environ.get(name, "").strip()\n    if not raw:\n        return None\n    try:\n        return int(raw)\n    except ValueError:\n        return None' \
+        --replace-fail \
+          'compression_max_workers: int | None = None' \
+          'compression_max_workers: int | None = field(default_factory=lambda: _env_int_or_none("HEADROOM_COMPRESSION_MAX_WORKERS"))'
     '';
 
     env = {
@@ -90,6 +101,7 @@ in
     ];
 
     makeWrapperArgs = [
+      "--set HEADROOM_EXECUTABLE ${placeholder "out"}/bin/headroom"
       "--prefix PATH : ${lib.makeBinPath [ast-grep]}"
       "--set ORT_DYLIB_PATH ${lib.getLib onnxruntime}/lib/libonnxruntime.so"
       "--prefix LD_LIBRARY_PATH : ${lib.getLib onnxruntime}/lib"

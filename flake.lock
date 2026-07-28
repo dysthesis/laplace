@@ -353,27 +353,6 @@
     },
     "flake-parts_3": {
       "inputs": {
-        "nixpkgs-lib": [
-          "hister",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1782949081,
-        "narHash": "sha256-vp6Y/Grm98ESt6ceOkWiHWyZRDV3J1RID4w+6NWK9yA=",
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "17c9d6cdfc60c64f4ee8d306f9bc0b4ccb51481e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "type": "github"
-      }
-    },
-    "flake-parts_4": {
-      "inputs": {
         "nixpkgs-lib": "nixpkgs-lib_2"
       },
       "locked": {
@@ -390,7 +369,7 @@
         "type": "github"
       }
     },
-    "flake-parts_5": {
+    "flake-parts_4": {
       "inputs": {
         "nixpkgs-lib": [
           "nixpak",
@@ -411,7 +390,7 @@
         "type": "github"
       }
     },
-    "flake-parts_6": {
+    "flake-parts_5": {
       "inputs": {
         "nixpkgs-lib": [
           "poincare",
@@ -433,7 +412,7 @@
         "type": "github"
       }
     },
-    "flake-parts_7": {
+    "flake-parts_6": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib_3"
       },
@@ -580,27 +559,6 @@
         "type": "github"
       }
     },
-    "hister": {
-      "inputs": {
-        "flake-parts": "flake-parts_3",
-        "nixpkgs": [
-          "nixpkgs-unstable"
-        ]
-      },
-      "locked": {
-        "lastModified": 1785183957,
-        "narHash": "sha256-im4LavanRVmc9/RZlEInbdxmxhKexa7qDbTagV4rd3Q=",
-        "owner": "asciimoo",
-        "repo": "hister",
-        "rev": "c817c987e837fc5e7572797374df62911b1467a1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "asciimoo",
-        "repo": "hister",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -624,7 +582,7 @@
     },
     "iosevka-cadmus": {
       "inputs": {
-        "flake-parts": "flake-parts_4",
+        "flake-parts": "flake-parts_3",
         "nixpkgs": [
           "nixpkgs-unstable"
         ]
@@ -737,7 +695,7 @@
     },
     "neovim-nightly-overlay": {
       "inputs": {
-        "flake-parts": "flake-parts_6",
+        "flake-parts": "flake-parts_5",
         "neovim-src": "neovim-src",
         "nixpkgs": "nixpkgs_6"
       },
@@ -854,7 +812,7 @@
     },
     "nixpak": {
       "inputs": {
-        "flake-parts": "flake-parts_5",
+        "flake-parts": "flake-parts_4",
         "hercules-ci-effects": "hercules-ci-effects",
         "nixpkgs": [
           "nixpkgs"
@@ -1334,7 +1292,6 @@
         "dwl": "dwl",
         "gungnir": "gungnir",
         "headscale": "headscale",
-        "hister": "hister",
         "iosevka-cadmus": "iosevka-cadmus",
         "lanzaboote": "lanzaboote",
         "mandelbrot": "mandelbrot",
@@ -1492,7 +1449,7 @@
     "slides": {
       "inputs": {
         "atkinson-fontsource": "atkinson-fontsource",
-        "flake-parts": "flake-parts_7",
+        "flake-parts": "flake-parts_6",
         "iosevka-fontsource": "iosevka-fontsource",
         "mermaid": "mermaid",
         "nixpkgs": [

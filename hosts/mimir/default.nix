@@ -9,8 +9,7 @@
   minifluxHost = "miniflux.dysthesis.com";
   beszelHost = "status.dysthesis.com";
   radicaleHost = "cal.dysthesis.com";
-  wallabagHost = "wallabag.dysthesis.com";
-  histerHost = "search.dysthesis.com";
+  karakeepHost = "read.dysthesis.com";
 in {
   sops.secrets = {
     # The Miniflux module otherwise uses the shared secret file.
@@ -18,7 +17,6 @@ in {
     # Beszel KEY and TOKEN environment file.
     beszel_agent_env.sopsFile = ../../system/secrets/mimir.yaml;
     radicale_htpasswd.sopsFile = ../../system/secrets/mimir.yaml;
-    wallabag_secret.sopsFile = ../../system/secrets/mimir.yaml;
     telemetry_client_certificate = {
       sopsFile = ../../system/secrets/mimir.yaml;
       restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
@@ -50,7 +48,7 @@ in {
     profiles = ["proxmox"];
     proxmox = {
       cores = 2;
-      memory = 5120; # MiB, ballooning ceiling (bleve indexing + ~500 MB embedder)
+      memory = 5120; # MiB, ballooning ceiling (karakeep's node stack + headless chromium)
       balloon = 1280; # MiB, ballooning floor (Postgres + app processes)
       diskSize = "32G";
     };
@@ -82,26 +80,9 @@ in {
       silverbullet.enable = true;
       taskchampion.enable = true;
       radicale.enable = true;
-      wallabag = {
+      karakeep = {
         enable = true;
-        domain = wallabagHost;
-        adminUser = "demiurge";
-        adminEmail = "demiurge@localhost";
-      };
-      hister = {
-        enable = true;
-        domain = histerHost;
-        embedding.enable = true;
-        # Weekly reference corpora from hister.org/datasets.
-        datasets = [
-          "go-stdlib"
-          "rust-docs"
-          "python-docs"
-          "nodejs-api"
-          "mdn-css"
-          "mdn-html"
-          "mdn-js"
-        ];
+        domain = karakeepHost;
       };
       beszel = {
         hub = {
@@ -136,13 +117,12 @@ in {
           enable = true;
           sopsFile = ../../system/secrets/mimir.yaml;
           proxies = {
-            "miniflux.dysthesis.com" = "localhost:8087";
+            "miniflux.dysthesis.com" = "127.0.0.1:8087";
             "silverbullet.dysthesis.com" = "localhost:8101";
             "tasks.dysthesis.com" = "localhost:${toString config.laplace.services.taskchampion.port}";
             "status.dysthesis.com" = "localhost:8090";
             ${radicaleHost} = "localhost:${toString config.laplace.services.radicale.port}";
-            ${wallabagHost} = "localhost:${toString config.laplace.services.wallabag.port}";
-            ${histerHost} = "localhost:${toString config.laplace.services.hister.port}";
+            ${karakeepHost} = "localhost:${toString config.laplace.services.karakeep.port}";
           };
         };
       };
@@ -151,9 +131,13 @@ in {
 
   services = {
     miniflux.config = {
-      LISTEN_ADDR = lib.mkForce "127.0.0.1:8087";
+      # The host firewall admits this port only for authorised tailnet peers.
+      LISTEN_ADDR = lib.mkForce "0.0.0.0:8087";
       # BASE_URL controls absolute links and cookie scope; use the public origin.
       BASE_URL = lib.mkForce "https://${minifluxHost}";
+      # Karakeep sits on a tailnet-only origin; Miniflux's SSRF guard otherwise
+      # refuses integration POSTs to any host resolving to a non-public IP.
+      INTEGRATION_ALLOW_PRIVATE_NETWORKS = "1";
     };
     silverbullet.listenAddress = lib.mkForce "127.0.0.1";
   };
