@@ -8,6 +8,10 @@
     inputs.nixos-hardware.nixosModules.common-gpu-amd
   ];
   config = {
+    environment.systemPackages = with pkgs; [
+      android-tools
+      usbutils
+    ];
     # Deimos-only pregen overrides; Loki keeps the pack defaults.
     services.minecraft-servers.servers.retirement-home = {
       # The pack's c2me config disables parallel worldgen (see

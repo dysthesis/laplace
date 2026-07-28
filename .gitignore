@@ -3,3 +3,7 @@ core
 result
 .serena/
 AGENTS.md
+.claude/
+.tokensave/
+PLAN.md
+**/core.*

@@ -44,6 +44,7 @@ in {
           "libvirt"
           "render"
           "ollama"
+          "adbusers"
         ];
 
       packages = let
