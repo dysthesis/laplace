@@ -185,8 +185,9 @@
     serverName = "Retirement Home";
     useServerNameForRcon = true;
     useServerNameForConsole = true;
-    # randomUUID bypasses avatar cache; tydiumcraft supports Java and Bedrock.
-    playerAvatarURL = "https://api.tydiumcraft.net/v1/players/skin?uuid=%uuid%&type=avatar&randomuuid=%randomUUID%";
+    # randomUUID bypasses Discord's avatar cache. The mod's default host
+    # (api.tydiumcraft.net) serves a parked 404 page, so every face 404s.
+    playerAvatarURL = "https://mc-heads.net/avatar/%uuid%/64?randomuuid=%randomUUID%";
     webhookName = "MC_DC_INTEGRATION";
   };
 
