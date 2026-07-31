@@ -112,6 +112,10 @@ in {
     };
   };
 
+  # spark's async-profiler samples kernel-mode frames; the default 2 rejects that
+  # perf_event_open, silently degrading profiles to Java-only stacks.
+  boot.kernel.sysctl."kernel.perf_event_paranoid" = 1;
+
   laplace = {
     profiles = ["proxmox"];
     proxmox = {
