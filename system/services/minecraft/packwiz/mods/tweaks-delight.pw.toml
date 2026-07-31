@@ -1,0 +1,13 @@
+name = "Tweaks Delight"
+filename = "tweaksdelight-26.04.09-1.20-fabric.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/k4B832GB/versions/zri0IRuZ/tweaksdelight-26.04.09-1.20-fabric.jar"
+hash-format = "sha512"
+hash = "5fdae5d421b5bd2c66b659992246947e7fbc88c61e810aa1e093525d8e25f7211742d9b8243f54d678e5442638a19ad513066c2e54efba46e2b65db5bc8e5eb6"
+
+[update]
+[update.modrinth]
+mod-id = "k4B832GB"
+version = "zri0IRuZ"

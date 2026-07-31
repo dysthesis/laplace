@@ -5,7 +5,7 @@
   ...
 }: let
   packwizSource = builtins.path {
-    path = ../../system/services/minecraft/retirement-home-packwiz;
+    path = ../../system/services/minecraft/packwiz;
     name = "retirement-home-packwiz";
   };
   packwizUrl = "https://mc.dysthesis.com/packwiz/pack.toml";

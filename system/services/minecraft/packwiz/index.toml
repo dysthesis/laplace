@@ -1266,7 +1266,7 @@ metafile = true
 
 [[files]]
 file = "mods/continuity.pw.toml"
-hash = "e8730cdd978f8d60a16731d51c866a20a9fa97ceb02667c4fdbafafb2c091a2e"
+hash = "ca80c5f6b0faca95bbc06192a3da36446ff396b5e6e0304f6779269b60bbdd9d"
 metafile = true
 
 [[files]]
@@ -1336,7 +1336,7 @@ metafile = true
 
 [[files]]
 file = "mods/debugify.pw.toml"
-hash = "bcd39f13e5d1107280b5b6eef4c6245d1666ae3a996c308f5f874dbdfd4ec09d"
+hash = "8f611c3cf31eb5f5b3395b99414d794029192d556fd8dfc4b49a097a67134ccf"
 metafile = true
 
 [[files]]
@@ -1472,6 +1472,11 @@ metafile = true
 [[files]]
 file = "mods/fabric-language-kotlin.pw.toml"
 hash = "4cc3b25f841002fce1b9b3979767c394fa1f367664c8c282b1462e637a7cd293"
+metafile = true
+
+[[files]]
+file = "mods/fabric-seasons-terralith-compat.pw.toml"
+hash = "751b5e7213feb2072ee728327dcbb58134add5c5b0441c866dc0aa9fa1255e3b"
 metafile = true
 
 [[files]]
@@ -1770,6 +1775,11 @@ hash = "69282f41e0cb312fed48d9306b04ce1b86568704d5217d3b7ebee271bc5ea8e6"
 metafile = true
 
 [[files]]
+file = "mods/noisium.pw.toml"
+hash = "e94cfc8b72a467d63c5d7593a433edaf698a3792e0c9b95274751ba6d8435288"
+metafile = true
+
+[[files]]
 file = "mods/nuit-interop.pw.toml"
 hash = "b6ac1b0a3d0e03898185213c04d38af02e273f57c73e45393ed8786a941f7f85"
 metafile = true
@@ -1885,8 +1895,18 @@ hash = "113091d6201f8277290da8a6c22301792fe48d72b1bed42f07244cf4a3384f71"
 metafile = true
 
 [[files]]
+file = "mods/seasons-delight-refab-compat.pw.toml"
+hash = "60a3c05c150098bb859b1850a079ff37f90a9eba07474cf164648cfb6c1cc07d"
+metafile = true
+
+[[files]]
 file = "mods/shield-expansion.pw.toml"
 hash = "6f3a89b851837e77be91b52178cbe29358e81d6230e980a4ce58967f3f06b524"
+metafile = true
+
+[[files]]
+file = "mods/shulkerboxtooltip.pw.toml"
+hash = "2e6fb1842744392bac79f92c25c04613af1b82a904a29f7afd0df4f61a4c757e"
 metafile = true
 
 [[files]]
@@ -2012,6 +2032,11 @@ metafile = true
 [[files]]
 file = "mods/trinkets.pw.toml"
 hash = "440d296d0164e808975ba8827b75c372a1ce5993d90f6bea68ed4364a070e6d9"
+metafile = true
+
+[[files]]
+file = "mods/tweaks-delight.pw.toml"
+hash = "84ee3fbd7a2813bd62930029ce334fbb3ab294f30e75c7920596a34c1faf3bef"
 metafile = true
 
 [[files]]

@@ -8,7 +8,7 @@ _: {
     "AGENTS.md"
     "system/secrets/*"
     # Vendored shader DSL includes non-JSON files with .json extensions.
-    "system/services/minecraft/retirement-home-packwiz/**"
+    "system/services/minecraft/packwiz/**"
   ];
   programs = {
     alejandra.enable = true;

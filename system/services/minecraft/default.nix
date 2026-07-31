@@ -12,7 +12,7 @@
 
   # Server and clients share this PackWiz manifest.
   packwizSource = builtins.path {
-    path = ./retirement-home-packwiz;
+    path = ./packwiz;
     name = "retirement-home-packwiz";
   };
 
@@ -64,7 +64,7 @@
     (pkgs.fetchPackwizModpack {
       src = packwizSource;
       side = "server";
-      packHash = "sha256-zEevmNiEMnJ0foab52x3LCc+SArDYLEey41udaegyac=";
+      packHash = "sha256-hV8278jBb0xOgH/hS+J68LHhr0NIQk/bQxgkdlDoALQ=";
     }).addFiles ({
         "mods/ledger-1.2.8.jar" = ledger;
         "mods/squaremap-fabric-mc1.20.1-1.2.0.jar" = squaremap;
