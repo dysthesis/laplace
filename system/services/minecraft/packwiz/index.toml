@@ -2020,6 +2020,11 @@ hash = "405d5102dc84d1e3a041a5c12e7be8ec970b5a5fc89b30503b8c840464015c9d"
 metafile = true
 
 [[files]]
+file = "mods/trade-cycling.pw.toml"
+hash = "df71b5d7427e9a508e9f298b5cdec84aa8c4fcb584beb0d16d86efb9d47b3bcd"
+metafile = true
+
+[[files]]
 file = "mods/travelers-titles.pw.toml"
 hash = "fac8084cd73d07e69b434478e35c78f75fa860f15728890075f4618183c19ff8"
 metafile = true
