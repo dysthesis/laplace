@@ -2110,6 +2110,11 @@ hash = "ccc4ac6de88de278feff68ca40657dc5ed4c257a74e5530c60ee085a8d979d3b"
 metafile = true
 
 [[files]]
+file = "mods/your-reputation.pw.toml"
+hash = "4270f442c2cc9c7f41b5e2d60bfdbbefc40684f63db27a391da6ecb87b9a394c"
+metafile = true
+
+[[files]]
 file = "mods/yungs-api.pw.toml"
 hash = "d2bd16d8614d95ffd3fe5adbdf80eacd8d26588a270d97af22c0f08ff42d1262"
 metafile = true
