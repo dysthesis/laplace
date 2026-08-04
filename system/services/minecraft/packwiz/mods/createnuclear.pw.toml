@@ -1,0 +1,13 @@
+name = "Create Nuclear"
+filename = "createnuclear-1.4.1-fabric.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/z611fdf7/versions/KArjaK66/createnuclear-1.4.1-fabric.jar"
+hash-format = "sha512"
+hash = "037d42011e19b9da7f702f0fcc58d5ee75341b5693d56d3d90dcbb9a4f39c774681cdabc418bff795e91ca7278a2e0d8125fe82afbb4e2926ffb52b49a37f000"
+
+[update]
+[update.modrinth]
+mod-id = "z611fdf7"
+version = "KArjaK66"

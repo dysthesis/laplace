@@ -1275,6 +1275,11 @@ hash = "9df23a76fbcebb629533b25b5c43bf3c1b4cc25879264eadebf46297ed375523"
 metafile = true
 
 [[files]]
+file = "mods/copycats.pw.toml"
+hash = "79d2d0db0f6cffec9bc3661d9a591ad379e041de1235239dba921f63f452eec7"
+metafile = true
+
+[[files]]
 file = "mods/corgilib.pw.toml"
 hash = "7de27f28003da131c1944974a16a4e697b9fe501ec2bdf2cab6afd23a71292ad"
 metafile = true
@@ -1295,6 +1300,11 @@ hash = "628b58ef55bd646e7c5834d02dc2a54e872286d847770016e1a24f14d8f7f83b"
 metafile = true
 
 [[files]]
+file = "mods/create-dreams-and-desires.pw.toml"
+hash = "fd2c9cdc0083b93038ce74132c66078e8e223722c4fae902ba4bfef28c37ed71"
+metafile = true
+
+[[files]]
 file = "mods/create-enchantment-industry-fabric-(create-6).pw.toml"
 hash = "f5cfb75812c73c3c427e60242a192f4e22c1fd844a6c974d09a078133e9dd91d"
 metafile = true
@@ -1302,6 +1312,11 @@ metafile = true
 [[files]]
 file = "mods/create-fabric.pw.toml"
 hash = "29369376507badba24fa48b032799ca6156fe2916462c226dd463f00a5e24740"
+metafile = true
+
+[[files]]
+file = "mods/create-jetpack.pw.toml"
+hash = "efe1eba1eeb156b4efaafe48fb095dc4221b1c2c57e16e703aaf6e21026f2df5"
 metafile = true
 
 [[files]]
@@ -1320,8 +1335,18 @@ hash = "a6033968359265ec1de91ed8380d6fc04f58787fd93e2d2b8e5c3d055372f980"
 metafile = true
 
 [[files]]
+file = "mods/create-trading-floor.pw.toml"
+hash = "1b7e14317bc324ac08736eb154458a463715fdbc59bd556999893b58129eebf8"
+metafile = true
+
+[[files]]
 file = "mods/createaddition.pw.toml"
 hash = "157877feb67f5ed92eb7a310a086bf7baf58ad2461aa36d3541b3a0c0e9a2423"
+metafile = true
+
+[[files]]
+file = "mods/createnuclear.pw.toml"
+hash = "3b64d766c8c9aa0a36b072ce9ea359e5692566fc73b2740d90e0b6faaf4cdab8"
 metafile = true
 
 [[files]]
