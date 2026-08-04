@@ -1300,11 +1300,6 @@ hash = "628b58ef55bd646e7c5834d02dc2a54e872286d847770016e1a24f14d8f7f83b"
 metafile = true
 
 [[files]]
-file = "mods/create-dreams-and-desires.pw.toml"
-hash = "fd2c9cdc0083b93038ce74132c66078e8e223722c4fae902ba4bfef28c37ed71"
-metafile = true
-
-[[files]]
 file = "mods/create-enchantment-industry-fabric-(create-6).pw.toml"
 hash = "f5cfb75812c73c3c427e60242a192f4e22c1fd844a6c974d09a078133e9dd91d"
 metafile = true
@@ -1332,11 +1327,6 @@ metafile = true
 [[files]]
 file = "mods/create-steam-n-rails.pw.toml"
 hash = "a6033968359265ec1de91ed8380d6fc04f58787fd93e2d2b8e5c3d055372f980"
-metafile = true
-
-[[files]]
-file = "mods/create-trading-floor.pw.toml"
-hash = "1b7e14317bc324ac08736eb154458a463715fdbc59bd556999893b58129eebf8"
 metafile = true
 
 [[files]]
