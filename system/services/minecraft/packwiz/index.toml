@@ -2175,6 +2175,14 @@ hash = "d320a6bbabe4b86591e3fe24487e069f8a8b2a4c1f37b40313827255a8f0522d"
 metafile = true
 
 [[files]]
+file = "moonlight-global-datapacks/CreateJetpack_TrinketsBackSlot/data/trinkets/tags/items/chest/back.json"
+hash = "b0746cd55d37df25d0344aa216ef46d035ce6cf0e54886a4564fa8ef772ec214"
+
+[[files]]
+file = "moonlight-global-datapacks/CreateJetpack_TrinketsBackSlot/pack.mcmeta"
+hash = "0154a0e2a60ec76367a0fabdbce651f40bf794c0f02a7173936f8bb35eefa685"
+
+[[files]]
 file = "moonlight-global-datapacks/VillagerPlus_Numismatic_Supplementaries.zip"
 hash = "a909ada3f9375b9104a22d256b0ee387f4e559240202affae755c89f7e28dec9"
 
