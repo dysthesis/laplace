@@ -236,6 +236,9 @@ _: {
           "lara"
           "kelly"
           "chris"
+          "laura"
+          "gayatri"
+          "joel"
         ];
         reach = {
           game = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"]; # Minecraft, voice chat, downloads, and map
