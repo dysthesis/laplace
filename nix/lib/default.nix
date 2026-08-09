@@ -121,7 +121,12 @@ nixpkgs.lib.extend (
       # Each addFlags item is prepended as one argv.
       # Values are escaped with escapeShellArgs.
       pkgs.mkWrapper = pkgs: package: args: let
-        paths = [package];
+        paths =
+          if
+            (!package ? outputSpecified || !package.outputSpecified)
+            && package.meta.outputsToInstall or null != null
+          then map (output: package.${output}) package.meta.outputsToInstall
+          else [package];
         mainProgram = package.meta.mainProgram or (final.getName package);
         spec =
           if builtins.isString args
@@ -141,7 +146,7 @@ nixpkgs.lib.extend (
           postBuild = wrapLine + (spec.postBuild or "");
           name = "${final.getName package}-wrapped";
           buildInputs = [pkgs.makeWrapper];
-          # symlinkJoin cannot dereference extra package outputs.
+          # Selected package outputs are flattened into the join's out.
           meta =
             (package.meta or {})
             // {
