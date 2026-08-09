@@ -119,6 +119,7 @@ nixpkgs.lib.extend (
       # Wrap one or more binaries. args may be raw postBuild or a wrapper spec.
       # Spec keys: program, addFlags, set, binPath, run, and postBuild.
       # Each addFlags item is prepended as one argv.
+      # binPath is prepended to PATH, so wrapper dependencies shadow host tools.
       # Values are escaped with escapeShellArgs.
       pkgs.mkWrapper = pkgs: package: args: let
         paths =
