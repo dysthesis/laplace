@@ -1,7 +1,7 @@
 nixpkgs:
 nixpkgs.lib.extend (
   final: _prev: let
-    inherit (builtins) readDir attrNames isList elemAt;
+    inherit (builtins) readDir attrNames;
 
     getItemsOfType = dir: type:
       dir
@@ -121,15 +121,8 @@ nixpkgs.lib.extend (
       # Each addFlags item is prepended as one argv.
       # Values are escaped with escapeShellArgs.
       pkgs.mkWrapper = pkgs: package: args: let
-        target =
-          if isList package
-          then elemAt package 0
-          else package;
-        paths =
-          if isList package
-          then package
-          else [package];
-        mainProgram = target.meta.mainProgram or (final.getName target);
+        paths = [package];
+        mainProgram = package.meta.mainProgram or (final.getName package);
         spec =
           if builtins.isString args
           then {postBuild = args;}
@@ -146,11 +139,11 @@ nixpkgs.lib.extend (
         pkgs.symlinkJoin {
           inherit paths;
           postBuild = wrapLine + (spec.postBuild or "");
-          name = "${final.getName target}-wrapped";
+          name = "${final.getName package}-wrapped";
           buildInputs = [pkgs.makeWrapper];
           # symlinkJoin cannot dereference extra package outputs.
           meta =
-            (target.meta or {})
+            (package.meta or {})
             // {
               inherit mainProgram;
               outputsToInstall = ["out"];
