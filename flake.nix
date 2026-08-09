@@ -68,6 +68,25 @@
               touch $out
             '';
 
+          mk-wrapper = let
+            argumentCheck = pkgs.writeShellScriptBin "argument check" ''
+              test "$#" -eq 2
+              test "$1" = "complex command"
+              test "$2" = "--literal"
+            '';
+            wrapped = lib.laplace.pkgs.mkWrapper pkgs argumentCheck {
+              program = "argument check";
+              addFlags = ["complex command" "--literal"];
+            };
+            bashWrapped = lib.laplace.pkgs.mkWrapper pkgs pkgs.bash {};
+          in
+            assert bashWrapped.meta.outputsToInstall == ["out"];
+              pkgs.runCommand "mk-wrapper-check" {} ''
+                "${wrapped}/bin/argument check"
+                test -e ${bashWrapped}/share/man/man1/bash.1.gz
+                touch $out
+              '';
+
           minecraft-maintenance = let
             services = nixosConfigurations.loki.config.systemd.services;
             snapshot = pkgs.writeText "mc-world-snapshot.sh" services.mc-world-snapshot.script;
