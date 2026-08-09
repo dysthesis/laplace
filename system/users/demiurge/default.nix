@@ -65,6 +65,7 @@ in {
           configured.bmm
           configured.helix
           configured.pi
+          configured.opencode
         ];
 
         dev = with pkgs; [
