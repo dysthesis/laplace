@@ -19,6 +19,6 @@
   ];
 in
   mkWrapper pkgs neomutt {
-    addFlags = ["-F ${config}"];
+    addFlags = ["-F" config];
     binPath = deps;
   }

@@ -4,7 +4,6 @@
   swaylock-effects,
   ...
 }: let
-  inherit (builtins) concatStringsSep;
   wallpaper = "${../../assets/wallpaper.png}";
 
   tokens = [
@@ -70,18 +69,5 @@
     "--separator-color"
     "00000000"
   ];
-
-  mkParam = s:
-    if lib.hasInfix " " s
-    then ''--add-flag ${lib.escapeShellArg s}''
-    else ''--add-flags ${lib.escapeShellArg s}'';
-
-  formatted = concatStringsSep " \\\n      " (map mkParam tokens);
 in
-  # Uses --add-flag (singular) for space-containing values, so needs raw postBuild.
-  lib.laplace.pkgs.mkWrapper pkgs swaylock-effects {
-    postBuild = ''
-      wrapProgram "$out/bin/swaylock" \
-        ${formatted}
-    '';
-  }
+  lib.laplace.pkgs.mkWrapper pkgs swaylock-effects {addFlags = tokens;}

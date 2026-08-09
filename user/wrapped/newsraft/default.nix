@@ -11,7 +11,9 @@ in
   mkWrapper pkgs pkgs.newsraft {
     binPath = deps;
     addFlags = [
-      "-c ${./config}"
-      "-f ${./feeds}"
+      "-c"
+      "${./config}"
+      "-f"
+      "${./feeds}"
     ];
   }

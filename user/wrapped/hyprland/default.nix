@@ -92,12 +92,12 @@
     )
   );
 
-  configuredHyprIdle = mkWrapper pkgs hypridle {addFlags = ["-c ${hypridleConf}"];};
+  configuredHyprIdle = mkWrapper pkgs hypridle {addFlags = ["-c" hypridleConf];};
 
   hyprlockConf = pkgs.writeText "hyprlock.conf" (
     toHyprconf initialIndent (import ./config/hyprlock.nix)
   );
-  configuredHyprLock = mkWrapper pkgs hyprlock {addFlags = ["-c ${hyprlockConf}"];};
+  configuredHyprLock = mkWrapper pkgs hyprlock {addFlags = ["-c" hyprlockConf];};
 
   mkConfig = conf: toHyprconf initialIndent conf |> toString |> pkgs.writeText "hyprland.conf";
   hyprlandConf = mkConfig (
@@ -114,4 +114,4 @@
     }
   );
 in
-  mkWrapper pkgs hyprland {addFlags = ["-c ${hyprlandConf}"];}
+  mkWrapper pkgs hyprland {addFlags = ["-c" hyprlandConf];}

@@ -18,4 +18,4 @@
     sway = sway-unwrapped;
   };
 in
-  mkWrapper pkgs sway-unwrapped {addFlags = ["--config ${configFile}"];}
+  mkWrapper pkgs sway-unwrapped {addFlags = ["--config" configFile];}

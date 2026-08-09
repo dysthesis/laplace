@@ -21,7 +21,9 @@
 in
   mkWrapper pkgs pkgs.waybar {
     addFlags = [
-      "-c ${generated.json}"
-      "-s ${generated.css}"
+      "-c"
+      generated.json
+      "-s"
+      generated.css
     ];
   }

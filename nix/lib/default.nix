@@ -118,6 +118,7 @@ nixpkgs.lib.extend (
 
       # Wrap one or more binaries. args may be raw postBuild or a wrapper spec.
       # Spec keys: program, addFlags, set, binPath, run, and postBuild.
+      # Each addFlags item is prepended as one argv.
       # Values are escaped with escapeShellArgs.
       pkgs.mkWrapper = pkgs: package: args: let
         target =
@@ -134,7 +135,7 @@ nixpkgs.lib.extend (
           then {postBuild = args;}
           else args;
         wrapperArgs =
-          final.concatMap (f: ["--add-flags" f]) (spec.addFlags or [])
+          final.concatMap (f: ["--add-flag" f]) (spec.addFlags or [])
           ++ final.concatLists (final.mapAttrsToList (n: v: ["--set" n v]) (spec.set or {}))
           ++ final.optionals ((spec.binPath or []) != []) ["--prefix" "PATH" ":" (final.makeBinPath spec.binPath)]
           ++ final.concatMap (c: ["--run" c]) (spec.run or []);

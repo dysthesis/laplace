@@ -7,4 +7,4 @@
   inherit (lib.laplace.pkgs) mkWrapper;
   cfg = pkgs.writers.writeYAML (import ./config.nix {});
 in
-  mkWrapper pkgs lazygit {addFlags = [''--use-config-file="${cfg}"''];}
+  mkWrapper pkgs lazygit {addFlags = ["--use-config-file=${cfg}"];}

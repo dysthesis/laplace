@@ -31,4 +31,4 @@
     ${toDunstIni cfg}
   '';
 in
-  mkWrapper pkgs pkgs.dunst {addFlags = ["-config ${dunstrc}"];}
+  mkWrapper pkgs pkgs.dunst {addFlags = ["-config" dunstrc];}
