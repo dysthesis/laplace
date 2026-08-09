@@ -141,7 +141,7 @@ nixpkgs.lib.extend (
           ++ final.concatMap (c: ["--run" c]) (spec.run or []);
         wrapLine =
           final.optionalString (wrapperArgs != [])
-          "wrapProgram $out/bin/${spec.program or mainProgram} ${final.escapeShellArgs wrapperArgs}\n";
+          "wrapProgram $out/bin/${final.escapeShellArg (spec.program or mainProgram)} ${final.escapeShellArgs wrapperArgs}\n";
       in
         pkgs.symlinkJoin {
           inherit paths;
