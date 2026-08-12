@@ -11,7 +11,12 @@
     environment.systemPackages = with pkgs; [
       android-tools
       usbutils
+
+      signal-desktop
+      polkit_gnome
     ];
+
+    security.polkit.enable = true;
     # Deimos-only pregen overrides; Loki keeps the pack defaults.
     services.minecraft-servers.servers.retirement-home = {
       # The pack's c2me config disables parallel worldgen (see

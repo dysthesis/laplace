@@ -19,18 +19,18 @@
   mullvadConnections = {
     deimos = {
       registeredNodeKey = "nodekey:ddec812440a7cc7728567fe2f8d6d97f5b8411fba6593fe4cdb5035c09a6aa53";
-      ipv4MasqAddr = "10.131.163.163";
-      ipv6MasqAddr = "fc00:bbbb:bbbb:bb01:d:0:3:a3a3";
+      ipv4MasqAddr = "10.139.68.25";
+      ipv6MasqAddr = "fc00:bbbb:bbbb:bb01:d:0:b:4419";
     };
     phobos = {
       registeredNodeKey = "nodekey:b3e3b7c895bd9ff16ab73d004ae85a42c7e3aa59b71145881493196119a40324";
       ipv4MasqAddr = "10.143.70.112";
       ipv6MasqAddr = "fc00:bbbb:bbbb:bb01:d:0:f:4670";
     };
-    phone = {
-      registeredNodeKey = "nodekey:312ee1628d1b5ce0c9a821373e2e8da5a644dcb1efde20be87256325926f5258";
-      ipv4MasqAddr = "10.138.113.245";
-      ipv6MasqAddr = "fc00:bbbb:bbbb:bb01:d:0:a:71f5";
+    device-1 = {
+      registeredNodeKey = "nodekey:4b22be2882278b95b80bdfdb410c0cab76be7a2a0160924dde2b6a88f3a54c1e";
+      ipv4MasqAddr = "10.156.52.92";
+      ipv6MasqAddr = "fc00:bbbb:bbbb:bb01:d:0:1c:345c";
     };
   };
 

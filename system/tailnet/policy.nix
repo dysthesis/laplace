@@ -47,9 +47,9 @@ _: {
         ip6 = "fd7a:115c:a1e0::4";
         tags = ["workstation"];
       }; # workstation (PC)
-      phone = {
-        ip = "100.64.0.2";
-        ip6 = "fd7a:115c:a1e0::2";
+      device-1 = {
+        ip = "100.64.0.40";
+        ip6 = "fd7a:115c:a1e0::28";
         tags = ["phone"];
       }; # tag:phone (current mobile)
       device = {
