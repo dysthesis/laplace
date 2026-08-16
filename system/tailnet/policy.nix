@@ -40,17 +40,17 @@ _: {
       phobos = {
         ip = "100.64.0.1";
         ip6 = "fd7a:115c:a1e0::1";
-        tags = ["workstation"];
+        tags = ["workstation" "owner-device"];
       }; # workstation (laptop)
       deimos = {
         ip = "100.64.0.4";
         ip6 = "fd7a:115c:a1e0::4";
-        tags = ["workstation"];
+        tags = ["workstation" "owner-device"];
       }; # workstation (PC)
-      device-1 = {
+      phone = {
         ip = "100.64.0.40";
         ip6 = "fd7a:115c:a1e0::28";
-        tags = ["phone"];
+        tags = ["phone" "owner-device"];
       }; # tag:phone (current mobile)
       device = {
         ip = "100.64.0.7";
@@ -66,6 +66,11 @@ _: {
 
     # Delete retired phones; keeping them preserves mesh access.
     flows = [
+      {
+        from = "owner-device";
+        to = "owner-device";
+        ports = ["*"];
+      } # personal devices may initiate traffic to each other
       {
         from = "*";
         to = "dns";
@@ -239,6 +244,7 @@ _: {
           "laura"
           "gayatri"
           "joel"
+          "abiram"
         ];
         reach = {
           game = ["tcp/25565" "udp/24454" "tcp/80" "tcp/443"]; # Minecraft, voice chat, downloads, and map

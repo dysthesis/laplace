@@ -75,7 +75,16 @@ deploy *ARGS:
   colmena apply --on @proxmox {{ARGS}}
 
 deploy-one HOST *ARGS:
-  colmena apply --on {{HOST}} {{ARGS}}
+  #!/usr/bin/env sh
+  set -eu
+  trap 'rm -f ".gcroots/node-{{HOST}}"; rmdir .gcroots 2>/dev/null || true' EXIT
+  target=$(nix eval --raw '.#colmena.{{HOST}}.deployment.targetHost')
+  target_user=$(nix eval --raw '.#colmena.{{HOST}}.deployment.targetUser')
+  colmena apply build --impure --on {{HOST}} --keep-result
+  system=$(readlink -f '.gcroots/node-{{HOST}}')
+  # Determinate Nix 3.22 aborts Colmena on unsigned imports; bypass only over authenticated root SSH.
+  nix copy --no-check-sigs --to "ssh-ng://$target_user@$target" "$system"
+  colmena apply --impure --on {{HOST}} {{ARGS}}
 
 # Create a persisted SOPS age key and print its recipient.
 # Add the recipient to .sops.yaml before encrypting host secrets.
