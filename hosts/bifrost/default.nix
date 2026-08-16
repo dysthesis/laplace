@@ -27,7 +27,7 @@
       ipv4MasqAddr = "10.143.70.112";
       ipv6MasqAddr = "fc00:bbbb:bbbb:bb01:d:0:f:4670";
     };
-    device-1 = {
+    phone = {
       registeredNodeKey = "nodekey:4b22be2882278b95b80bdfdb410c0cab76be7a2a0160924dde2b6a88f3a54c1e";
       ipv4MasqAddr = "10.156.52.92";
       ipv6MasqAddr = "fc00:bbbb:bbbb:bb01:d:0:1c:345c";
@@ -106,7 +106,7 @@ in {
   };
 
   laplace = {
-    harden = ["malloc"];
+    harden = ["malloc" "kernel"];
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
