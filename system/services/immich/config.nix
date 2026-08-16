@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   inherit (lib) mkIf;
@@ -28,6 +29,7 @@ in {
 
     services.immich = {
       enable = true;
+      package = pkgs.unstable.immich;
       inherit (cfg) host mediaLocation port;
       openFirewall = false;
       # Local PostgreSQL uses peer auth; leave app settings mutable in the UI.
