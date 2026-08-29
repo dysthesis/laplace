@@ -6,8 +6,6 @@
   inputs,
   lib,
   nodeModules,
-  # Match nixosConfigurations package overlays.
-  overlays,
 }: let
   inherit (lib) mapAttrs;
 
@@ -41,7 +39,6 @@ in
     meta = {
       nixpkgs = import inputs.nixpkgs.outPath {
         system = "x86_64-linux";
-        inherit overlays;
       };
       # Match mkSystem specialArgs.
       specialArgs = {inherit self inputs lib;};

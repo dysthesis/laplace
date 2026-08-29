@@ -560,7 +560,7 @@
 
       colmena = import ./nix/deploy {
         inherit self inputs lib;
-        inherit (hosts) nodeModules overlays;
+        inherit (hosts) nodeModules;
       };
     };
 
