@@ -55,5 +55,16 @@ in {
         DISABLE_NEW_RELEASE_CHECK = "true";
       };
     };
+
+    systemd.services = {
+      karakeep-web.serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "10s";
+      };
+      karakeep-workers.serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "10s";
+      };
+    };
   };
 }
