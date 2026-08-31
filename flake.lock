@@ -584,11 +584,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786013826,
-        "narHash": "sha256-ToLHBRnNcjDnRCjIRM2nfEpfH1yl2lzuvgJ14KNwQYE=",
+        "lastModified": 1788182423,
+        "narHash": "sha256-afr/DvPP/gShDYOE1OpTsRx9nX9tjazwXikimEOqTZ8=",
         "owner": "dysthesis",
         "repo": "iosevka-cadmus",
-        "rev": "7120c51a747449aeaa611e5b038a12e1ce249439",
+        "rev": "058c7b4ef3fcf7b5f4fd1caa8db1e1890ffcd151",
         "type": "github"
       },
       "original": {
