@@ -71,7 +71,7 @@
             };
           }
           {
-            name = "DP-3";
+            name = "DP-2";
             width = 1920;
             height = 1080;
             refreshRate = 165.001007;

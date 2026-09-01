@@ -95,14 +95,18 @@ in {
       <?xml version="1.0"?>
       <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
       <fontconfig>
-        <match target="font">
-          <test name="family" compare="eq">
-            <string>Iosevka Cadmus</string>
-          </test>
-          <edit name="hintstyle" mode="assign">
-            <const>hintfull</const>
-          </edit>
-        </match>
+        <selectfont>
+          <rejectfont>
+            <pattern>
+              <patelt name="family">
+                <string>IosevkaCadmus Nerd Font</string>
+              </patelt>
+              <patelt name="fontwrapper">
+                <string>WOFF2</string>
+              </patelt>
+            </pattern>
+          </rejectfont>
+        </selectfont>
       </fontconfig>
     '';
     services = {
@@ -148,13 +152,24 @@ in {
       };
     };
     environment = {
-      sessionVariables = {
+      sessionVariables = let
+        gsettingsOverrides = pkgs.gnome.nixos-gsettings-overrides.override {
+          extraGSettingsOverrides = ''
+            [org.gnome.desktop.interface]
+            font-hinting='slight'
+            font-antialiasing='grayscale'
+          '';
+        };
+      in {
         PYTORCH_ROCM_ARCH = "gfx1030";
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
         HCC_AMDGPU_TARGET = "gfx1030";
         GTK_USE_PORTAL = "1";
+        NIX_GSETTINGS_OVERRIDES_DIR =
+          pkgs.glib.getSchemaPath
+          gsettingsOverrides;
       };
-      systemPackages = with pkgs; [xdg-utils];
+      systemPackages = with pkgs; [xdg-utils gsettings-desktop-schemas];
     };
     security = {
       # For electron stuff

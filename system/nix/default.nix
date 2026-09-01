@@ -18,6 +18,13 @@ in {
       settings =
         {
           extra-platforms = ["aarch64-linux"];
+          system-features = [
+            "benchmark"
+            "big-parallel"
+            "gccarch-znver3"
+            "kvm"
+            "nixos-test"
+          ];
           experimental-features =
             [
               "nix-command"

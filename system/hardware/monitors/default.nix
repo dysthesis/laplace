@@ -55,7 +55,7 @@ in {
               int
               float
             ]);
-            default = null;
+            default = 1;
             description = "Output scale used by compositors that support per-monitor scaling.";
           };
 
