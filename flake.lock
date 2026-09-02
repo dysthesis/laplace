@@ -603,11 +603,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786719456,
-        "narHash": "sha256-B74DLQs/VjlqyhnnX3tguWwghqJHWSJX30TKZuAljIg=",
+        "lastModified": 1788229478,
+        "narHash": "sha256-G0F2rFORVcFkEvVdE/qWQTnYekIc77YP5/vRF9nZlxU=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "83b7606dcf44abe3a94b86e8bb2b3355d22e8797",
+        "rev": "1dc2d1f720ab17fc7981e087346bf54b26d284b1",
         "type": "github"
       },
       "original": {
@@ -1051,11 +1051,11 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1787962033,
-        "narHash": "sha256-u6z9VTZA4Kf3RkHQo9sQI7NI4Ei/uiU9vrMqOiwWP1Y=",
+        "lastModified": 1788187754,
+        "narHash": "sha256-bu1QxmXKmPuvBLN7bHP355OV9Qo13x9WCiRDH62CqRM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "c5c4a43b0e8056328ec4529f735cabdb8f1942bb",
+        "rev": "5dfba6236110080a54247d6460bc2ff5dda939cc",
         "type": "github"
       },
       "original": {
@@ -1198,14 +1198,15 @@
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
-        "ouroboros": "ouroboros_2"
+        "ouroboros": "ouroboros_2",
+        "typst-ts-mode": "typst-ts-mode"
       },
       "locked": {
-        "lastModified": 1788242285,
-        "narHash": "sha256-Wwk0P8TqhjC07Pb9WTL83bHTDtGjW+HQQLUZZ4RcEjo=",
+        "lastModified": 1788268382,
+        "narHash": "sha256-oRAyN8PYMDT3gxvE8Nugbbe9bEf5mWJplypBH3dSxAw=",
         "owner": "dysthesis",
         "repo": "ouroboros",
-        "rev": "12cfe909d074052b79ff601c6ae57eedc6a96827",
+        "rev": "07b77441e8a95c4c955c9557055ee73b1da1d5ae",
         "type": "github"
       },
       "original": {
@@ -2079,6 +2080,22 @@
         "type": "github"
       }
     },
+    "typst-ts-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782317899,
+        "narHash": "sha256-6QUPLiEoKD64tozOm0KBvCdwCNMxcUpCVZu9qOEVosk=",
+        "ref": "refs/heads/develop",
+        "rev": "155bb36cff3afe701a0f6b57bd3fe5c9effaa314",
+        "revCount": 318,
+        "type": "git",
+        "url": "https://codeberg.org/meow_king/typst-ts-mode"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/meow_king/typst-ts-mode"
+      }
+    },
     "uv2nix": {
       "inputs": {
         "nixpkgs": [
@@ -2112,11 +2129,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788234882,
-        "narHash": "sha256-ObmDN3fTx/xrmdfEyxDHYnpVvIyKQgCWskcwaDg+vxs=",
+        "lastModified": 1788254223,
+        "narHash": "sha256-27Q1HjIybCEOHqGrP/LOtSnIb4Rmek3Ochi7Trl90Y4=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "0c22264c8760e5e8aa0290e1141c5ead56d0e55e",
+        "rev": "82589d1716b7d4de8e17e77b92b67952b7e3da96",
         "type": "github"
       },
       "original": {
