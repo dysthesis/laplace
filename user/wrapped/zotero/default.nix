@@ -103,6 +103,7 @@ in
         in
           {
             GTK_USE_PORTAL = "1";
+            PATH = lib.makeBinPath [pkgs.coreutils];
             XDG_DATA_DIRS = lib.makeSearchPath "share" [
               pkgs.shared-mime-info
               cursorPackage

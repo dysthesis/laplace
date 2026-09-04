@@ -7,6 +7,7 @@
   ...
 }: let
   minifluxHost = "miniflux.dysthesis.com";
+  alteroHost = "lib.dysthesis.com";
   beszelHost = "status.dysthesis.com";
   radicaleHost = "cal.dysthesis.com";
   karakeepHost = "read.dysthesis.com";
@@ -77,6 +78,10 @@ in {
         };
       };
       miniflux.enable = true;
+      altero = {
+        enable = true;
+        domain = alteroHost;
+      };
       silverbullet.enable = true;
       taskchampion.enable = true;
       radicale.enable = true;
@@ -112,6 +117,15 @@ in {
           encode @notSSE
           root * ${inputs.slides.packages.${pkgs.stdenv.hostPlatform.system}.slides}
           file_server
+        '';
+        virtualHosts.${alteroHost}.extraConfig = ''
+          tls {
+            dns cloudflare {env.CF_API_TOKEN}
+            resolvers 1.1.1.1
+          }
+          reverse_proxy 127.0.0.1:${toString config.laplace.services.altero.port} {
+            header_up X-Forwarded-For {remote_host}
+          }
         '';
         cloudflare = {
           enable = true;

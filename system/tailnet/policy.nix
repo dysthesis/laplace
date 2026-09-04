@@ -16,7 +16,7 @@ _: {
         ip = "100.64.0.8";
         ip6 = "fd7a:115c:a1e0::8";
         tags = ["apps" "monitor" "infra" "rss"];
-      }; # miniflux/silverbullet/karakeep/vikunja/radicale + beszel-hub
+      }; # miniflux/altero/silverbullet/karakeep/vikunja/radicale + beszel-hub
       argus = {
         ip = "100.64.0.34";
         ip6 = "fd7a:115c:a1e0::22";

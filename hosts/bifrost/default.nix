@@ -106,7 +106,7 @@ in {
   };
 
   laplace = {
-    harden = ["malloc" "kernel"];
+    harden = ["malloc"];
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
@@ -296,6 +296,11 @@ in {
             }
             {
               name = "miniflux.${fqdn}";
+              type = "A";
+              value = mimirTailnetIp;
+            }
+            {
+              name = "lib.${fqdn}";
               type = "A";
               value = mimirTailnetIp;
             }

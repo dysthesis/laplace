@@ -16,11 +16,11 @@ in {
       }
     ];
 
-    # Persist media and PostgreSQL, but let replaceable ML models redownload.
-    # simplification: persist /var/cache/immich if first-use latency matters.
+    # ML models exceed small tmpfs roots, so keep the cache on disk.
     mnemosyne.dirs = [
       cfg.mediaLocation
       config.services.postgresql.dataDir
+      "/var/cache/immich"
     ];
 
     # Pin UID and GID so persisted media ownership survives root resets.

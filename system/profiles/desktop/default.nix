@@ -90,6 +90,7 @@ in {
 
       nerd-fonts.iosevka
       inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font
+      inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-emacs-nerd-font
     ];
     fonts.fontconfig.localConf = ''
       <?xml version="1.0"?>
