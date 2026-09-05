@@ -30,7 +30,7 @@ in
       etc.sslCertificates.enable = true;
       fonts = {
         enable = true;
-        fonts = config.fonts.packages;
+        fonts = config.fonts.packages ++ [pkgs.liberation_ttf];
       };
       gpu.enable = true;
       locale.enable = true;
