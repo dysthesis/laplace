@@ -1,0 +1,16 @@
+--- a/ytfzf
++++ b/ytfzf
+@@ -1486,7 +1486,12 @@ _youtube_channel_json() {
+ 		url: "'"$yt_video_link_domain"'/watch?v=\(.content.videoRenderer.videoId)",
+ 		title: .content.videoRenderer.title.runs[0].text,
+ 	    	channel: "'"$channel_name"'",
+-	    	thumbs: .content.videoRenderer.thumbnail.thumbnails[2].url|sub("\\?.*";""),
++	    	thumbs: (
++			(.content.videoRenderer.thumbnail.thumbnails // [])
++			| map(.url? // empty)
++			| last // ""
++			| sub("\\?.*"; "")
++		),
+ 	    	duration: .content.videoRenderer.lengthText.simpleText,
+             views: "\(.content.videoRenderer.lengthText.simpleText | split("views")[0])",
+ 	    	date: .content.videoRenderer.publishedTimeText.simpleText,

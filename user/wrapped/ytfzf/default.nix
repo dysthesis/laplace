@@ -19,13 +19,17 @@
     ncurses
     curl
   ];
-  ytfzf = pkgs.ytfzf.override {
-    inherit
-      (pkgs.configured)
-      mpv
-      ;
-    inherit (pkgs.unstable) fzf;
-  };
+  ytfzf =
+    (pkgs.ytfzf.override {
+      inherit (pkgs.configured) mpv;
+      inherit (pkgs.unstable) fzf;
+    }).overrideAttrs (old: {
+      patches =
+        (old.patches or [])
+        ++ [
+          ./youtube-thumbnail.patch
+        ];
+    });
 in
   # PATH is *replaced* (not prefixed): ytfzf shells out to a fixed toolset.
   mkWrapper pkgs ytfzf {
