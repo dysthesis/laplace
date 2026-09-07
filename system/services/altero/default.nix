@@ -50,6 +50,8 @@ in {
       volumes = ["${cfg.dataDir}:/data"];
       environment = {
         ALTERO_DATABASE_URL = "sqlite+aiosqlite:////data/altero.sqlite";
+        # Host-published Podman ports appear from the default bridge gateway.
+        ALTERO_FORWARDED_ALLOW_IPS = "10.88.0.1";
         ALTERO_PUBLIC_URL = "https://${cfg.domain}";
       };
       extraOptions = [
