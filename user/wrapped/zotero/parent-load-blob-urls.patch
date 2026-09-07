@@ -1,0 +1,30 @@
+diff --git a/chrome/content/zotero/HiddenBrowser.mjs b/chrome/content/zotero/HiddenBrowser.mjs
+index 5b58f9c..d79dcd8 100644
+--- a/chrome/content/zotero/HiddenBrowser.mjs
++++ b/chrome/content/zotero/HiddenBrowser.mjs
+@@ -221,11 +221,20 @@ export class HiddenBrowser {
+ 				);
+ 			});
+ 
+-			let loadURISuccess = await this.browsingContext.currentWindowGlobal.getActor("PageData")
+-				.sendQuery("loadURI", { uri });
+-			if (!loadURISuccess) {
+-				Zotero.logError(new Error("Load failed"));
+-				return false;
++			if (uri.startsWith('blob:')) {
++				// Parent-created blob URLs must be loaded by the parent process.
++				this._browser.loadURI(Services.io.newURI(uri), {
++					triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
++					remoteType
++				});
++			}
++			else {
++				let loadURISuccess = await this.browsingContext.currentWindowGlobal.getActor("PageData")
++					.sendQuery("loadURI", { uri });
++				if (!loadURISuccess) {
++					Zotero.logError(new Error("Load failed"));
++					return false;
++				}
+ 			}
+ 			await loadCompletePromise;
+ 		}

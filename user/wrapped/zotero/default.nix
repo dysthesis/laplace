@@ -19,7 +19,9 @@ in
   mkNixPak {
     config = {sloth, ...}: {
       app = {
-        package = pkgs.unstable.zotero;
+        package = pkgs.unstable.zotero.overrideAttrs (old: {
+          patches = (old.patches or []) ++ [./parent-load-blob-urls.patch];
+        });
         extraEntrypoints = [
           "/bin/zotero"
           "/bin/zotero-bin"
