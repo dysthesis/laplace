@@ -4,6 +4,7 @@ final: prev: {
   georgia-fonts = final.callPackage ./georgia-fonts {};
   jbcustom-nf = final.callPackage ./jbcustom-nf {};
   literata = final.callPackage ./literata {};
+  soularr = final.callPackage ./soularr {};
 
   # Karakeep 0.32 requires its pinned better-sqlite3 11.3; drop when it supports Node 24.
   karakeep = prev.karakeep.override {nodejs = final.nodejs_22;};

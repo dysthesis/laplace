@@ -15,8 +15,13 @@ _: {
       mimir = {
         ip = "100.64.0.8";
         ip6 = "fd7a:115c:a1e0::8";
-        tags = ["apps" "monitor" "infra" "rss"];
-      }; # miniflux/altero/silverbullet/karakeep/vikunja/radicale + beszel-hub
+        tags = ["apps" "monitor" "infra" "rss" "sync"];
+      }; # miniflux/altero/silverbullet/karakeep/vikunja/radicale/syncthing + beszel-hub
+      apollo = {
+        ip = "100.64.0.41";
+        ip6 = "fd7a:115c:a1e0::29";
+        tags = ["media"];
+      }; # Prowlarr/Lidarr/qBittorrent/Navidrome
       argus = {
         ip = "100.64.0.34";
         ip6 = "fd7a:115c:a1e0::22";
@@ -40,17 +45,17 @@ _: {
       phobos = {
         ip = "100.64.0.1";
         ip6 = "fd7a:115c:a1e0::1";
-        tags = ["workstation" "owner-device"];
+        tags = ["workstation" "owner-device" "sync"];
       }; # workstation (laptop)
       deimos = {
         ip = "100.64.0.4";
         ip6 = "fd7a:115c:a1e0::4";
-        tags = ["workstation" "owner-device"];
+        tags = ["workstation" "owner-device" "sync"];
       }; # workstation (PC)
       phone = {
         ip = "100.64.0.40";
         ip6 = "fd7a:115c:a1e0::28";
-        tags = ["phone" "owner-device"];
+        tags = ["phone" "owner-device" "sync"];
       }; # tag:phone (current mobile)
       device = {
         ip = "100.64.0.7";
@@ -71,6 +76,16 @@ _: {
         to = "owner-device";
         ports = ["*"];
       } # personal devices may initiate traffic to each other
+      {
+        from = "owner-device";
+        to = "media";
+        ports = ["tcp/443"];
+      } # owner workstations and current phone -> music stack
+      {
+        from = "sync";
+        to = "sync";
+        ports = ["tcp/22000" "udp/22000"];
+      } # Syncthing TCP/QUIC full mesh: laptop, PC, phone, and Mimir
       {
         from = "*";
         to = "dns";
@@ -255,6 +270,14 @@ _: {
       miniflux = {
         users = ["mary"];
         reach = {rss = ["tcp/80" "tcp/443"];};
+      };
+
+      vikunja = {
+        users = ["sheva"];
+        reach = {
+          apps = ["tcp/443"];
+          dns = ["udp/53"];
+        };
       };
 
       photos = {

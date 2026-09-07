@@ -59,6 +59,7 @@ in {
         # unfree meta.license, so match on the unwrapped name.
         allowUnfreePredicate = pkg:
           builtins.elem (lib.removeSuffix "-wrapped" (lib.getName pkg)) [
+            "obsidian"
             "graalvm-oracle"
             "minecraft-server"
             "steam"

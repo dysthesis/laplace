@@ -19,7 +19,8 @@
     bifrost = "x86_64-linux"; # Headscale host on Proxmox
     charon = "x86_64-linux"; # Tailscale exit node
     mneme = "x86_64-linux"; # Immich
-    mimir = "x86_64-linux"; # Miniflux + SilverBullet
+    mimir = "x86_64-linux"; # Application services + Syncthing
+    apollo = "x86_64-linux"; # Music automation and streaming host on Proxmox
     loki = "x86_64-linux"; # Dedicated Minecraft host on Proxmox
   };
   defaultImports = [

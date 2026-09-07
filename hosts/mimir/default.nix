@@ -7,10 +7,12 @@
   ...
 }: let
   minifluxHost = "miniflux.dysthesis.com";
+  vikunjaHost = "tasks.dysthesis.com";
   alteroHost = "lib.dysthesis.com";
   beszelHost = "status.dysthesis.com";
   radicaleHost = "cal.dysthesis.com";
   karakeepHost = "read.dysthesis.com";
+  syncHost = "sync.dysthesis.com";
 in {
   sops.secrets = {
     # The Miniflux module otherwise uses the shared secret file.
@@ -83,7 +85,7 @@ in {
         domain = alteroHost;
       };
       silverbullet.enable = true;
-      taskchampion.enable = true;
+      vikunja.enable = true;
       radicale.enable = true;
       karakeep = {
         enable = true;
@@ -118,6 +120,23 @@ in {
           root * ${inputs.slides.packages.${pkgs.stdenv.hostPlatform.system}.slides}
           file_server
         '';
+        virtualHosts.${syncHost}.extraConfig = ''
+          tls {
+            dns cloudflare {env.CF_API_TOKEN}
+            resolvers 1.1.1.1
+          }
+          # Port-based tailnet ACLs cannot distinguish Mimir's HTTPS vhosts.
+          # Restrict Syncthing's unauthenticated GUI to its three owner clients.
+          @syncClients remote_ip ${config.laplace.tailnet.nodes.phobos.ip} ${config.laplace.tailnet.nodes.phobos.ip6} ${config.laplace.tailnet.nodes.deimos.ip} ${config.laplace.tailnet.nodes.deimos.ip6} ${config.laplace.tailnet.nodes.phone.ip} ${config.laplace.tailnet.nodes.phone.ip6}
+          handle @syncClients {
+            reverse_proxy 127.0.0.1:8384 {
+              header_up Host {upstream_hostport}
+            }
+          }
+          handle {
+            respond 403
+          }
+        '';
         virtualHosts.${alteroHost}.extraConfig = ''
           tls {
             dns cloudflare {env.CF_API_TOKEN}
@@ -133,7 +152,7 @@ in {
           proxies = {
             "miniflux.dysthesis.com" = "127.0.0.1:8087";
             "silverbullet.dysthesis.com" = "localhost:8101";
-            "tasks.dysthesis.com" = "localhost:${toString config.laplace.services.taskchampion.port}";
+            ${vikunjaHost} = "127.0.0.1:${toString config.services.vikunja.port}";
             "status.dysthesis.com" = "localhost:8090";
             ${radicaleHost} = "localhost:${toString config.laplace.services.radicale.port}";
             ${karakeepHost} = "localhost:${toString config.laplace.services.karakeep.port}";
@@ -143,7 +162,19 @@ in {
     };
   };
 
+  # mnemosyne creates the persistent directory before users-groups activation;
+  # ensure the Syncthing daemon can actually own and write its state directory.
+  systemd.tmpfiles.rules = [
+    "d ${config.services.syncthing.dataDir} 0700 syncthing syncthing - -"
+  ];
   services = {
+    syncthing = {
+      enable = true;
+      # Caddy is the only GUI ingress; transfer ports are opened by the
+      # identity-aware tailnet policy instead of the host-wide firewall.
+      guiAddress = "127.0.0.1:8384";
+      openDefaultPorts = false;
+    };
     miniflux.config = {
       # The host firewall admits this port only for authorised tailnet peers.
       LISTEN_ADDR = lib.mkForce "0.0.0.0:8087";
@@ -153,8 +184,15 @@ in {
       # refuses integration POSTs to any host resolving to a non-public IP.
       INTEGRATION_ALLOW_PRIVATE_NETWORKS = "1";
     };
+    # Vikunja embeds this public origin in the frontend API configuration.
+    vikunja = {
+      frontendScheme = lib.mkForce "https";
+      frontendHostname = lib.mkForce vikunjaHost;
+    };
     silverbullet.listenAddress = lib.mkForce "127.0.0.1";
   };
+  # Preserve the device identity, index, GUI configuration, and synced folders.
+  mnemosyne.dirs = [config.services.syncthing.dataDir];
 
   environment.systemPackages = with pkgs; [
     vim

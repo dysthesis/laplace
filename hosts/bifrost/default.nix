@@ -12,6 +12,7 @@
   adguardTailnetIp = nodes.hermes.ip; # AdGuard (also the tailnet resolver)
   mnemeTailnetIp = nodes.mneme.ip; # immich
   mimirTailnetIp = nodes.mimir.ip; # miniflux + silverbullet + radicale
+  apolloTailnetIp = nodes.apollo.ip;
   argusTailnetIp = nodes.argus.ip; # Grafana
   horosTailnetIp = nodes.horos.ip; # Uptime Kuma + ntfy
   lokiTailnetIp = nodes.loki.ip; # minecraft
@@ -315,6 +316,11 @@ in {
               value = mimirTailnetIp;
             }
             {
+              name = "music.${fqdn}";
+              type = "A";
+              value = apolloTailnetIp;
+            }
+            {
               name = "status.${fqdn}";
               type = "A";
               value = mimirTailnetIp;
@@ -346,6 +352,11 @@ in {
             }
             {
               name = "slides.${fqdn}";
+              type = "A";
+              value = mimirTailnetIp;
+            }
+            {
+              name = "sync.${fqdn}";
               type = "A";
               value = mimirTailnetIp;
             }

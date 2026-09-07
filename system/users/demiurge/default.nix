@@ -100,6 +100,7 @@ in {
         applications = with pkgs; [
           configured.zotero
           unstable.signal-desktop
+          unstable.obsidian
           (unstable.prismlauncher.override {
             jdks = with pkgs; [
               graalvmPackages.graalvm-oracle_17

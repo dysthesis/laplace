@@ -14,9 +14,6 @@ in {
   sops = mkIf (!(elem hostName ["phobos" "chaos"])) {
     secrets = mkIf hasDemiurge {
       libera.owner = "demiurge";
-      # client_id + encryption_secret lines for Taskwarrior's TaskChampion sync
-      # (tasks.dysthesis.com). The wrapped `task` stages this into ~/.config/task.
-      taskwarrior_sync.owner = "demiurge";
       # Radicale (cal.dysthesis.com) password for the demiurge htpasswd account.
       # vdirsyncer reads it at runtime via password.fetch; never staged to disk.
       khal_caldav.owner = "demiurge";

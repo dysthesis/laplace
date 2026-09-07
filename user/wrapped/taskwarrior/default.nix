@@ -28,10 +28,6 @@
     search.case.sensitive=no
     data.location=~/.local/share/task
 
-    # Load TaskChampion client secrets at runtime, outside the store.
-    sync.server.url=https://tasks.dysthesis.com
-    include ~/.config/task/sync.conf
-
     # Prevent priority inversion
     urgency.inherit=1
     urgency.blocking.coefficient=0
@@ -125,6 +121,4 @@ in
   mkWrapper pkgs pkgs.taskwarrior3 {
     set.TASKRC = taskrc;
     binPath = deps;
-    # Stage SOPS client secrets on first run.
-    run = [''sync="$HOME/.config/task/sync.conf"; if [ -r /run/secrets/taskwarrior_sync ]; then ${pkgs.coreutils}/bin/install -Dm600 /run/secrets/taskwarrior_sync "$sync"; elif [ ! -e "$sync" ]; then ${pkgs.coreutils}/bin/install -Dm600 /dev/null "$sync"; fi''];
   }

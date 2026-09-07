@@ -11,10 +11,10 @@
   # Do not strip: Bun appends its bundle after the ELF.
   omp = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "oh-my-pi";
-    version = "17.1.0";
+    version = "18.1.13";
     src = pkgs.fetchurl {
       url = "https://github.com/can1357/oh-my-pi/releases/download/v${finalAttrs.version}/omp-linux-x64";
-      hash = "sha256-b9cJ7qYm+SUDc3xcaZTWJIP4jdPfJFRELarxmChp0VQ=";
+      hash = "sha256-O+WjCMyR5va7oUgXX75lHTWD/20yriIcuTHcCKZOHzk=";
     };
     dontUnpack = true;
     dontStrip = true;
@@ -45,10 +45,10 @@ in
     run = [
       ''
         dir="''${PI_CODING_AGENT_DIR:-$HOME/.omp/agent}"
-        [ -e "$dir/config.yml" ]
+        [ -e "$dir/config.yml" ] \
           || install -Dm644 ${config} "$dir/config.yml"
 
-        [ -e "$dir/themes/minimal.json" ]
+        [ -e "$dir/themes/minimal.json" ] \
           || install -Dm644 ${minimalTheme} "$dir/themes/minimal.json"
 
         [ -e "$dir/agents/explorer.md" ] \
