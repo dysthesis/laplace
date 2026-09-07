@@ -1,0 +1,28 @@
+{
+  "pins": {
+    "nixpkgs": {
+      "type": "Channel",
+      "name": "nixpkgs-unstable",
+      "artifact": "nixexprs.tar.xz",
+      "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1069909.da39501c8d0a/nixexprs.tar.xz",
+      "hash": "sha256-QIrzQVJg274RbHiJL6nSupKPiJPrUYRsB7eGqfRX2c0="
+    },
+    "subtui": {
+      "type": "GitRelease",
+      "repository": {
+        "type": "GitHub",
+        "owner": "MattiaPun",
+        "repo": "subtui"
+      },
+      "pre_releases": false,
+      "version_upper_bound": null,
+      "release_prefix": null,
+      "submodules": false,
+      "version": "v2.14.3",
+      "revision": "e5702ad05c62aa9db2e5a2979caa4958edccac35",
+      "url": "https://api.github.com/repos/MattiaPun/subtui/tarball/refs/tags/v2.14.3",
+      "hash": "sha256-LuiWdTfuUsIPV3RhMup6XegZaATFko8cIPI0Xe/O2Sc="
+    }
+  },
+  "version": 8
+}

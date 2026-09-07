@@ -13,6 +13,7 @@
     guiPackage = package: package.config.env;
   in {
     configured = rec {
+      subtui = callPackage ./subtui {inherit pkgs lib;};
       opencode = callPackage ./opencode {inherit pkgs lib;};
       delta = callPackage ./delta {inherit pkgs lib;};
       gh-dash = callPackage ./gh-dash {inherit pkgs lib delta;};

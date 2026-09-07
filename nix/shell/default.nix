@@ -37,6 +37,8 @@ in
       shellcheck
       mergiraf
 
+      npins
+
       defuddle
       nodejs
       headroom
