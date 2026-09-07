@@ -1219,11 +1219,11 @@
         "typst-ts-mode": "typst-ts-mode"
       },
       "locked": {
-        "lastModified": 1788684251,
-        "narHash": "sha256-u1XpUIVuOII+B2vlXv9P0KcBDlpOl05uHKAfR+9lsFA=",
+        "lastModified": 1788782943,
+        "narHash": "sha256-MbN6PEjv2/EOkELM4xCzEikhPxpRIBoyRyGzFl4tCsY=",
         "owner": "dysthesis",
         "repo": "ouroboros",
-        "rev": "07f71a1a7a70ec0e44cca839b52304360e6da763",
+        "rev": "eafcddb2fe8457cc1dc447339c099ffdb4639d81",
         "type": "github"
       },
       "original": {
