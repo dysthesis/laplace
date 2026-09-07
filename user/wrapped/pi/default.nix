@@ -45,8 +45,14 @@ in
     run = [
       ''
         dir="''${PI_CODING_AGENT_DIR:-$HOME/.omp/agent}"
-        [ -e "$dir/config.yml" ] || install -Dm644 ${config} "$dir/config.yml"
-        [ -e "$dir/themes/minimal.json" ] || install -Dm644 ${minimalTheme} "$dir/themes/minimal.json"
+        [ -e "$dir/config.yml" ]
+          || install -Dm644 ${config} "$dir/config.yml"
+
+        [ -e "$dir/themes/minimal.json" ]
+          || install -Dm644 ${minimalTheme} "$dir/themes/minimal.json"
+
+        [ -e "$dir/agents/explorer.md" ] \
+          || install -Dm644 ${./agents/explorer.md} "$dir/agents/explorer.md"
       ''
     ];
   }
