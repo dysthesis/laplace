@@ -5,7 +5,7 @@ inputs: pkgs: let
   };
 in
   pkgs.mkShell {
-    name = "Poincare";
+    name = "laplace-dev";
     packages = with pkgs; [
       nil
       nixd

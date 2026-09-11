@@ -42,9 +42,14 @@
       | sed "s|^alias cd=__zoxide_z\$|function cd --wraps=__zoxide_z --description 'alias cd=__zoxide_z'\n    __zoxide_z \$argv\nend|" \
       > $out
   '';
-  direnvHook = pkgs.runCommand "direnv-hook.fish" {} ''
-    HOME="$TMPDIR" ${lib.getExe direnv} hook fish > $out
-  '';
+
+  mkHook = what: args:
+    pkgs.runCommand "${what.pname or "unknown"}.fish" {} ''
+      HOME="TMPDIR" ${lib.getExe what} ${args} fish > $out
+    '';
+
+  direnvHook = mkHook direnv "hook";
+  atuinHook = mkHook atuin "init";
 
   # Resolve plugin function and completion paths at build time; skip vendor_conf.d.
   pluginPaths = pkgs.runCommand "fish-plugin-paths.fish" {} ''
@@ -106,9 +111,6 @@
       HOME="$TMPDIR" XDG_RUNTIME_DIR="$TMPDIR" ${lib.getExe fish} --no-config ${gen} > $out
     '';
 
-  # Exclude TaskDroid's duplicate events; collection ID changes after recreation.
-  taskMirrorCalendar = "08dc09ab-c6bf-1a74-8019-003a57d72f37";
-
   deps = with pkgs;
     lib.makeBinPath [
       zoxide
@@ -138,16 +140,11 @@
         end
         set -gx DIRENV_LOG_FORMAT ""
         set -gx direnv_config_dir ${direnvConfig}
-        source ${direnvHook}
-        dbus-update-activation-environment --systemd --all
-        ${lib.getExe pkgs.configured.taskwarrior} next due.before:today+7d
-        ${lib.getExe pkgs.configured.khal} list -d ${taskMirrorCalendar} now today
-      end
 
-      function cpfile
-          for file in $argv
-              echo "file://" (realpath $file)
-          end | wl-copy --type text/uri-list
+      set PATH ${deps} $PATH
+        source ${direnvHook}
+        source ${atuinHook}
+        dbus-update-activation-environment --systemd --all
       end
 
       function git
@@ -158,7 +155,6 @@
           end
       end
 
-      set PATH ${deps} $PATH
 
       source ${aliasesFile}
 
