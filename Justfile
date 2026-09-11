@@ -4,8 +4,6 @@ vcs := `if command -v jj >/dev/null 2>&1 \
            else \
              printf 'git'; \
            fi`
-retirement_home_service := "minecraft-server-retirement-home"
-retirement_home_stdin := "/run/minecraft/retirement-home.stdin"
 
 update FLAKE="":
   #!/usr/bin/env sh
@@ -70,7 +68,6 @@ clean:
 proxmox HOST:
   nix build .#nixosConfigurations.{{HOST}}.config.system.build.proxmoxVMA
 
-# Deploy Proxmox guests; handle reach-critical hosts one at a time.
 deploy *ARGS:
   colmena apply --on @proxmox {{ARGS}}
 
@@ -86,8 +83,6 @@ deploy-one HOST *ARGS:
   nix copy --no-check-sigs --to "ssh-ng://$target_user@$target" "$system"
   colmena apply --impure --on {{HOST}} {{ARGS}}
 
-# Create a persisted SOPS age key and print its recipient.
-# Add the recipient to .sops.yaml before encrypting host secrets.
 age-key TARGET:
   #!/usr/bin/env sh
   set -eu
@@ -101,29 +96,6 @@ age-key TARGET:
     fi
     nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -y "$f"
   '
-
-# Send a server command through the protected stdin FIFO.
-mc +CMD:
-  printf '%s\n' "{{CMD}}" | doas tee {{retirement_home_stdin}} >/dev/null
-
-# Start Chunky pregen at 0,0; WORLD selects the dimension.
-# Read progress with pregen-status or pregen-watch.
-pregen-start RADIUS="5000" WORLD="minecraft:overworld": (mc ("chunky world " + WORLD)) (mc "chunky center 0 0") (mc ("chunky radius " + RADIUS)) (mc "chunky start")
-
-pregen-pause: (mc "chunky pause")
-
-pregen-resume: (mc "chunky continue")
-
-# Cancel deletes the task's progress; Chunky wants a confirm within 10s.
-pregen-cancel: (mc "chunky cancel") (mc "chunky confirm")
-
-pregen-status: (mc "chunky progress")
-  #!/usr/bin/env sh
-  sleep 1
-  journalctl -u {{retirement_home_service}} -n 15 --no-pager | grep -i chunky || echo "no chunky output in recent log"
-
-pregen-watch:
-  journalctl -fu {{retirement_home_service}}
 
 tailnet-reconcile TARGET="root@10.0.50.2":
   #!/usr/bin/env sh
