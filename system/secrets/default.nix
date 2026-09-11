@@ -9,9 +9,7 @@
   hostName = config.networking.hostName or "";
 in {
   imports = [inputs.sops-nix.nixosModules.sops];
-  # phobos has no age key; chaos is the live ISO (not a sops recipient, and the
-  # age key would live on a /nix/persist that doesn't exist on the ISO).
-  sops = mkIf (!(elem hostName ["phobos" "chaos"])) {
+  sops = mkIf (!(elem hostName ["chaos"])) {
     secrets = mkIf hasDemiurge {
       libera.owner = "demiurge";
       # Radicale (cal.dysthesis.com) password for the demiurge htpasswd account.

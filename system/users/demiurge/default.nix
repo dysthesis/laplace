@@ -77,7 +77,6 @@ in {
           configured.tmux
           unstable.texliveFull
           inputs.poincare.packages.${hostSystem}.default
-          inputs.ouroboros.packages.${hostSystem}.znver3 # native-compiled for deimos' CPU
         ];
 
         desktop = with pkgs;
