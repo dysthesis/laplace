@@ -58,6 +58,7 @@
 
       display = {
         servers = ["wayland"];
+        wayland.compositor = "dwl";
         hidpi = true;
       };
 
