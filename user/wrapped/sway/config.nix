@@ -67,11 +67,14 @@
     rec {
       name = "foot.music";
       prefix = "m";
-      cmd = "${pkgs.configured.foot}/bin/foot --app-id=${name} -e spotify_player";
+      cmd = "${pkgs.configured.foot}/bin/foot --app-id=${name} -e subtui";
     }
   ];
 
-  scratchpadCfg = scratchpads |> lib.map mkScratchpad |> lib.concatStringsSep "\n";
+  scratchpadCfg =
+    scratchpads
+    |> lib.map mkScratchpad
+    |> lib.concatStringsSep "\n";
 
   inherit (lib.cli) toGNUCommandLineShell;
   wlsunset = let

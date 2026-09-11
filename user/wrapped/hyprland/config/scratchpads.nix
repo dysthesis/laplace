@@ -31,7 +31,7 @@
     rec {
       name = "foot.music";
       prefix = "m";
-      cmd = "${getExe pkgs.configured.foot} --app-id=${name} -e spotify_player";
+      cmd = "${getExe pkgs.configured.foot} --app-id=${name} -e subtui";
     }
 
     rec {

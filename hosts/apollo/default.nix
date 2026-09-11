@@ -293,6 +293,12 @@ in {
       environmentFile = config.sops.templates."slskd.env".path;
       openFirewall = false;
       settings = {
+        auth = {
+          method = "Forms";
+          required = "Disabled";
+          trustCgnatIpAddresses = false;
+        };
+
         directories = {
           downloads = slskdDownloadsDir;
           incomplete = "${slskdDownloadsDir}/incomplete";

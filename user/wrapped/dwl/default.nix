@@ -76,7 +76,7 @@
             "--app-id=${terminal.appId}.music"
             "--title=Music"
             "-e"
-            "spotify_player"
+            "subtui"
           ];
         }
         {

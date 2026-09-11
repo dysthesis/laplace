@@ -23,7 +23,6 @@
       dbus-update-activation-environment --systemd --all
 
       ${getExe syncthing} -no-browser &
-      ${getExe configured.spotify-player} -d &
       ${configured.dunst}/bin/dunst &
       ${getExe udiskie} &
       ${getExe hsetroot} -cover ${./wallpaper.png} &

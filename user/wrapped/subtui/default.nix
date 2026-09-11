@@ -4,12 +4,13 @@
   buildGoModule,
   versionCheckHook,
 }: let
-  sources = import ./npins;
+  sources = import ../npins;
+  src = sources.subtui;
 in
-  buildGoModule (finalAttrs: {
+  buildGoModule (finalAttrs: rec {
     pname = "subtui";
-    version = "2.14.3";
-    src = import sources.subtui {};
+    inherit src;
+    inherit (src) version;
 
     vendorHash = "sha256-ZI6K3EupgqPvE1ixd7VpJ9cvND0rwcrvRcPfbdjjK+U=";
 
@@ -19,7 +20,7 @@ in
       "-s"
       "-w"
       "-X main.version=v${finalAttrs.version}"
-      "-X main.commit=${finalAttrs.src.rev}"
+      "-X main.commit=${finalAttrs.src.revision}"
     ];
 
     postInstall = ''

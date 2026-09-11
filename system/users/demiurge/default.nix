@@ -122,7 +122,6 @@ in {
 
         apps = with pkgs.configured; [
           zathura
-          spotify-player
           mpv
           neomutt
           vesktop
