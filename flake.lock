@@ -1,5 +1,18 @@
 {
   "nodes": {
+    "atkinson-fontsource": {
+      "flake": false,
+      "locked": {
+        "lastModified": 499162500,
+        "narHash": "sha256-P0hVZgjvyK5fovj1XRYYc6yB+q7Z8YoHy4vrBjO/zcA=",
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/@fontsource/atkinson-hyperlegible-next/-/atkinson-hyperlegible-next-5.2.7.tgz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/@fontsource/atkinson-hyperlegible-next/-/atkinson-hyperlegible-next-5.2.7.tgz"
+      }
+    },
     "babel": {
       "inputs": {
         "nixpkgs": [
@@ -476,6 +489,24 @@
         "type": "github"
       }
     },
+    "flake-parts_7": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib_4"
+      },
+      "locked": {
+        "lastModified": 1782949081,
+        "narHash": "sha256-vp6Y/Grm98ESt6ceOkWiHWyZRDV3J1RID4w+6NWK9yA=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "17c9d6cdfc60c64f4ee8d306f9bc0b4ccb51481e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -679,6 +710,19 @@
         "type": "github"
       }
     },
+    "iosevka-fontsource": {
+      "flake": false,
+      "locked": {
+        "lastModified": 499162500,
+        "narHash": "sha256-kTeA8JSuG0dPxYbWG/9lbZBrHlQYJs5zXIVxFLY3QTE=",
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/@fontsource/iosevka/-/iosevka-5.2.5.tgz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/@fontsource/iosevka/-/iosevka-5.2.5.tgz"
+      }
+    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane",
@@ -738,6 +782,19 @@
         "owner": "dysthesis",
         "repo": "mandelbrot",
         "type": "github"
+      }
+    },
+    "mermaid": {
+      "flake": false,
+      "locked": {
+        "lastModified": 499162500,
+        "narHash": "sha256-fmH71Lh8jf1L3WHxmkepmfbVTLd5QlSBw+CGwwe4CTo=",
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/mermaid/-/mermaid-11.16.0.tgz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/mermaid/-/mermaid-11.16.0.tgz"
       }
     },
     "minimal-tmux": {
@@ -970,6 +1027,21 @@
         "owner": "nix-community",
         "repo": "nixpkgs.lib",
         "rev": "596e2e3940e09b2abbeb03f75fa1828c57fcd72c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "type": "github"
+      }
+    },
+    "nixpkgs-lib_4": {
+      "locked": {
+        "lastModified": 1782614948,
+        "narHash": "sha256-ePjCwr1sNm9NYUqywL7QfK3JnlS015msC+eBu2zKlp8=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "db3f255737b94216eb71cce308e2912cf6bc2d7c",
         "type": "github"
       },
       "original": {
@@ -1408,6 +1480,22 @@
         "type": "github"
       }
     },
+    "reveal-hugo": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779194775,
+        "narHash": "sha256-qy2g6+8so619EaCj23Psvmd6AbseZd7Ak3fmmyPXXXM=",
+        "owner": "joshed-io",
+        "repo": "reveal-hugo",
+        "rev": "94e8660849dea33e19ee8221fe07e050b8465f1a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "joshed-io",
+        "repo": "reveal-hugo",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "daedalus": "daedalus",
@@ -1429,6 +1517,7 @@
         "poincare": "poincare",
         "read": "read",
         "serena": "serena",
+        "slides": "slides",
         "sops-nix": "sops-nix",
         "status": "status",
         "treefmt-nix": "treefmt-nix_10",
@@ -1590,6 +1679,32 @@
         "owner": "dysthesis",
         "repo": "sim",
         "type": "github"
+      }
+    },
+    "slides": {
+      "inputs": {
+        "atkinson-fontsource": "atkinson-fontsource",
+        "flake-parts": "flake-parts_7",
+        "iosevka-fontsource": "iosevka-fontsource",
+        "mermaid": "mermaid",
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ],
+        "reveal-hugo": "reveal-hugo"
+      },
+      "locked": {
+        "lastModified": 1784675147,
+        "narHash": "sha256-xQv2hpOd3PwTvESmeSSuHWpldMv7gUr6+y08YhKMlBA=",
+        "ref": "main",
+        "rev": "9940b7bf414e87369c28231d9b1328f91520fb23",
+        "revCount": 16,
+        "type": "git",
+        "url": "file:///home/demiurge/Documents/University/COMP6841_2026T2"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "file:///home/demiurge/Documents/University/COMP6841_2026T2"
       }
     },
     "sops-nix": {

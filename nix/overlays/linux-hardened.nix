@@ -1,12 +1,12 @@
 # linux-hardened kernel overlay.
-# Applies the upstream linux-hardened patch and local config to linux_7_1.
+# Applies the upstream linux-hardened patch and local config to linux_latest.
 # Pin the exact kernel release because hardened patches do not follow moving branches.
 final: prev: let
-  version = "7.1";
+  version = "7.2.5";
   suffix = "hardened1";
   modDirVersion = "${prev.lib.versions.pad 3 version}-${suffix}";
 
-  base = prev.linux_7_1;
+  base = prev.linux_latest;
   src = prev.fetchurl {
     url = "mirror://kernel/linux/kernel/v7.x/linux-${version}.tar.xz";
     hash = "sha256-aR9EeX++eQ3IoyFgTJJwh1Jq0nttZJkl1g+O7QolZKA=";
@@ -35,9 +35,9 @@ final: prev: let
     extraPassthru.isHardened = true;
   };
 in {
-  linux_7_1_hardened = linuxHardened;
+  linux_latest_hardened = linuxHardened;
   linux_hardened = linuxHardened;
 
-  linuxPackages_7_1_hardened = final.linuxPackagesFor final.linux_7_1_hardened;
-  linuxPackages_hardened = final.linuxPackages_7_1_hardened;
+  linuxPackages_latest_hardened = final.linuxPackagesFor final.linux_latest_hardened;
+  linuxPackages_hardened = final.linuxPackages_latest_hardened;
 }
