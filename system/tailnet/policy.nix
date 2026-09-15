@@ -22,6 +22,11 @@ _: {
         ip6 = "fd7a:115c:a1e0::29";
         tags = ["media"];
       }; # Prowlarr/Lidarr/qBittorrent/Navidrome
+      nyx = {
+        ip = "100.64.0.42";
+        ip6 = "fd7a:115c:a1e0::2a";
+        tags = ["pve"];
+      }; # Proxmox VE
       argus = {
         ip = "100.64.0.34";
         ip6 = "fd7a:115c:a1e0::22";
@@ -181,6 +186,11 @@ _: {
         to = "notifications";
         ports = ["tcp/443"];
       }
+      {
+        from = "workstation";
+        to = "pve";
+        ports = ["*"];
+      } # owner workstations manage PVE
       {
         from = "workstation";
         to = "reader";

@@ -13,7 +13,7 @@ in {
   config = mkIf cfg {
     networking = {
       networkmanager = {
-        dns = "none";
+        dns = "systemd-resolved";
         dhcp = "dhcpcd";
       };
       nameservers = [

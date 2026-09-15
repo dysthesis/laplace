@@ -13,6 +13,7 @@
   mnemeTailnetIp = nodes.mneme.ip; # immich
   mimirTailnetIp = nodes.mimir.ip; # miniflux + silverbullet + radicale
   apolloTailnetIp = nodes.apollo.ip;
+  nyxTailnetIp = nodes.nyx.ip; # Proxmox VE
   argusTailnetIp = nodes.argus.ip; # Grafana
   horosTailnetIp = nodes.horos.ip; # Uptime Kuma + ntfy
   lokiTailnetIp = nodes.loki.ip; # minecraft
@@ -319,6 +320,11 @@ in {
               name = "music.${fqdn}";
               type = "A";
               value = apolloTailnetIp;
+            }
+            {
+              name = "nyx.${fqdn}";
+              type = "A";
+              value = nyxTailnetIp;
             }
             {
               name = "status.${fqdn}";

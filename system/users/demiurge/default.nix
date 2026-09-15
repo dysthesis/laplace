@@ -53,6 +53,7 @@ in {
           rsync
           gnupg
           inputs.poincare.packages.${hostSystem}.default
+
           age
           sops
         ];
@@ -76,7 +77,7 @@ in {
           configured.jjui
           configured.tmux
           unstable.texliveFull
-          inputs.poincare.packages.${hostSystem}.default
+          inputs.ouroboros.packages.${hostSystem}.znver3
         ];
 
         desktop = with pkgs;

@@ -727,11 +727,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    slides = {
-      url = "git+file:///home/demiurge/Documents/University/COMP6841_2026T2?ref=main";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     iosevka-cadmus = {
       url = "github:dysthesis/iosevka-cadmus";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

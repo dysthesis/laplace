@@ -1,5 +1,10 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   config = {
+    services.resolved.enable = lib.mkForce true;
     boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     laplace = {
       services.tailscale = {
