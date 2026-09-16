@@ -1234,11 +1234,11 @@
         "typst-ts-mode": "typst-ts-mode"
       },
       "locked": {
-        "lastModified": 1789346443,
-        "narHash": "sha256-VZofjeRNZnaNApGvdbC7jUbPmg0Wc+R/o0sfVKo7Nx8=",
+        "lastModified": 1789528565,
+        "narHash": "sha256-1J0dPeWKjQR4NxQKywdBuvtEELPHMYW+7Wf/iJeaJjE=",
         "owner": "dysthesis",
         "repo": "ouroboros",
-        "rev": "171aa0102833dafc154b2d9ecd334bc838054f3b",
+        "rev": "2268adc807b8fa34c86ad2d3e463c713fde5afd3",
         "type": "github"
       },
       "original": {
