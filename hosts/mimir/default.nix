@@ -183,6 +183,7 @@ in {
       # Karakeep sits on a tailnet-only origin; Miniflux's SSRF guard otherwise
       # refuses integration POSTs to any host resolving to a non-public IP.
       INTEGRATION_ALLOW_PRIVATE_NETWORKS = "1";
+      BROWSER_WEB_URL = "http://127.0.0.1:9222";
     };
     # Vikunja embeds this public origin in the frontend API configuration.
     vikunja = {
