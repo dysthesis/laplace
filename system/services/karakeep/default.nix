@@ -1,8 +1,7 @@
-# Tailnet-only Karakeep. Upstream module runs the whole stack and generates its
-# own secrets; this pins it to loopback and names the public origin.
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.laplace.services.karakeep;
@@ -45,6 +44,7 @@ in {
 
     services.karakeep = {
       enable = true;
+      package = pkgs.unstable.karakeep;
       extraEnvironment = {
         # Next.js standalone defaults to 0.0.0.0, which escapes the tailnet.
         HOSTNAME = "127.0.0.1";
