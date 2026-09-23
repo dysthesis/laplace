@@ -84,7 +84,7 @@ in {
           [
             brightnessctl
             bash
-            # calibre
+            calibre-no-speech
             bibata-cursors
             pwvucontrol
           ]

@@ -11,10 +11,10 @@
   # Do not strip: Bun appends its bundle after the ELF.
   omp = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "oh-my-pi";
-    version = "18.1.13";
+    version = "18.3.0";
     src = pkgs.fetchurl {
       url = "https://github.com/can1357/oh-my-pi/releases/download/v${finalAttrs.version}/omp-linux-x64";
-      hash = "sha256-O+WjCMyR5va7oUgXX75lHTWD/20yriIcuTHcCKZOHzk=";
+      hash = "sha256-0v2qKa/+luWW65x41C9Ujx8pHfKGCGMbzAB1CoS5S8M=";
     };
     dontUnpack = true;
     dontStrip = true;
