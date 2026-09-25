@@ -78,10 +78,11 @@
   '';
   metricsIngressRoutes = concatStringsSep "\n" (mapAttrsToList (name: writer: let
       matcher = lib.replaceStrings ["-"] ["_"] name;
+      endpoint = lib.laplace.telemetry.endpoints {writer = name;};
     in ''
       @${matcher}_metrics {
         method POST
-        path /${name}/metrics
+        path ${endpoint.metricsPath}
         remote_ip ${writer.sourceAddress}
         header Content-Type application/x-protobuf
         vars {http.request.tls.client.fingerprint} ${writer.certificateFingerprint}
@@ -98,10 +99,11 @@
     writers);
   journalIngressRoutes = concatStringsSep "\n" (mapAttrsToList (name: writer: let
       matcher = lib.replaceStrings ["-"] ["_"] name;
+      endpoint = lib.laplace.telemetry.endpoints {writer = name;};
     in ''
       @${matcher}_journal {
         method POST
-        path /${name}/journald/upload
+        path ${endpoint.journalUploadPath}
         remote_ip ${writer.sourceAddress}
         header Content-Type application/vnd.fdo.journal
         header !Content-Encoding
@@ -166,15 +168,15 @@ in {
       enable = mkEnableOption "authenticated host telemetry ingestion";
       domain = mkOption {
         type = types.str;
-        default = "telemetry.dysthesis.com";
+        default = lib.laplace.telemetry.domain;
       };
       metricsPort = mkOption {
         type = types.port;
-        default = 8443;
+        default = lib.laplace.telemetry.metricsPort;
       };
       journalPort = mkOption {
         type = types.port;
-        default = 8444;
+        default = lib.laplace.telemetry.journalPort;
       };
       caFile = mkOption {
         type = types.nullOr types.str;

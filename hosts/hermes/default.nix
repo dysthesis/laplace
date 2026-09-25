@@ -39,12 +39,10 @@
         enable = true;
         role = "dns";
         metrics = {
-          remoteWriteUrl = "https://telemetry.dysthesis.com:8443/hermes/metrics";
           certificateFile = config.sops.secrets.telemetry_client_certificate.path;
           keyFile = config.sops.secrets.telemetry_client_key.path;
         };
         journal = {
-          url = "https://telemetry.dysthesis.com:8444/hermes/journald";
           certificateFile = config.sops.secrets.telemetry_client_certificate.path;
           keyFile = config.sops.secrets.telemetry_client_key.path;
         };

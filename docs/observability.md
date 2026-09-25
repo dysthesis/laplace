@@ -150,6 +150,49 @@ routes overwrite `host` or `source`, reject query methods and paths, enforce
 bounded requests/series/queues, and require its source address through Caddy and
 nftables.
 
+Remote defaults come from `lib.laplace.telemetry`: `telemetry.writer` defaults
+to `networking.hostName` and selects `/<writer>/metrics` and
+`/<writer>/journald`; it can differ without changing vmagent's `host` label
+or journal-upload's `source` header, which still use the machine hostname.
+`metrics.origin` and `journal.origin` independently select an HTTP(S) scheme
+and authority (no trailing slash, path, query, or fragment); the matching
+Argus ingress domain/port defaults use the same contract but can be configured
+separately. `metrics.remoteWriteUrl` and `journal.url` remain explicit,
+higher-precedence full-URL overrides, including Argus's loopback URLs; they
+are not normalized. When a stream is enabled, explicitly setting its URL to
+`null` remains invalid.
+
+The origin guard only protects URL joining; it is not complete hostname,
+IPv6, or port validation. The sending binaries and backends still handle the
+actual destination, including arbitrary full-URL overrides. An enabled
+stream's TLS client certificate still requires an HTTPS URL; credential
+pairs remain required even when that stream is disabled, without forcing its
+unused origin or URL through the HTTPS assertion.
+
+By default, `journal.url` is the slash-free *base* `/<writer>/journald`. The
+pinned systemd-journal-upload 260.4 appends `/upload`, sending
+`POST /<writer>/journald/upload`, which Argus accepts; an isolated
+disposable-journal request confirmed this boundary. Full-URL overrides must
+account for this suffix. Sender routing, receiver writer admission,
+and the separate `observability.expectedHosts` monitoring acknowledgement
+are independently authored: changing an origin or writer identity alone does
+not update accepted clients or monitored hosts. Coordinate rollout without
+assuming an atomic cutover or automatic enrollment.
+
+Another disposable-journal capture used an evaluated `writer=canary` and
+loopback-only journal origin; the actual pinned 260.4 uploader sent
+`POST /canary/journald/upload` without a `Content-Encoding` header. Neither
+capture exercised live mTLS, the Caddy receiver, or staged writer migration.
+
+All ten remote clients separately pin `telemetry.dysthesis.com` to Argus's
+`10.0.20.84` through `networking.hosts` (for example,
+`hosts/talos/default.nix:11`). Moving Argus or changing the ingestion hostname
+requires reviewing those resolver pins as well as the endpoint origins and
+independent receiver admission; the shared contract does not update them.
+During a writer-identity rename, retaining the old admission also retains its
+`expectedHosts` monitoring obligation, while removing the old route before
+old clients switch rejects their writes. Plan the transition explicitly.
+
 Live tests rejected missing and unknown certificates, wrong source, method,
 path, admin/query access, compressed journals, oversized writes, forged identity,
 and a ninth concurrent connection. Talos is now the first remote canary and is in
@@ -158,10 +201,12 @@ and a ninth concurrent connection. Talos is now the first remote canary and is i
 is persisted under `/var/cache/private/vmagent`.
 
 Complete backend-outage, reboot, queue-drain, and cursor-survival tests before
-rolling out VLAN 20 and isolated guests. Give every new writer a
-distinct mTLS leaf, fingerprint, source rule, paths, central vmagent port, and
-expected-host entry in the same change. Keep Beszel until equivalent alerts have
-run for one month.
+rolling out VLAN 20 and isolated guests. Give every new writer its own route
+identity, distinct mTLS leaf, fingerprint, source rule, and central vmagent
+port; explicitly add its ingress writer and expected-host entry in the same
+change. The expected-host equality and duplicate checks retain separate
+monitoring acknowledgement. Keep Beszel until equivalent alerts have run for
+one month.
 
 The 2026-07-13 Argus reboot test started with VictoriaLogs stopped. System
 startup finished in 13.359 seconds with both telemetry filesystems remounted

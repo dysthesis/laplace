@@ -7,6 +7,11 @@
   inherit (lib) mkEnableOption mkIf mkMerge mkOption optionalAttrs optionals types;
   cfg = config.laplace.services.telemetry;
   hostName = config.networking.hostName;
+  endpoints = lib.laplace.telemetry.endpoints {
+    writer = cfg.writer;
+    metricsOrigin = cfg.metrics.origin;
+    journalOrigin = cfg.journal.origin;
+  };
   uploadSettings =
     {
       URL = cfg.journal.url;
@@ -25,6 +30,12 @@
 in {
   options.laplace.services.telemetry = {
     enable = mkEnableOption "bounded host metrics and journal forwarding";
+    writer = mkOption {
+      type = types.strMatching "[a-z0-9][a-z0-9-]*";
+      default = config.networking.hostName;
+      defaultText = lib.literalExpression "config.networking.hostName";
+      description = "Identity in the remote ingestion paths; sender host/source labels still use networking.hostName.";
+    };
     role = mkOption {
       type = types.str;
       default = "host";
@@ -39,9 +50,14 @@ in {
         type = types.bool;
         default = true;
       };
+      origin = mkOption {
+        type = types.str;
+        default = lib.laplace.telemetry.metricsOrigin;
+        description = "Metrics ingestion scheme and authority without a trailing slash or path; ignored by a remoteWriteUrl override.";
+      };
       remoteWriteUrl = mkOption {
         type = types.nullOr types.str;
-        default = null;
+        default = endpoints.metricsUrl;
       };
       basicAuthUsername = mkOption {
         type = types.nullOr types.str;
@@ -78,9 +94,15 @@ in {
         type = types.bool;
         default = true;
       };
+      origin = mkOption {
+        type = types.str;
+        default = lib.laplace.telemetry.journalOrigin;
+        description = "Journal ingestion scheme and authority without a trailing slash or path; ignored by a url override.";
+      };
       url = mkOption {
         type = types.nullOr types.str;
-        default = null;
+        default = endpoints.journalBaseUrl;
+        description = "Journal base URL; systemd-journal-upload appends /upload when sending.";
       };
       trustFile = mkOption {
         type = types.str;
@@ -129,11 +151,11 @@ in {
           message = "telemetry journal TLS client key and certificate must be set together";
         }
         {
-          assertion = cfg.metrics.certificateFile == null || (cfg.metrics.remoteWriteUrl != null && lib.hasPrefix "https://" cfg.metrics.remoteWriteUrl);
+          assertion = !cfg.metrics.enable || cfg.metrics.certificateFile == null || (cfg.metrics.remoteWriteUrl != null && lib.hasPrefix "https://" cfg.metrics.remoteWriteUrl);
           message = "telemetry metric TLS client certificate needs an HTTPS remote-write URL";
         }
         {
-          assertion = cfg.journal.certificateFile == null || (cfg.journal.url != null && lib.hasPrefix "https://" cfg.journal.url);
+          assertion = !cfg.journal.enable || cfg.journal.certificateFile == null || (cfg.journal.url != null && lib.hasPrefix "https://" cfg.journal.url);
           message = "telemetry journal TLS client certificate needs an HTTPS upload URL";
         }
       ];
