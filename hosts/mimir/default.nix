@@ -106,18 +106,6 @@ in {
         enable = true;
         email = "dysthesis@protonmail.com";
         openFirewall = false; # tailnet-only; :443 reached over tailscale0
-        # Serve store files directly; no extra HTTP service.
-        # cloudflare.proxies only renders reverse proxies.
-        virtualHosts."slides.dysthesis.com".extraConfig = ''
-          tls {
-            dns cloudflare {env.CF_API_TOKEN}
-            resolvers 1.1.1.1
-          }
-          @notSSE not header Accept *text/event-stream*
-          encode @notSSE
-          root * ${inputs.slides.packages.${pkgs.stdenv.hostPlatform.system}.slides}
-          file_server
-        '';
         virtualHosts.${syncHost}.extraConfig = ''
           tls {
             dns cloudflare {env.CF_API_TOKEN}

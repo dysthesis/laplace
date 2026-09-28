@@ -53,6 +53,9 @@ in {
         DISABLE_SIGNUPS = boolToString cfg.disableSignups;
         # Nix owns the version.
         DISABLE_NEW_RELEASE_CHECK = "true";
+
+        BROWSER_WEB_URL = "http://127.0.0.1:9222";
+        HTML_CONTENT_SIZE_INLINE_THRESHOLD_BYTES = "65536";
       };
     };
 

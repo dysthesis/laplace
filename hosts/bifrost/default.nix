@@ -357,11 +357,6 @@ in {
               value = mimirTailnetIp;
             }
             {
-              name = "slides.${fqdn}";
-              type = "A";
-              value = mimirTailnetIp;
-            }
-            {
               name = "sync.${fqdn}";
               type = "A";
               value = mimirTailnetIp;
