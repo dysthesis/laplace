@@ -155,6 +155,13 @@
         };
       in [
         {
+          modifiers = ["MODKEY"];
+          key = "XKB_KEY_w";
+          function = "spawn";
+          argument = [(lib.getExe pkgs.configured.zen)];
+          comment = "Launch Zen";
+        }
+        {
           modifiers = [
             "MODKEY"
             "WLR_MODIFIER_SHIFT"

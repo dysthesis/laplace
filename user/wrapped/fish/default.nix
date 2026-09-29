@@ -71,10 +71,20 @@
     install -Dm444 ${./functions/popd.fish} $out/share/fish/vendor_functions.d/popd.fish
   '';
 
-  direnvConfig = writeTextDir "direnvrc" ''
-    source ${nix-direnv}/share/nix-direnv/direnvrc
-  '';
+  direnvConfig = pkgs.symlinkJoin {
+    name = "direnv-config";
 
+    paths = [
+      (writeTextDir "direnvrc" ''
+        source ${nix-direnv}/share/nix-direnv/direnvrc
+      '')
+
+      (writeTextDir "direnv.toml" ''
+        [global]
+        hide_env_diff = true
+      '')
+    ];
+  };
   aliases = with pkgs; let
     inherit (lib) getExe;
     baseAliases = {
