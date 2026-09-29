@@ -1,0 +1,818 @@
+{
+  "scope": "deimos real built Fish wrapper prompt retest; no boot/desktop latency",
+  "builds": {
+    "old": {
+      "shell": "/nix/store/b389sy78mpx9vkzdxh340ivjacg7grng-fish-wrapped/bin/fish",
+      "vendor_conf": "/nix/store/flky03lywyd025zswyvvr7jc5jfq9rym-user_config.fish/share/fish/vendor_conf.d/user_config.fish",
+      "starship_toml": "/nix/store/82d1yaw69lpvvnrrjh5pwl5wn0mhnmwv-starship.toml",
+      "vendor_conf_sha256": "06a1324f062b0b630401953b5bdc073e1364249981aaf4ec765db9f4f1638c9d",
+      "starship_toml_sha256": "41ae6b71b9772b1feb4478978d68e3e46f3468484c873dd46f9c5cdd6aa003f6"
+    },
+    "new": {
+      "shell": "/nix/store/affyy36qk4z6v7y3fgkvnrr28db34cfq-fish-wrapped/bin/fish",
+      "vendor_conf": "/nix/store/zvl0vwv4cb0mw0sh274snylm2s16xsxl-user_config.fish/share/fish/vendor_conf.d/user_config.fish",
+      "starship_toml": "/nix/store/0z70d1lwgwqfdrf4rbwidv3y0i5va73g-starship.toml",
+      "vendor_conf_sha256": "61d7d25c610cfdcf0331876be09f67a2b146cc0b5839b84719b22d4f901faf15",
+      "starship_toml_sha256": "97691ca5cd3e9b1b2359dce1fc356d790ce983b7118b0739da5c205dd3bd45ac"
+    }
+  },
+  "candidate_source_sha256": "97691ca5cd3e9b1b2359dce1fc356d790ce983b7118b0739da5c205dd3bd45ac",
+  "audit_probe": {
+    "path": "bench/pty-probe.py",
+    "sha256_at_audit": "2f969c374004667990bec5764877fc427525ee34ce0e1683222b20f43931a95f"
+  },
+  "paired_checkout": {
+    "source_local_only": "bench/results/retest/{1..6}.{old,new}.json, paired.json",
+    "historical_context": "checkout (as labelled in local paired.json; raw arms omit cwd)",
+    "historical_home_xdg_path_bus_and_warmups": "not recorded in raw pair JSON",
+    "pair_protocol": {
+      "order": "odd old/new; even new/old",
+      "pairs": 6,
+      "spawns_per_arm_per_pair_per_metric": 2,
+      "enters_per_spawn": 3,
+      "pty_cols": 120,
+      "pty_rows": 30,
+      "quiesce_ms": 120
+    },
+    "pairs": [
+      {
+        "number": 1,
+        "order": [
+          "old",
+          "new"
+        ],
+        "old": {
+          "first_prompt_lag_ms": [
+            68.34187599997676,
+            70.13348799955565
+          ],
+          "command_lag_ms": [
+            40.52008899998327,
+            39.099069999792846,
+            39.57169800014526,
+            46.242654999332444,
+            40.23934500037285,
+            42.65031500017358
+          ],
+          "input_lag_ms": [
+            0.15783999970153673,
+            0.12804200014215894,
+            0.1341420002063387,
+            0.15998999970179284,
+            0.10641399967425968,
+            0.10697299967432627
+          ],
+          "input_lag_longbuf_ms": [
+            0.1515399999334477,
+            0.13397199927567272,
+            0.13203200069256127,
+            0.14863100022921572,
+            0.1276319999305997,
+            0.11966300007770769
+          ],
+          "first_command_lag_ms": [
+            78.47434599989356,
+            75.08033300018724
+          ]
+        },
+        "new": {
+          "first_prompt_lag_ms": [
+            57.049867999921844,
+            60.08915300026274
+          ],
+          "command_lag_ms": [
+            29.217432000223198,
+            29.028328000094916,
+            28.99292499932926,
+            28.98431400080881,
+            27.22333499968954,
+            31.021222999697784
+          ],
+          "input_lag_ms": [
+            0.16897000023163855,
+            0.10407300032966305,
+            0.10977400052070152,
+            0.16830999993544538,
+            0.13845200010109693,
+            0.14652200025011552
+          ],
+          "input_lag_longbuf_ms": [
+            0.14151200048218016,
+            0.13363200014282484,
+            0.12479199995141244,
+            0.14152199946693145,
+            0.13222199959272984,
+            0.09689500075182877
+          ],
+          "first_command_lag_ms": [
+            67.05568599954859,
+            66.34877800024697
+          ]
+        }
+      },
+      {
+        "number": 2,
+        "order": [
+          "new",
+          "old"
+        ],
+        "old": {
+          "first_prompt_lag_ms": [
+            66.08053599939012,
+            66.21148900012486
+          ],
+          "command_lag_ms": [
+            38.53200499997911,
+            38.77053599990177,
+            41.92701499960094,
+            42.16335999990406,
+            39.24439300044469,
+            40.42156800005614
+          ],
+          "input_lag_ms": [
+            0.14608099991164636,
+            0.11392399937903974,
+            0.10447400018165354,
+            0.17117000061261933,
+            0.10125400058313971,
+            0.09252400013792794
+          ],
+          "input_lag_longbuf_ms": [
+            0.12125299963372527,
+            0.1208829999086447,
+            0.11168400033056969,
+            0.12305300060688751,
+            0.0977850004346692,
+            0.12621299993043067
+          ],
+          "first_command_lag_ms": [
+            77.60999000038282,
+            79.15475200024957
+          ]
+        },
+        "new": {
+          "first_prompt_lag_ms": [
+            57.619998000518535,
+            59.1856099999859
+          ],
+          "command_lag_ms": [
+            28.803123999750824,
+            28.38837200033595,
+            26.63739000036003,
+            29.62303299955238,
+            28.70450200043706,
+            26.766728999973566
+          ],
+          "input_lag_ms": [
+            0.15398100003949367,
+            0.12481300018407637,
+            0.11560300026758341,
+            0.16101100027299253,
+            0.10473400016053347,
+            0.11166300009790575
+          ],
+          "input_lag_longbuf_ms": [
+            0.12136199984524865,
+            0.10665399986464763,
+            0.16088099982880522,
+            0.1366119995509507,
+            0.11442300001363037,
+            0.10410400045657298
+          ],
+          "first_command_lag_ms": [
+            64.55932499920891,
+            67.31706399932591
+          ]
+        }
+      },
+      {
+        "number": 3,
+        "order": [
+          "old",
+          "new"
+        ],
+        "old": {
+          "first_prompt_lag_ms": [
+            69.90062899967597,
+            67.25969100079965
+          ],
+          "command_lag_ms": [
+            38.37731600015104,
+            38.599219000388985,
+            41.88101999989158,
+            39.21239200008131,
+            41.10937299992656,
+            38.96725799950218
+          ],
+          "input_lag_ms": [
+            0.157790999764984,
+            0.12714200056507252,
+            0.09735400089994073,
+            0.15418099974340294,
+            0.1213529994856799,
+            0.10580399975879118
+          ],
+          "input_lag_longbuf_ms": [
+            0.09301399950345512,
+            0.09614500049792696,
+            0.09085500005312497,
+            0.11467400054243626,
+            0.13581199982581893,
+            0.11094399997091386
+          ],
+          "first_command_lag_ms": [
+            78.39091000005283,
+            76.93378200019652
+          ]
+        },
+        "new": {
+          "first_prompt_lag_ms": [
+            55.98126699987915,
+            55.40452299919707
+          ],
+          "command_lag_ms": [
+            28.38729599989165,
+            27.198855000278854,
+            28.030473999933747,
+            27.481301999614516,
+            30.111311999462487,
+            28.537113999846042
+          ],
+          "input_lag_ms": [
+            0.16109100033645518,
+            0.09512500037089922,
+            0.07922599979792722,
+            0.1626309995117481,
+            0.09717499960970599,
+            0.11348400039423723
+          ],
+          "input_lag_longbuf_ms": [
+            0.08998599969345378,
+            0.10634400041453773,
+            0.11621300018305192,
+            0.10141500024474226,
+            0.1042949998009135,
+            0.16611099999863654
+          ],
+          "first_command_lag_ms": [
+            66.38244700025098,
+            67.68006699985563
+          ]
+        }
+      },
+      {
+        "number": 4,
+        "order": [
+          "new",
+          "old"
+        ],
+        "old": {
+          "first_prompt_lag_ms": [
+            65.81293500039465,
+            68.83982399995148
+          ],
+          "command_lag_ms": [
+            38.948852000430634,
+            38.15241799929936,
+            38.2179170001109,
+            40.136382000127924,
+            37.35831500034692,
+            38.510272999701556
+          ],
+          "input_lag_ms": [
+            0.13756299995293375,
+            0.103684999885445,
+            0.11588400047912728,
+            0.158811999426689,
+            0.09877499996946426,
+            0.08749500011617783
+          ],
+          "input_lag_longbuf_ms": [
+            0.14240199925552588,
+            0.10100400049850577,
+            0.09708500056149205,
+            0.10660499992809491,
+            0.11243500011914875,
+            0.09628499992686557
+          ],
+          "first_command_lag_ms": [
+            75.96278199980588,
+            75.60879999982717
+          ]
+        },
+        "new": {
+          "first_prompt_lag_ms": [
+            60.466938999525155,
+            56.86932899970998
+          ],
+          "command_lag_ms": [
+            29.340907000005245,
+            28.271629999835568,
+            29.38038400043297,
+            28.81657299985818,
+            27.554265000617306,
+            28.35636500003602
+          ],
+          "input_lag_ms": [
+            0.16631099970254581,
+            0.11875400014105253,
+            0.10760399982245872,
+            0.15993200031516608,
+            0.11680399984470569,
+            0.09618500007491093
+          ],
+          "input_lag_longbuf_ms": [
+            0.11331400037306594,
+            0.09533399952488253,
+            0.1242340003955178,
+            0.0955239993345458,
+            0.09511499956715852,
+            0.08885500028554816
+          ],
+          "first_command_lag_ms": [
+            66.62661200061848,
+            66.0119649992339
+          ]
+        }
+      },
+      {
+        "number": 5,
+        "order": [
+          "old",
+          "new"
+        ],
+        "old": {
+          "first_prompt_lag_ms": [
+            67.26046899984794,
+            65.2222829994571
+          ],
+          "command_lag_ms": [
+            37.918515000455955,
+            37.67924299972947,
+            40.11613199963904,
+            39.65681699992274,
+            37.053595999168465,
+            38.78023299967026
+          ],
+          "input_lag_ms": [
+            0.15206199987005675,
+            0.1257639996765647,
+            0.10248499984299997,
+            0.1955799998540897,
+            0.09226500060321996,
+            0.08050599990383489
+          ],
+          "input_lag_longbuf_ms": [
+            0.10409399965283228,
+            0.08620500011602417,
+            0.11420399914641166,
+            0.0892549996933667,
+            0.09302499984187307,
+            0.11901299967576051
+          ],
+          "first_command_lag_ms": [
+            79.32319500014273,
+            75.51958000021841
+          ]
+        },
+        "new": {
+          "first_prompt_lag_ms": [
+            57.32215599982737,
+            56.37928499982081
+          ],
+          "command_lag_ms": [
+            28.55611199993291,
+            30.793403000643593,
+            27.63531700020394,
+            27.10199100056343,
+            28.209770000103163,
+            28.284829000767786
+          ],
+          "input_lag_ms": [
+            0.16554200010432396,
+            0.08388500009459676,
+            0.09048599986272166,
+            0.1920810000228812,
+            0.12689399954979308,
+            0.1359230000161915
+          ],
+          "input_lag_longbuf_ms": [
+            0.11356399954820517,
+            0.11591400016186526,
+            0.10813399967446458,
+            0.15282200001820456,
+            0.11215399990760488,
+            0.11395399997127242
+          ],
+          "first_command_lag_ms": [
+            69.07540399970458,
+            69.68689399946015
+          ]
+        }
+      },
+      {
+        "number": 6,
+        "order": [
+          "new",
+          "old"
+        ],
+        "old": {
+          "first_prompt_lag_ms": [
+            69.15144599952328,
+            70.71607799935009
+          ],
+          "command_lag_ms": [
+            37.83874500004458,
+            38.82633699959115,
+            37.37280200039095,
+            38.8878650001061,
+            38.21419599989895,
+            38.55563599972811
+          ],
+          "input_lag_ms": [
+            0.16897200021048775,
+            0.07904599988250993,
+            0.10248499984299997,
+            0.1591419995747856,
+            0.07857600030547474,
+            0.09132599916483741
+          ],
+          "input_lag_longbuf_ms": [
+            0.11714399988704827,
+            0.12363499990897253,
+            0.11940399963350501,
+            0.11133400039398111,
+            0.10003500028687995,
+            0.09679499999037944
+          ],
+          "first_command_lag_ms": [
+            77.6149080002142,
+            77.41362700016907
+          ]
+        },
+        "new": {
+          "first_prompt_lag_ms": [
+            56.021934000455076,
+            55.89600100029202
+          ],
+          "command_lag_ms": [
+            30.03320000061649,
+            27.37648599941167,
+            27.024300999983097,
+            27.79280699996889,
+            27.538772999832872,
+            27.78785499958758
+          ],
+          "input_lag_ms": [
+            0.17371100057061994,
+            0.08704599986231187,
+            0.08072599939623615,
+            0.1437130003978382,
+            0.09696599954622798,
+            0.08106600034807343
+          ],
+          "input_lag_longbuf_ms": [
+            0.08603599962953012,
+            0.08829600028548157,
+            0.08332600009453017,
+            0.1427730003342731,
+            0.11272499978076667,
+            0.31830399984755786
+          ],
+          "first_command_lag_ms": [
+            65.57431000055658,
+            66.68567700035055
+          ]
+        }
+      }
+    ],
+    "local_paired_metrics": {
+      "first_prompt_lag_ms": {
+        "baseline_median": 67.80117249991235,
+        "candidate_median": 56.95959849981591,
+        "baseline_p90": 70.11020209956769,
+        "candidate_p90": 59.99879870023506,
+        "delta_median": -10.841574000096443,
+        "paired_cluster_ci95": [
+          -13.14984549935616,
+          -8.591490999606322
+        ]
+      },
+      "first_command_lag_ms": {
+        "baseline_median": 77.51180850027595,
+        "candidate_median": 66.65614450048452,
+        "baseline_p90": 79.08671140021397,
+        "candidate_p90": 68.93587029971968,
+        "delta_median": -10.855663999791432,
+        "paired_cluster_ci95": [
+          -11.1222949999501,
+          -8.795969000402692
+        ]
+      },
+      "command_lag_ms": {
+        "baseline_median": 38.91835850026837,
+        "candidate_median": 28.371830499963835,
+        "baseline_p90": 41.90401749974626,
+        "candidate_p90": 29.828116500084434,
+        "delta_median": -10.546528000304534,
+        "paired_cluster_ci95": [
+          -11.034584000299219,
+          -10.16477399980431
+        ]
+      },
+      "input_lag_ms": {
+        "baseline_median": 0.11490399992908351,
+        "candidate_median": 0.11777899999287911,
+        "baseline_p90": 0.1595659996382892,
+        "candidate_p90": 0.1673104998189956,
+        "delta_median": 0.0028750000637955964,
+        "paired_cluster_ci95": [
+          -0.009703999694465892,
+          0.016654500086588087
+        ]
+      }
+    }
+  },
+  "conflicted_tail": {
+    "source_local_only": "bench/results/retest/conflict-tail-trace.json",
+    "historical_new_smoke_command_lag_ms": [
+      25.512151999919297,
+      25.344106999909854,
+      25.974958000006154,
+      27.904462000151398,
+      3.151234999677399,
+      3122.1769230000973
+    ],
+    "historical_outlier_cause": "unknown",
+    "fixture": {
+      "type": "native non-colocated jj merge of divergent tracked file",
+      "reconstruction": [
+        "FIXTURE=$(mktemp -d)/conflict",
+        "jj() { command jj --config \"user.name=Prompt Fixture\" --config user.email=fixture@localhost --config signing.behavior=drop \"$@\"; }",
+        "jj git init --no-colocate \"$FIXTURE\"; cd \"$FIXTURE\"; printf \"base\\n\" >tracked; jj describe -m base; base=$(jj log --ignore-working-copy -r @ --no-graph -T commit_id)",
+        "jj new -m left; printf \"left\\n\" >tracked; jj status; left=$(jj log --ignore-working-copy -r @ --no-graph -T commit_id)",
+        "jj new \"$base\" -m right; printf \"right\\n\" >tracked; jj status; right=$(jj log --ignore-working-copy -r @ --no-graph -T commit_id)",
+        "jj new \"$left\" \"$right\" -m merge; jj log --ignore-working-copy -r @ --no-graph -T conflict # true"
+      ]
+    },
+    "protocol": {
+      "order": "odd old/new; even new/old",
+      "warmup_spawns_per_arm": 1,
+      "pairs": 6,
+      "spawns_per_arm_per_pair": 2,
+      "enters_per_spawn": 3,
+      "first_prompt_settled": true,
+      "pty_cols": 120,
+      "pty_rows": 30,
+      "quiesce_ms": 120,
+      "private_bus": "asserted by local trace metadata; launcher unavailable"
+    },
+    "arms": {
+      "old": {
+        "last_byte_ms": [
+          36.26603600059752,
+          36.60884700002498,
+          37.48553300101776,
+          36.02468400094949,
+          36.90264999931969,
+          35.60106199984148,
+          36.26630600047065,
+          36.36973700122326,
+          38.26150899840286,
+          37.893205999353086,
+          36.50585800096451,
+          35.88799399949494,
+          38.107618000140064,
+          40.297651999935624,
+          37.515203999646474,
+          36.224726998625556,
+          36.14936700068938,
+          39.84428999865486,
+          38.67238299972087,
+          37.33286399983626,
+          35.68672399887873,
+          36.39598900008423,
+          37.20643400083645,
+          35.2387210004963,
+          35.91825500006962,
+          36.40626900050847,
+          37.53733600024134,
+          37.718666999353445,
+          35.19431099994108,
+          35.59200400013651,
+          36.410380000234,
+          39.10671700032253,
+          36.42579000006663,
+          38.370102000044426,
+          35.36123300000327,
+          38.145331000123406
+        ],
+        "median_ms": 36.46582400051557,
+        "p90_ms": 38.521242499882646,
+        "max_ms": 40.297651999935624,
+        "under_5ms": 0,
+        "above_1s": 0,
+        "slowest_trace": {
+          "pair": 3,
+          "spawn": 1,
+          "enter_index": 2,
+          "chunk_read_ms": [
+            0.069,
+            0.142,
+            3.112,
+            40.198,
+            40.301
+          ],
+          "final_prompt_chunk_base64": "G1tLG10xMzM7QTtjbGlja19ldmVudHM9MQcbW0oNChtbS+KAphtbMzg7MjsyMjE7MjIxOzIyMW1peC1zaGVsbC42UnFzNlMvbml4LXNoZWxsLjlPRTY4bS9qai1wcm9tcHQtdGFpbC0zanB0NzNsdS9jb25mbGljdBtbMG0gG1szODsyOzg1Ozg1Ozg1bWpqOhtbMG0gG1szODsyOzExMjsxMjg7MTQ0bRtbMW0bWzM4OzU7NW1uG1swbRtbMzg7NTs4bXVudhtbMzltG1swbSAbWzE7Mzg7MjsyMTU7MDswbT1jb25mbGljdBtbMG0gG1szODsyOzg1Ozg1Ozg1bShlbXB0eSkbWzBtIBtbMzg7MjsxMjI7MTIyOzEyMm0ibWVyZ2UiG1swbSAbWzM4OzI7MTE5OzEzNjsxNzBtICBsYXBsYWNlLWRldi1lbnYbWzBtIA0KG1sxOzM4OzI7MTIwOzE1MzsxMjBt4p2vG1swbSAbXTEzMztCBxtbOTdtG1tLDRtbMTE1QxtbMzg7Mjs4NTs4NTs4NW0xNToyNRtbMG0NG1sxMTVDDRtbMkM="
+        }
+      },
+      "new": {
+        "last_byte_ms": [
+          25.66872999886982,
+          24.182770001061726,
+          27.699962000042433,
+          24.392141998760053,
+          25.834181000391254,
+          25.726641000801465,
+          27.281389999188832,
+          25.58653899905039,
+          25.57890899879567,
+          25.84572100022342,
+          26.171273000727524,
+          25.52444999855652,
+          27.289850999295595,
+          25.66211100020155,
+          26.328714999181102,
+          26.508045999435126,
+          26.53481600100349,
+          25.141758000245318,
+          24.379342999964138,
+          27.23005000007106,
+          26.03448300033051,
+          25.96762200118974,
+          24.596264000138035,
+          26.736636998975882,
+          24.3312929997046,
+          26.00525399975595,
+          24.755234999247477,
+          25.129798999842023,
+          25.06729800006724,
+          27.134951000334695,
+          27.55678399989847,
+          24.66374600044219,
+          26.49097600078676,
+          26.85098899928562,
+          25.065148000066984,
+          24.618375000500237
+        ],
+        "median_ms": 25.78041100059636,
+        "p90_ms": 27.255719999629946,
+        "max_ms": 27.699962000042433,
+        "under_5ms": 0,
+        "above_1s": 0,
+        "slowest_trace": {
+          "pair": 1,
+          "spawn": 1,
+          "enter_index": 3,
+          "chunk_read_ms": [
+            0.072,
+            0.164,
+            3.064,
+            27.717
+          ],
+          "final_prompt_chunk_base64": "G10wOy90L24vbi9qL2NvbmZsaWN0BxtbbRtdMTE7PxtcG1s2bhtbMGMbWz8yMDA0aBtbPzIwMzFoG1s9NXUbW0sbXTEzMztBO2NsaWNrX2V2ZW50cz0xBxtbSg0KG1tL4oCmG1szODsyOzIyMTsyMjE7MjIxbWl4LXNoZWxsLjZScXM2Uy9uaXgtc2hlbGwuOU9FNjhtL2pqLXByb21wdC10YWlsLTNqcHQ3M2x1L2NvbmZsaWN0G1swbSAbWzM4OzI7ODU7ODU7ODVtamo6G1swbSAbWzM4OzI7MTEyOzEyODsxNDRtG1sxbRtbMzg7NTs1bW4bWzBtG1szODs1OzhtdW52G1szOW0bWzBtIBtbMTszODsyOzIxNTswOzBtPWNvbmZsaWN0G1swbSAbWzM4OzI7ODU7ODU7ODVtKGVtcHR5KRtbMG0gG1szODsyOzEyMjsxMjI7MTIybSJtZXJnZSIbWzBtIBtbMzg7MjsxMTk7MTM2OzE3MG0gIGxhcGxhY2UtZGV2LWVudhtbMG0gDQobWzE7Mzg7MjsxMjA7MTUzOzEyMG3ina8bWzBtIBtdMTMzO0IHG1s5N20bW0sNG1sxMTVDG1szODsyOzg1Ozg1Ozg1bTE1OjI0G1swbQ0bWzExNUMNG1syQw=="
+        }
+      }
+    }
+  },
+  "corrected_recipe_smoke": {
+    "checkout": {
+      "context": "checkout",
+      "measurement_cwd": "/home/demiurge/Documents/Projects/laplace",
+      "repo": "/home/demiurge/Documents/Projects/laplace",
+      "environment": {
+        "PATH": "/nix/store/l25gq3dqifhzbhsvr7cl3vl7h0kzrwai-python3-3.14.7/bin:/etc/profiles/per-user/demiurge/bin:/run/current-system/sw/bin",
+        "TERM": "xterm-256color",
+        "LC_ALL": "C.UTF-8",
+        "XDG_DATA_DIRS": "/run/current-system/sw/share",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1"
+      },
+      "private_home_xdg": true,
+      "private_bus": true,
+      "versions": {
+        "python": "Python 3.14.7",
+        "jj": "jj 0.45.1",
+        "git": "git version 2.54.0",
+        "fish": "fish, version 4.7.1"
+      },
+      "arms": {
+        "old": "/nix/store/b389sy78mpx9vkzdxh340ivjacg7grng-fish-wrapped/bin/fish",
+        "new": "/nix/store/affyy36qk4z6v7y3fgkvnrr28db34cfq-fish-wrapped/bin/fish"
+      },
+      "pairs": 6,
+      "order": "odd old/new; even new/old",
+      "warmup_spawns_per_arm": 2,
+      "spawns_per_arm_per_pair": 2,
+      "enters_per_spawn": 3,
+      "pty": "120x30; 120ms quiet; empty prompt regex",
+      "fixture_commands": [
+        "cd /home/demiurge/Documents/Projects/laplace (existing directory)"
+      ],
+      "raw_local_only": "bench/results/retest/checkout/run.p55kbznm",
+      "repeated_command_median_ms": {
+        "old": 37.49413400146295,
+        "new": 27.009609999367967
+      },
+      "repeated_command_p90_ms": {
+        "old": 39.56914850277826,
+        "new": 27.442946498922538
+      }
+    },
+    "outside": {
+      "context": "outside",
+      "measurement_cwd": "/tmp",
+      "repo": "/home/demiurge/Documents/Projects/laplace",
+      "environment": {
+        "PATH": "/nix/store/l25gq3dqifhzbhsvr7cl3vl7h0kzrwai-python3-3.14.7/bin:/etc/profiles/per-user/demiurge/bin:/run/current-system/sw/bin",
+        "TERM": "xterm-256color",
+        "LC_ALL": "C.UTF-8",
+        "XDG_DATA_DIRS": "/run/current-system/sw/share",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1"
+      },
+      "private_home_xdg": true,
+      "private_bus": true,
+      "versions": {
+        "python": "Python 3.14.7",
+        "jj": "jj 0.45.1",
+        "git": "git version 2.54.0",
+        "fish": "fish, version 4.7.1"
+      },
+      "arms": {
+        "old": "/nix/store/b389sy78mpx9vkzdxh340ivjacg7grng-fish-wrapped/bin/fish",
+        "new": "/nix/store/affyy36qk4z6v7y3fgkvnrr28db34cfq-fish-wrapped/bin/fish"
+      },
+      "pairs": 6,
+      "order": "odd old/new; even new/old",
+      "warmup_spawns_per_arm": 2,
+      "spawns_per_arm_per_pair": 2,
+      "enters_per_spawn": 3,
+      "pty": "120x30; 120ms quiet; empty prompt regex",
+      "fixture_commands": [
+        "cd /tmp (existing directory)"
+      ],
+      "raw_local_only": "bench/results/retest/outside/run.FVszeiKE",
+      "repeated_command_median_ms": {
+        "old": 19.467393001832534,
+        "new": 20.343558499007486
+      },
+      "repeated_command_p90_ms": {
+        "old": 20.17825700022513,
+        "new": 21.248708999337396
+      }
+    }
+  },
+  "current_host_validation": {
+    "hosts": {
+      "deimos": "/nix/store/v2g7hjz1a0n5bq9prd3j0fv4phhqqh5g-fish-wrapped",
+      "phobos": "/nix/store/v2g7hjz1a0n5bq9prd3j0fv4phhqqh5g-fish-wrapped"
+    },
+    "eval_argv": [
+      "nix",
+      "eval",
+      "--offline",
+      "--json",
+      "--impure",
+      "--expr",
+      "let f = builtins.getFlake (toString ./.); mk = name: let p = f.nixosConfigurations.${name}.pkgs; in { out = p.configured.fish.outPath; drv = p.configured.fish.drvPath; }; in { deimos = mk \"deimos\"; phobos = mk \"phobos\"; }"
+    ],
+    "build_argv": [
+      "nix",
+      "build",
+      "--offline",
+      "--no-link",
+      "--impure",
+      "--expr",
+      "let f = builtins.getFlake (toString ./.); in [ f.nixosConfigurations.deimos.pkgs.configured.fish f.nixosConfigurations.phobos.pkgs.configured.fish ]"
+    ],
+    "vendor_config": "/nix/store/66qz1xkqr0f1kas4j8x82q8qai0ll4qn-user_config.fish/share/fish/vendor_conf.d/user_config.fish",
+    "starship_toml": "/nix/store/0z70d1lwgwqfdrf4rbwidv3y0i5va73g-starship.toml",
+    "starship_sha256": "97691ca5cd3e9b1b2359dce1fc356d790ce983b7118b0739da5c205dd3bd45ac",
+    "difference_from_historical_candidate": "direnv hook bytes identical, direnvrc bytes identical; current direnv-config adds [global] hide_env_diff = true, notes alias points to a wrapped direnv config that also adds hide_env_diff. Not a controlled same-build A/B.",
+    "private_pty_smoke": {
+      "cwd": "/home/demiurge/Documents/Projects/laplace",
+      "source_local_only": "bench/results/retest/current-host-smoke.json",
+      "first_prompt_lag_ms": [
+        64.83773400395876
+      ],
+      "first_command_lag_ms": [
+        61.707815002591815
+      ],
+      "command_lag_ms": [
+        26.91290200164076,
+        26.240237995807547
+      ]
+    }
+  }
+}

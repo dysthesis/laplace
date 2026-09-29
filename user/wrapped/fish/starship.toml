@@ -16,16 +16,16 @@ min_time = 2000 # hide commands under 2 seconds
 style = "yellow"
 format = "[$duration]($style) "
 
-# Run the full template only inside jj repos; jj root skips snapshots.
-# Disable Git modules for jj-primary repos. Requires jj 0.18 or newer.
+# A single jj log probes repo membership and renders the change without
+# snapshotting the working copy. Git modules still show colocated Git status.
 [custom.jj]
 disabled = false
 ignore_timeout = true
-when = "jj root --ignore-working-copy"
+when = true
 shell = ["sh"]
 style = "gray5"
 symbol = "jj:"
-format = "[$symbol]($style) $output "
+format = "([$symbol]($style) $output )"
 command = '''
 jj log -r @ -n 1 --ignore-working-copy --no-graph --color always -T 'separate(" ",
   raw_escape_sequence("\e[38;2;112;128;144m") ++ separate(" ", change_id.shortest(4), bookmarks) ++ raw_escape_sequence("\e[0m"),
@@ -34,7 +34,7 @@ jj log -r @ -n 1 --ignore-working-copy --no-graph --color always -T 'separate(" 
   if(empty, raw_escape_sequence("\e[38;2;85;85;85m") ++ "(empty)" ++ raw_escape_sequence("\e[0m")),
   if(description,
     raw_escape_sequence("\e[38;2;122;122;122m") ++ "\"" ++ truncate_end(24, description.first_line(), "…") ++ "\"" ++ raw_escape_sequence("\e[0m"),
-    raw_escape_sequence("\e[38;2;85;85;85m") ++ "(no description)" ++ raw_escape_sequence("\e[0m")))'
+    raw_escape_sequence("\e[38;2;85;85;85m") ++ "(no description)" ++ raw_escape_sequence("\e[0m")))' 2>/dev/null
 '''
 
 # Disabled: running task on every prompt costs more than its hourly data merits.
