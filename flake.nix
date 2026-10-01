@@ -905,10 +905,5 @@
       url = "github:dysthesis/iosevka-cadmus";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-
-    ouroboros = {
-      url = "github:dysthesis/ouroboros";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
   };
 }

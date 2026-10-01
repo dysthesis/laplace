@@ -77,7 +77,6 @@ in {
           configured.jjui
           configured.tmux
           unstable.texliveFull
-          inputs.ouroboros.packages.${hostSystem}.znver3
         ];
 
         desktop = with pkgs;
