@@ -1,58 +1,87 @@
 {
-  callPackage,
   pkgs,
   lib,
+  pi-coding-agent,
+  nodejs_24,
+  qemu,
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
-  minimalTheme = callPackage ./theme.nix {inherit pkgs;};
 
-  # Package the prebuilt glibc OMP binary with autoPatchelf.
-  # Do not strip: Bun appends its bundle after the ELF.
-  omp = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
-    pname = "oh-my-pi";
-    version = "18.3.0";
-    src = pkgs.fetchurl {
-      url = "https://github.com/can1357/oh-my-pi/releases/download/v${finalAttrs.version}/omp-linux-x64";
-      hash = "sha256-0v2qKa/+luWW65x41C9Ujx8pHfKGCGMbzAB1CoS5S8M=";
-    };
-    dontUnpack = true;
-    dontStrip = true;
-    nativeBuildInputs = [pkgs.autoPatchelfHook];
-    buildInputs = [pkgs.stdenv.cc.cc.lib];
-    installPhase = ''
-      runHook preInstall
-      install -Dm755 $src $out/bin/omp
-      runHook postInstall
-    '';
-    meta.mainProgram = "omp";
-  });
-
-  # Seed only preferences not covered by OMP defaults.
-  config = pkgs.writeText "config.yml" (builtins.toJSON {
+  cfg = {
+    defaultProvider = "openai";
+    defaultModel = "gpt-6-astra";
     defaultThinkingLevel = "max";
-    hideThinkingBlock = true;
-    theme.dark = "minimal";
-  });
+    compaction.enabled = false;
+    enableInstallTelemetry = false;
+    enableAnalytics = false;
+
+    defaultTools = [
+      "+codemode"
+    ];
+  };
+
+  mkCfg = cfg:
+    pkgs.writeText "pi-settings.json" (builtins.toJSON cfg);
+
+  settings = mkCfg cfg;
+
+  agents = pkgs.writeText "pi-AGENTS.md" ''
+    Always prioritise simple, minimal, semantically tiny solutions that's
+    precisely what's needed to solve the given problem with the known
+    information, no more, and no less. Do not overfit your solutions. Instead,
+    for unknown or uncertain "frontiers" of the design, make it _extensible_,
+    defining a clear, coherent interface to extend it in the future if/when
+    enough information becomes known, or designing such a solution becomes
+    unavoidable.
+  '';
+  piSrc = pkgs.fetchFromGitHub {
+    owner = "earendil-works";
+    repo = "pi";
+    rev = "v${pi-coding-agent.version}";
+    hash = "sha256-ukN//DNSnCr9gZHKSzexAGEZu95eMzTGJLjLc5B+Hwo=";
+  };
 in
-  mkWrapper pkgs omp {
-    # OMP shells out for Git-shaped tools through Bun.spawn.
-    binPath = [pkgs.git];
-    # Pin write mode: approve file access, prompt for execution and network access.
-    # Use omp --yolo only per session.
-    addFlags = ["--approval-mode=write"];
-    # simplification: seed user-editable files once; delete one to apply later Nix changes.
+  mkWrapper pkgs pi-coding-agent {
+    binPath = [
+      nodejs_24
+      qemu
+    ];
+
     run = [
       ''
-        dir="''${PI_CODING_AGENT_DIR:-$HOME/.omp/agent}"
-        [ -e "$dir/config.yml" ] \
-          || install -Dm644 ${config} "$dir/config.yml"
+        state="''${XDG_STATE_HOME:-$HOME/.local/state}/pi"
+        agent="$state/agent"
+        sessions="$state/sessions"
+        gondolin="$agent/extensions/gondolin"
 
-        [ -e "$dir/themes/minimal.json" ] \
-          || install -Dm644 ${minimalTheme} "$dir/themes/minimal.json"
+        mkdir -p "$agent" "$sessions"
 
-        [ -e "$dir/agents/explorer.md" ] \
-          || install -Dm644 ${./agents/explorer.md} "$dir/agents/explorer.md"
+        rm -f "$agent/settings.json"
+        install -m 0644 ${settings} "$agent/settings.json"
+
+        rm -f "$agent/AGENTS.md"
+        ln -s ${agents} "$agent/AGENTS.md"
+
+        # Install the Gondolin extension once.
+        if [ ! -d "$gondolin/node_modules/@earendil-works/gondolin" ]; then
+          rm -rf "$gondolin"
+          mkdir -p "$gondolin"
+
+          cp -R \
+            ${piSrc}/packages/coding-agent/examples/extensions/gondolin/. \
+            "$gondolin/"
+
+          chmod -R u+w "$gondolin"
+
+          (
+            cd "$gondolin"
+            npm install --ignore-scripts
+          )
+        fi
+
+        export PI_CODING_AGENT_DIR="$agent"
+        export PI_CODING_AGENT_SESSION_DIR="$sessions"
       ''
     ];
   }

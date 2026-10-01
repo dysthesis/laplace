@@ -97,7 +97,6 @@ in {
             configured.foot
           ];
         applications = with pkgs; [
-          configured.zotero
           unstable.signal-desktop
           unstable.obsidian
           configured.subtui
