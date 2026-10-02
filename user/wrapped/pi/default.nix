@@ -19,6 +19,9 @@
     defaultTools = [
       "+codemode"
     ];
+    packages = [
+      "npm:@casualjim/pi-headroom"
+    ];
   };
 
   mkCfg = cfg:
@@ -46,6 +49,7 @@ in
     binPath = [
       nodejs_24
       qemu
+      pkgs.configured.headroom
     ];
 
     run = [

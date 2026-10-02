@@ -13,6 +13,7 @@
     guiPackage = package: package.config.env;
   in {
     configured = rec {
+      headroom = callPackage ./headroom {inherit pkgs;};
       subtui = callPackage ./subtui {inherit pkgs lib;};
       opencode = callPackage ./opencode {inherit pkgs lib;};
       delta = callPackage ./delta {inherit pkgs lib;};

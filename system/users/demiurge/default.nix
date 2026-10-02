@@ -48,7 +48,6 @@ in {
         ];
 
       packages = let
-        headroom = pkgs.callPackage ../../../nix/shell/headroom.nix {};
         basePackages = with pkgs; [
           rsync
           gnupg
@@ -72,8 +71,8 @@ in {
         dev = with pkgs; [
           git
           direnv
-          headroom
           configured.jujutsu
+          configured.headroom
           configured.jjui
           configured.tmux
           unstable.texliveFull
