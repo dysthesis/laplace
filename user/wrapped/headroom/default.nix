@@ -14,19 +14,19 @@
 in
   pyPkgs.buildPythonApplication rec {
     pname = "headroom-ai";
-    version = "0.32.0";
+    version = "0.39.1";
     pyproject = true;
 
     src = fetchFromGitHub {
       owner = "headroomlabs-ai";
       repo = "headroom";
       tag = "v${version}";
-      hash = "sha256-7+ul+rco4HvI3ar6Y9JvfBiFem8IeBwnBEGUcj/d9xU=";
+      hash = "sha256-pcsKKq27cKyB7uWskbnWP8VI/UU9RdrE89QClLisvcU=";
     };
 
     cargoDeps = rustPlatform.fetchCargoVendor {
       inherit pname version src;
-      hash = "sha256-bSBtv1CUP2NjZujQSsAgPpeFYd28O5Ea1FXKu6ZRcvs=";
+      hash = "sha256-azHjTfjdARzYuDMdH1AOYn0YV9U9lzaoULcSC/a9MuE=";
     };
 
     nativeBuildInputs = [

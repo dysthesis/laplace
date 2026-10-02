@@ -22,6 +22,24 @@ inputs: final: _prev: {
                 dependencies = (old.dependencies or []) ++ [pythonPrev.pycountry];
                 disabledTestPaths = (old.disabledTestPaths or []) ++ ["tests/guidance"];
               });
+
+              torch = pythonPrev.torch.overrideAttrs (old:
+                unstableFinal.lib.optionalAttrs old.passthru.rocmSupport {
+                  # CMake runs this CK helper before the fixup shebang hook.
+                  postPatch =
+                    (old.postPatch or "")
+                    + ''
+                      patchShebangs --build aten/src/ATen/native/transformers/hip/flash_attn/ck/add_make_kernel_pt.sh
+                    '';
+
+                  # Parse libstdc++ before HIP defines its __noinline__ macro.
+                  # CMake's CXXFLAGS initialization keeps this out of C/HIP flags.
+                  preConfigure =
+                    (old.preConfigure or "")
+                    + ''
+                      export CXXFLAGS="''${CXXFLAGS-} ''${CMAKE_CXX_FLAGS-} -include chrono"
+                    '';
+                });
             })
           ];
       })

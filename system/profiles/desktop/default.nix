@@ -73,6 +73,16 @@ in {
               --no-restart
           '';
         };
+        headroom = {
+          description = "Headroom proxy";
+          after = ["network.target"];
+          wantedBy = ["default.target"];
+
+          serviceConfig = {
+            ExecStart = "${lib.getExe' pkgs.configured.headroom "headroom"} proxy --port 8787";
+            Restart = "on-failure";
+          };
+        };
       };
     };
     fonts.packages = with pkgs; [
