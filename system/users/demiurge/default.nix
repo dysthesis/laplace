@@ -66,6 +66,7 @@ in {
           configured.helix
           configured.pi
           configured.opencode
+          inputs.oh-my-pi.packages.${hostSystem}.default
         ];
 
         dev = with pkgs; [

@@ -6,8 +6,8 @@
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
 
-  rev = "c291194a4e593bbbb91420e81fa0111508084448";
-  srcHash = "sha256-LipZljhxpMFOEce+KNNcjJVWKsxDJnhgJm9UWJ4sWJI=";
+  rev = "ab33c9a19d626f8d0ac0bd1adfdba21946ada948";
+  srcHash = "sha256-CZlbQut5jM8/dWuLlJPDaLBykV7K5l/caB3DLQ94mG8=";
 
   fcftPatched = pkgs.fcft.overrideAttrs (old: {
     patches =

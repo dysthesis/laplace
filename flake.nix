@@ -874,6 +874,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    oh-my-pi = {
+      url = "github:can1357/oh-my-pi/v18.6.1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
     nixpak = {
