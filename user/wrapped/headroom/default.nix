@@ -1,122 +1,61 @@
 {
-  python314,
   fetchFromGitHub,
-  rustPlatform,
-  makeWrapper,
-  pkg-config,
-  onnxruntime,
-  openssl,
   lib,
-  ast-grep,
+  python3Packages,
+  rustPlatform,
   ...
-}: let
-  pyPkgs = python314.pkgs;
-in
-  pyPkgs.buildPythonApplication rec {
-    pname = "headroom-ai";
-    version = "0.39.1";
-    pyproject = true;
+}:
+python3Packages.buildPythonApplication (finalAttrs: {
+  pname = "headroom-ai";
+  version = "0.39.1";
+  pyproject = true;
 
-    src = fetchFromGitHub {
-      owner = "headroomlabs-ai";
-      repo = "headroom";
-      tag = "v${version}";
-      hash = "sha256-pcsKKq27cKyB7uWskbnWP8VI/UU9RdrE89QClLisvcU=";
-    };
+  src = fetchFromGitHub {
+    owner = "headroomlabs-ai";
+    repo = "headroom";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-pcsKKq27cKyB7uWskbnWP8VI/UU9RdrE89QClLisvcU=";
+  };
 
-    cargoDeps = rustPlatform.fetchCargoVendor {
-      inherit pname version src;
-      hash = "sha256-azHjTfjdARzYuDMdH1AOYn0YV9U9lzaoULcSC/a9MuE=";
-    };
+  cargoDeps = rustPlatform.fetchCargoVendor {
+    inherit (finalAttrs) pname version src;
+    hash = "sha256-azHjTfjdARzYuDMdH1AOYn0YV9U9lzaoULcSC/a9MuE=";
+  };
 
-    nativeBuildInputs = [
-      makeWrapper
-      pkg-config
-      rustPlatform.cargoSetupHook
-      rustPlatform.maturinBuildHook
-    ];
+  postPatch = ''
+    substituteInPlace headroom/ccr/mcp_server.py \
+      --replace-fail \
+        "return HeadroomMCPServer(proxy_url=proxy_url)" \
+        'return HeadroomMCPServer(proxy_url=proxy_url, check_proxy=os.environ.get("HEADROOM_MCP_CHECK_PROXY", "1").lower() not in ("0", "false", "off"))'
+  '';
 
-    buildInputs = [
-      onnxruntime
-      openssl
-    ];
+  build-system = with rustPlatform; [
+    cargoSetupHook
+    maturinBuildHook
+  ];
 
-    postPatch = ''
-      substituteInPlace headroom/cli/wrap.py \
-        --replace-fail \
-          'cmd = [sys.executable, "-m", "headroom.cli", "proxy", "--port", str(port)]' \
-          'cmd = [os.environ.get("HEADROOM_EXECUTABLE", "headroom"), "proxy", "--port", str(port)]'
+  dependencies = with python3Packages; [
+    ast-grep-cli
+    click
+    httpx
+    litellm
+    mcp
+    opentelemetry-api
+    pydantic
+    pyyaml
+    rich
+    starlette
+    tiktoken
+    tomlkit
+    uvicorn
+  ];
 
-      substituteInPlace headroom/proxy/models.py \
-        --replace-fail \
-          'from dataclasses import InitVar, dataclass, field' \
-          $'from dataclasses import InitVar, dataclass, field\nimport os' \
-        --replace-fail \
-          'from headroom.providers.registry import ProviderApiOverrides' \
-          $'from headroom.providers.registry import ProviderApiOverrides\n\n\ndef _env_int_or_none(name: str) -> int | None:\n    raw = os.environ.get(name, "").strip()\n    if not raw:\n        return None\n    try:\n        return int(raw)\n    except ValueError:\n        return None' \
-        --replace-fail \
-          'compression_max_workers: int | None = None' \
-          'compression_max_workers: int | None = field(default_factory=lambda: _env_int_or_none("HEADROOM_COMPRESSION_MAX_WORKERS"))'
-    '';
+  pythonImportsCheck = ["headroom"];
 
-    env = {
-      ORT_STRATEGY = "system";
-      ORT_LIB_LOCATION = "${lib.getLib onnxruntime}/lib";
-      ORT_PREFER_DYNAMIC_LINK = "true";
-      ORT_DYLIB_PATH = "${lib.getLib onnxruntime}/lib/libonnxruntime.so";
-    };
-
-    dependencies = with pyPkgs; [
-      tomlkit
-      click
-      fastapi
-      h2
-      httpx
-      litellm
-      magika
-      mcp
-      openai
-      pydantic
-      rich
-      sqlite-vec
-      tiktoken
-      transformers
-      uvicorn
-      watchdog
-      websockets
-      zstandard
-      opentelemetry-api
-      onnxruntime
-      pyyaml # 0.32.0: parse/merge omp's models.yml registry
-    ];
-
-    pythonRelaxDeps = [
-      "litellm"
-      # headroom never calls vulnerable click.edit; its CLI works with nixpkgs 8.3.1.
-      "click"
-    ];
-
-    pythonRemoveDeps = [
-      "ast-grep-cli"
-    ];
-
-    makeWrapperArgs = [
-      "--set HEADROOM_EXECUTABLE ${placeholder "out"}/bin/headroom"
-      "--prefix PATH : ${lib.makeBinPath [ast-grep]}"
-      "--set ORT_DYLIB_PATH ${lib.getLib onnxruntime}/lib/libonnxruntime.so"
-      "--prefix LD_LIBRARY_PATH : ${lib.getLib onnxruntime}/lib"
-    ];
-
-    pythonImportsCheck = [
-      "headroom"
-    ];
-
-    meta = {
-      description = "Context optimization layer for LLM applications and coding agents";
-      homepage = "https://github.com/chopratejas/headroom";
-      changelog = "https://github.com/chopratejas/headroom/releases/tag/v${version}";
-      license = lib.licenses.asl20;
-      mainProgram = "headroom";
-      platforms = lib.platforms.linux;
-    };
-  }
+  meta = {
+    description = "Local context compression tools for LLM applications";
+    homepage = "https://github.com/headroomlabs-ai/headroom";
+    license = lib.licenses.asl20;
+    mainProgram = "headroom";
+  };
+})

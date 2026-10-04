@@ -37,7 +37,7 @@ inputs: final: _prev: {
                   preConfigure =
                     (old.preConfigure or "")
                     + ''
-                      export CXXFLAGS="''${CXXFLAGS-} ''${CMAKE_CXX_FLAGS-} -include chrono"
+                      export CXXFLAGS="''${CXXFLAGS-''${CFLAGS-}} ''${CMAKE_CXX_FLAGS-} -include chrono"
                     '';
                 });
             })
