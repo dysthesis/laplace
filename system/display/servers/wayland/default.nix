@@ -14,6 +14,7 @@ in {
       multiple = false;
       default = "niri";
     })
+    ./desktop
   ];
 
   # Selected compositor command for VT1 login.

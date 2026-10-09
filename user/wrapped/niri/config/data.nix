@@ -121,7 +121,7 @@
       matches = [
         {appId = "^mpv$";}
       ];
-      openFloating = true;
+      openFloating = false;
       defaultColumnWidth.proportion = 0.8;
       defaultWindowHeight.proportion = 0.8;
       variableRefreshRate = true;
@@ -924,11 +924,20 @@
       ];
     }
     {
-      combo = "Ctrl+Print";
+      combo = "Mod+P";
       actions = [
         {
           type = "action";
           name = "screenshot-screen";
+        }
+      ];
+    }
+    {
+      combo = "Mod+Shift+Tab";
+      actions = [
+        {
+          type = "action";
+          name = "move-workspace-to-monitor-left";
         }
       ];
     }

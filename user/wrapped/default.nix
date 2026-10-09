@@ -71,7 +71,7 @@
           inputs
           ;
       };
-      swaylock = callPackage ./swaylock {inherit lib pkgs;};
+      swaylock = callPackage ./swaylock {inherit lib pkgs config;};
       hyprland = callPackage ./hyprland {
         inherit
           pkgs
@@ -87,6 +87,15 @@
           config
           inputs
           ;
+      };
+      quickshell = callPackage ./quickshell {
+        inherit pkgs lib config;
+        inherit (pkgs) quickshell;
+      };
+      noctalia = callPackage ./noctalia {inherit pkgs lib;};
+      vicinae = callPackage ./vicinae {
+        inherit pkgs lib;
+        inherit (pkgs) vicinae;
       };
       bibiman = callPackage ./bibiman {inherit pkgs lib inputs;};
       sway = callPackage ./sway {

@@ -1,0 +1,15 @@
+singleton Theme 1.0 Theme.qml
+singleton Desktop 1.0 Desktop.qml
+singleton Niri 1.0 Niri.qml
+singleton Notifications 1.0 Notifications.qml
+Audio 1.0 Audio.qml
+Bar 1.0 Bar.qml
+DatePopover 1.0 DatePopover.qml
+NotificationCard 1.0 NotificationCard.qml
+NotificationEntry 1.0 NotificationEntry.qml
+NotificationInbox 1.0 NotificationInbox.qml
+NotificationToasts 1.0 NotificationToasts.qml
+ShellButton 1.0 ShellButton.qml
+Tray 1.0 Tray.qml
+TrayMenu 1.0 TrayMenu.qml
+Workspaces 1.0 Workspaces.qml

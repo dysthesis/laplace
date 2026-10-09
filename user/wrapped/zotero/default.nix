@@ -19,7 +19,7 @@ in
   mkNixPak {
     config = {sloth, ...}: {
       app = {
-        package = pkgs.unstable.zotero;
+        package = pkgs.zotero;
         extraEntrypoints = [
           "/bin/zotero"
           "/bin/zotero-bin"

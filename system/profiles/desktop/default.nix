@@ -209,5 +209,7 @@ in {
         extraPortals = [pkgs.xdg-desktop-portal-gtk];
       };
     };
+    hardware.i2c.enable = true;
+    boot.kernelModules = ["i2c-dev"];
   };
 }

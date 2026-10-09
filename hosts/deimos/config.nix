@@ -8,6 +8,7 @@
     inputs.nixos-hardware.nixosModules.common-gpu-amd
   ];
   config = {
+    boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     environment.systemPackages = with pkgs; [
       android-tools
       usbutils
@@ -141,7 +142,10 @@
       users = ["demiurge"];
       display = {
         servers = ["wayland"];
-        wayland.compositor = "dwl";
+        wayland = {
+          compositor = "niri";
+          desktop.enable = true;
+        };
       };
 
       virtualisation.enable = true;

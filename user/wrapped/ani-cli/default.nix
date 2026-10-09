@@ -1,4 +1,4 @@
 {pkgs, ...}:
-pkgs.ani-cli.override {
+pkgs.unstable.ani-cli.override {
   mpv = pkgs.configured.mpv;
 }

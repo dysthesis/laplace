@@ -804,6 +804,8 @@
         inherit self inputs lib;
         inherit (hosts) nodeModules;
       };
+
+      colmenaHive = inputs.colmena.lib.makeHive self.outputs.colmena;
     };
 
   inputs = {
@@ -875,7 +877,7 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.6.1";
+      url = "github:can1357/oh-my-pi/v18.8.6";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -910,5 +912,6 @@
       url = "github:dysthesis/iosevka-cadmus";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    colmena.url = "github:nix-community/colmena";
   };
 }

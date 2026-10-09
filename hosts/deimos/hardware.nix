@@ -6,7 +6,7 @@
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
-
+  hardware.i2c.enable = true;
   boot = {
     initrd = {
       availableKernelModules =

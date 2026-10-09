@@ -45,6 +45,7 @@ in {
           "render"
           "ollama"
           "adbusers"
+          "i2c"
         ];
 
       packages = let
@@ -64,9 +65,9 @@ in {
           configured.bibiman
           configured.bmm
           configured.helix
-          configured.pi
           configured.opencode
           inputs.oh-my-pi.packages.${hostSystem}.default
+          unstable.pi-coding-agent
         ];
 
         dev = with pkgs; [
@@ -99,6 +100,7 @@ in {
         applications = with pkgs; [
           unstable.signal-desktop
           unstable.obsidian
+          unstable.zotero
           configured.subtui
           (unstable.prismlauncher.override {
             jdks = with pkgs; [

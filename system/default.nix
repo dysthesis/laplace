@@ -24,6 +24,7 @@ in {
       // lib.optionalAttrs isDesktop {
         BROWSER = lib.getExe pkgs.configured.zen;
       };
+
     boot.binfmt.emulatedSystems =
       if (system != "aarch64-linux")
       then ["aarch64-linux"]

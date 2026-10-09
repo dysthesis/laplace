@@ -23,6 +23,7 @@
         sponsorblock
         thumbfast
         mpv-webm
+        mpris
         uosc
         ;
     };

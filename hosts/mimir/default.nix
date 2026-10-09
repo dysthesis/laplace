@@ -1,7 +1,6 @@
 # Application guest. Caddy fronts loopback services on tailnet-only port 443.
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
@@ -65,6 +64,11 @@ in {
 
     services = {
       tailscale.enable = true;
+      nocodb = {
+        enable = true;
+        domain = "db.dysthesis.com";
+        port = 8088;
+      };
       telemetry = {
         enable = true;
         role = "apps";
@@ -136,6 +140,7 @@ in {
           enable = true;
           sopsFile = ../../system/secrets/mimir.yaml;
           proxies = {
+            "db.dysthesis.com" = "127.0.0.1:8088";
             "miniflux.dysthesis.com" = "127.0.0.1:8087";
             "silverbullet.dysthesis.com" = "localhost:8101";
             ${vikunjaHost} = "127.0.0.1:${toString config.services.vikunja.port}";
