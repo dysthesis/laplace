@@ -72,6 +72,10 @@ in {
     systemd.user.services =
       {
         swayidle = sessionService "Wayland idle lock manager" "${idleCommand}";
+        niri-swallow =
+          sessionService
+          "Automatic terminal window swallowing"
+          "${lib.getExe pkgs.python3} ${../../../../../../user/wrapped/niri/scripts/niri-swallow.py}";
       }
       // optionalAttrs (!desktopEnabled) {
         swaybg = sessionService "Wayland background" "${getExe pkgs.swaybg} -i ${wallpaper} -m fill";
