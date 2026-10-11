@@ -6,7 +6,6 @@
 }: let
   cfg = config.laplace.display.wayland.desktop;
   display = config.laplace.display;
-  # wallpaper = "${../../../../../user/assets/wallpaper.png}";
   palette = import ./palette.nix;
   sessionService = description: execStart: {
     inherit description;
@@ -29,10 +28,10 @@ in {
         assertion = builtins.elem "wayland" display.servers;
         message = "laplace.display.wayland.desktop.enable requires Wayland.";
       }
-      # {
-      #   assertion = display.wayland.compositor == "niri";
-      #   message = "laplace.display.wayland.desktop.enable requires Niri.";
-      # }
+      {
+        assertion = display.wayland.compositor == "niri";
+        message = "laplace.display.wayland.desktop.enable requires Niri.";
+      }
     ];
 
     environment.systemPackages = with pkgs.configured; [noctalia vicinae pkgs.ddcutil];
@@ -41,7 +40,7 @@ in {
       cssText = lib.mkDefault (import ./gtk.nix palette);
       fontName = lib.mkDefault "Atkinson Hyperlegible Next 10";
       preferDark = lib.mkDefault true;
-      cursor.size = lib.mkDefault 20;
+      cursor.size = lib.mkDefault 24;
     };
 
     systemd.user.services = {
@@ -55,25 +54,16 @@ in {
           ];
         };
 
-      # wbg = {
-      #   description = "Wallpaper service";
-      #   after = ["niri.service"];
-      #   requires = ["dbus.socket"];
-      #   partOf = ["graphical-session.target"];
-      #   wantedBy = ["graphical-session.target"];
-      #   serviceConfig = {
-      #     ExecStart = "${lib.getExe pkgs.wbg} ${wallpaper}";
-      #     Restart = "on-failure";
-      #     RestartSec = 2;
-      #   };
-      # };
       vicinae =
+        lib.recursiveUpdate
         (sessionService "Vicinae launcher" "${lib.getExe pkgs.configured.vicinae} server")
-        // {
+        {
           path = [
             config.system.path
             "/etc/profiles/per-user/demiurge"
           ];
+          # Match upstream: restarting the launcher must not kill apps it launched.
+          serviceConfig.KillMode = "process";
         };
       polkit-gnome = sessionService "Polkit authentication agent" "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
     };

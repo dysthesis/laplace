@@ -20,13 +20,14 @@
     copilot.enabled = false;
     flags.allowGuestDemoWorkspace = false;
     server = {
-      name = "Dysthesis Wiki";
+      name = "Topos";
       externalUrl = "https://${cfg.domain}";
       host = cfg.domain;
       https = true;
     };
   });
   environment = {
+    DEPLOYMENT_TYPE = "selfhosted";
     AFFINE_INDEXER_ENABLED = "false";
     DATABASE_URL = "postgresql://affine@postgres:5432/affine";
     REDIS_SERVER_HOST = "redis";
@@ -92,7 +93,7 @@ in {
           "--network=${network}"
           "--network-alias=postgres"
           "--pull=missing"
-          "--health-cmd=pg_isready -U affine -d affine"
+          "--health-cmd=pg_isready -h 127.0.0.1 -U affine -d affine"
           "--health-interval=10s"
           "--health-timeout=5s"
           "--health-retries=5"
@@ -208,7 +209,7 @@ in {
         requires = ["affine-network.service" "affine-prepare.service" "affine-migration.service"];
         after = ["affine-network.service" "affine-prepare.service" "affine-migration.service"];
         unitConfig.RequiresMountsFor = cfg.dataDir;
-        serviceConfig.TimeoutStartSec = "3min";
+        serviceConfig.TimeoutStartSec = lib.mkForce "3min";
         # Migration success is a separate hard dependency; this only checks serving readiness.
         postStart = ''
           for attempt in $(${pkgs.coreutils}/bin/seq 1 60); do

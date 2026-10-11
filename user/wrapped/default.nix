@@ -88,10 +88,6 @@
           inputs
           ;
       };
-      quickshell = callPackage ./quickshell {
-        inherit pkgs lib config;
-        inherit (pkgs) quickshell;
-      };
       noctalia = callPackage ./noctalia {inherit pkgs lib;};
       vicinae = callPackage ./vicinae {
         inherit pkgs lib;

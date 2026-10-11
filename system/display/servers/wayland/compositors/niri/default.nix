@@ -27,11 +27,13 @@
 
   lockCommand = "${getExe pkgs.configured.swaylock} -f";
   powerOffCommand = "${getExe pkgs.configured.niri} msg action power-off-monitors";
+  powerOnCommand = "${getExe pkgs.configured.niri} msg action power-on-monitors";
   idleCommand = pkgs.writeShellScript "niri-idle" ''
     exec ${getExe pkgs.swayidle} -w \
       timeout 300 ${escapeShellArg lockCommand} \
-      timeout 600 ${escapeShellArg powerOffCommand} \
+      timeout 600 ${escapeShellArg powerOffCommand} resume ${escapeShellArg powerOnCommand} \
       before-sleep ${escapeShellArg lockCommand} \
+      after-resume ${escapeShellArg powerOnCommand} \
       lock ${escapeShellArg lockCommand}
   '';
 

@@ -65,7 +65,12 @@
   };
   themeFile = pkgs.writers.writeJSON "Minimal.json" theme;
   cfg =
-    import ./config.nix
+    import ./config.nix {
+      vicinaeExe = lib.getExe pkgs.configured.vicinae;
+      swaylockExe = lib.getExe pkgs.configured.swaylock;
+      # Avoid a dependency cycle through the configured Niri shell bindings.
+      niriExe = lib.getExe pkgs.niri;
+    }
     |> pkgs.writers.writeTOML "config.toml"
     |> (file:
       pkgs.runCommand "noctalia-config" {} ''

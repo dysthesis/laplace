@@ -64,6 +64,11 @@ in {
 
     services = {
       tailscale.enable = true;
+      affine = {
+        enable = true;
+        domain = "topos.dysthesis.com";
+        port = 8089;
+      };
       nocodb = {
         enable = true;
         domain = "db.dysthesis.com";
@@ -181,6 +186,7 @@ in {
       frontendScheme = lib.mkForce "https";
       frontendHostname = lib.mkForce vikunjaHost;
     };
+
     silverbullet.listenAddress = lib.mkForce "127.0.0.1";
   };
   # Preserve the device identity, index, GUI configuration, and synced folders.

@@ -28,7 +28,7 @@
         xwaylandSatellite = lib.getExe pkgs.xwayland-satellite;
       }
       // lib.optionalAttrs desktopEnabled {
-        quickshell = lib.getExe pkgs.configured.quickshell;
+        noctalia = lib.getExe pkgs.configured.noctalia;
       };
   };
 

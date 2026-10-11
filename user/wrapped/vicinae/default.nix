@@ -15,7 +15,7 @@
     colors = {
       core = {
         accent = palette.focus;
-        accent_foreground = palette.foreground;
+        accent_foreground = palette.background;
         background = palette.popup;
         foreground = palette.foreground;
         secondary_background = palette.surface;
@@ -44,8 +44,8 @@
         success = palette.foreground;
         placeholder = palette.dim;
         selection = {
-          background = palette.border;
-          foreground = palette.foreground;
+          background = palette.focus;
+          foreground = palette.background;
         };
         links = {
           default = palette.muted;
@@ -59,11 +59,11 @@
         border_error = palette.urgent;
       };
       button.primary = {
-        background = palette.surface;
-        foreground = palette.foreground;
+        background = palette.focus;
+        foreground = palette.background;
         hover = {
-          background = palette.border;
-          foreground = palette.foreground;
+          background = palette.info;
+          foreground = palette.background;
         };
         focus.outline = palette.focus;
       };
@@ -74,7 +74,8 @@
           secondary_foreground = palette.muted;
         };
         selection = {
-          background = palette.surface;
+          # Accessories keep their muted foreground even on selected rows.
+          background = palette.border;
           foreground = palette.foreground;
           secondary_background = palette.surface;
           secondary_foreground = palette.muted;
@@ -101,6 +102,9 @@
     };
   };
   defaultsFile = pkgs.writeText "vicinae-desktop-defaults.json" (builtins.toJSON {
+    # Each invocation starts in search, rather than an old clipboard/settings view.
+    pop_to_root_on_close = true;
+    favicon_service = "none";
     search_files_in_root = false;
     fallbacks = [];
     providers.files.preferences.autoIndexing = false;
@@ -118,7 +122,6 @@
     launcher_window = {
       opacity = 1;
       material = "none";
-      blur.enabled = false;
       rounding = 10;
       client_side_decorations = {
         enabled = true;

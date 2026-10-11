@@ -63,7 +63,10 @@
 
       display = {
         servers = ["wayland"];
-        wayland.compositor = "dwl";
+        wayland = {
+          compositor = "niri";
+          desktop.enable = true;
+        };
         hidpi = true;
       };
 

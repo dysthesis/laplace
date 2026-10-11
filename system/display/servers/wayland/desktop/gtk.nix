@@ -4,8 +4,8 @@ palette: ''
   @define-color theme_fg_color ${palette.foreground};
   @define-color theme_base_color ${palette.inset};
   @define-color theme_text_color ${palette.foreground};
-  @define-color theme_selected_bg_color ${palette.border};
-  @define-color theme_selected_fg_color ${palette.foreground};
+  @define-color theme_selected_bg_color ${palette.focus};
+  @define-color theme_selected_fg_color ${palette.background};
   @define-color insensitive_fg_color ${palette.dim};
   @define-color borders ${palette.border};
 

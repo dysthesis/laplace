@@ -57,7 +57,7 @@ in
         bright6 = hex palette.info;
         bright7 = hex palette.foreground;
         cursor = "${hex palette.background} ${hex palette.foreground}";
-        selection-background = hex palette.foreground;
+        selection-background = hex palette.focus;
         selection-foreground = hex palette.background;
       }
       else {

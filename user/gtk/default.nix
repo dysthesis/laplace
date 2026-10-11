@@ -35,6 +35,7 @@
       gtk-theme-name = cfg.theme.name;
       gtk-icon-theme-name = cfg.iconTheme.name;
       gtk-cursor-theme-name = cfg.cursor.name;
+      gtk-cursor-theme-size = cfg.cursor.size;
       gtk-application-prefer-dark-theme =
         if cfg.preferDark
         then 1

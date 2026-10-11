@@ -287,6 +287,11 @@ in {
           # Resolve internal app names to their tailnet frontends.
           extra_records = [
             {
+              name = "topos.${fqdn}";
+              type = "A";
+              value = mimirTailnetIp;
+            }
+            {
               name = "db.${fqdn}";
               type = "A";
               value = mimirTailnetIp;
