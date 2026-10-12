@@ -2,6 +2,7 @@
   vicinaeExe,
   swaylockExe,
   niriExe,
+  config,
 }: let
   wallpaper = "${../../assets/wallpaper.png}";
 in {
@@ -230,6 +231,27 @@ in {
     offset_y = 24;
     follow_focused_output = true;
     kinds.media = false; # Suppress repeated music-track popups.
+  };
+
+  calendar = {
+    enabled = true;
+    refresh_minutes = 15;
+    account.radicale = {
+      type = "caldav";
+      name = "Personal";
+      provider = "custom";
+      server_url = "https://cal.dysthesis.com";
+      username = "demiurge";
+      calendars = [];
+      credential_source = "file";
+      password_file = config.sops.secrets."caldav".path;
+    };
+    reminders = {
+      enabled = true;
+      use_event_reminders = true; # honor per-event reminders; off = always use the default lead below
+      default_lead_minutes = 10; # used for events with no reminder of their own; 0 = at event start
+      all_day_digest_time = "09:00"; # one notification listing today's all-day events; "" disables it
+    };
   };
 
   dock.enabled = false;

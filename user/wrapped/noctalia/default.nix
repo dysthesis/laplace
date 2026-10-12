@@ -2,6 +2,7 @@
   pkgs,
   lib,
   noctalia,
+  config,
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
@@ -68,6 +69,7 @@
     import ./config.nix {
       vicinaeExe = lib.getExe pkgs.configured.vicinae;
       swaylockExe = lib.getExe pkgs.configured.swaylock;
+      inherit config;
       # Avoid a dependency cycle through the configured Niri shell bindings.
       niriExe = lib.getExe pkgs.niri;
     }

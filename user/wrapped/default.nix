@@ -88,7 +88,7 @@
           inputs
           ;
       };
-      noctalia = callPackage ./noctalia {inherit pkgs lib;};
+      noctalia = callPackage ./noctalia {inherit pkgs lib config;};
       vicinae = callPackage ./vicinae {
         inherit pkgs lib;
         inherit (pkgs) vicinae;

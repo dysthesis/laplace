@@ -26,7 +26,7 @@
     type = "caldav"
     url = "https://cal.dysthesis.com/"
     username = "demiurge"
-    password.fetch = ["command", "cat", "/run/secrets/khal_caldav"]
+    password.fetch = ["command", "cat", "/run/secrets/caldav"]
   '';
 in
   mkWrapper pkgs.unstable pkgs.unstable.vdirsyncer {set.VDIRSYNCER_CONFIG = config;}
