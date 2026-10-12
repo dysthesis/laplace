@@ -162,16 +162,6 @@
       ];
     }
     {
-      combo = "Super+Alt+L";
-      title = "Lock the screen";
-      actions = [
-        {
-          type = "spawn";
-          command = "locker";
-        }
-      ];
-    }
-    {
       combo = "Mod+Shift+E";
       actions = [
         {

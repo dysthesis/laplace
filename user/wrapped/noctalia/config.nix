@@ -1,6 +1,5 @@
 {
   vicinaeExe,
-  swaylockExe,
   niriExe,
   config,
 }: let
@@ -25,7 +24,7 @@ in {
 
     animation = {
       enabled = true;
-      speed = 1.4; # Short transitions; set enabled = false to eliminate shell motion.
+      speed = 1.4;
     };
     shadow = {
       direction = "down";
@@ -41,13 +40,6 @@ in {
       open_near_click_session = true;
     };
     session.actions = [
-      {
-        action = "command";
-        label = "Lock";
-        glyph = "lock";
-        shortcut = "1";
-        command = "${swaylockExe} -f";
-      }
       {
         action = "logout";
         shortcut = "2";
@@ -87,14 +79,10 @@ in {
     custom_palette = "Minimal";
   };
 
-  lockscreen.enabled = false;
   idle.behavior = {
-    lock.enabled = false;
+    lock.enabled = true;
     screen-off.enabled = false;
   };
-  system.monitor.enabled = false;
-  weather.enabled = false;
-  audio.enable_overdrive = false;
 
   brightness = {
     enable_ddcutil = true;
@@ -106,7 +94,49 @@ in {
     };
   };
 
-  desktop_widgets.enabled = false;
+  desktop_widgets = {
+    enabled = true;
+    schema_version = 2;
+    widget_order = ["calendar_main" "weather_main"];
+
+    grid = {
+      visible = true;
+      cell_size = 16;
+      major_interval = 4;
+    };
+
+    widget = {
+      calendar_main = {
+        box_height = 448.0;
+        box_width = 640.0;
+        cx = 1540.0;
+        cy = 316.0;
+        output = "DP-2";
+        placement_height = 1080.0;
+        placement_width = 1920.0;
+        rotation = 0.0;
+        type = "calendar";
+      };
+      weather_main = {
+        box_height = 192.0;
+        box_width = 352.0;
+        cx = 1684.0;
+        cy = 700.0;
+        output = "DP-2";
+        placement_height = 1080.0;
+        placement_width = 1920.0;
+        rotation = -0.0;
+        type = "weather";
+        settings = {
+          background_opacity = 0.75;
+          background_padding = 12;
+          background_radius = 32;
+          forecast_days = 3;
+          show_forecast = true;
+        };
+      };
+    };
+  };
 
   bar.main = {
     enabled = true;
@@ -133,7 +163,7 @@ in {
     capsule = false;
 
     start = ["apps" "workspaces"];
-    center = ["clock"];
+    center = ["weather" "clock"];
     end = [
       "tray"
       "network"
@@ -148,7 +178,7 @@ in {
       type = "custom_button";
       glyph = "search";
       label = "Apps";
-      tooltip = "Applications and commands · Super+Space";
+      tooltip = "Applications and commands";
       actions.left = "exec ${vicinaeExe} toggle";
     };
     workspaces = {
@@ -176,6 +206,7 @@ in {
       drawer_item_size = 22;
       hide_passive = true;
     };
+    weather.color = "on_surface_variant";
     notifications = {
       hide_when_no_unread = false; # Keeps the notification/DND affordance available.
       color = "on_surface_variant";
@@ -191,6 +222,7 @@ in {
     };
     control-center = {
       color = "on_surface";
+      glyph = " ";
     };
   };
 
@@ -252,6 +284,22 @@ in {
       default_lead_minutes = 10; # used for events with no reminder of their own; 0 = at event start
       all_day_digest_time = "09:00"; # one notification listing today's all-day events; "" disables it
     };
+    idle = {
+      behavior_order = ["lock" "screen-off" "suspend"];
+      # Seconds to fade a fullscreen surface-tint overlay, then run the idle command.
+      # 0 disables the overlay (the command runs as soon as the compositor reports idle).
+      # Parsed between 0 and 120; the in-app Settings stepper uses whole seconds 0–30.
+      pre_action_fade_seconds = 2.0;
+    };
+  };
+
+  inherit (config) location;
+  nightlight = {
+    enabled = true;
+    force = false; # hold night temperature, ignoring the schedule
+
+    temperature_day = 6500; # Kelvin (must be > temperature_night by at least 100)
+    temperature_night = 4000; # Kelvin
   };
 
   dock.enabled = false;

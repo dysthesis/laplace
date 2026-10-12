@@ -68,7 +68,6 @@
   cfg =
     import ./config.nix {
       vicinaeExe = lib.getExe pkgs.configured.vicinae;
-      swaylockExe = lib.getExe pkgs.configured.swaylock;
       inherit config;
       # Avoid a dependency cycle through the configured Niri shell bindings.
       niriExe = lib.getExe pkgs.niri;
@@ -76,8 +75,8 @@
     |> pkgs.writers.writeTOML "config.toml"
     |> (file:
       pkgs.runCommand "noctalia-config" {} ''
-              mkdir -p "$out/noctalia"
-              ln -s ${file} "$out/noctalia/config.toml"
+        mkdir -p "$out/noctalia"
+        ln -s ${file} "$out/noctalia/config.toml"
         mkdir "$out/noctalia/palettes/"
         ln -s ${themeFile} "$out/noctalia/palettes/Minimal.json"
       '');

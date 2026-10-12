@@ -23,7 +23,6 @@
           else pkgs.configured.fuzzel
         );
         brightnessctl = lib.getExe pkgs.brightnessctl;
-        locker = lib.getExe pkgs.configured.swaylock;
         wpctl = lib.getExe' pkgs.wireplumber "wpctl";
         xwaylandSatellite = lib.getExe pkgs.xwayland-satellite;
       }

@@ -190,9 +190,6 @@ in {
       # `login` means TTY login
       pam.services = {
         login.enableGnomeKeyring = true;
-        swaylock.text = ''
-          auth include login
-        '';
       };
     };
     xdg = {
