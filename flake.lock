@@ -779,11 +779,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1792016088,
-        "narHash": "sha256-9c0Cd16neZP4jb/jUY1kcvvFG1U480mC9qtrSXqXxAY=",
+        "lastModified": 1792099399,
+        "narHash": "sha256-GZXltf6mtqBYRuyMX2Bg+9VNvgyynHrXCNcmbkhgHuA=",
         "owner": "nix-community",
         "repo": "lanzaboote",
-        "rev": "b39d0853df99afe18a5a5ea6576c597023dc7196",
+        "rev": "bca381a05c2b2cde9e322a6fdba82b8984aa95b8",
         "type": "github"
       },
       "original": {
@@ -1335,16 +1335,16 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1791744921,
-        "narHash": "sha256-thp9cUYJJqbwLlYBBuGkbmQLG0nKlOxCKoZBQHIDJ+w=",
+        "lastModified": 1792074880,
+        "narHash": "sha256-9b+QTtxCJFuAEBjsjh1OExHNpuT3mb65v/sW/c0ovRs=",
         "owner": "can1357",
         "repo": "oh-my-pi",
-        "rev": "bd4dffd5e617ce732f8a14249b0be1e6c7621886",
+        "rev": "7cc912940b107eb2d771b0d106c640a8eddc9edf",
         "type": "github"
       },
       "original": {
         "owner": "can1357",
-        "ref": "v18.9.2",
+        "ref": "v18.11.1",
         "repo": "oh-my-pi",
         "type": "github"
       }
@@ -1530,11 +1530,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791448976,
-        "narHash": "sha256-HJ4TEF3j7HmLYeEP/PtqjeiBX/6TppXB2qY53HcrWbs=",
+        "lastModified": 1792087235,
+        "narHash": "sha256-vQHkG9lwSHJI3MVnyilP50hWW3TNnBWFTbLIurWgPhI=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "f91010a5c1b6125b715eb78a84fb5dd8fb74a2b0",
+        "rev": "87ffb7f777aef2e2647fd8fd718a5b3cbc825588",
         "type": "github"
       },
       "original": {
@@ -1663,11 +1663,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1792064174,
-        "narHash": "sha256-xm9560f6t4/42Wrr2+biE5KcILAo36QzzfZz3sk67zs=",
+        "lastModified": 1792093193,
+        "narHash": "sha256-/IQaA6PVp7QCUlBx63pCGIqwWjHXMq0tGqFt0vZS3jk=",
         "owner": "oraios",
         "repo": "serena",
-        "rev": "c272169ffdef12b4d1a7a3ea65a3033cc3d1a469",
+        "rev": "d9e4c796fae0207ba6848d1df4b331122a5567b5",
         "type": "github"
       },
       "original": {
