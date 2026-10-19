@@ -12,6 +12,7 @@
   radicaleHost = "cal.dysthesis.com";
   karakeepHost = "read.dysthesis.com";
   syncHost = "sync.dysthesis.com";
+  livesyncHost = "livesync.dysthesis.com";
 in {
   sops.secrets = {
     # The Miniflux module otherwise uses the shared secret file.
@@ -19,6 +20,13 @@ in {
     # Beszel KEY and TOKEN environment file.
     beszel_agent_env.sopsFile = ../../system/secrets/mimir.yaml;
     radicale_htpasswd.sopsFile = ../../system/secrets/mimir.yaml;
+    # Pre-hashed [admins] INI: CouchDB must not persist a stale password override.
+    couchdb_admin_ini = {
+      sopsFile = ../../system/secrets/mimir.yaml;
+      owner = config.services.couchdb.user;
+      group = config.services.couchdb.group;
+      restartUnits = ["couchdb.service"];
+    };
     telemetry_client_certificate = {
       sopsFile = ../../system/secrets/mimir.yaml;
       restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
@@ -64,11 +72,6 @@ in {
 
     services = {
       tailscale.enable = true;
-      affine = {
-        enable = true;
-        domain = "topos.dysthesis.com";
-        port = 8089;
-      };
       nocodb = {
         enable = true;
         domain = "db.dysthesis.com";
@@ -145,13 +148,13 @@ in {
           enable = true;
           sopsFile = ../../system/secrets/mimir.yaml;
           proxies = {
-            "db.dysthesis.com" = "127.0.0.1:8088";
             "miniflux.dysthesis.com" = "127.0.0.1:8087";
             "silverbullet.dysthesis.com" = "localhost:8101";
             ${vikunjaHost} = "127.0.0.1:${toString config.services.vikunja.port}";
             "status.dysthesis.com" = "localhost:8090";
             ${radicaleHost} = "localhost:${toString config.laplace.services.radicale.port}";
             ${karakeepHost} = "localhost:${toString config.laplace.services.karakeep.port}";
+            ${livesyncHost} = "127.0.0.1:${toString config.services.couchdb.port}";
           };
         };
       };
@@ -164,6 +167,30 @@ in {
     "d ${config.services.syncthing.dataDir} 0700 syncthing syncthing - -"
   ];
   services = {
+    couchdb = {
+      enable = true;
+      bindAddress = "127.0.0.1";
+      extraConfigFiles = [config.sops.secrets.couchdb_admin_ini.path];
+      extraConfig = {
+        couchdb = {
+          single_node = true; # Create system databases without an HTTP setup script.
+          max_document_size = 50000000;
+        };
+        chttpd = {
+          require_valid_user = true;
+          enable_cors = true;
+          max_http_request_size = 4294967296;
+        };
+        httpd = {
+          enable_cors = true;
+          "WWW-Authenticate" = ''Basic realm="couchdb"'';
+        };
+        cors = {
+          credentials = true;
+          origins = "app://obsidian.md,capacitor://localhost,http://localhost";
+        };
+      };
+    };
     syncthing = {
       enable = true;
       # Caddy is the only GUI ingress; transfer ports are opened by the
@@ -189,8 +216,11 @@ in {
 
     silverbullet.listenAddress = lib.mkForce "127.0.0.1";
   };
-  # Preserve the device identity, index, GUI configuration, and synced folders.
-  mnemosyne.dirs = [config.services.syncthing.dataDir];
+  # Preserve Syncthing's state and CouchDB's databases, indexes, and node identity.
+  mnemosyne.dirs = [
+    config.services.syncthing.dataDir
+    config.services.couchdb.databaseDir
+  ];
 
   environment.systemPackages = with pkgs; [
     vim

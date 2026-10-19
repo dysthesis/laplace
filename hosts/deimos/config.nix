@@ -8,7 +8,7 @@
     inputs.nixos-hardware.nixosModules.common-gpu-amd
   ];
   config = {
-    boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
+    boot.kernelPackages = pkgs.linuxPackages_cachyos;
     environment.systemPackages = with pkgs; [
       android-tools
       usbutils

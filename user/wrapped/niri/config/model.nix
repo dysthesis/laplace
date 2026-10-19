@@ -78,7 +78,6 @@ in {
               workspaceAutoBackAndForth = false;
             };
           hotkeyOverlay = data.hotkeyOverlay // {skipAtStartup = true;};
-          blur.off = true;
           layout =
             data.layout
             // {

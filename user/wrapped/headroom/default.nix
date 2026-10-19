@@ -7,7 +7,7 @@
 }:
 python3Packages.buildPythonApplication (finalAttrs: {
   pname = "headroom-ai";
-  version = "0.39.1";
+  version = "0.41.0";
   pyproject = true;
 
   src = fetchFromGitHub {

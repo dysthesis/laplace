@@ -90,6 +90,13 @@
       backgroundEffect.blur = true;
     }
     {
+      matches = [{namespace = "^vicinae$";}];
+      backgroundEffect = {
+        blur = true;
+        xray = false;
+      };
+    }
+    {
       matches = [
         {title = "^Picture-in-Picture$";}
       ];

@@ -14,15 +14,14 @@
     };
     colors = {
       core = {
+        inherit (palette) foreground border;
         accent = palette.focus;
         accent_foreground = palette.background;
         background = palette.popup;
-        foreground = palette.foreground;
         secondary_background = palette.surface;
-        border = palette.border;
       };
       main_window = {
-        border = palette.border;
+        inherit (palette) border;
         footer.background = palette.surface;
       };
       settings_window.border = palette.border;
@@ -38,8 +37,8 @@
       };
       shortcut.border = palette.border;
       text = {
+        inherit (palette) muted;
         default = palette.foreground;
-        muted = palette.muted;
         danger = palette.foreground;
         success = palette.foreground;
         placeholder = palette.dim;
@@ -53,8 +52,8 @@
         };
       };
       input = {
+        inherit (palette) border;
         background = palette.inset;
-        border = palette.border;
         border_focus = palette.focus;
         border_error = palette.urgent;
       };
@@ -69,14 +68,13 @@
       };
       list.item = {
         hover = {
+          inherit (palette) foreground;
           background = palette.surface;
-          foreground = palette.foreground;
           secondary_foreground = palette.muted;
         };
         selection = {
-          # Accessories keep their muted foreground even on selected rows.
+          inherit (palette) foreground;
           background = palette.border;
-          foreground = palette.foreground;
           secondary_background = palette.surface;
           secondary_foreground = palette.muted;
         };
@@ -91,9 +89,8 @@
         secondary_background = palette.surface;
       };
       tooltip = {
+        inherit (palette) border foreground;
         background = palette.popup;
-        foreground = palette.foreground;
-        border = palette.border;
       };
       loading = {
         bar = palette.focus;

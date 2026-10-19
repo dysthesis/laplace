@@ -163,7 +163,7 @@ in {
     capsule = false;
 
     start = ["apps" "workspaces"];
-    center = ["weather" "clock"];
+    center = ["clock" "weather"];
     end = [
       "tray"
       "network"

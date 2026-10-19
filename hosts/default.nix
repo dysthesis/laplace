@@ -37,6 +37,7 @@
     self.overlays.linux-hardened
     (import ../nix/pkgs)
     (import ../nix/overlays/unstable.nix inputs)
+    (import ../nix/overlays/nix-output-monitor.nix)
     inputs.nix-minecraft.overlay
     # Bound hung activations so they release the deployment lock.
     (import ../nix/overlays/stc-timeout.nix)

@@ -41,6 +41,9 @@ nixpkgs.lib.extend (
       specialArgs = {inherit self inputs;} // specialArgs;
       modules =
         [
+          inputs.chaotic.nixosModules.nyx-cache
+          inputs.chaotic.nixosModules.nyx-overlay
+          inputs.chaotic.nixosModules.nyx-registry
           {networking.hostName = hostname;}
           {nixpkgs.hostPlatform = final.mkDefault system;}
           (

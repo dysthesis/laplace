@@ -42,3 +42,55 @@ No insecure-package allowance is added.
 
 The complete Deimos configuration also builds successfully with `nh os build`;
 system activation is left to `just rebuild`.
+
+# Obsidian LiveSync on Mimir
+
+Mimir hosts native CouchDB 3 at `https://livesync.dysthesis.com`, behind its
+tailnet-only Caddy proxy. Bifrost supplies the private DNS record; deploy both
+hosts (`just deploy-one bifrost`, then `just deploy-one mimir`). No public A record,
+container, or upstream `couchdb-init.sh` is needed: Nix configures authentication,
+Obsidian's three CORS origins, request limits, and single-node system databases.
+The upstream setup script would replace the loopback binding with `0.0.0.0`.
+
+The administrator is `admin`. Retrieve its generated password locally with:
+
+```sh
+sops decrypt --extract '["couchdb_admin_password"]' system/secrets/mimir.yaml
+```
+
+On the first device, use LiveSync's
+[manual CouchDB onboarding](https://github.com/vrtmrz/obsidian-livesync/blob/main/docs/quick_setup.md#configure-couchdb-manually-on-the-first-device):
+enter the HTTPS URL, credentials, and a separate lowercase database name for each
+vault (e.g. `obsidian`). Onboarding creates the database. Enable vault end-to-end
+encryption and keep its passphrase separately; use a Setup URI from this device
+for subsequent devices. Clients must be on the tailnet. Back up the vault first,
+and do not run Syncthing or another synchroniser against the same vault.
+
+`/var/lib/couchdb` is persisted through mnemosyne, including databases, indexes,
+the node UUID, and Erlang cookie. This is persistence, not a backup.
+
+`couchdb_admin_ini` contains a pre-hashed administrator password, installed by
+SOPS as a CouchDB-readable runtime file. The plaintext password is not installed
+on Mimir or included in the Nix store. Pre-hashing avoids CouchDB writing an
+administrator hash into `local.ini` that would override future SOPS rotations.
+Manage administrator credentials through SOPS, not Fauxton's mutable settings.
+
+To rotate, edit `couchdb_admin_password` with `sops system/secrets/mimir.yaml`,
+then regenerate its paired INI before deploying Mimir:
+
+```sh
+python3 - <<'PY'
+import hashlib, json, secrets, subprocess
+file = "system/secrets/mimir.yaml"
+password = json.loads(subprocess.check_output(
+    ["sops", "decrypt", "--output-type", "json", file]))["couchdb_admin_password"]
+salt = secrets.token_hex(16)
+key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 600000).hex()
+ini = f"[admins]\nadmin = -pbkdf2:sha256-{key},{salt},600000\n"
+subprocess.run(
+    ["sops", "set", "--value-stdin", file, '["couchdb_admin_ini"]'],
+    input=json.dumps(ini).encode(), check=True)
+PY
+```
+
+Changing the INI restarts CouchDB; update every client's password afterwards.

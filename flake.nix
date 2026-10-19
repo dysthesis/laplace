@@ -814,7 +814,7 @@
     # Channel revisions have Hydra substitutes; raw master may not.
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
 
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -877,7 +877,7 @@
     };
 
     oh-my-pi = {
-      url = "github:can1357/oh-my-pi/v18.9.2";
+      url = "github:can1357/oh-my-pi/v18.11.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -913,5 +913,6 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     colmena.url = "github:nix-community/colmena";
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
   };
 }

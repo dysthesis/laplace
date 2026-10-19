@@ -8,7 +8,6 @@
   zoxide,
   atuin,
   writeTextDir,
-  nix-direnv,
   direnv,
 }: let
   inherit (lib) nameValuePair;
@@ -71,20 +70,6 @@
     install -Dm444 ${./functions/popd.fish} $out/share/fish/vendor_functions.d/popd.fish
   '';
 
-  direnvConfig = pkgs.symlinkJoin {
-    name = "direnv-config";
-
-    paths = [
-      (writeTextDir "direnvrc" ''
-        source ${nix-direnv}/share/nix-direnv/direnvrc
-      '')
-
-      (writeTextDir "direnv.toml" ''
-        [global]
-        hide_env_diff = true
-      '')
-    ];
-  };
   aliases = with pkgs; let
     inherit (lib) getExe;
     baseAliases = {
@@ -148,8 +133,6 @@
         function starship_transient_prompt_func
           ${lib.getExe starship} module character
         end
-        set -gx DIRENV_LOG_FORMAT ""
-        set -gx direnv_config_dir ${direnvConfig}
 
       set PATH ${deps} $PATH
         source ${direnvHook}

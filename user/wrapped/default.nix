@@ -21,6 +21,8 @@
       direnv = callPackage ./direnv {
         inherit pkgs lib;
         inherit (pkgs.unstable) direnv;
+        nix = config.nix.package;
+        nix-direnv = pkgs.unstable.nix-direnv.override {nix = config.nix.package;};
       };
       tmux = callPackage ./tmux {inherit inputs pkgs;};
       jjui = callPackage ./jjui {

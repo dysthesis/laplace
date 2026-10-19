@@ -7,9 +7,9 @@ inputs: final: _prev: {
     overlays = [
       (unstableFinal: unstablePrev: {
         # Zotero 10 still targets ESR 140; ESR 153 breaks its Gecko customizations.
-        zotero = unstablePrev.zotero.override {
-          firefox-esr-153-unwrapped = final.firefox-esr-140-unwrapped;
-        };
+        # zotero = unstablePrev.zotero.override {
+        #   firefox-esr-153-unwrapped = final.firefox-esr-140-unwrapped;
+        # };
 
         pythonPackagesExtensions =
           (unstablePrev.pythonPackagesExtensions or [])

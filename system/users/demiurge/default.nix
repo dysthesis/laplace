@@ -72,7 +72,7 @@ in {
 
         dev = with pkgs; [
           git
-          direnv
+          configured.direnv
           configured.jujutsu
           configured.headroom
           configured.jjui
@@ -100,7 +100,7 @@ in {
         applications = with pkgs; [
           unstable.signal-desktop
           unstable.obsidian
-          unstable.zotero
+          # unstable.zotero
           configured.subtui
           (unstable.prismlauncher.override {
             jdks = with pkgs; [

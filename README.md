@@ -2,6 +2,29 @@
 
 A NixOS flake. It is a work-in-progress rewrite of my old configurations.
 
+## Nix tooling
+
+All hosts use the official Determinate NixOS module, constrained to major version 3.
+Keep Determinate's own nixpkgs input pin so its binaries remain substitutable.
+The module selects `nix.package`; Nixd manages `/etc/nix/nix.conf`, including lazy
+trees, evaluator parallelism, its binary cache, and rotating signing keys.
+Local `nix.settings` are written to the included `/etc/nix/nix.custom.conf`.
+NixOS and binfmt supply host features and supported platforms; do not advertise
+a CPU architecture globally.
+
+`nix/overlays/nix-output-monitor.nix` backports the immutable upstream
+[unknown activity/result fix](https://github.com/maralorn/nix-output-monitor/pull/321)
+and makes `nh` use that monitor. Remove the backport once pinned nixpkgs includes it.
+
+The configured direnv wrapper owns `DIRENV_CONFIG`, loads nix-direnv, and pins its
+Nix executable to `config.nix.package`, including generated shell hooks.
+It leaves `XDG_CONFIG_HOME` unchanged; fish needs no separate direnv configuration.
+After switching the system, restart fish and run `direnv reload`.
+
+Garbage collection intentionally retains the daily `--delete-older-than 7d`
+policy, including old profile generations. Nixd's background collector is disabled
+in `/etc/determinate/config.json` so only one collector is scheduled.
+
 ## Design
 
 ### Wrappers as configurations
