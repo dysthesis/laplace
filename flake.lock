@@ -1429,11 +1429,11 @@
         "treefmt-nix": "treefmt-nix_6"
       },
       "locked": {
-        "lastModified": 1792445079,
-        "narHash": "sha256-9hlWCQAym6VdhhoZezAbC5gmRjzfJQLwimHDKhIU5fo=",
+        "lastModified": 1792450638,
+        "narHash": "sha256-jn2pc57qO+Wn3P9+YdJ4JWPzM6sFaNYzJw/MtFrOTJs=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "c7e16e28f5e90a062181bd03349df695bc8788c6",
+        "rev": "06890f1bb6f136724c78fcbeea3c98a89f2794c9",
         "type": "github"
       },
       "original": {
