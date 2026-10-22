@@ -185,11 +185,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1792641026,
-        "narHash": "sha256-ZZ7VZ2V5M84aeFFtWsk6MY5Bn7AOFcNxaVJ+ThFq++I=",
+        "lastModified": 1792659591,
+        "narHash": "sha256-x2AkmpPqq4LBeguSZ2vZqoQZIT5fLlKOY+xKx0clqC8=",
         "owner": "chaotic-cx",
         "repo": "nyx",
-        "rev": "7f6cf5c59333bc16e7993e1fcb21b1a9e0cc102f",
+        "rev": "4cde6dd28fd039ba36b16af3c5ee375fa68707cf",
         "type": "github"
       },
       "original": {
@@ -770,11 +770,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792495086,
-        "narHash": "sha256-TyoYH983Nsc++1scw0SoOEKshPSJWJDxK7tTmuZ974M=",
+        "lastModified": 1792605213,
+        "narHash": "sha256-J73EBU30r2hXvHCcBtaigQDAIu/GGPYk1nc6P9THcmg=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "ec80131710bffcdf3b8498cf41f3a0579833b023",
+        "rev": "ab97a5d09e0f2aa7339cfd35ec5824fd6653e27c",
         "type": "github"
       },
       "original": {
@@ -1041,11 +1041,11 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1792491056,
-        "narHash": "sha256-6n1Dn+WYtD8lprnSi+0k4FjbKfIVNG8lblpJ5MiiqXs=",
+        "lastModified": 1792697326,
+        "narHash": "sha256-2UBK0jdmPANGaeAIoVOZY+hSPB2Gy13ZuZeSxP3vF8k=",
         "owner": "NixOS",
         "repo": "nixos-hardware",
-        "rev": "efb6d0d5e2394c3c5416a18652808aba206c0988",
+        "rev": "1b418b8f203e49a92f250f8babdd19af1b6f7a7f",
         "type": "github"
       },
       "original": {
@@ -1429,11 +1429,11 @@
         "treefmt-nix": "treefmt-nix_6"
       },
       "locked": {
-        "lastModified": 1792638597,
-        "narHash": "sha256-qrmkqxH2KKv2hEwpmbqPxKphhKpbXwmDI9bsHbDZUB8=",
+        "lastModified": 1792702178,
+        "narHash": "sha256-nsTPtxFOofJoOziY5wPImoFbptHvHslmRgeWqtZatvk=",
         "owner": "dysthesis",
         "repo": "poincare",
-        "rev": "d2a15cf54112afdc495d59eca63a20e8e97c3fec",
+        "rev": "f79a990f16ea435b205b7ab1a07433a86dbd0c41",
         "type": "github"
       },
       "original": {
