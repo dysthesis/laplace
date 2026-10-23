@@ -33,6 +33,7 @@ in {
         # unfree meta.license, so match on the unwrapped name.
         allowUnfreePredicate = pkg:
           builtins.elem (lib.removeSuffix "-wrapped" (lib.getName pkg)) [
+            "rtk"
             "obsidian"
             "graalvm-oracle"
             "minecraft-server"
@@ -40,6 +41,9 @@ in {
             "steam-unwrapped"
             "firefox-esr-140-bin-unwrapped"
           ];
+        permittedInsecurePackages = [
+          "firefox-esr-140-bin-unwrapped-140.17.0esr"
+        ];
 
         rocmSupport = builtins.elem "amd" config.laplace.hardware.gpu;
       };

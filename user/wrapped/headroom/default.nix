@@ -14,12 +14,12 @@ python3Packages.buildPythonApplication (finalAttrs: {
     owner = "headroomlabs-ai";
     repo = "headroom";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-pcsKKq27cKyB7uWskbnWP8VI/UU9RdrE89QClLisvcU=";
+    hash = "sha256-ITVrw5ruGnNI9t7pq+0Z6gsnqDDAB/5v7I3oOQM5AtE=";
   };
 
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit (finalAttrs) pname version src;
-    hash = "sha256-azHjTfjdARzYuDMdH1AOYn0YV9U9lzaoULcSC/a9MuE=";
+    hash = "sha256-RF1b24TIV3EASGfXKUHSrGgQGBUmJLYxzDEjb4fvKPo=";
   };
 
   postPatch = ''
@@ -28,10 +28,10 @@ python3Packages.buildPythonApplication (finalAttrs: {
         "return HeadroomMCPServer(proxy_url=proxy_url)" \
         'return HeadroomMCPServer(proxy_url=proxy_url, check_proxy=os.environ.get("HEADROOM_MCP_CHECK_PROXY", "1").lower() not in ("0", "false", "off"))'
 
-    substituteInPlace headroom/cli/wrap.py \
-      --replace-fail \
-        'cmd = [sys.executable, "-m", "headroom.cli", "proxy", "--port", str(port)]' \
-        "cmd = [\"$out/bin/headroom\", \"proxy\", \"--port\", str(port)]"
+    # substituteInPlace headroom/cli/wrap.py \
+    #   --replace-fail \
+    #     'cmd = [sys.executable, "-m", "headroom.cli", "proxy", "--port", str(port)]' \
+    #     "cmd = [\"$out/bin/headroom\", \"proxy\", \"--port\", str(port)]"
 
     # Disable Headroom's external beacon and local telemetry at the
     # implementation boundary. Environment variables cannot re-enable them.
@@ -74,6 +74,8 @@ python3Packages.buildPythonApplication (finalAttrs: {
     rich
     tiktoken
     tomlkit
+
+    truststore
 
     # headroom-ai[proxy].
     fastapi
@@ -137,6 +139,7 @@ python3Packages.buildPythonApplication (finalAttrs: {
     "watchdog"
     "websockets"
     "zstandard"
+    "truststore"
   ];
 
   meta = {

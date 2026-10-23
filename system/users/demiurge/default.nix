@@ -100,7 +100,7 @@ in {
         applications = with pkgs; [
           unstable.signal-desktop
           unstable.obsidian
-          # unstable.zotero
+          unstable.zotero
           configured.subtui
           (unstable.prismlauncher.override {
             jdks = with pkgs; [
@@ -133,7 +133,6 @@ in {
           taskwarrior
           timewarrior
           taskwarrior-tui2
-          khal
           vdirsyncer
           zk
           pass
