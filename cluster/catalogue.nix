@@ -1,0 +1,23 @@
+{lib}:
+lib.genAttrs [
+  "miniflux"
+  "nocodb"
+  "altero"
+  "silverbullet"
+  "vikunja"
+  "radicale"
+  "karakeep"
+  "beszel-hub"
+  "syncthing-server"
+  "livesync"
+  "immich"
+  "minecraft"
+  "music"
+  "observability"
+  "uptime-kuma"
+  "ntfy"
+  "adguardhome"
+  "forgejo"
+  "forgejo-runner"
+  "headscale"
+] (name: import (../system/services + "/${name}/cluster.nix") {inherit lib;})

@@ -1,5 +1,6 @@
 {
   config,
+  cluster,
   pkgs,
   ...
 }: {
@@ -31,10 +32,8 @@
     zram.enable = true;
 
     services = {
-      immich.enable = true;
       tailscale.enable = true;
       telemetry = {
-        enable = true;
         role = "photos";
         metrics = {
           certificateFile = config.sops.secrets.telemetry_client_certificate.path;
@@ -46,8 +45,6 @@
         };
       };
       beszel.agent = {
-        enable = true;
-        hubUrl = "https://status.dysthesis.com";
         environmentFile = config.sops.secrets.beszel_agent_env.path;
       };
 
@@ -58,7 +55,6 @@
         cloudflare = {
           enable = true;
           sopsFile = ../../system/secrets/mneme.yaml;
-          proxies."immich.dysthesis.com" = "localhost:2283";
         };
       };
     };
@@ -68,13 +64,12 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.20.1"];
-    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
   };
 
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
-      Address = "10.0.20.81/24";
+      Address = "${cluster.hosts.mneme.lan.ip}/24";
       Gateway = "10.0.20.1";
       DNS = "10.0.20.1";
       DHCP = "no";

@@ -2,27 +2,12 @@
   inputs,
   self,
   lib,
+  cluster,
   ...
 }: let
   inherit (lib.laplace.system) mkSystem mkSystemModules;
   inherit (builtins) mapAttrs;
-  hosts = {
-    phobos = "x86_64-linux"; # Laptop
-    deimos = "x86_64-linux"; # PC
-    chaos = "x86_64-linux"; # Installer ISO
-    argus = "x86_64-linux"; # Observability host on Proxmox
-    horos = "x86_64-linux"; # Uptime Kuma + ntfy host on Proxmox
-    hephaestus = "x86_64-linux"; # Forgejo host on Proxmox
-    talos = "x86_64-linux"; # Forgejo Actions runner on Proxmox
-    hermes = "x86_64-linux"; # AdGuard Home
-    portunus = "x86_64-linux"; # Reverse proxy host on Proxmox
-    bifrost = "x86_64-linux"; # Headscale host on Proxmox
-    charon = "x86_64-linux"; # Tailscale exit node
-    mneme = "x86_64-linux"; # Immich
-    mimir = "x86_64-linux"; # Application services + Syncthing
-    apollo = "x86_64-linux"; # Music automation and streaming host on Proxmox
-    loki = "x86_64-linux"; # Dedicated Minecraft host on Proxmox
-  };
+  hosts = cluster.manifest.hosts;
   defaultImports = [
     ../system
     ../modules
@@ -44,9 +29,9 @@
   ];
 
   # Shared inputs for nixosConfigurations and Colmena.
-  mkArgs = hostname: system: {
+  mkArgs = hostname: host: {
+    system = host.system;
     inherit
-      system
       hostname
       self
       inputs
@@ -54,7 +39,10 @@
       ;
     # hardened.nix breaks Wi-Fi; equivalent manual options do not.
     nixosProfiles = ["minimal"];
-    specialArgs = {inherit lib;};
+    specialArgs = {
+      inherit lib;
+      cluster = cluster.manifest;
+    };
     config = {
       documentation.man.enable = true;
       programs.nix-index-database.comma.enable = true;
@@ -62,13 +50,14 @@
       imports =
         [
           ./${hostname}
+          (cluster.hostModule hostname)
         ]
         ++ defaultImports;
     };
   };
 in {
-  nixosConfigurations = mapAttrs (hostname: system: mkSystem (mkArgs hostname system)) hosts;
+  nixosConfigurations = mapAttrs (hostname: host: mkSystem (mkArgs hostname host)) hosts;
   # Per-host {modules, specialArgs, system} for Colmena to instantiate itself.
-  nodeModules = mapAttrs (hostname: system: mkSystemModules (mkArgs hostname system)) hosts;
+  nodeModules = mapAttrs (hostname: host: mkSystemModules (mkArgs hostname host)) hosts;
   inherit overlays;
 }

@@ -33,8 +33,7 @@ in {
     inherit (config.services) forgejo;
     srv = forgejo.settings.server;
   in
-    # Portunus terminates TLS and proxies port 8080; only it and talos may connect.
-    # System SSH remains VLAN20-only.
+    # The deployment recipe supplies the frontend identity and scoped LAN ingress.
     mkIf cfg.enable {
       mnemosyne.dirs = [
         forgejo.stateDir
@@ -115,10 +114,11 @@ in {
             };
 
             server = {
-              DOMAIN = "git.dysthesis.com";
+              DOMAIN = cfg.domain;
               ROOT_URL = "https://${srv.DOMAIN}/";
               LANDING_PAGE = "explore";
-              HTTP_PORT = 8080;
+              HTTP_ADDR = cfg.listenAddress;
+              HTTP_PORT = cfg.port;
               SSH_USER = "git";
               SSH_PORT = lib.head config.services.openssh.ports;
             };
@@ -132,7 +132,7 @@ in {
 
             # Anubis flattens the proxy chain, so Forgejo sees one trusted hop.
             security = {
-              REVERSE_PROXY_TRUSTED_PROXIES = "10.0.40.2/32";
+              REVERSE_PROXY_TRUSTED_PROXIES = lib.concatStringsSep "," cfg.trustedProxies;
               # PASSWORD_COMPLEXITY must be a comma-separated string.
               MIN_PASSWORD_LENGTH = 12;
               PASSWORD_COMPLEXITY = "lower,upper,digit,spec";

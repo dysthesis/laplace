@@ -29,19 +29,9 @@
     "--security-opt=no-new-privileges"
   ];
 in {
-  options.laplace.services.nocodb = {
-    enable = lib.mkEnableOption "NocoDB";
-
-    domain = lib.mkOption {
-      type = lib.types.str;
-      default = "db.dysthesis.com";
-    };
-
-    port = lib.mkOption {
-      type = lib.types.port;
-      default = 8088;
-    };
-  };
+  options.laplace.services.nocodb =
+    {enable = lib.mkEnableOption "NocoDB";}
+    // import ./settings.nix {inherit lib;};
 
   config = lib.mkIf cfg.enable {
     laplace.docker.enable = true;
@@ -53,12 +43,9 @@ in {
 
     sops = {
       secrets = {
-        nocodb_postgres_password.sopsFile =
-          ../../secrets/mimir.yaml;
-        nocodb_jwt_secret.sopsFile =
-          ../../secrets/mimir.yaml;
-        nocodb_connection_key.sopsFile =
-          ../../secrets/mimir.yaml;
+        nocodb_postgres_password.sopsFile = cfg.sopsFile;
+        nocodb_jwt_secret.sopsFile = cfg.sopsFile;
+        nocodb_connection_key.sopsFile = cfg.sopsFile;
       };
 
       templates = {

@@ -1,5 +1,6 @@
 {
   config,
+  cluster,
   pkgs,
   ...
 }: {
@@ -34,9 +35,7 @@
     zram.enable = true;
 
     services = {
-      adguardhome.enable = true;
       telemetry = {
-        enable = true;
         role = "dns";
         metrics = {
           certificateFile = config.sops.secrets.telemetry_client_certificate.path;
@@ -47,10 +46,7 @@
           keyFile = config.sops.secrets.telemetry_client_key.path;
         };
       };
-      # Push metrics to the tailnet-only hub through its Caddy endpoint.
       beszel.agent = {
-        enable = true;
-        hubUrl = "https://status.dysthesis.com";
         environmentFile = config.sops.secrets.beszel_agent_env.path;
       };
       tailscale = {
@@ -59,7 +55,6 @@
         denyDNS = true;
       };
 
-      # Serve AdGuard TLS directly on the admin-only tailnet route.
       caddy = {
         enable = true;
         email = "dysthesis@protonmail.com";
@@ -67,26 +62,20 @@
         cloudflare = {
           enable = true;
           sopsFile = ../../system/secrets/hermes.yaml;
-          proxies."adguard.dysthesis.com" = "localhost:80";
         };
       };
     };
   };
 
-  # AdGuard owns port 80; DNS-01 lets Caddy use only port 443.
-  services.caddy.globalConfig = "auto_https disable_redirects";
   networking = {
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.20.1"];
-    # denyDNS disables MagicDNS, so pin the hub name to mimir's tailnet IP.
-    hosts."100.64.0.8" = ["status.dysthesis.com"];
-    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
   };
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
-      Address = "10.0.20.82/24";
+      Address = "${cluster.hosts.hermes.lan.ip}/24";
       Gateway = "10.0.20.1";
       DNS = "10.0.20.1";
       DHCP = "no";

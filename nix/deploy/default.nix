@@ -1,48 +1,24 @@
-# Colmena reuses each host's modules and package overlays.
-# Deploy by LAN IP so tailnet or DNS changes cannot cut the deployment path.
-# Root SSH is key-only and VLAN-scoped; deploy critical guests one at a time.
+# LAN transport remains independent of application DNS and Tailnet policy.
 {
-  self,
   inputs,
   lib,
   nodeModules,
+  cluster,
+  ...
 }: let
-  inherit (lib) mapAttrs;
-
-  # name -> LAN IP. Add/move a guest by editing this table.
-  targets = {
-    argus = "10.0.20.84";
-    horos = "10.0.20.85";
-    apollo = "10.0.20.86";
-    mneme = "10.0.20.81";
-    hermes = "10.0.20.82";
-    mimir = "10.0.20.83";
-    charon = "10.0.20.10";
-    portunus = "10.0.40.2";
-    bifrost = "10.0.50.2";
-    loki = "10.0.60.2";
-    hephaestus = "10.0.70.2";
-    talos = "10.0.80.2";
-  };
-
-  mkNode = name: targetHost: {
+  hosts = lib.filterAttrs (_: h: h.deployment != null) cluster.hosts;
+  packageSet = host: import inputs.nixpkgs.outPath {system = host.system;};
+  mkNode = name: host: {
     imports = nodeModules.${name}.modules;
-    deployment = {
-      inherit targetHost;
-      targetUser = "root";
-      # Build locally; small tmpfs-root guests would thrash.
-      buildOnTarget = false;
-      tags = ["proxmox"];
-    };
+    deployment = host.deployment // {tags = [host.role];};
   };
 in
-  {
-    meta = {
-      nixpkgs = import inputs.nixpkgs.outPath {
-        system = "x86_64-linux";
+  builtins.deepSeq cluster ({
+      meta = {
+        nixpkgs = import inputs.nixpkgs.outPath {system = "x86_64-linux";};
+        nodeNixpkgs = lib.mapAttrs (_: packageSet) hosts;
+        # Preserve Colmena's name/nodes arguments; share all our import-time args.
+        nodeSpecialArgs = lib.mapAttrs (name: _: nodeModules.${name}.specialArgs) hosts;
       };
-      # Match mkSystem specialArgs.
-      specialArgs = {inherit self inputs lib;};
-    };
-  }
-  // mapAttrs mkNode targets
+    }
+    // lib.mapAttrs mkNode hosts)

@@ -69,7 +69,7 @@ proxmox HOST:
   nix build .#nixosConfigurations.{{HOST}}.config.system.build.proxmoxVMA
 
 deploy *ARGS:
-  colmena apply --on @proxmox {{ARGS}}
+  colmena apply --on @server {{ARGS}}
 
 deploy-one HOST *ARGS:
   #!/usr/bin/env sh
@@ -97,14 +97,20 @@ age-key TARGET:
     nix --extra-experimental-features "nix-command flakes" shell nixpkgs#age -c age-keygen -y "$f"
   '
 
-tailnet-reconcile TARGET="root@10.0.50.2":
+tailnet-reconcile TARGET="":
   #!/usr/bin/env sh
   set -eu
-  ssot=$(nix eval --json '.#nixosConfigurations.bifrost.config.laplace.tailnet.nodes')
-  live=$(ssh {{TARGET}} 'headscale nodes list --output json')
-  problems=$(printf '%s' "$live" | nix shell nixpkgs#jq -c jq -r \
+  target={{quote(TARGET)}}
+  if [ -z "$target" ]; then
+    host=$(nix eval --raw '.#laplace.activeServices.headscale.host')
+    address=$(nix eval --raw ".#laplace.hosts.$host.deployment.targetHost")
+    target="root@$address"
+  fi
+  ssot=$(nix eval --json '.#laplace.nodes')
+  live=$(ssh "$target" 'headscale nodes list --output json')
+  problems=$(printf '%s' "$live" | nix shell nixpkgs#jq -c jq -c \
     --argjson ssot "$ssot" -f system/tailnet/reconcile.jq)
-  if [ -n "$problems" ]; then
+  if [ "$problems" != '[]' ]; then
     printf 'tailnet reconcile FAILED (live Headscale state != SSOT):\n%s\n' "$problems" >&2
     exit 1
   fi

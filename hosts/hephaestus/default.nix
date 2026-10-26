@@ -1,6 +1,7 @@
-# Forgejo guest. VLAN70 port 8080 accepts only portunus and talos.
+# Git-segment guest; application placement is declared in the cluster inventory.
 {
   config,
+  cluster,
   pkgs,
   ...
 }: {
@@ -19,19 +20,14 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["127.0.0.1" "10.0.70.1"];
-    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
     # extraInputRules and SSH scoping require nftables.
     nftables.enable = true;
-    # Allow only the portunus proxy and talos runner; OPNsense routes both VLANs.
-    firewall.extraInputRules = ''
-      ip saddr { 10.0.40.2, 10.0.80.2 } tcp dport ${toString config.services.forgejo.settings.server.HTTP_PORT} accept
-    '';
   };
 
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
-      Address = "10.0.70.2/24";
+      Address = "${cluster.hosts.hephaestus.lan.ip}/24";
       Gateway = "10.0.70.1";
       DNS = "10.0.70.1";
       DHCP = "no";
@@ -60,9 +56,7 @@
     zram.enable = true;
 
     services = {
-      forgejo.enable = true;
       telemetry = {
-        enable = true;
         role = "git";
         metrics = {
           certificateFile = config.sops.secrets.telemetry_client_certificate.path;

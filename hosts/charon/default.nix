@@ -1,5 +1,6 @@
 {
   config,
+  cluster,
   pkgs,
   ...
 }: {
@@ -7,13 +8,12 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.20.1"];
-    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
   };
 
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
-      Address = "10.0.20.10/24";
+      Address = "${cluster.hosts.charon.lan.ip}/24";
       Gateway = "10.0.20.1";
       DNS = "10.0.20.1";
       DHCP = "no";
@@ -37,7 +37,6 @@
     zram.enable = true;
     services = {
       telemetry = {
-        enable = true;
         role = "exit";
         metrics = {
           certificateFile = config.sops.secrets.telemetry_client_certificate.path;
@@ -54,8 +53,6 @@
         advertiseExitNode = true;
       };
       beszel.agent = {
-        enable = true;
-        hubUrl = "https://status.dysthesis.com";
         environmentFile = config.sops.secrets.beszel_agent_env.path;
       };
     };

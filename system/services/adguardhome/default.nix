@@ -4,12 +4,13 @@
   ...
 }: let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.laplace.services.adguardhome.enable;
+  cfg = config.laplace.services.adguardhome;
 in {
-  options.laplace.services.adguardhome.enable =
-    mkEnableOption "Whether or not to enable AdGuard Home";
+  options.laplace.services.adguardhome =
+    {enable = mkEnableOption "Whether or not to enable AdGuard Home";}
+    // import ./settings.nix {inherit lib;};
 
-  config = mkIf cfg {
+  config = mkIf cfg.enable {
     # Persist UI-managed rewrites and accounts.
     mnemosyne.dirs = ["/var/lib/private/AdGuardHome"];
 
@@ -20,8 +21,8 @@ in {
       # Keep the UI closed on the LAN; tailscale0 remains trusted.
       openFirewall = false;
 
-      # Must match the port used by node-local Caddy.
-      port = 80;
+      port = cfg.port;
+      host = cfg.listenAddress;
 
       settings = {
         # Caddy terminates TLS for DoH on the plain HTTP port.
@@ -239,7 +240,7 @@ in {
         user_rules = [
           "@@||api.ipify.org^$important"
           "@@||ipify.org^$important"
-          "@@||clickclickclick.click^$client='100.64.0.4'"
+          "@@||clickclickclick.click^$client='${cfg.exceptionClientAddress}'"
           "@@||clickclickclick.click^$important"
           "@@||raw.utscsec.win^$important"
           "@@||www.iroh.computer^$important"
@@ -273,14 +274,8 @@ in {
           ""
         ];
 
-        # Route dysthesis.com directly to Cloudflare to avoid stale negative replies
-        # winning parallel upstream races. Nix owns this list; UI edits are temporary.
-        dns.upstream_dns = [
-          "[/dysthesis.com/]https://dns.cloudflare.com/dns-query"
-          "https://dns10.quad9.net/dns-query"
-          "https://dns.adguard-dns.com/dns-query"
-          "https://dns.cloudflare.com/dns-query"
-        ];
+        # Ordered site forwarding belongs to the service inventory.
+        dns.upstream_dns = cfg.upstreamDNS;
       };
     };
 

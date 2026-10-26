@@ -125,6 +125,35 @@
       }
     '')
     writers);
+  # The source JSON remains a fixture; only the service-specific host selectors
+  # are rendered from placement. Fleet metrics and journal identities are untouched.
+  minecraftHostTitle =
+    if cfg.minecraftHost == null
+    then ""
+    else lib.toUpper (builtins.substring 0 1 cfg.minecraftHost) + builtins.substring 1 (builtins.stringLength cfg.minecraftHost) cfg.minecraftHost;
+  dashboards = pkgs.linkFarm "observability-dashboards" [
+    {
+      name = "fleet.json";
+      path = ./dashboards/fleet.json;
+    }
+    {
+      name = "journals.json";
+      path = ./dashboards/journals.json;
+    }
+    {
+      name = "argus.json";
+      path = pkgs.writeText "argus.json" (lib.replaceStrings
+        ["host=\\\"argus\\\""]
+        ["host=\\\"${config.networking.hostName}\\\""]
+        (builtins.readFile ./dashboards/argus.json));
+    }
+  ];
+  minecraftDashboards = pkgs.linkFarm "minecraft-dashboards" (lib.optional (cfg.minecraftHost != null) {
+    name = "minecraft.json";
+    path = pkgs.writeText "minecraft.json" (lib.replaceStrings
+      ["loki" "Loki"] [cfg.minecraftHost minecraftHostTitle]
+      (builtins.readFile ./dashboards/minecraft.json));
+  });
 in {
   options.laplace.services.observability = {
     enable = mkEnableOption "single-node homelab observability stack";
@@ -141,6 +170,21 @@ in {
       description = "Dedicated VictoriaLogs filesystem mount point.";
     };
 
+    minecraftHost = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Active Minecraft placement, or null to remove its dashboards and rules.";
+    };
+    ntfyOrigin = mkOption {
+      type = types.str;
+      default = "https://ntfy.dysthesis.com";
+      description = "Origin of the configured ntfy alert sink.";
+    };
+    kumaOrigin = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Uptime Kuma origin; preserves the secret heartbeat path and query.";
+    };
     expectedHosts = mkOption {
       type = types.listOf types.str;
       default = [config.networking.hostName];
@@ -185,56 +229,7 @@ in {
       writers = mkOption {
         default = {};
         type = types.attrsOf (types.submodule {
-          options = {
-            sourceAddress = mkOption {
-              type = types.strMatching "([0-9]{1,3}\\.){3}[0-9]{1,3}";
-            };
-            certificateFile = mkOption {
-              type = types.str;
-            };
-            certificateFingerprint = mkOption {
-              type = types.strMatching "[0-9a-f]{64}";
-            };
-            role = mkOption {
-              type = types.strMatching "[A-Za-z0-9_.-]+";
-              default = "host";
-            };
-            site = mkOption {
-              type = types.strMatching "[A-Za-z0-9_.-]+";
-              default = "home";
-            };
-            metricsPort = mkOption {
-              type = types.port;
-            };
-            maxIngestionRate = mkOption {
-              type = types.ints.positive;
-              default = 1000;
-            };
-            maxHourlySeries = mkOption {
-              type = types.ints.positive;
-              default = 10000;
-            };
-            maxDailySeries = mkOption {
-              type = types.ints.positive;
-              default = 20000;
-            };
-            metricsBytesPerSecond = mkOption {
-              type = types.ints.positive;
-              default = 65536;
-            };
-            metricsBurstBytes = mkOption {
-              type = types.ints.positive;
-              default = 16777216;
-            };
-            journalBytesPerSecond = mkOption {
-              type = types.ints.positive;
-              default = 65536;
-            };
-            journalBurstBytes = mkOption {
-              type = types.ints.positive;
-              default = 134217728;
-            };
-          };
+          options = import ./writer-options.nix {inherit lib;};
         });
       };
     };
@@ -259,6 +254,13 @@ in {
   config = mkIf cfg.enable (mkMerge [
     {
       assertions = [
+        {
+          assertion =
+            cfg.metricsMount
+            == "/var/lib/private/${config.services.victoriametrics.stateDir}"
+            && cfg.logsMount == "/var/lib/private/${config.services.victorialogs.stateDir}";
+          message = "observability dedicated mounts must back the receivers' actual private StateDirectory paths";
+        }
         {
           assertion = cfg.metricsMount != cfg.logsMount;
           message = "observability metrics and logs need distinct filesystem mounts";
@@ -379,7 +381,7 @@ in {
               check_for_updates = false;
             };
 
-            dashboards.default_home_dashboard_path = "${./dashboards}/fleet.json";
+            dashboards.default_home_dashboard_path = "${dashboards}/fleet.json";
 
             metrics.enabled = true;
           };
@@ -425,7 +427,14 @@ in {
                   type = "file";
                   disableDeletion = true;
                   updateIntervalSeconds = 30;
-                  options.path = ./dashboards;
+                  options.path = dashboards;
+                }
+                {
+                  name = "Minecraft";
+                  type = "file";
+                  disableDeletion = false;
+                  updateIntervalSeconds = 30;
+                  options.path = minecraftDashboards;
                 }
               ];
             };
@@ -474,7 +483,7 @@ in {
                 name = "warnings";
                 webhook_configs = [
                   {
-                    url = "https://ntfy.dysthesis.com/alerts?template=alertmanager&priority=high&tags=warning";
+                    url = "${cfg.ntfyOrigin}/alerts?template=alertmanager&priority=high&tags=warning";
                     send_resolved = true;
                     http_config.authorization = {
                       type = "Bearer";
@@ -487,7 +496,7 @@ in {
                 name = "critical";
                 webhook_configs = [
                   {
-                    url = "https://ntfy.dysthesis.com/alerts?template=alertmanager&priority=max&tags=rotating_light";
+                    url = "${cfg.ntfyOrigin}/alerts?template=alertmanager&priority=max&tags=rotating_light";
                     send_resolved = true;
                     http_config.authorization = {
                       type = "Bearer";
@@ -517,7 +526,7 @@ in {
               "remoteRead.url" = metricsUrl;
               "remoteWrite.url" = metricsUrl;
             };
-            rules = import ./rules/metrics.nix {inherit (cfg) expectedHosts;};
+            rules = import ./rules/metrics.nix {inherit (cfg) expectedHosts minecraftHost;};
           };
           logs = {
             enable = true;
@@ -587,9 +596,14 @@ in {
               ExecStart = "${pkgs.coreutils}/bin/true";
             };
           };
-          alertmanager.preStart = lib.mkAfter ''
-            ${config.services.prometheus.alertmanager.package}/bin/amtool check-config /tmp/alert-manager-substituted.yaml
-          '';
+          alertmanager.preStart = lib.mkMerge [
+            (lib.mkIf (cfg.kumaOrigin != null) (lib.mkBefore ''
+              export UPTIME_KUMA_PUSH_URL=${lib.escapeShellArg cfg.kumaOrigin}/"''${UPTIME_KUMA_PUSH_URL#*://*/}"
+            ''))
+            (lib.mkAfter ''
+              ${config.services.prometheus.alertmanager.package}/bin/amtool check-config /tmp/alert-manager-substituted.yaml
+            '')
+          ];
           vmalert-metrics = {
             after = ["victoriametrics.service" "alertmanager.service"];
             requires = ["victoriametrics.service" "alertmanager.service"];

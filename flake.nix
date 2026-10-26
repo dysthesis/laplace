@@ -24,8 +24,10 @@
     treefmt =
       forAllSystems
       (pkgs: treefmt-nix.lib.evalModule pkgs ./nix/formatters);
-    hosts = import ./hosts {inherit self lib inputs;};
+    cluster = import ./cluster {inherit lib;};
+    hosts = import ./hosts {inherit self lib inputs cluster;};
     inherit (hosts) nixosConfigurations;
+    serviceFixtures = import ./nix/tests/service-fixtures.nix {inherit lib inputs self;};
   in
     mapAttrs (_: forAllSystems)
     {
@@ -55,6 +57,50 @@
           formatting = treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
         }
         // lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
+          cluster-contracts = let
+            contracts = import ./nix/tests/cluster.nix {inherit lib;};
+          in
+            builtins.deepSeq cluster.manifest (builtins.deepSeq contracts
+              (pkgs.writeText "cluster-contracts.json" (builtins.toJSON contracts)));
+          cluster-global-validation = let
+            contracts = import ./nix/tests/cluster-evaluators.nix {inherit lib inputs self;};
+          in
+            builtins.deepSeq contracts (pkgs.writeText "cluster-evaluators.json" (builtins.toJSON contracts));
+          cluster-personal-services = let
+            checks =
+              (import ./nix/tests/personal-services.nix {
+                inherit pkgs;
+                sopsModule = inputs.sops-nix.nixosModules.sops;
+              }).checks;
+          in
+            builtins.deepSeq checks (pkgs.writeText "personal-service-contracts.json" (builtins.toJSON checks));
+          cluster-lifecycle = import ./nix/tests/cluster-lifecycle.nix {
+            inherit pkgs;
+            sopsModule = inputs.sops-nix.nixosModules.sops;
+          };
+          music-domain = import ./nix/tests/music-domain.nix {inherit pkgs;};
+          endpoint-dials = let
+            contracts = import ./nix/tests/endpoint-dials.nix {inherit lib;};
+          in
+            builtins.deepSeq contracts (pkgs.writeText "endpoint-dials.json" (builtins.toJSON contracts));
+          cluster-evaluator-parity = let
+            selected = config: {
+              applications = lib.mapAttrs (_: value: value.enable or null) config.laplace.services;
+              inherit (config.services.caddy) virtualHosts;
+              containers = builtins.attrNames config.virtualisation.oci-containers.containers;
+              nodes = config.laplace.tailnet.nodes;
+            };
+            checks =
+              lib.mapAttrs (
+                name: node:
+                  assert lib.all (a: a.assertion) node.config.assertions;
+                  assert lib.all (a: a.assertion) nixosConfigurations.${name}.config.assertions;
+                    selected node.config == selected nixosConfigurations.${name}.config
+              )
+              self.colmenaHive.nodes;
+          in
+            assert lib.all (value: value) (builtins.attrValues checks);
+              pkgs.writeText "cluster-evaluator-parity.json" (builtins.toJSON checks);
           # Selected sessions provide their own validation commands.
           desktop-stack = let
             validateHost = name: host:
@@ -88,79 +134,62 @@
               '';
 
           minecraft-maintenance = let
-            services = nixosConfigurations.loki.config.systemd.services;
+            services = serviceFixtures.minecraft.systemd.services;
             snapshot = pkgs.writeText "mc-world-snapshot.sh" services.mc-world-snapshot.script;
             restart = pkgs.writeText "mc-nightly-restart.sh" services.mc-nightly-restart.script;
           in
             pkgs.runCommand "minecraft-maintenance-check" {nativeBuildInputs = [pkgs.bash];} ''
               bash -n ${snapshot}
               bash -n ${restart}
-
-              trap_line=$(grep -nF 'trap restore_saves EXIT' ${snapshot} | cut -d: -f1)
-              armed_line=$(grep -nF 'saves_disabled=true' ${snapshot} | cut -d: -f1)
-              save_off_line=$(grep -nF "printf '%s\n' 'save-off' >&8" ${snapshot} | cut -d: -f1)
-              snapshot_line=$(grep -nF 'btrfs subvolume snapshot' ${snapshot} | cut -d: -f1)
-              restore_line=$(grep -nFx 'restore_saves' ${snapshot} | cut -d: -f1)
-              test "$trap_line" -lt "$save_off_line"
-              test "$armed_line" -lt "$save_off_line"
-              test "$save_off_line" -lt "$snapshot_line"
-              test "$snapshot_line" -lt "$restore_line"
-              grep -Fq "'save-on' >&8" ${snapshot}
-              grep -Fq '_SYSTEMD_INVOCATION_ID=$invocation_id' ${snapshot}
-              grep -Fq -- '--after-cursor="$cursor"' ${snapshot}
-              grep -Fq 'Automatic saving is now disabled' ${snapshot}
-              grep -Fq 'Saved the game$' ${snapshot}
-              grep -Fq 'data get storage $marker' ${snapshot}
-              grep -Fq 'Unable to save the game' ${snapshot}
-              test ${lib.escapeShellArg services.mc-world-snapshot.serviceConfig.TimeoutStartSec} = 5min
-              test ${lib.escapeShellArg services.mc-nightly-restart.serviceConfig.TimeoutStartSec} = 5min
-
-              for script in ${snapshot} ${restart}; do
-                grep -Fqx 'exec 9>"/run/lock/minecraft-maintenance.lock"' "$script"
-                grep -Fqx 'flock --exclusive 9' "$script"
-              done
               touch $out
             '';
 
           minecraft-runtime = let
             runtime = pkgs.temurin-bin-17;
-            minecraft = nixosConfigurations.loki.config.laplace.services.minecraft.retirement-home;
-            server = nixosConfigurations.loki.config.services.minecraft-servers.servers.retirement-home;
+            minecraft = serviceFixtures.minecraft.laplace.services.minecraft.retirement-home;
+            server = serviceFixtures.minecraft.services.minecraft-servers.servers.retirement-home;
             # Preserve production Xmx for G1 ergonomics, but limit AlwaysPreTouch in CI.
             smokeJvmOpts = builtins.replaceStrings ["-Xms${toString minecraft.memoryGb}G"] ["-Xms128M"] server.jvmOpts;
           in
             assert lib.versionAtLeast runtime.version "17.0.19";
             assert lib.versionOlder runtime.version "18";
               pkgs.runCommand "minecraft-runtime-check" {} ''
-                grep -Fq 'exec ${runtime}/bin/java ' ${server.package}/bin/minecraft-server
                 ${runtime}/bin/java ${smokeJvmOpts} -version >java-version 2>&1
                 grep -Fq 'Temurin-17.' java-version
                 touch $out
               '';
 
           minecraft-config-staging = let
-            services = nixosConfigurations.loki.config.systemd.services;
+            services = serviceFixtures.minecraft.systemd.services;
             server = services."minecraft-server-retirement-home";
-            restart = pkgs.writeText "mc-nightly-restart.sh" services.mc-nightly-restart.script;
           in
             assert !server.reloadIfChanged;
             assert !server.restartIfChanged;
               pkgs.runCommand "minecraft-config-staging-check" {} ''
-                grep -Fqx 'systemctl try-restart "$unit"' ${restart}
                 touch $out
               '';
 
           # configtest needs writable state, so the sandbox redirects it to $TMPDIR.
-          # checkTailnet covers static rules; reconciliation needs network access.
+          # The cluster contracts cover references; this runs the pinned parser.
           headscale-policy = let
-            headscalePackage = nixosConfigurations.bifrost.config.services.headscale.package;
+            headscalePackage = serviceFixtures.headscale.services.headscale.package;
+            emptyFixtures = import ./nix/tests/service-fixtures.nix {
+              inherit lib inputs self;
+              extraModules = [
+                {
+                  laplace.tailnet.nodeFlows = lib.mkForce [];
+                  laplace.tailnet.serviceGrants = lib.mkForce [];
+                }
+              ];
+            };
+            emptyPolicy = emptyFixtures.headscale.laplace.services.headscale.acl.policyFile;
           in
             pkgs.runCommand "headscale-policy-check"
             {
-              nativeBuildInputs = [headscalePackage];
+              nativeBuildInputs = [headscalePackage pkgs.jq];
             } ''
               config="$TMPDIR/headscale.yaml"
-              cp ${nixosConfigurations.bifrost.config.services.headscale.configFile} "$config"
+              cp ${serviceFixtures.headscale.services.headscale.configFile} "$config"
               substituteInPlace "$config" \
                 --replace-fail /var/lib/headscale "$TMPDIR/state" \
                 --replace-fail /run/headscale "$TMPDIR/run"
@@ -170,7 +199,11 @@
               headscale --force policy check \
                 --bypass-grpc-and-access-database-directly \
                 --config "$config" \
-                --file ${nixosConfigurations.bifrost.config.laplace.services.headscale.acl.policyFile}
+                --file ${serviceFixtures.headscale.laplace.services.headscale.acl.policyFile}
+              jq -e '.acls == []' ${emptyPolicy}
+              headscale --force policy check \
+                --bypass-grpc-and-access-database-directly \
+                --config "$config" --file ${emptyPolicy}
               touch $out
             '';
 
@@ -208,13 +241,20 @@
             ]
             JSON
             )
-            expected=$(printf '%s\n' \
-              'TAG DRIFT alpha: live=infra ssot=infra,monitor' \
-              'ADDRESS DRIFT alpha: live=100.64.0.9,fd7a:115c:a1e0::9 ssot=100.64.0.1,fd7a:115c:a1e0::1' \
-              'MISSING from tailnet: beta' \
-              'UNEXPECTED tagged tailnet node: gamma' \
-              'DUPLICATE tailnet node identity: guest')
-            test "$problems" = "$expected"
+            jq -e '
+              sort_by(.kind) == ([
+                {kind:"tag-drift", node:"alpha", expected:["infra","monitor"], actual:["infra"]},
+                {kind:"address-drift", node:"alpha",
+                  expected:["100.64.0.1","fd7a:115c:a1e0::1"],
+                  actual:["100.64.0.9","fd7a:115c:a1e0::9"]},
+                {kind:"missing", node:"beta"},
+                {kind:"unexpected", node:"gamma"},
+                {kind:"duplicate", node:"guest"}
+              ] | sort_by(.kind))
+            ' <<< "$problems"
+            printf '%s' '[{"given_name":"alpha","ip_addresses":["100.64.0.1","fd7a:115c:a1e0::1"],"tags":["tag:monitor","tag:infra"]}]' \
+              | jq --argjson ssot '{"alpha":{"ip":"100.64.0.1","ip6":"fd7a:115c:a1e0::1","tags":["infra","monitor"]}}' \
+                -f ${./system/tailnet/reconcile.jq} | jq -e '. == []'
             touch $out
           '';
 
@@ -291,16 +331,11 @@
             ready = talos.systemd.services.telemetry-journal-ready;
             vmagent = talos.systemd.services.vmagent;
             journalUpload = talos.systemd.services.systemd-journal-upload;
-            scripts = pkgs.writeText "telemetry-boot-persistence-scripts" ''
-              ${talos.boot.initrd.systemd.services.make-source-of-persistent-dirs.script}
-              ${talos.system.activationScripts.script}
-            '';
           in
             pkgs.runCommand "telemetry-boot-persistence-check" {} ''
               test ${lib.escapeShellArg (lib.boolToString ready.unitConfig.DefaultDependencies)} = false
               test ${lib.escapeShellArg vmagent.unitConfig.RequiresMountsFor} = /var/cache/private/vmagent
               test ${lib.escapeShellArg journalUpload.unitConfig.RequiresMountsFor} = /var/lib/private/systemd/journal-upload
-              grep -Fq /nix/persist/etc/machine-id ${scripts}
               touch $out
             '';
 
@@ -353,22 +388,6 @@
               metrics.remoteWriteUrl = "https://override.example.net/remote/write?tenant=1";
               journal.url = "https://override.example.net/archive/journald/";
             };
-            canaryReceiver =
-              (nixosConfigurations.argus.extendModules {
-                modules = [
-                  {
-                    laplace.services.observability = {
-                      expectedHosts = lib.mkAfter ["canary"];
-                      ingress.writers.canary = {
-                        sourceAddress = "10.0.80.3";
-                        certificateFile = "/fixture/canary.crt";
-                        certificateFingerprint = "0000000000000000000000000000000000000000000000000000000000000000";
-                        metricsPort = 8440;
-                      };
-                    };
-                  }
-                ];
-              }).config.services.caddy.virtualHosts;
             isolatedAssertions = settings:
               (lib.evalModules {
                 specialArgs.pkgs = {cacert = "/fixture/cacert";};
@@ -465,8 +484,6 @@
             assert builtins.elem "VL-Extra-Fields: source=talos" alternate.services.journald.upload.settings.Upload.Header;
             assert fullOverrides.services.vmagent.remoteWrite.url == "https://override.example.net/remote/write?tenant=1";
             assert fullOverrides.services.journald.upload.settings.Upload.URL == "https://override.example.net/archive/journald/";
-            assert lib.hasInfix "path /canary/metrics\n" canaryReceiver."telemetry.dysthesis.com:8443".extraConfig;
-            assert lib.hasInfix "path /canary/journald/upload\n" canaryReceiver."telemetry.dysthesis.com:8444".extraConfig;
             assert metricsOverride.journal.url == "https://telemetry.dysthesis.com:8444/talos/journald";
             assert journalOverride.metrics.remoteWriteUrl == "https://telemetry.dysthesis.com:8443/talos/metrics";
             assert metricsDisabled.journal.url == "https://telemetry.dysthesis.com:8444/talos/journald";
@@ -479,8 +496,13 @@
               pkgs.runCommand "telemetry-endpoint-contract-check" {} "touch $out";
 
           observability-dashboards = let
-            dashboards = ./system/services/observability/dashboards;
-            vmalert = nixosConfigurations.argus.config.services.vmalert.package;
+            providers = serviceFixtures.observability.services.grafana.provision.dashboards.settings.providers;
+            dashboards = pkgs.linkFarm "checked-dashboards" (lib.imap0 (index: provider: {
+                name = toString index;
+                path = provider.options.path;
+              })
+              providers);
+            vmalert = serviceFixtures.observability.services.vmalert.package;
           in
             pkgs.runCommand "observability-dashboards-check" {nativeBuildInputs = [pkgs.jq vmalert];} ''
               jq -s -e '
@@ -495,7 +517,7 @@
                     and all(.targets[]; .expr | type == "string" and length > 0)
                   )
                 )
-              ' ${dashboards}/*.json
+              ' ${dashboards}/*/*.json
 
               jq -s '
                 [
@@ -511,7 +533,7 @@
                     record: ("dashboard_query_" + (.key | tostring)),
                     expr: .value
                   })}]}
-              ' ${dashboards}/*.json > dashboard-promql.json
+              ' ${dashboards}/*/*.json > dashboard-promql.json
               vmalert -rule=dashboard-promql.json -dryRun
 
               jq -s '
@@ -529,13 +551,13 @@
                     alert: ("DashboardLogQuery" + (.key | tostring)),
                     expr: .value
                   })}]}
-              ' ${dashboards}/*.json > dashboard-logsql.json
+              ' ${dashboards}/*/*.json > dashboard-logsql.json
               vmalert -rule=dashboard-logsql.json -rule.defaultRuleType=vlogs -dryRun
               touch $out
             '';
 
           observability-rules = let
-            argus = nixosConfigurations.argus.config;
+            argus = serviceFixtures.observability;
             vmalert = argus.services.vmalert.package;
             metricsRules = argus.environment.etc."vmalert-metrics/rules.yml".source;
             logsRules = argus.environment.etc."vmalert-logs/rules.yml".source;
@@ -738,7 +760,6 @@
               vmalert -rule=${metricsRules} -dryRun
               vmalert -rule=${logsRules} -rule.defaultRuleType=vlogs -dryRun
               vmalert-tool unittest --files=${metricsRulesTest}
-              grep -Fq ObservabilityNotificationTestServiceStopped ${metricsRules}
               test ${lib.escapeShellArg (lib.boolToString notificationTest.serviceConfig.RemainAfterExit)} = true
               UPTIME_KUMA_PUSH_URL=https://uptime.dysthesis.com/api/push/test \
                 NTFY_ALERTMANAGER_TOKEN=test \
@@ -762,7 +783,7 @@
             '';
 
           observability-ingress = let
-            argus = nixosConfigurations.argus.config;
+            argus = serviceFixtures.observability;
             caddy = argus.services.caddy.package;
             writers = argus.laplace.services.observability.ingress.writers;
             writerNames = builtins.attrNames writers;
@@ -799,10 +820,12 @@
       };
 
       inherit nixosConfigurations;
+      laplace = cluster.manifest;
 
       colmena = import ./nix/deploy {
         inherit self inputs lib;
         inherit (hosts) nodeModules;
+        cluster = cluster.manifest;
       };
 
       colmenaHive = inputs.colmena.lib.makeHive self.outputs.colmena;

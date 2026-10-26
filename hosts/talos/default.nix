@@ -1,6 +1,7 @@
 # Forgejo runner guest. VLAN80 limits untrusted CI; jobs use Forgejo on VLAN70.
 {
   config,
+  cluster,
   pkgs,
   ...
 }: {
@@ -8,7 +9,6 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.80.1"];
-    hosts."10.0.20.84" = ["telemetry.dysthesis.com"];
     # SSH scoping requires nftables.
     nftables.enable = true;
   };
@@ -16,7 +16,7 @@
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
-      Address = "10.0.80.2/24";
+      Address = "${cluster.hosts.talos.lan.ip}/24";
       Gateway = "10.0.80.1";
       DNS = "10.0.80.1";
       DHCP = "no";
@@ -45,13 +45,7 @@
     zram.enable = true;
 
     services = {
-      forgejo-runner = {
-        enable = true;
-        url = "http://10.0.70.2:8080";
-        tokenFile = config.sops.secrets.action_runner.path;
-      };
       telemetry = {
-        enable = true;
         role = "ci-runner";
         metrics = {
           certificateFile = config.sops.secrets.telemetry_client_certificate.path;
@@ -65,9 +59,7 @@
     };
   };
 
-  # Registration credentials use this host's SOPS age key.
   sops.secrets = {
-    action_runner.sopsFile = ../../system/secrets/talos.yaml;
     telemetry_client_certificate = {
       sopsFile = ../../system/secrets/talos.yaml;
       restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
