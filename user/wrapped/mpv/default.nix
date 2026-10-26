@@ -16,6 +16,13 @@
   low1kParsed =
     low1k |> mapAttrsToList (k: v: "${k} ${v}") |> concatStringsSep "\n" |> writeText "inputs.conf";
 
+  # Only the background decoder needs Whisper; keep playback's FFmpeg unchanged.
+  transcriber = pkgs.mpv-unwrapped.override {ffmpeg = pkgs.ffmpeg-full;};
+  whisperModel = pkgs.fetchurl {
+    url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base.bin";
+    hash = "sha256-YO1bw90U7qhWST0zQ0m0BXgt3K8AKNS130CINF+6Lv4=";
+  };
+
   mpv = pkgs.mpv.override {
     scripts = builtins.attrValues {
       inherit
@@ -37,6 +44,10 @@
       mkdir -p $out/
       cp -r $src/* $out/
       cp ${low1kParsed} $out/input.conf
+      substituteInPlace $out/scripts/auto-subs.lua \
+        --replace-fail '@transcriber@' '${lib.getExe transcriber}' \
+        --replace-fail '@model@' '${whisperModel}' \
+        --replace-fail '@mktemp@' '${pkgs.coreutils}/bin/mktemp'
     '';
   });
 in
