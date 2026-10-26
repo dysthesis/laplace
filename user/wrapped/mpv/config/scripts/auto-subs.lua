@@ -203,6 +203,13 @@ local function schedule()
     if loaded and not blocked and options.enabled then restart:resume() end
 end
 
+mp.add_key_binding(nil, "stop", function()
+    blocked = true
+    restart:kill()
+    stop()
+    mp.osd_message("Whisper auto-subs stopped for this file")
+end)
+
 -- After decoding starts, mpv estimates even live-stream durations from cached
 -- packets. Only trust the duration present before playback starts.
 mp.add_hook("on_preloaded", 50, function()
