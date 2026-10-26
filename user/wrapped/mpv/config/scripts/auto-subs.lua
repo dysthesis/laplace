@@ -124,6 +124,13 @@ local function start()
             if track.type == "audio" and track.id == audio.id then break end
         end
     end
+    -- Whisper imitates transcript context rather than obeying instructions.
+    -- Bias English spelling without forcing English recognition or translation.
+    local prompt = ""
+    if options.language == "auto" or options.language == "en" then
+        prompt = ":prompt=My favourite colour is grey. The neighbours organised a programme at the theatre."
+            .. " We travelled to the town centre and enjoyed the flavour."
+    end
     local args = {
         "@transcriber@", "--no-config", "--load-scripts=no", "--ytdl=no",
         "--vid=no", "--sid=no", "--sub-auto=no", "--audio-file-auto=no",
@@ -131,7 +138,7 @@ local function start()
         "--msg-level=all=warn", "--aid=" .. aid,
         "--start=" .. math.max(0, (mp.get_property_number("time-pos") or 0) - 1),
         "--af=lavfi=[whisper=model=@model@:language=" .. options.language
-            .. ":queue=5:use_gpu=false:destination=" .. current.raw .. ":format=srt]:o=[threads=4]",
+            .. prompt .. ":queue=5:use_gpu=false:destination=" .. current.raw .. ":format=srt]:o=[threads=4]",
     }
     -- Preserve authentication and demuxer settings for the already resolved URL.
     for _, name in ipairs({ "user-agent", "referrer", "http-proxy", "cookies", "cookies-file",

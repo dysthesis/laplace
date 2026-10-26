@@ -1,0 +1,29 @@
+Expose whisper.cpp's existing initial prompt through FFmpeg's whisper filter.
+Keep the default unset so other users of this private FFmpeg build are unchanged.
+
+--- a/libavfilter/af_whisper.c
++++ b/libavfilter/af_whisper.c
+@@ -48,6 +48,7 @@ typedef struct WhisperContext {
+     const AVClass *class;
+     char *model_path;
+     char *language;
++    char *prompt;
+     bool use_gpu;
+     int gpu_device;
+     char *vad_model_path;
+@@ -207,6 +208,7 @@ static void run_transcription(AVFilterContext *ctx, AVFrame *frame, int samples)
+ 
+     struct whisper_full_params params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY);
+     params.language = wctx->language;
++    params.initial_prompt = wctx->prompt;
+     params.n_threads = ff_filter_get_nb_threads(ctx);
+     params.print_special = 0;
+     params.print_progress = 0;
+@@ -450,6 +452,7 @@ static const AVOption whisper_options[] = {
+     { "model", "Path to the whisper.cpp model file", OFFSET(model_path), AV_OPT_TYPE_STRING,.flags = FLAGS },
+     { "language", "Language for transcription ('auto' for auto-detect)", OFFSET(language), AV_OPT_TYPE_STRING, {.str = "auto"}, .flags = FLAGS },
++    { "prompt", "Initial transcription context (not an instruction)", OFFSET(prompt), AV_OPT_TYPE_STRING, .flags = FLAGS },
+     { "queue", "Audio queue size", OFFSET(queue), AV_OPT_TYPE_DURATION, {.i64 = 3000000}, 20000, HOURS, .flags = FLAGS },
+     { "use_gpu", "Use GPU for processing", OFFSET(use_gpu), AV_OPT_TYPE_BOOL, {.i64 = 1}, 0, 1, .flags = FLAGS },
+     { "gpu_device", "GPU device to use", OFFSET(gpu_device), AV_OPT_TYPE_INT, {.i64 = 0}, 0, INT_MAX, .flags = FLAGS },
+     { "destination", "Output destination", OFFSET(destination), AV_OPT_TYPE_STRING, {.str = ""}, .flags = FLAGS },

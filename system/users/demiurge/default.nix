@@ -87,6 +87,7 @@ in {
             calibre-no-speech
             bibata-cursors
             pwvucontrol
+            configured.ytsub
           ]
           ++ lib.optionals (builtins.elem "wayland" config.laplace.display.servers) [
             wl-clipboard

@@ -17,7 +17,11 @@
     low1k |> mapAttrsToList (k: v: "${k} ${v}") |> concatStringsSep "\n" |> writeText "inputs.conf";
 
   # Only the background decoder needs Whisper; keep playback's FFmpeg unchanged.
-  transcriber = pkgs.mpv-unwrapped.override {ffmpeg = pkgs.ffmpeg-full;};
+  transcriptionFFmpeg = pkgs.ffmpeg-full.overrideAttrs (old: {
+    # Upstream's filter does not yet expose whisper_full_params.initial_prompt.
+    patches = (old.patches or []) ++ [./whisper-prompt.patch];
+  });
+  transcriber = pkgs.mpv-unwrapped.override {ffmpeg = transcriptionFFmpeg;};
   whisperModel = pkgs.fetchurl {
     url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base.bin";
     hash = "sha256-YO1bw90U7qhWST0zQ0m0BXgt3K8AKNS130CINF+6Lv4=";

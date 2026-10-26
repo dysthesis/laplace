@@ -4,7 +4,10 @@
   ytsub,
   ...
 }: let
-  inherit (lib) makeBinPath;
   inherit (lib.laplace.pkgs) mkWrapper;
 in
-  mkWrapper pkgs ytsub { }
+  mkWrapper pkgs ytsub {
+    binPath = [
+      pkgs.configured.mpv
+    ];
+  }
