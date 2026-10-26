@@ -19,7 +19,7 @@ in {
     # ML models exceed small tmpfs roots, so keep the cache on disk.
     mnemosyne.dirs = [
       cfg.mediaLocation
-      config.services.postgresql.dataDir
+      cfg.postgresqlPersistenceRoot
       "/var/cache/immich"
     ];
 
@@ -30,7 +30,8 @@ in {
     services.immich = {
       enable = true;
       package = pkgs.unstable.immich;
-      inherit (cfg) host mediaLocation port;
+      inherit (cfg) mediaLocation port;
+      host = cfg.listenAddress;
       openFirewall = false;
       # Local PostgreSQL uses peer auth; leave app settings mutable in the UI.
     };

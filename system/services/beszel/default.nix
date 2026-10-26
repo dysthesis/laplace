@@ -28,6 +28,11 @@ in {
 
     agent = {
       enable = mkEnableOption "Beszel agent (per-host metrics reporter)";
+      mode = mkOption {
+        type = types.enum ["push" "pull"];
+        default = "push";
+        description = "Machine-side connection mode; cluster supplies the hub endpoint and identity.";
+      };
 
       # Agent pushes to hub.
       hubUrl = mkOption {

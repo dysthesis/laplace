@@ -23,8 +23,8 @@ in {
     services.miniflux = {
       enable = true;
       config = {
-        LISTEN_ADDR = "127.0.0.1:8087";
-        BASE_URL = "http://localhost:8087";
+        LISTEN_ADDR = lib.mkDefault "127.0.0.1:8087";
+        BASE_URL = lib.mkDefault "http://localhost:8087";
         CLEANUP_FREQUENCY_HOURS = "168";
       };
       adminCredentialsFile = config.sops.secrets.miniflux_admin.path;

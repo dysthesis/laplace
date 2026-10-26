@@ -4,19 +4,12 @@
   ...
 }: let
   cfg = config.laplace.services.radicale;
-  inherit (lib) mkEnableOption mkIf mkOption types;
-  port = 5232;
+  common = import ../personal-common.nix {inherit lib;};
+  inherit (lib) mkEnableOption mkIf;
 in {
-  options.laplace.services.radicale = {
-    enable = mkEnableOption "Radicale CalDAV/CardDAV server";
-
-    port = mkOption {
-      type = types.port;
-      default = port;
-      description = "Loopback port for Radicale; the node-local Caddy proxies to this.";
-    };
-  };
-
+  options.laplace.services.radicale =
+    {enable = mkEnableOption "Radicale CalDAV/CardDAV server";}
+    // import ./settings.nix {inherit lib;};
   config = mkIf cfg.enable {
     mnemosyne.dirs = ["/var/lib/radicale"];
 
@@ -30,7 +23,7 @@ in {
     services.radicale = {
       enable = true;
       settings = {
-        server.hosts = ["127.0.0.1:${toString cfg.port}"];
+        server.hosts = [(common.hostPort cfg.listenAddress cfg.port)];
         storage.filesystem_folder = "/var/lib/radicale/collections";
         auth = {
           type = "htpasswd";

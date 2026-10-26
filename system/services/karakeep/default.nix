@@ -5,32 +5,11 @@
   ...
 }: let
   cfg = config.laplace.services.karakeep;
-  inherit (lib) boolToString mkEnableOption mkIf mkOption types;
+  inherit (lib) boolToString mkEnableOption mkIf;
 in {
-  options.laplace.services.karakeep = {
-    enable = mkEnableOption "Karakeep, self-hosted bookmark-everything app";
-
-    domain = mkOption {
-      type = types.str;
-      example = "read.example.com";
-      description = "Public origin (`NEXTAUTH_URL`). Node-local Caddy terminates TLS and proxies {option}`port`.";
-    };
-
-    port = mkOption {
-      type = types.port;
-      default = 3000;
-      description = "Loopback HTTP port the web app listens on.";
-    };
-
-    disableSignups = mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        Reject new registrations. Leave false until the first account exists —
-        it becomes the admin — then flip it.
-      '';
-    };
-  };
+  options.laplace.services.karakeep =
+    {enable = mkEnableOption "Karakeep, self-hosted bookmark-everything app";}
+    // import ./settings.nix {inherit lib;};
 
   config = mkIf cfg.enable {
     # settings.env holds the generated NEXTAUTH_SECRET, meilisearch holds the
@@ -45,19 +24,21 @@ in {
     services.karakeep = {
       enable = true;
       package = pkgs.unstable.karakeep;
+      browser.port = cfg.browserPort;
       extraEnvironment = {
         # Next.js standalone defaults to 0.0.0.0, which escapes the tailnet.
-        HOSTNAME = "127.0.0.1";
+        HOSTNAME = cfg.listenAddress;
         PORT = toString cfg.port;
         NEXTAUTH_URL = "https://${cfg.domain}";
         DISABLE_SIGNUPS = boolToString cfg.disableSignups;
         # Nix owns the version.
         DISABLE_NEW_RELEASE_CHECK = "true";
 
-        BROWSER_WEB_URL = "http://127.0.0.1:9222";
+        BROWSER_WEB_URL = "http://127.0.0.1:${toString cfg.browserPort}";
         HTML_CONTENT_SIZE_INLINE_THRESHOLD_BYTES = "65536";
       };
     };
+    services.meilisearch.listenPort = cfg.searchPort;
 
     systemd.services = {
       karakeep-web.serviceConfig = {
