@@ -1,3 +1,4 @@
+
 local mp = require("mp")
 local options = { enabled = true, language = "auto" }
 require("mp.options").read_options(options, "auto-subs")
@@ -36,19 +37,41 @@ local function stop()
     os.remove(old.dir)
 end
 
+-- Read the end timestamp of the latest SRT cue, in playback seconds.
+local function srt_last_end(srt)
+    local h, m, s, ms = srt:match(".*%-%-> (%d%d):(%d%d):(%d%d),(%d%d%d)")
+    if not h then return nil end
+    return tonumber(h) * 3600 + tonumber(m) * 60 + tonumber(s) + tonumber(ms) / 1000
+end
+
 local function refresh(current)
     if job ~= current then return end
     local file = io.open(current.raw, "rb")
-    if not file then return end
-    local size = file:seek("end")
-    if size == current.size then file:close(); return end
-    file:seek("set")
-    local data = file:read("*a")
-    file:close()
-    current.size = size
-    -- Never expose a partially written SRT cue to mpv's subtitle demuxer.
-    local complete = data:match("^(.*\n\n)")
-    if not complete or #complete == current.published then return end
+    if file then
+        local size = file:seek("end")
+        if size ~= current.size then
+            file:seek("set")
+            local data = file:read("*a")
+            current.size = size
+            -- Only publish complete cues. Keep unpublished data for later.
+            local complete = data:match("^(.*\n\n)")
+            if complete and #complete ~= current.published then
+                current.pending = complete
+            end
+        end
+        file:close()
+    end
+    if not current.pending then return end
+
+    -- A subtitle file already extending 10s ahead needs no immediate reload.
+    -- A fast GPU transcriber may write many chunks before playback reaches them.
+    local now = mp.get_property_number("time-pos") or 0
+    if current.published and not current.finished and current.coverage_end
+        and current.coverage_end > now + 10 then
+        return
+    end
+
+    local complete = current.pending
     local output, err = io.open(current.subs, "wb")
     if not output then
         mp.msg.error("Cannot write Whisper subtitles: " .. err)
@@ -63,15 +86,16 @@ local function refresh(current)
         return
     end
     current.published = #complete
+    current.coverage_end = srt_last_end(complete)
+    current.pending = nil
+
     local provided, _, generated = tracks()
     if provided then blocked = true; stop(); return end
     if generated then
-        -- These commands default to async. Wait before restoring selection.
         local sid = mp.get_property_native("sid")
         local secondary = mp.get_property_native("secondary-sid")
         mp.commandv("sync", "sub-reload", generated.id)
-        -- Reload changes the selected track but can leave options/sid at "no".
-        -- Force an option change so restoring "no" actually deselects it.
+        -- Keep intentional subtitle selection, including sid=no.
         mp.set_property_number("sid", generated.id)
         mp.set_property_native("sid", sid)
         mp.set_property_native("secondary-sid", false)
@@ -130,8 +154,8 @@ local function start()
     if options.language == "auto" or options.language == "en" then
         prompt = ":prompt=My favourite colour is grey. The neighbours organised a programme at the theatre."
             .. " We travelled to the town centre and enjoyed the flavour."
-            .. " What the fuck? This is fucking bullshit. Holy shit."
-            .. " That is ridiculous. Fuck off. You bastard. Stop being such an arsehole."
+            .. " What the fuck? This is fucking bullshit. Holy shit. That is ridiculous."
+            .. " Fuck off. You bastard. Stop being such an arsehole."
     end
     -- Ten-second chunks give large-v3 enough context and amortise its encoder.
     local args = {
@@ -161,6 +185,7 @@ local function start()
     }, function(success, result, err)
         if job ~= current then return end
         current.process = nil
+        current.finished = true -- Always publish the final complete SRT, even if far ahead.
         refresh(current)
         current.timer:kill()
         if not success or result.status ~= 0 then
