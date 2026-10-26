@@ -1,12 +1,16 @@
-# Caddy for internal sevices
+# Caddy for internal services
 
-Inside Tailscale, we use Caddy as a reverse-proxy, which serves two purposes:
+Node-local Caddy provides stable application origins and TLS via Cloudflare
+DNS-01 without publishing public A records. The shared engine, ACME identity and
+certificate credential stay machine facilities; each cluster recipe owns its
+individual routes, upstream, headers and public-origin setting.
 
-- the disambiguation of URLs, e.g. `tasks.dysthesis.com` rather than
-  `mimir.tailnet.dysthesis.com:3456` -- useful especially given that some hosts,
-  like `mimir`, hosts more than one services, and
-- TLS via DNS-01; this is not for any security reason, just UX (so that browsers
-  do not complain).
+Tailnet policy authorizes addresses/ports, not HTTP vhosts. A grant to one
+service's shared IP:443 also reaches the other vhosts at the network layer.
+Application authorization and Syncthing's explicit owner-source proxy gate are
+therefore required. Disabling one route must not remove another owner's access
+or the shared Caddy state.
 
-DNS-01 is used since internal services has no public A record. With that, we can
-still obtain certificates.
+NocoDB's domain/DNS record intentionally does not create a Caddy route. Forgejo
+and Headscale instead use the declared Portunus edge with scoped LAN backends.
+See [cluster network semantics](cluster.md#network-semantics).

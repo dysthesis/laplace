@@ -1,47 +1,63 @@
 # Tailscale and Headscale
 
-We connect the infra together via Tailscale, with a self-hosted Headscale as
-the coordination server. The Headscale instance is hosted on host `bifrost`, and
-is the only component of this network that is accessible via the public internet
-and thus acts as a chokepoint. It alone introduces new members to the Tailnet,
-manages access control, etc.
+Headscale is a cluster application, initially on Bifrost, with its public Caddy
+frontend on Portunus. Bifrost, Portunus, Hephaestus and Talos intentionally remain
+outside the Tailnet; the refactor does not bridge those VLAN boundaries.
+Headplane is dormant. There is no deployed `headplane.dysthesis.com` UI.
 
-## Access control
+## Configuration authority
 
-Headscale manages who can talk to who via Tailscale ACL. This is defined
-declaratively with the `laplace.services.headscale.acl.*` options. We first
-define what _assets_ exist -- our Tailnet nodes, in
-`laplace.services.headscale.acl.hosts.*`, in the form of `<tailnet-ip>/32`.
-Then, we define _how_ people can access these assets via a whitelist in
-`laplace.services.headscale.acl.groups.*`; each group contains `member`, listing
-the users who are part of this group, and the `destinations` they are allowed to
-reach, in the form of `<host>:<port>` (where `<host>` is a host previously
-defined in `laplace.services.headscale.acl.hosts.*`).
+- `cluster/machines.nix`: managed host identities, separate unmanaged peers,
+  Headscale guest usernames, and explicitly retained static records.
+- `cluster/access.nix`: service endpoint references plus genuine node flows.
+- `system/services/<name>/cluster.nix`: actual listeners/frontends, DNS ownership
+  and placement constraints.
+- `cluster/network.nix`: validated concrete connections, dual-stack aliases and
+  DNS records; `system/tailnet/` renders Headscale and per-node nftables.
 
-## Hygiene
+An application domain follows its selected frontend, which can differ from its
+backend. Existing DNS records remain A-only. `topos.dysthesis.com` is an explicit
+unowned record, not an AFFiNE deployment; NocoDB retains DNS without a proxy.
 
-Machines on the DMZ, which is exposed to the public internet, _must never_ be
-introduced into the Tailnet, as it breaks the compartementalisation of the VLANs
-and allows an avenue for pivoting.
+Service grants use exactly one source selector (`role`, `guest`, `node`,
+`service`, or `knownNodes`) and a destination `{service; endpoint;}`. Misspelled
+references fail even for absent/disabled applications. Known disabled targets
+emit no service grant. A source service resolves to its whole host, not a process.
+Node tags remain identity/trust facts and are not service placement selectors.
 
-Note that one issue with this is that Headscale _itself_ is in the DMZ, and it
-is the sole authority for introducing new machines into the Tailnet. However,
-this helps with isolating private machines from any break-ins in the DMZ as long
-as it's not on Headscale itself.
+## Enforcement boundaries
 
-## Management UI
+Headscale group memberships retain union semantics. Guest addresses are dynamic:
+Headscale authenticates users and nftables gates the corresponding ports for the
+Tailnet ranges. Known-node sources expand to known tags rather than `*`, so they
+do not include untagged guests. Every address alias has explicit IPv4 `/32` and
+IPv6 `/128` forms; Headscale does not infer the other family.
 
-Headplane is a management UI for Headscale, accessible only _inside_ the Tailnet
-at `headplane.dysthesis.com`. It is hosted in `bifrost` as well.
+The Headscale renderer still drops protocol, so keep the TCP/UDP-specific host
+firewall. Tailnet servers remove `tailscale0` from trusted interfaces; LAN SSH,
+fail2ban and scoped non-Tailnet backend ingress remain independent. Exit access
+uses `autogroup:internet` and FORWARD, never all-ports INPUT on Charon.
 
-**TODO.** Consider separating them into a different host, or moving Headplane to
-`mimir`, as Headplane is a strictly private service, thus mixing it with the DMZ
-is probably a bad idea (gives a publicly-exposed node an entryway into the
-Tailnet if it is compromised).
+Shared IP:443 grants reach all colocated HTTPS vhosts at the network layer.
+Syncthing's unauthenticated GUI therefore retains its explicit proxy source gate.
+Existing broad phone grants remain machine-bound, including the retired `device`
+identity; neither a service toggle nor a placement edit revokes that access.
+Game placement cannot inherit trusted node tags or collocate with trusted apps.
 
-## Minor thoughts
+The file policy retains an explicit `acls` array even with zero application
+rules. Missing policy or `{}` is allow-all in the pinned Headscale implementation.
 
-In theory, a cleaner architecture for a coordination server would be to split
-the _introducer_ and the _manager_. The former strictly needs to be exposed to
-the public internet, to coordinate with new devices; the latter does
-not, and strictly works with nodes who are _already_ in the Tailnet.
+## Reconciliation and lifecycle
+
+`just tailnet-reconcile` derives the active Headscale LAN deployment target and
+compares names, IPv4/IPv6 addresses and tags. An explicit SSH target can still be
+passed. Drift is emitted as structured records; the command reports but never
+repairs live enrollment or removes labels.
+
+Headscale owns WG-only peer reconciliation, but these peers bypass normal ACLs
+and use explicit stored connections. Omitted peers are not automatically deleted;
+disabling Headscale/reconciliation is not revocation or database cleanup.
+
+For disable, full-fleet build/deployment, secret preparation and state transfer,
+use the [cluster operator guide](cluster.md). No live membership, external DNS,
+OPNsense rule or production service is changed by evaluation alone.

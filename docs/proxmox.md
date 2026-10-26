@@ -2,26 +2,18 @@
 
 Some of the hosts here are Proxmox guests, running on a Proxmox node `erebus` in
 my cupboard (NUC13ANKH5, slim "K" chassis, 37mm, i5-13420H, 32 GB RAM, 1 TB M.2
-NVMe SSD). As of writing this, we have the following Proxmox hosts:
+NVMe SSD). Inspect deployable servers with:
 
-```nix
-nix-repl> isProxmoxHost = (_: host: builtins.elem "proxmox" host.config.laplace.profiles)
-
-nix-repl> proxmoxHosts = (builtins.filterAttrs isProxmoxHost  nixosConfigurations)
-
-nix-repl> lib.mapAttrsToList (k: _: k) proxmoxHosts
-[
-  "bifrost"
-  "charon"
-  "hephaestus"
-  "hermes"
-  "horos"
-  "loki"
-  "mimir"
-  "mneme"
-  "portunus"
-]
+```sh
+nix eval --json .#laplace.hosts
 ```
+
+Deployment uses the inventory's explicit `server` role, not the `proxmox`
+profile or the set of active applications. All twelve server targets remain in
+`just deploy`'s `@server` selection when an application is disabled.
+Cross-host LAN addresses and deployment targets have one authority in
+`cluster/machines.nix`; interfaces, gateways and VM/storage provisioning stay
+under `hosts/`.
 
 ## Profile
 
@@ -32,6 +24,12 @@ guest, including QEMU integration and building VMA images to restore from.
 
 Run `just proxmox <hostname>` to build the VMA image, ready to deploy to Proxmox.
 This only works for hosts which has enabled the `proxmox` profile.
+
+For a structural cutover or stateful relocation, run `just deploy build` for
+the full server selection before any activation. `just deploy switch` is not
+transactional or dependency-ordered; use the
+[cluster rollout/relocation procedure](cluster.md). A placement edit neither
+restores a VMA nor attaches disks, grants decryption rights, or copies state.
 
 ## Proxmox-only options
 

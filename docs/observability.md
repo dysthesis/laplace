@@ -15,6 +15,18 @@ notifications and the Uptime Kuma dead-man receiver are live, although both
 notification guests still share one hypervisor. The tailnet-only Grafana
 frontend and public certificate are live.
 
+Placement and receiver-owned configuration now come from the `observability`
+instance in `cluster/infrastructure-services.nix`; its recipe owns ingestion,
+Grafana, alert sinks and optional Minecraft monitoring. Node telemetry participation
+is explicit in `cluster/machines.nix`; writer roles/certificates remain attached to
+their machines. Apollo remains excluded. The historical live observations below
+are not evidence of a deployment of this structural refactor.
+
+The receiver requires declared, separately provisioned observability volumes.
+Changing its host does not attach disks or transfer data. It also requires enabled
+ntfy and Uptime Kuma; disabling either is an explicit dependency error. Read the
+[cluster rollout and relocation procedure](cluster.md) before changing placement.
+
 ## Provisioning order
 
 1. Build and restore the 32 GiB root VMA with `just proxmox argus`.
@@ -64,8 +76,10 @@ key without following Grafana's key-rotation procedure.
 
 ## Dashboards
 
-Grafana provisions four non-editable dashboards from
-`system/services/observability/dashboards`:
+Grafana provisions the fleet/journal/receiver dashboards and, while the Minecraft
+instance is active, its separate game dashboard. Sources live in
+`system/services/observability/dashboards`; the generated files parameterize the
+active receiver and game placements without relabeling historical host metrics.
 
 - **Fleet overview** is the default home dashboard. Its host selector drives
   node health, CPU, RAM, swap, load, PSI, persistent-root storage, disk/network
@@ -76,9 +90,10 @@ Grafana provisions four non-editable dashboards from
 - **Argus self-monitoring** covers central scrapes, Grafana probing, alert state,
   store free space, ingestion, queues, errors, and drops.
 - **Minecraft - Retirement Home** combines FabricExporter and Spark game data,
-  JVM/GC data, Loki host pressure and storage, maintenance timers, player events,
-  warnings, and the server journal. Loki's vmagent scrapes the already-installed
-  exporter over loopback every 15 seconds; port 25585 remains unexposed.
+  JVM/GC data, the selected game host's pressure/storage, maintenance timers,
+  player events and journal. Its node-local vmagent scrapes the exporter every
+  15 seconds; port 25585 remains unexposed. Disabling Minecraft removes its
+  scrape contribution, rule group and provisioned dashboard.
 
 `nix build .#checks.x86_64-linux.observability-dashboards` validates dashboard
 identity, datasource references, PromQL, and aggregate LogsQL before deployment.
@@ -169,7 +184,7 @@ stream's TLS client certificate still requires an HTTPS URL; credential
 pairs remain required even when that stream is disabled, without forcing its
 unused origin or URL through the HTTPS assertion.
 
-By default, `journal.url` is the slash-free *base* `/<writer>/journald`. The
+By default, `journal.url` is the slash-free _base_ `/<writer>/journald`. The
 pinned systemd-journal-upload 260.4 appends `/upload`, sending
 `POST /<writer>/journald/upload`, which Argus accepts; an isolated
 disposable-journal request confirmed this boundary. Full-URL overrides must
@@ -184,11 +199,12 @@ loopback-only journal origin; the actual pinned 260.4 uploader sent
 `POST /canary/journald/upload` without a `Content-Encoding` header. Neither
 capture exercised live mTLS, the Caddy receiver, or staged writer migration.
 
-All ten remote clients separately pin `telemetry.dysthesis.com` to Argus's
-`10.0.20.84` through `networking.hosts` (for example,
-`hosts/talos/default.nix:11`). Moving Argus or changing the ingestion hostname
-requires reviewing those resolver pins as well as the endpoint origins and
-independent receiver admission; the shared contract does not update them.
+Node consumers now derive `telemetry.dysthesis.com` LAN pins and ingestion origins
+from the selected receiver endpoint. There is no independently maintained address
+table in the host files. Writer names, source addresses, certificates/fingerprints
+and monitoring membership remain machine-bound. Receiver relocation needs an
+explicit remote credential/admission for the old receiver; the initial Argus
+loopback writer has no remote client key to move automatically.
 During a writer-identity rename, retaining the old admission also retains its
 `expectedHosts` monitoring obligation, while removing the old route before
 old clients switch rejects their writes. Plan the transition explicitly.

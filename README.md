@@ -27,6 +27,24 @@ in `/etc/determinate/config.json` so only one collector is scheduled.
 
 ## Design
 
+### Service-first fleet
+
+`cluster/inventory.nix` is the application authority: a declared
+`laplace.services.<name>.host` selects a deployable server and defaults enabled;
+an absent entry deploys nothing. Recipes own the application plus its state and
+secret consumers, proxy/DNS/access contributions and placement-dependent clients.
+`hosts/` retains machine identity, hardware/storage provisioning and network
+facilities. NixOS and Colmena share the validated model and module arguments.
+
+Inspect it with `nix eval --json .#laplace`. `just deploy` selects all deployable
+`@server` nodes, including nodes with no active applications. Build the full
+selection before this cutover or a stateful relocation: `just deploy build`.
+
+Disabling is not deleting data; moving is not copying data. Shared HTTPS is not
+vhost isolation, and Colmena activation is not a fleet transaction. See the
+[cluster operator guide](docs/cluster.md) for dependencies, validation, rollout,
+secret preparation, decommissioning and relocation.
+
 ### Wrappers as configurations
 
 Instead of symlinking configuration files to their appropriate directories, _e.g._ `~`, we instead

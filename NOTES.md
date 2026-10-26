@@ -45,12 +45,14 @@ system activation is left to `just rebuild`.
 
 # Obsidian LiveSync on Mimir
 
-Mimir hosts native CouchDB 3 at `https://livesync.dysthesis.com`, behind its
-tailnet-only Caddy proxy. Bifrost supplies the private DNS record; deploy both
-hosts (`just deploy-one bifrost`, then `just deploy-one mimir`). No public A record,
-container, or upstream `couchdb-init.sh` is needed: Nix configures authentication,
-Obsidian's three CORS origins, request limits, and single-node system databases.
-The upstream setup script would replace the loopback binding with `0.0.0.0`.
+The `livesync` cluster instance initially hosts native CouchDB 3 on Mimir at
+`https://livesync.dysthesis.com`, behind tailnet-only Caddy. Its recipe owns the
+backend, private DNS contribution, credentials, CORS and single-node configuration.
+Change `cluster/personal-services.nix`, build all targets (`just deploy build`),
+then converge the application, DNS and policy nodes using the
+[cluster deployment procedure](docs/cluster.md). No public A record, container,
+or upstream `couchdb-init.sh` is needed; that script would replace the loopback
+binding with `0.0.0.0`. Syncthing remains an independent instance.
 
 The administrator is `admin`. Retrieve its generated password locally with:
 
@@ -68,6 +70,10 @@ and do not run Syncthing or another synchroniser against the same vault.
 
 `/var/lib/couchdb` is persisted through mnemosyne, including databases, indexes,
 the node UUID, and Erlang cookie. This is persistence, not a backup.
+Disabling LiveSync removes its active mount declaration, not its backing data.
+Moving its host does not move databases, node identity or the Erlang cookie.
+The explicit `mimir.yaml` credential source does not follow the hostname; prepare
+recipient access and a consistent restore before relocation.
 
 `couchdb_admin_ini` contains a pre-hashed administrator password, installed by
 SOPS as a CouchDB-readable runtime file. The plaintext password is not installed
