@@ -17,14 +17,19 @@
     low1k |> mapAttrsToList (k: v: "${k} ${v}") |> concatStringsSep "\n" |> writeText "inputs.conf";
 
   # Only the background decoder needs Whisper; keep playback's FFmpeg unchanged.
-  transcriptionFFmpeg = pkgs.ffmpeg-full.overrideAttrs (old: {
-    # Upstream's filter does not yet expose whisper_full_params.initial_prompt.
-    patches = (old.patches or []) ++ [./whisper-prompt.patch];
-  });
+  transcriptionFFmpeg =
+    (pkgs.ffmpeg-full.override {
+      whisper-cpp = (pkgs.whisper-cpp.override {vulkanSupport = true;}).overrideAttrs (old: {
+        patches = (old.patches or []) ++ [./whisper-compute-queue.patch];
+      });
+    }).overrideAttrs (old: {
+      # Upstream's filter does not yet expose whisper_full_params.initial_prompt.
+      patches = (old.patches or []) ++ [./whisper-prompt.patch];
+    });
   transcriber = pkgs.mpv-unwrapped.override {ffmpeg = transcriptionFFmpeg;};
   whisperModel = pkgs.fetchurl {
-    url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base.bin";
-    hash = "sha256-YO1bw90U7qhWST0zQ0m0BXgt3K8AKNS130CINF+6Lv4=";
+    url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo.bin";
+    hash = "sha256-H8cPd0046xaZk6w5Huo1fvR8iHV+9y7llDh5t+jivGk=";
   };
 
   mpv = pkgs.mpv.override {
