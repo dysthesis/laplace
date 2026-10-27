@@ -9,14 +9,14 @@ final: prev: let
   base = prev.linux_latest;
   src = prev.fetchurl {
     url = "mirror://kernel/linux/kernel/v7.x/linux-${version}.tar.xz";
-    hash = "sha256-aR9EeX++eQ3IoyFgTJJwh1Jq0nttZJkl1g+O7QolZKA=";
+    hash = "sha256-Vd3w34Ml2drZb8/3vZOXfSLj9QrwZSdXKvWbd8djK3g=";
   };
 
   hardenedPatch = {
     name = "linux-hardened-v${version}-${suffix}";
     patch = prev.fetchurl {
       url = "https://github.com/anthraxx/linux-hardened/releases/download/v${version}-${suffix}/linux-hardened-v${version}-${suffix}.patch";
-      hash = "sha256-VpzjHXkuiPra4yMLD9KYUUh8cyK00xwZ9V1gBILcIxI=";
+      hash = "sha256-yB4ip+GEzLrX5V7qG1dKrmka9M20QVrnnMas7q0Ug14=";
     };
   };
 
