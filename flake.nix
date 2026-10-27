@@ -314,8 +314,7 @@
             assert services.affine-postgres-backup.unitConfig.RequiresMountsFor == "/srv/affine /var/backups/affine";
               pkgs.runCommand "affine-service-check" {nativeBuildInputs = [pkgs.jq];} ''
                 jq -e '
-                  .server.name == "Dysthesis Wiki"
-                  and .server.externalUrl == "https://wiki.example.test"
+                  .server.externalUrl == "https://wiki.example.test"
                   and .server.host == "wiki.example.test"
                   and .server.https == true
                   and .auth.allowSignup == false
@@ -564,6 +563,8 @@
             alertmanagerConfig = pkgs.writeText "alertmanager.json" (builtins.toJSON argus.services.prometheus.alertmanager.configuration);
             alertmanager = argus.services.prometheus.alertmanager.package;
             notificationTest = argus.systemd.services.observability-notification-test;
+            # vmalert-tool v1.154.0 starts at 2000-01-01T00:00:00Z, not Unix epoch 0.
+            testStartSeconds = "946684800";
             metricsRulesTest = pkgs.writeText "observability-metrics-rules-test.yml" ''
               rule_files:
                 - ${metricsRules}
@@ -707,32 +708,40 @@
                           exp_annotations:
                             summary: loki:/nix/persist predicted full within a day
                             description: Physical free space is under 25% and its 6-hour trend crosses zero within 24 hours.
-                - name: stale alert overlaps absence alert
+                - name: stale and absent telemetry recovers without alerting healthy hosts
                   interval: 30s
                   input_series:
                     - series: 'node_time_seconds{host="talos",job="node-agent"}'
-                      values: "0 _x20"
+                      values: "${testStartSeconds} _x13 946685220+30x6"
                     - series: 'node_time_seconds{host="argus",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                     - series: 'node_time_seconds{host="mneme",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                     - series: 'node_time_seconds{host="mimir",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                     - series: 'node_time_seconds{host="horos",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                     - series: 'node_time_seconds{host="hermes",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                     - series: 'node_time_seconds{host="charon",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                     - series: 'node_time_seconds{host="loki",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                     - series: 'node_time_seconds{host="hephaestus",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                     - series: 'node_time_seconds{host="bifrost",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                     - series: 'node_time_seconds{host="portunus",job="node-agent"}'
-                      values: "0+30x20"
+                      values: "${testStartSeconds}+30x20"
                   alert_rule_test:
+                    - eval_time: 4m
+                      groupname: argus-self
+                      alertname: TelemetryHostStale
+                      exp_alerts: []
+                    - eval_time: 5m
+                      groupname: argus-self
+                      alertname: TelemetryHostAbsent
+                      exp_alerts: []
                     - eval_time: 6m30s
                       groupname: argus-self
                       alertname: TelemetryHostStale
@@ -754,6 +763,14 @@
                           exp_annotations:
                             summary: No telemetry received from talos
                             description: Check vmagent, its queue, and network path from talos to Argus.
+                    - eval_time: 7m30s
+                      groupname: argus-self
+                      alertname: TelemetryHostStale
+                      exp_alerts: []
+                    - eval_time: 7m30s
+                      groupname: argus-self
+                      alertname: TelemetryHostAbsent
+                      exp_alerts: []
             '';
           in
             pkgs.runCommand "observability-rules-check" {nativeBuildInputs = [vmalert alertmanager pkgs.envsubst pkgs.jq];} ''

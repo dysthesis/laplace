@@ -31,6 +31,27 @@ transactional or dependency-ordered; use the
 [cluster rollout/relocation procedure](cluster.md). A placement edit neither
 restores a VMA nor attaches disks, grants decryption rights, or copies state.
 
+## Hardened-kernel smoke
+
+Before deploying a changed hardened-kernel build, run the on-demand disposable
+QEMU check:
+
+```sh
+nix build --no-link -L .#packages.x86_64-linux.linux-hardened-boot-test
+```
+
+It uses the unchanged overlay kernel, checks its release and `/proc/kcore`
+absence, and loads the profile's VirtIO/storage modules plus Btrfs in both the
+systemd initrd and multi-user userspace. This is not a production disk-layout,
+bootloader, persistence, secret-decryption or full hardening-policy test.
+
+At the pinned systemd 260.5/Nixpkgs versions, initrd assembly warns about
+`libcrypt.so.1` and `libcrypt.so.1.1`. These are alternate SONAMEs for password
+hashing: systemd successfully loads `libcrypt.so.2` first, but the initrd collector
+checks every alternative independently. The built Argus initrd includes
+`libcrypt.so.2`. Do not add compatibility libraries or suppress these messages
+merely to silence them; recheck actual dependencies after package updates.
+
 ## Proxmox-only options
 
 Some options are exclusive to the Proxmox profile -- they define parameters e.g.

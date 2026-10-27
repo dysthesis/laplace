@@ -1,4 +1,4 @@
-inputs: pkgs:
+_inputs: pkgs:
 pkgs.mkShell {
   name = "laplace-dev";
   packages = with pkgs; [

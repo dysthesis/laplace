@@ -8,6 +8,11 @@
   inherit (lib) mkIf;
   inherit (builtins) elem;
   cfg = config.laplace.profiles;
+  gnomeCfg = config.services.desktopManager.gnome;
+  gnomeOwnsSchemas =
+    gnomeCfg.enable
+    || gnomeCfg.flashback.enableMetacity
+    || gnomeCfg.flashback.customSessions != [];
 
   browser = ["zen"];
 
@@ -121,6 +126,13 @@ in {
       </fontconfig>
     '';
     services = {
+      # GNOME compiles these into its own schema directory; non-GNOME sessions
+      # use the same overrides in the fallback package below.
+      desktopManager.gnome.extraGSettingsOverrides = ''
+        [org.gnome.desktop.interface]
+        font-hinting='slight'
+        font-antialiasing='grayscale'
+      '';
       # Interactive outbound-connection prompts need a GUI to answer them, so
       # opensnitch belongs to the desktop profile rather than the generic
       # firewall module (which headless servers also enable).
@@ -165,20 +177,18 @@ in {
     environment = {
       sessionVariables = let
         gsettingsOverrides = pkgs.gnome.nixos-gsettings-overrides.override {
-          extraGSettingsOverrides = ''
-            [org.gnome.desktop.interface]
-            font-hinting='slight'
-            font-antialiasing='grayscale'
-          '';
+          inherit (gnomeCfg) extraGSettingsOverrides extraGSettingsOverridePackages;
         };
       in {
         PYTORCH_ROCM_ARCH = "gfx1030";
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
         HCC_AMDGPU_TARGET = "gfx1030";
         GTK_USE_PORTAL = "1";
+        # GNOME (including Flashback) owns this variable when enabled. The
+        # override package's schema subdirectory differs from its package name.
         NIX_GSETTINGS_OVERRIDES_DIR =
-          pkgs.glib.getSchemaPath
-          gsettingsOverrides;
+          mkIf (!gnomeOwnsSchemas)
+          "${gsettingsOverrides}/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas";
       };
       systemPackages = with pkgs; [xdg-utils gsettings-desktop-schemas];
     };

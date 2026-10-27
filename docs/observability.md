@@ -268,6 +268,18 @@ PVE, PBS, and OPNsense remain external configuration:
 
 ## Validation
 
+Validate generated rules and synthetic alert transitions locally:
+
+```sh
+nix build --no-link -L .#checks.x86_64-linux.observability-rules
+```
+
+The telemetry fixture covers the stale-alert grace period, overlap with absence,
+recovery, and continued health of other writers. Its `node_time_seconds` values
+use the pinned `vmalert-tool` clock's Unix timestamp for 2000-01-01
+(`946684800`), not elapsed seconds from zero. Keep this aligned with the tool's
+clock when updating VictoriaMetrics; production rule expressions are not offset.
+
 Run these before remote rollout:
 
 ```sh

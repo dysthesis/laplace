@@ -31,14 +31,14 @@ and timestamps reactions) for an arbitrary shell binary.
 
 ## What gets measured
 
-| Metric              | Definition                             | What it exposes in _this_ config                                                                                                                                            |
-| ------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `first_prompt_lag`  | spawn → prompt rendered              | Fish vendor init, build-time generated hooks, D-Bus import, and the first Starship render |
-| `first_command_lag` | spawn → first command starts executing | same, but the number that matters for "open tab, immediately type"                                                                                                          |
+| Metric              | Definition                             | What it exposes in _this_ config                                                                               |
+| ------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `first_prompt_lag`  | spawn → prompt rendered                | Fish vendor init, build-time generated hooks, D-Bus import, and the first Starship render                      |
+| `first_command_lag` | spawn → first command starts executing | same, but the number that matters for "open tab, immediately type"                                             |
 | `command_lag`       | Enter on an empty line → next prompt   | full Starship redraw (`custom.jj` via `jj log`, Git modules, sudo and right prompt); `custom.task` is disabled |
-| `input_lag`         | one keypress → character echoed        | fish's built-in syntax highlighting + `autopair`, recomputed per keystroke                                                                                                  |
-| `input_lag_longbuf` | same, with a long line already typed   | the full-buffer re-highlight cost the second write-up calls out — worst case for a long command line                                                                        |
-| `exit_time`         | `fish -i -c exit` wall-clock           | **the "wrong" metric** — kept only as a labelled floor and a cheap regression tripwire, never the headline                                                                  |
+| `input_lag`         | one keypress → character echoed        | fish's built-in syntax highlighting + `autopair`, recomputed per keystroke                                     |
+| `input_lag_longbuf` | same, with a long line already typed   | the full-buffer re-highlight cost the second write-up calls out — worst case for a long command line           |
+| `exit_time`         | `fish -i -c exit` wall-clock           | **the "wrong" metric** — kept only as a labelled floor and a cheap regression tripwire, never the headline     |
 
 ## Why this is more than the blog's approach
 
@@ -238,16 +238,16 @@ isolation cannot be independently verified from the archived samples. The
 reproducer below uses private history/runtime paths and `dbus-run-session`;
 that bus does not reproduce the live broker/systemd activation delays.
 
-| Context / experiment | Metric (ms) | Baseline median / p90 | Candidate median / p90 | Delta of medians (95% paired-block CI) |
-| --- | --- | ---: | ---: | ---: |
-| outside / no D-Bus import | first prompt | 51.89 / 53.17 | 50.07 / 51.84 | -1.81 [-3.14, -0.82] |
-| empty Git / no D-Bus import | first command | 62.70 / 65.15 | 59.10 / 61.30 | -3.59 [-5.11, -2.29] |
-| jj checkout / no D-Bus import | first command | 84.65 / 87.06 | 80.31 / 83.87 | -4.34 [-5.26, -2.92] |
-| jj checkout / one `jj log` | first prompt | 70.81 / 74.31 | 61.33 / 62.51 | -9.47 [-10.31, -8.37] |
-| jj checkout / one `jj log` | first command | 80.11 / 83.60 | 72.56 / 74.33 | -7.55 [-9.71, -6.93] |
-| jj checkout / one `jj log` | repeated command | 38.24 / 40.46 | 27.79 / 29.07 | -10.45 [-10.88, -9.83] |
-| outside / one `jj log` | repeated command | 20.01 / 20.77 | 20.85 / 21.74 | +0.84 [+0.38, +1.32] |
-| dirty Git / one `jj log` | repeated command | 20.42 / 21.08 | 21.44 / 21.89 | +1.02 [+0.76, +1.28] |
+| Context / experiment          | Metric (ms)      | Baseline median / p90 | Candidate median / p90 | Delta of medians (95% paired-block CI) |
+| ----------------------------- | ---------------- | --------------------: | ---------------------: | -------------------------------------: |
+| outside / no D-Bus import     | first prompt     |         51.89 / 53.17 |          50.07 / 51.84 |                   -1.81 [-3.14, -0.82] |
+| empty Git / no D-Bus import   | first command    |         62.70 / 65.15 |          59.10 / 61.30 |                   -3.59 [-5.11, -2.29] |
+| jj checkout / no D-Bus import | first command    |         84.65 / 87.06 |          80.31 / 83.87 |                   -4.34 [-5.26, -2.92] |
+| jj checkout / one `jj log`    | first prompt     |         70.81 / 74.31 |          61.33 / 62.51 |                  -9.47 [-10.31, -8.37] |
+| jj checkout / one `jj log`    | first command    |         80.11 / 83.60 |          72.56 / 74.33 |                   -7.55 [-9.71, -6.93] |
+| jj checkout / one `jj log`    | repeated command |         38.24 / 40.46 |          27.79 / 29.07 |                 -10.45 [-10.88, -9.83] |
+| outside / one `jj log`        | repeated command |         20.01 / 20.77 |          20.85 / 21.74 |                   +0.84 [+0.38, +1.32] |
+| dirty Git / one `jj log`      | repeated command |         20.42 / 21.08 |          21.44 / 21.89 |                   +1.02 [+0.76, +1.28] |
 
 The **no-D-Bus-import** ablation was not retained: startup savings were
 roughly 2–4 ms (the first prompt was 1.81 ms faster outside, 1.91 ms in
@@ -262,11 +262,11 @@ unchanged rather than assume the two activation environments are equivalent.
 **Retained:** in `user/wrapped/fish/starship.toml`, one
 `jj log --ignore-working-copy` now both probes jj membership and formats the
 change; a conditional `$output` group hides `jj:` when not in a repo. This
-removes the separate `jj root` fork on *every prompt in a jj repo*, with no
+removes the separate `jj root` fork on _every prompt in a jj repo_, with no
 working-copy snapshot or cached metadata. Its repeated-command improvement
 exceeded the 10 ms target; the ~1 ms outside/plain-Git regression is real,
 but below the practical threshold. The previously configured `custom.task`
-was already disabled; Git modules were *not* removed. The archived
+was already disabled; Git modules were _not_ removed. The archived
 `semantic-equality.log` lists equal escaped prompts in nine contexts,
 including conflicted jj. A fresh real-Starship run with the two stored TOMLs,
 private HOME/XDG state and bus compared stdout/stderr byte-for-byte in eight
@@ -288,7 +288,7 @@ The original conflicted-jj wrapper smoke recorded Enter samples of 3.15 ms
 then 3122.18 ms, with `ignore_timeout = true` unchanged. Their cause is
 **unknown**: neither a confirmed 3-second prompt regression nor a trustworthy
 fast render follows from those two values. A separate interleaved A/B in one
-disposable *actually conflicted* jj merge traced every PTY output chunk after
+disposable _actually conflicted_ jj merge traced every PTY output chunk after
 the prompt settled (120 ms quiet window): 36 Enter redraws per real wrapper,
 old median/p90/max 36.47/38.52/40.30 ms, new 25.78/27.26/27.70 ms.
 All 72 redraws settled and contained the `=conflict` prompt; none took <5 ms
@@ -313,17 +313,17 @@ the paired samples, exact store/config identity, and follow-up protocol is
 output was discarded, so its historical warmup count, `$HOME`/XDG state, bus
 address and exact `$PATH` cannot be independently checked from the raw JSON.
 Do not retroactively assign the later private-session environment to it.
-The reproduction below saves its *own* warmups and allowlisted environment
+The reproduction below saves its _own_ warmups and allowlisted environment
 per run. These are warm-use PTY results, not boot-cold starts.
 
-The historical A/B applies to those *exact* `b389…` → `affyy…` wrappers, not
+The historical A/B applies to those _exact_ `b389…` → `affyy…` wrappers, not
 automatically to the latest output of this checkout. A final offline
 evaluation/build of `pkgs.configured.fish` for **deimos and phobos** resolved
 the same `/nix/store/v2g7hjz1a0n5bq9prd3j0fv4phhqqh5g-fish-wrapped`;
 its `STARSHIP_CONFIG` still points to the tested TOML (SHA-256
 `97691ca5cd3e9b1b2359dce1fc356d790ce983b7118b0739da5c205dd3bd45ac`).
 Its direnv configuration now also sets `hide_env_diff = true`, an unrelated
-effective behavior change. A private-bus PTY smoke of the *current* wrapper
+effective behavior change. A private-bus PTY smoke of the _current_ wrapper
 in this checkout gave first prompt 64.84 ms, first command 61.71 ms, and
 Enter redraws 26.91/26.24 ms (n=1/1/2): this proves the current path runs,
 **not** a current-build A/B or a transferred latency estimate.
@@ -373,7 +373,7 @@ print(f"exact paired-block 95%: [{percentile(2.5):.2f}, {percentile(97.5):.2f}] 
 PY
 ```
 
-To repeat with two *real* wrapped Fish builds, use `nix build --no-link
+To repeat with two _real_ wrapped Fish builds, use `nix build --no-link
 --print-out-paths '.#nixosConfigurations.deimos.pkgs.configured.fish'` before
 and after changing the source, then substitute those `/bin/fish` paths for
 `OLD` and `NEW` below. Set `REPO` to this checkout's **absolute** path (the
@@ -478,7 +478,7 @@ BASH
 
 The Fish wrapper itself sets `STARSHIP_CONFIG`, so overriding only the
 parent's environment variable does **not** test an alternate prompt. This
-recipe measures *warm* local PTY interactions with a clean allowlisted parent
+recipe measures _warm_ local PTY interactions with a clean allowlisted parent
 environment; it omits in-situ history, live-bus publication, emulator
 rendering and post-boot cold starts. `stats.py compare` prints unclustered
 intervals; preserve the pair files and resample pair blocks for inference.
@@ -510,7 +510,7 @@ it does not time human gestures, physical monitor scanout, full browser
 readiness, the live user's warm profile or a phobos desktop. A separate
 private-seat smoke of the retained Super+w binding reached Zen's first-run
 Welcome UI, which did not advance on that seat. Relaunching in a new
-private seat with a copy of *only* the initialized disposable Zen profile
+private seat with a copy of _only_ the initialized disposable Zen profile
 showed normal browser chrome and keyboard-navigable `about:about`.
 The settled PNG is `bench/results/desktop-20260929-settled.png`.
 `bench/results/desktop-20260929-evidence.json` retains all six pairs'

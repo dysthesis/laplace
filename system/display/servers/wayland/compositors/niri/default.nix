@@ -17,12 +17,6 @@
   enabled = elem "wayland" cfg.servers && cfg.wayland.compositor == "niri";
   desktopEnabled = cfg.wayland.desktop.enable;
   wallpaper = "${../../../../../../user/assets/wallpaper.png}";
-  defaultLocation = {
-    latitude = 0;
-    longitude = 0;
-  };
-  location = defaultLocation // (config.location or {});
-  hasLocation = (location.latitude != 0) || (location.longitude != 0);
 
   sessionService = description: execStart: {
     inherit description;
