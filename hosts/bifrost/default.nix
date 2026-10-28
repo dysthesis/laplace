@@ -60,11 +60,7 @@
     services = {
       telemetry = {
         role = "control-plane";
-        metrics = {
-          certificateFile = config.sops.secrets.telemetry_client_certificate.path;
-          keyFile = config.sops.secrets.telemetry_client_key.path;
-        };
-        journal = {
+        clientIdentity = {
           certificateFile = config.sops.secrets.telemetry_client_certificate.path;
           keyFile = config.sops.secrets.telemetry_client_key.path;
         };

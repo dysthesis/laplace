@@ -44,6 +44,18 @@ in {
       type = types.str;
       default = "home";
     };
+    clientIdentity = {
+      certificateFile = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Node-owned client certificate; the cluster attaches it only to remote telemetry transports.";
+      };
+      keyFile = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Node-owned client key, retained when this node becomes the local receiver.";
+      };
+    };
 
     metrics = {
       enable = mkOption {

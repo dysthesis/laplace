@@ -236,12 +236,18 @@ loopback-only journal origin; the actual pinned 260.4 uploader sent
 `POST /canary/journald/upload` without a `Content-Encoding` header. Neither
 capture exercised live mTLS, the Caddy receiver, or staged writer migration.
 
-Node consumers now derive `telemetry.dysthesis.com` LAN pins and ingestion origins
+Node consumers derive `telemetry.dysthesis.com` LAN pins and ingestion origins
 from the selected receiver endpoint. There is no independently maintained address
-table in the host files. Writer names, source addresses, certificates/fingerprints
-and monitoring membership remain machine-bound. Receiver relocation needs an
-explicit remote credential/admission for the old receiver; the initial Argus
-loopback writer has no remote client key to move automatically.
+table in the host files. Each machine stores its certificate/key paths under
+`laplace.services.telemetry.clientIdentity`; the cluster attaches them only to
+remote HTTPS transports. A remote writer becoming the receiver retains its
+identity material but uses loopback HTTP without client TLS options or loaded
+credentials. Moving it back to a remote role reuses that node identity.
+
+Writer names, certificates/fingerprints, source addresses and host labels remain
+machine-bound. Relocation needs an explicit remote credential/admission for the
+old receiver; the initial Argus loopback writer has no remote client key to move
+automatically.
 During a writer-identity rename, retaining the old admission also retains its
 `expectedHosts` monitoring obligation, while removing the old route before
 old clients switch rejects their writes. Plan the transition explicitly.

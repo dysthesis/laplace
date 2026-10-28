@@ -66,10 +66,14 @@ in {
         metrics = {
           origin = lib.mkDefault (origin metrics);
           remoteWriteUrl = mkIf localReceiver "http://127.0.0.1:8428/api/v1/write";
+          certificateFile = mkIf (!localReceiver) telemetry.clientIdentity.certificateFile;
+          keyFile = mkIf (!localReceiver) telemetry.clientIdentity.keyFile;
         };
         journal = {
           origin = lib.mkDefault (origin journal);
           url = mkIf localReceiver "http://127.0.0.1:9428/insert/journald";
+          certificateFile = mkIf (!localReceiver) telemetry.clientIdentity.certificateFile;
+          keyFile = mkIf (!localReceiver) telemetry.clientIdentity.keyFile;
         };
       };
     })

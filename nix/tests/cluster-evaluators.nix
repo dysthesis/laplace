@@ -80,6 +80,44 @@
     };
   };
   remainingApp = withoutReceiver.hosts.nixosConfigurations.argus.config;
+  relocatedReceiver = build {
+    laplace.hosts.horos.storage = ["observability-volumes"];
+    laplace.services.observability = {
+      host = lib.mkForce "horos";
+      settings.writers.argus = {
+        metricsPort = 8440;
+        certificateFingerprint = lib.concatStrings (lib.replicate 64 "0");
+      };
+    };
+  };
+  receiver =
+    (relocatedReceiver.hosts.nixosConfigurations.horos.extendModules {
+      modules = [
+        {
+          fileSystems = {
+            "/var/lib/private/victoriametrics" = {
+              device = "/dev/disk/by-label/prepared-metrics";
+              fsType = "ext4";
+            };
+            "/var/lib/private/victorialogs" = {
+              device = "/dev/disk/by-label/prepared-logs";
+              fsType = "ext4";
+            };
+          };
+        }
+      ];
+    }).config;
+  formerReceiver =
+    (relocatedReceiver.hosts.nixosConfigurations.argus.extendModules {
+      modules = [
+        {
+          laplace.services.telemetry.clientIdentity = {
+            certificateFile = "/fixture/argus.crt";
+            keyFile = "/fixture/argus.key";
+          };
+        }
+      ];
+    }).config;
   cases = {
     desktop = rejected {laplace.services.minecraft.host = lib.mkForce "deimos";};
     installer = rejected {laplace.services.miniflux.host = lib.mkForce "chaos";};
@@ -138,6 +176,17 @@
       && !(remainingApp.services.caddy.virtualHosts ? "observe.example.test")
       && !remainingApp.services.grafana.enable
       && lib.all (a: a.assertion) remainingApp.assertions;
+    receiverRelocation =
+      lib.all (a: a.assertion) (receiver.assertions ++ formerReceiver.assertions)
+      && toString receiver.laplace.services.caddy.cloudflare.sopsFile == toString ../../system/secrets/horos.yaml
+      && receiver.laplace.services.telemetry.clientIdentity.certificateFile == receiver.sops.secrets.telemetry_client_certificate.path
+      && receiver.services.vmagent.remoteWrite.url == "http://127.0.0.1:8428/api/v1/write"
+      && receiver.services.journald.upload.settings.Upload.URL == "http://127.0.0.1:9428/insert/journald"
+      && receiver.systemd.services.vmagent.serviceConfig.LoadCredential == []
+      && receiver.systemd.services.systemd-journal-upload.serviceConfig.LoadCredential == []
+      && receiver.services.journald.upload.settings.Upload.ServerCertificateFile == null
+      && formerReceiver.services.vmagent.remoteWrite.url == "https://telemetry.dysthesis.com:8443/argus/metrics"
+      && builtins.elem "client_certificate:/fixture/argus.crt" formerReceiver.systemd.services.vmagent.serviceConfig.LoadCredential;
     sharedPostgres =
       postgres.services.miniflux.enable
       && postgres.services.immich.enable
@@ -149,4 +198,4 @@
   };
 in
   assert lib.assertMsg (lib.all (x: x) (builtins.attrValues cases))
-  "cluster invalid declaration escaped a NixOS or checked Colmena entrypoint"; cases
+  "cluster evaluator failures: ${lib.concatStringsSep ", " (builtins.attrNames (lib.filterAttrs (_: passed: !passed) cases))}"; cases
