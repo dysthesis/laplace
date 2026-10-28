@@ -141,6 +141,31 @@
     };
     conflictingAssignment = !success [machines {laplace.services.silverbullet = silver;} {laplace.services.silverbullet.host = "beta";}];
     globalStrictness = !(builtins.tryEval (builtins.seq (evaluate [machines {laplace.services.silverbullet = silver // {host = "desktop";};}]).hostModule true)).success;
+    syncthingExternalGUI = lib.all (listenAddress:
+      rejected {
+        services.syncthing-server = {
+          host = "alpha";
+          settings = {
+            domain = "sync.example.test";
+            guiClients = ["reader"];
+            inherit listenAddress;
+          };
+        };
+      }) ["0.0.0.0" "::" "[::]" "*" "10.1.0.1" "100.64.1.1"];
+    syncthingLoopbackGUI = lib.all (listenAddress:
+      success [
+        machines
+        {
+          laplace.services.syncthing-server = {
+            host = "alpha";
+            settings = {
+              domain = "sync.example.test";
+              guiClients = ["reader"];
+              inherit listenAddress;
+            };
+          };
+        }
+      ]) ["127.0.0.1" "localhost" "::1" "[::1]"];
     missingBrowser = rejected {services.miniflux = miniflux // {settings = miniflux.settings // {useKarakeepBrowser = true;};};};
     disabledBrowser = rejected {
       services = {

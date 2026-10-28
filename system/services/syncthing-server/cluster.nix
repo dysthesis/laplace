@@ -62,6 +62,12 @@ in {
     cluster,
   }:
     common.validate "syncthing-server" {inherit instance cluster;}
+    ++ [
+      {
+        assertion = builtins.elem instance.settings.listenAddress ["127.0.0.1" "localhost" "::1" "[::1]"];
+        message = "syncthing-server GUI must bind to loopback so guiClients cannot be bypassed.";
+      }
+    ]
     ++ map (name: {
       assertion = builtins.hasAttr name cluster.nodes;
       message = "syncthing-server GUI client '${name}' is not a known Tailnet node identity.";

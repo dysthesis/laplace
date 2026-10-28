@@ -122,9 +122,11 @@ Exit grants remain forwarding, not all-ports INPUT access.
 
 A service-source grant authorizes its whole machine, not its process. Shared
 IP:443 does **not** isolate HTTP vhosts. Syncthing keeps its proxy-level owner
-source gate. Existing phone whole-node grants stay attached to nodes and can
-still permit a disabled service's former port; disabling removes only that
-service's contribution. Live tags are not silently retagged or revoked. The
+source gate: `guiClients` is enforced by Caddy, so the GUI must bind to
+`127.0.0.1`, `localhost`, `::1` or `[::1]`; other binds fail validation. Existing
+phone whole-node grants stay attached to nodes and can still permit a disabled
+service's former port; disabling removes only that service's contribution.
+Live tags are not silently retagged or revoked. The
 Headscale file always contains an explicit `acls` array, even when empty; an
 absent policy or `{}` would allow all at the pinned Headscale version.
 
