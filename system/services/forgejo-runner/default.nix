@@ -28,22 +28,23 @@ in {
       type = types.str;
       example = "http://localhost:8080";
       description = ''
-        Base URL of the Forgejo instance the runner registers against. Loopback
-        while colocated with the server; the reachable Forgejo address once the
-        runner moves to its own host. Note: a `url` change alone does NOT force
-        re-registration (it isn't part of the register hash-gate) — pair it with a
-        fresh token, which a host move needs anyway.
+        Reachable base URL of the Forgejo instance. On startup, the persisted
+        `.runner.address` is reconciled to this URL after the upstream registration
+        gate. A URL-only change restarts the runner without re-registration,
+        retaining its identity and durable token. This supports relocating the
+        same Forgejo instance, not moving a registration to a different instance.
       '';
     };
 
     tokenFile = mkOption {
       type = types.path;
       description = ''
-        Path to an EnvironmentFile containing a `TOKEN=` line (the one-shot
-        registration token). Wire this to a sops secret in the host. The token is
-        consumed only on first register / label change; the durable identity then
-        lives in the persisted `.runner`, so the token must be unexpired at that
-        first start but is irrelevant afterwards.
+        Path to an EnvironmentFile containing a `TOKEN=` registration token.
+        Wire this to a sops secret in the host; the file must remain readable on
+        every start. Initial registration, changed token contents, or changed
+        labels require a valid registration token. With an unchanged token and
+        labels, the persisted `.runner` supplies the durable credentials, so an
+        expired registration token does not prevent a URL-only change.
       '';
     };
 

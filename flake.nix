@@ -173,6 +173,8 @@
                 touch $out
               '';
 
+          forgejo-runner-address = import ./nix/tests/forgejo-runner-address.nix {inherit pkgs;};
+
           # configtest needs writable state, so the sandbox redirects it to $TMPDIR.
           # The cluster contracts cover references; this runs the pinned parser.
           headscale-policy = let

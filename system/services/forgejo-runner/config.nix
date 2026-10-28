@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   inherit (lib) mkIf any hasPrefix;
@@ -26,6 +27,27 @@ in {
     # simplification: CPUQuota and TasksMax are estimates; tune if valid CI is throttled.
     # Unit name assumes a DNS-clean instanceName (no systemd-path escaping).
     systemd.services."gitea-runner-${cfg.instanceName}".serviceConfig = {
+      # Keep upstream's token/label registration gate first, then reconcile the
+      # address read by the daemon. Embedding cfg.url also restarts on URL changes.
+      ExecStartPre = lib.mkAfter [
+        (pkgs.writeShellScript "forgejo-runner-reconcile-address-${cfg.instanceName}" ''
+          set -eu
+          umask 077
+          registration="$STATE_DIRECTORY"/${lib.escapeShellArg "${cfg.instanceName}/.runner"}
+          address=${lib.escapeShellArg cfg.url}
+
+          if ${lib.getExe pkgs.jq} --exit-status --arg address "$address" '.address == $address' "$registration" >/dev/null; then
+            exit 0
+          fi
+
+          # Same-directory rename is atomic; mktemp keeps the durable token private.
+          temporary="$(${pkgs.coreutils}/bin/mktemp "$registration.XXXXXX")"
+          trap '${pkgs.coreutils}/bin/rm -f -- "$temporary"' EXIT
+          ${lib.getExe pkgs.jq} --arg address "$address" '.address = $address' "$registration" >"$temporary"
+          ${pkgs.coreutils}/bin/mv -f -- "$temporary" "$registration"
+        '')
+      ];
+
       CPUQuota = "300%";
       TasksMax = 4096;
       ProtectKernelTunables = true;

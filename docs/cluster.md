@@ -110,6 +110,14 @@ The music recipe reconciles qBittorrent's owned host allowlist before startup wh
 its domain changes; generated credentials and other mutable profile settings stay
 untouched.
 
+Forgejo runner startup reconciles `.runner.address` to the selected Forgejo
+endpoint without re-registering or replacing its ID, UUID or durable token.
+Keep the instance name, persisted state, registration-token file contents and
+labels unchanged for an address-only move of the same Forgejo installation.
+The token file must still be readable; changing its contents or the labels still
+uses upstream registration and requires a valid token. Do not delete `.runner`
+to make it follow a new address.
+
 ## Network semantics
 
 Endpoint references select addresses and ports, not new security identities.
