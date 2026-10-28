@@ -76,6 +76,25 @@
   model = settings: (evaluate [machines {laplace = settings;}]).manifest;
   success = modules: (builtins.tryEval (builtins.deepSeq (evaluate modules).manifest true)).success;
   rejected = settings: !success [machines {laplace = settings;}];
+  listenerPair = left: right: {
+    services = {
+      silverbullet = {
+        host = "alpha";
+        settings = {
+          domain = "notes.example.test";
+          listenAddress = left;
+        };
+      };
+      vikunja = {
+        host = "alpha";
+        settings = {
+          domain = "tasks.example.test";
+          listenAddress = right;
+          port = 8101;
+        };
+      };
+    };
+  };
   enabled = model {services.silverbullet = silver;};
   disabled = model {services.silverbullet = silver // {enable = false;};};
   grant = from: service: endpoint: {
@@ -259,6 +278,24 @@
         };
       };
     };
+    equivalentIPv6Listeners = lib.all (addresses:
+      rejected (listenerPair (builtins.head addresses) (lib.last addresses))) [
+      ["::1" "[::1]"]
+      ["[::1]" "::1"]
+      ["localhost" "[::1]"]
+      ["::1" "0:0:0:0:0:0:0:0001"]
+      ["fd00::a" "[FD00:0:0:0:0:0:0:000A]"]
+      ["0:0:0:0:0:0:0:0" "fd00::1"]
+      ["::ffff:192.0.2.1" "[0:0:0:0:0:FFFF:C000:201]"]
+      ["fe80::a%eth0" "[FE80:0:0:0:0:0:0:A%eth0]"]
+    ];
+    distinctIPv6Listeners = success [machines {laplace = listenerPair "fd00::1" "[fd00::2]";}];
+    ipv6ListenersOnDifferentPorts = success [
+      machines
+      {laplace = listenerPair "::1" "[::1]";}
+      {laplace.services.vikunja.settings.port = lib.mkForce 8102;}
+    ];
+    distinctIPv6Scopes = success [machines {laplace = listenerPair "fe80::1%eth0" "[fe80::1%eth1]";}];
     stateConflict = rejected {
       services = {
         silverbullet = silver;

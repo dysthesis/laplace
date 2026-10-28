@@ -159,12 +159,34 @@
       (filter (b: "${a.service}/${a.name}/${a.host}" < "${b.service}/${b.name}/${b.host}") list))
     list;
   shared = a: b: a.shared != null && a.shared == b.shared;
-  bindsOverlap = a: b:
-    a.listenAddress
-    == b.listenAddress
-    || builtins.elem a.listenAddress ["0.0.0.0" "::" "[::]" "*"]
-    || builtins.elem b.listenAddress ["0.0.0.0" "::" "[::]" "*"]
-    || (builtins.elem a.listenAddress ["localhost" "127.0.0.1" "::1"] && builtins.elem b.listenAddress ["localhost" "127.0.0.1" "::1"]);
+  normaliseBind = address: let
+    unbracketed = (import ../system/services/personal-common.nix {inherit lib;}).bindAddress address;
+    scoped = lib.splitString "%" unbracketed;
+    ip = builtins.head scoped;
+    pieces = lib.splitString ":" ip;
+    last = lib.last pieces;
+    # nixpkgs' IPv6 parser needs a hexadecimal rather than dotted IPv4 tail.
+    octets = map lib.toInt (lib.splitString "." last);
+    hextet = n: lib.toHexString (builtins.elemAt octets n * 256 + builtins.elemAt octets (n + 1));
+    ipv6 =
+      if lib.hasInfix "." last
+      then lib.concatStringsSep ":" (lib.init pieces ++ [(hextet 0) (hextet 2)])
+      else ip;
+  in
+    if lib.hasInfix ":" ip
+    then (lib.network.ipv6.fromString ipv6).address + lib.optionalString (builtins.length scoped > 1) "%${lib.concatStringsSep "%" (builtins.tail scoped)}"
+    else unbracketed;
+  bindsOverlap = a: b: let
+    left = normaliseBind a.listenAddress;
+    right = normaliseBind b.listenAddress;
+    wildcard = ["0.0.0.0" (normaliseBind "::") "*"];
+    loopback = ["localhost" "127.0.0.1" (normaliseBind "::1")];
+  in
+    left
+    == right
+    || builtins.elem left wildcard
+    || builtins.elem right wildcard
+    || (builtins.elem left loopback && builtins.elem right loopback);
   endpointAssertions = concatLists (mapAttrsToList (s: es:
     mapAttrsToList (name: e: {
       assertion =
