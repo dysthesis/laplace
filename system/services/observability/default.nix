@@ -127,11 +127,14 @@
     writers);
   # The source JSON remains a fixture; only the service-specific host selectors
   # are rendered from placement. Fleet metrics and journal identities are untouched.
-  minecraftHostTitle =
+  minecraftDashboardHost =
     if cfg.minecraftHost == null
-    then ""
-    else lib.toUpper (builtins.substring 0 1 cfg.minecraftHost) + builtins.substring 1 (builtins.stringLength cfg.minecraftHost) cfg.minecraftHost;
-  dashboards = pkgs.linkFarm "observability-dashboards" [
+    then "loki"
+    else cfg.minecraftHost;
+  minecraftHostTitle =
+    lib.toUpper (builtins.substring 0 1 minecraftDashboardHost)
+    + builtins.substring 1 (builtins.stringLength minecraftDashboardHost) minecraftDashboardHost;
+  dashboardFiles = [
     {
       name = "fleet.json";
       path = ./dashboards/fleet.json;
@@ -148,12 +151,179 @@
         (builtins.readFile ./dashboards/argus.json));
     }
   ];
-  minecraftDashboards = pkgs.linkFarm "minecraft-dashboards" (lib.optional (cfg.minecraftHost != null) {
+  minecraftDashboard = {
     name = "minecraft.json";
     path = pkgs.writeText "minecraft.json" (lib.replaceStrings
-      ["loki" "Loki"] [cfg.minecraftHost minecraftHostTitle]
+      ["loki" "Loki"] [minecraftDashboardHost minecraftHostTitle]
       (builtins.readFile ./dashboards/minecraft.json));
-  });
+  };
+  dashboards = pkgs.linkFarm "observability-dashboards" (dashboardFiles ++ lib.optional (cfg.minecraftHost != null) minecraftDashboard);
+  dashboardSources = pkgs.linkFarm "observability-dashboard-sources" (dashboardFiles ++ [minecraftDashboard]);
+  dashboardOwnership = pkgs.writeTextFile {
+    name = "grafana-dashboard-ownership";
+    destination = "/bin/grafana-dashboard-ownership";
+    executable = true;
+    text = ''
+      #!${pkgs.python3}/bin/python3
+      import configparser
+      from contextlib import closing
+      import http.client
+      import json
+      import os
+      from pathlib import Path
+      import secrets
+      import signal
+      import socket
+      import subprocess
+      import time
+
+      os.umask(0o077)
+      state = Path(os.environ["GRAFANA_STATE_DIR"])
+      runtime = Path(os.environ["RUNTIME_DIRECTORY"]) / "dashboard-ownership"
+      runtime.mkdir(mode=0o700, parents=True, exist_ok=True)
+      runtime.chmod(0o700)
+      staged = state / "dashboards"
+      staged.mkdir(mode=0o750, parents=True, exist_ok=True)
+      # Initialise bootstrap material only when missing, as on ordinary startup.
+      for name, size in [("secret-key", 32), ("bootstrap-admin-password", 24)]:
+          path = state / name
+          if not path.exists() or path.stat().st_size == 0:
+              path.write_text(secrets.token_hex(size) + "\n")
+
+      expected = {}
+      for source in Path(os.environ["GRAFANA_DASHBOARD_SOURCES"]).glob("*.json"):
+          target = staged / source.name
+          target.unlink(missing_ok=True)
+          target.symlink_to(source)
+          expected[json.loads(source.read_text())["uid"]] = source.name
+
+      provisioning = runtime / "provisioning"
+      for directory in ["dashboards", "datasources", "alerting", "plugins"]:
+          (provisioning / directory).mkdir(parents=True, exist_ok=True)
+      (provisioning / "dashboards" / "laplace.yaml").write_text(json.dumps({
+          "apiVersion": 1,
+          "providers": [{
+              "name": "Laplace",
+              "type": "file",
+              "disableDeletion": True,
+              "updateIntervalSeconds": 30,
+              "options": {"path": str(staged)},
+          }],
+      }))
+      private_socket = runtime / "grafana.sock"
+      private_socket.unlink(missing_ok=True)
+      settings = configparser.ConfigParser(interpolation=None)
+      settings.read_dict({
+          "paths": {
+              "data": os.environ["GRAFANA_DATA_PATH"],
+              "logs": str(runtime / "logs"),
+              "plugins": str(runtime / "plugins"),
+              "provisioning": str(provisioning),
+          },
+          "database": {"type": "sqlite3", "path": os.environ["GRAFANA_DATABASE_PATH"]},
+          "server": {
+              "protocol": "socket",
+              "socket": str(private_socket),
+              "socket_mode": "0600",
+              "root_url": "http://localhost/",
+          },
+          "security": {
+              "admin_user": os.environ["GRAFANA_ADMIN_USER"],
+              "admin_password": os.environ["GRAFANA_ADMIN_PASSWORD"],
+              "secret_key": os.environ["GRAFANA_SECRET_KEY"],
+          },
+          # Read-only readiness checks use only the owner-only Unix socket.
+          "auth.anonymous": {"enabled": "true", "org_role": "Viewer"},
+          "analytics": {
+              "reporting_enabled": "false",
+              "check_for_updates": "false",
+              "check_for_plugin_updates": "false",
+          },
+          "plugins": {
+              "preinstall_disabled": "true",
+              "public_key_retrieval_disabled": "true",
+          },
+          "unified_alerting": {"enabled": "false"},
+          "log": {"mode": "console", "level": "warn"},
+      })
+      config = runtime / "grafana.ini"
+      with config.open("w") as output:
+          settings.write(output)
+
+      class UnixConnection(http.client.HTTPConnection):
+          def connect(self):
+              self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+              self.sock.settimeout(self.timeout)
+              self.sock.connect(str(private_socket))
+
+      stop_requested = False
+
+      def interrupted(signum, frame):
+          global stop_requested
+          stop_requested = True
+
+      signal.signal(signal.SIGTERM, interrupted)
+      signal.signal(signal.SIGINT, interrupted)
+      log = runtime / "grafana.log"
+      try:
+          with log.open("w") as output:
+              process = subprocess.Popen(
+                  ["${lib.getExe config.services.grafana.package}", "server",
+                   "-homepath", "${config.services.grafana.package}/share/grafana",
+                   "-config", str(config)],
+                  stdout=output, stderr=subprocess.STDOUT,
+              )
+              try:
+                  deadline = time.monotonic() + 90
+                  pending = dict(expected)
+                  while pending:
+                      if stop_requested:
+                          raise RuntimeError("Dashboard reconciliation interrupted")
+                      if process.poll() is not None:
+                          raise RuntimeError("Private Grafana exited before dashboard reconciliation")
+                      for uid, filename in list(pending.items()):
+                          try:
+                              with closing(UnixConnection("localhost", timeout=2)) as connection:
+                                  connection.request("GET", "/api/dashboards/uid/" + uid)
+                                  response = connection.getresponse()
+                                  body = json.loads(response.read())
+                              # Grafana reports the stored external ID relative to
+                              # this provider's current path; an old store path
+                              # contains ../ segments, not just the filename.
+                              if (response.status == 200 and body["meta"]["provisioned"]
+                                      and body["meta"]["provisionedExternalId"] == filename):
+                                  del pending[uid]
+                          except (OSError, http.client.HTTPException, ValueError):
+                              pass
+                      if pending:
+                          if time.monotonic() >= deadline:
+                              raise RuntimeError(f"Dashboard reconciliation timed out: {pending}")
+                          time.sleep(0.25)
+                  if private_socket.stat().st_mode & 0o777 != 0o600:
+                      raise RuntimeError("Private Grafana socket is not owner-only")
+              finally:
+                  if process.poll() is None:
+                      process.terminate()
+                  try:
+                      process.wait(timeout=10)
+                  except subprocess.TimeoutExpired:
+                      process.kill()
+                      process.wait(timeout=10)
+                      raise RuntimeError("Private Grafana did not stop within its shutdown deadline")
+      except BaseException:
+          print(log.read_text(), flush=True)
+          raise
+
+      # The normal process starts only after the private process has stopped.
+      # Its deleting pass uses these same absolute paths, preserving every
+      # remaining dashboard while removing the now-missing game file.
+      if stop_requested:
+          raise SystemExit("Dashboard reconciliation interrupted")
+      if os.environ["GRAFANA_MINECRAFT_ENABLED"] != "1":
+          (staged / "minecraft.json").unlink()
+    '';
+    meta.mainProgram = "grafana-dashboard-ownership";
+  };
 in {
   options.laplace.services.observability = {
     enable = mkEnableOption "single-node homelab observability stack";
@@ -425,16 +595,9 @@ in {
                 {
                   name = "Laplace";
                   type = "file";
-                  disableDeletion = true;
-                  updateIntervalSeconds = 30;
-                  options.path = dashboards;
-                }
-                {
-                  name = "Minecraft";
-                  type = "file";
                   disableDeletion = false;
                   updateIntervalSeconds = 30;
-                  options.path = minecraftDashboards;
+                  options.path = "${config.services.grafana.dataDir}/dashboards";
                 }
               ];
             };
@@ -557,6 +720,12 @@ in {
         "/var/backups/grafana"
       ];
 
+      # Render once for provisioning, the home dashboard and build-time checks.
+      system.build = {
+        observabilityDashboards = dashboards;
+        observabilityDashboardOwnership = dashboardOwnership;
+      };
+
       systemd = {
         tmpfiles.rules = [
           "d /var/lib/grafana 0750 grafana grafana -"
@@ -578,12 +747,25 @@ in {
             wants = ["vmalert-logs.service"];
           };
           grafana = {
-            # Keep bootstrap secrets local until Argus has SOPS; rotate Grafana keys after changes.
+            # Reconcile paths without deletion before the normal deleting pass.
+            # ExecStartPre runs with the normal process stopped, including on restart.
             preStart = lib.mkBefore ''
-              umask 077
-              test -s /var/lib/grafana/secret-key || ${pkgs.openssl}/bin/openssl rand -hex 32 > /var/lib/grafana/secret-key
-              test -s /var/lib/grafana/bootstrap-admin-password || ${pkgs.openssl}/bin/openssl rand -hex 24 > /var/lib/grafana/bootstrap-admin-password
+              ${lib.getExe dashboardOwnership}
             '';
+            environment = {
+              GRAFANA_STATE_DIR = config.services.grafana.dataDir;
+              GRAFANA_DATA_PATH = config.services.grafana.settings.paths.data or "${config.services.grafana.dataDir}/data";
+              GRAFANA_DATABASE_PATH = config.services.grafana.settings.database.path;
+              GRAFANA_ADMIN_USER = config.services.grafana.settings.security.admin_user;
+              GRAFANA_ADMIN_PASSWORD = config.services.grafana.settings.security.admin_password;
+              GRAFANA_SECRET_KEY = config.services.grafana.settings.security.secret_key;
+              GRAFANA_DASHBOARD_SOURCES = "${dashboardSources}";
+              GRAFANA_MINECRAFT_ENABLED =
+                if cfg.minecraftHost == null
+                then "0"
+                else "1";
+            };
+            serviceConfig.TimeoutStartSec = 180;
             after = ["systemd-tmpfiles-setup.service" "victoriametrics.service" "victorialogs.service"];
             wants = ["victoriametrics.service" "victorialogs.service"];
           };

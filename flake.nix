@@ -498,13 +498,12 @@
             assert !badWriter.success;
               pkgs.runCommand "telemetry-endpoint-contract-check" {} "touch $out";
 
+          observability-dashboard-lifecycle = import ./nix/tests/observability-dashboard-lifecycle.nix {
+            inherit pkgs lib inputs self;
+          };
+
           observability-dashboards = let
-            providers = serviceFixtures.observability.services.grafana.provision.dashboards.settings.providers;
-            dashboards = pkgs.linkFarm "checked-dashboards" (lib.imap0 (index: provider: {
-                name = toString index;
-                path = provider.options.path;
-              })
-              providers);
+            dashboards = serviceFixtures.observability.system.build.observabilityDashboards;
             vmalert = serviceFixtures.observability.services.vmalert.package;
           in
             pkgs.runCommand "observability-dashboards-check" {nativeBuildInputs = [pkgs.jq vmalert];} ''
@@ -520,7 +519,7 @@
                     and all(.targets[]; .expr | type == "string" and length > 0)
                   )
                 )
-              ' ${dashboards}/*/*.json
+              ' ${dashboards}/*.json
 
               jq -s '
                 [
@@ -536,7 +535,7 @@
                     record: ("dashboard_query_" + (.key | tostring)),
                     expr: .value
                   })}]}
-              ' ${dashboards}/*/*.json > dashboard-promql.json
+              ' ${dashboards}/*.json > dashboard-promql.json
               vmalert -rule=dashboard-promql.json -dryRun
 
               jq -s '
@@ -554,7 +553,7 @@
                     alert: ("DashboardLogQuery" + (.key | tostring)),
                     expr: .value
                   })}]}
-              ' ${dashboards}/*/*.json > dashboard-logsql.json
+              ' ${dashboards}/*.json > dashboard-logsql.json
               vmalert -rule=dashboard-logsql.json -rule.defaultRuleType=vlogs -dryRun
               touch $out
             '';

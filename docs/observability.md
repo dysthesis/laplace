@@ -77,9 +77,9 @@ key without following Grafana's key-rotation procedure.
 ## Dashboards
 
 Grafana provisions the fleet/journal/receiver dashboards and, while the Minecraft
-instance is active, its separate game dashboard. Sources live in
-`system/services/observability/dashboards`; the generated files parameterize the
-active receiver and game placements without relabeling historical host metrics.
+instance is active, its game dashboard. Sources live in
+`system/services/observability/dashboards`; the generated files parameterise the
+active receiver and game placements without relabelling historical host metrics.
 
 - **Fleet overview** is the default home dashboard. Its host selector drives
   node health, CPU, RAM, swap, load, PSI, persistent-root storage, disk/network
@@ -95,8 +95,37 @@ active receiver and game placements without relabeling historical host metrics.
   15 seconds; port 25585 remains unexposed. Disabling Minecraft removes its
   scrape contribution, rule group and provisioned dashboard.
 
+All generated dashboards keep the historical `Laplace` provider identity and use
+the real, stable `/var/lib/grafana/dashboards` directory. Grafana's `preStart`
+first runs a private, non-deleting provisioning pass against the configured
+database with all four dashboard files present. This rebinds old Nix store paths
+without changing dashboard identities or their associated data. It does not
+change managers or reset credentials.
+
+The private process exposes only a mode-0600 Unix socket, uses only staged
+dashboard provisioning, and must reconcile every dashboard and stop before normal
+startup. Reconciliation has a 90-second deadline; failures prevent normal startup
+and print its log. There is deliberately no migration marker that could disagree
+with a restored database. Each service start/restart therefore costs one extra
+private Grafana start. The helper then removes the Minecraft file when the
+instance is disabled or absent; normal Grafana starts the same provider with
+deletion enabled. Only the missing game dashboard is deleted, including on the
+first cutover. Ordinary provisioned and manually created dashboards remain.
+No direct database mutation or intermediate enabled deployment is required.
+
 `nix build .#checks.x86_64-linux.observability-dashboards` validates dashboard
 identity, datasource references, PromQL, and aggregate LogsQL before deployment.
+
+`nix build .#checks.x86_64-linux.observability-dashboard-lifecycle` runs real
+Grafana against disposable SQLite state. It provisions the historical dashboard
+set, then reuses each database through a first disabled, absent or enabled
+cutover and subsequent enable/disable transitions. It also checks that the
+ordinary provisioned dashboards retain their numeric identities and an associated
+annotation, alongside a manually created dashboard's data. It runs the exact
+production preparation helper, checks that its private process stops, and covers
+interrupted preparation followed by recovery. No production credentials,
+deployment or VM support are needed; pinned Grafana uses disposable local state
+and loopback/Unix sockets, with plugin key retrieval disabled.
 
 ## Notification host
 
