@@ -37,11 +37,12 @@ in
   pkgs.runCommand "observability-dashboard-lifecycle" {nativeBuildInputs = [pkgs.python3];} ''
     python - <<'PY'
     import base64
-    from contextlib import contextmanager
+    from contextlib import closing, contextmanager
     import json
     import os
     from pathlib import Path
     import socket
+    import sqlite3
     import subprocess
     import tempfile
     import time
@@ -52,14 +53,16 @@ in
     ordinary_uids = ["laplace-fleet", "laplace-journal", "argus-self"]
     game_uid = "minecraft-retirement-home"
     manual_uid = "retained-manual-dashboard"
+    foreign_uid = "retained-foreign-dashboard"
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     auth = base64.b64encode(b"admin:dashboard-test-password").decode()
 
-    def api(path, payload=None, expected=200):
+    def api(path, payload=None, expected=200, method=None):
         request = urllib.request.Request(
             "http://127.0.0.1:3000" + path,
             data=None if payload is None else json.dumps(payload).encode(),
             headers={"Authorization": "Basic " + auth, "Content-Type": "application/json"},
+            method=method,
         )
         try:
             response = opener.open(request, timeout=5)
@@ -76,9 +79,7 @@ in
     def preparation_environment(state, generation):
         return os.environ | generations[generation]["environment"] | {
             "GRAFANA_STATE_DIR": str(state),
-            "GRAFANA_DATA_PATH": str(state / "data"),
             "GRAFANA_DATABASE_PATH": str(state / "grafana.db"),
-            "GRAFANA_ADMIN_PASSWORD": "dashboard-test-password",
             "GRAFANA_SECRET_KEY": "disposable-dashboard-test-secret",
             "RUNTIME_DIRECTORY": str(state / "runtime"),
         }
@@ -88,7 +89,53 @@ in
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
             assert connection.connect_ex(str(private_socket)) != 0, "Private Grafana was left running"
 
+    def database_snapshot(state):
+        with closing(sqlite3.connect((state / "grafana.db").as_uri() + "?mode=ro", uri=True)) as db:
+            return tuple(db.iterdump())
+
+    def foreign_record(state):
+        path = state / "grafana.db"
+        if not path.exists():
+            return None
+        with closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True)) as db:
+            return db.execute(
+                'SELECT resource_version, value FROM resource WHERE namespace = ? AND "group" = ? '
+                'AND resource = ? AND name = ?',
+                ("default", "dashboard.grafana.app", "dashboards", foreign_uid),
+            ).fetchone()
+
+    def copy_database(source, destination):
+        with closing(sqlite3.connect(source.as_uri() + "?mode=ro", uri=True)) as source_db:
+            with closing(sqlite3.connect(destination)) as destination_db:
+                source_db.backup(destination_db)
+
+    def prepare(state, generation, timeout=130, runtime=None):
+        foreign_before = foreign_record(state)
+        environment = preparation_environment(state, generation)
+        if runtime is not None:
+            environment["RUNTIME_DIRECTORY"] = str(runtime)
+        subprocess.run([generations[generation]["prepare"]], env=environment, check=True, timeout=timeout)
+        assert_private_stopped(state)
+        # Check before the normal Foreign provider could hide a destructive
+        # private pass by importing its dashboard again with a different ID.
+        assert foreign_record(state) == foreign_before
+
+    def assert_bounded_preparation(state, generation):
+        before = database_snapshot(state)
+        bootstrap = {name: (state / name).read_bytes()
+                     for name in ["secret-key", "bootstrap-admin-password"]}
+        # A stable database must not need any private-process runtime directory.
+        # Using a file here makes an unwanted extra migration fail immediately.
+        unused = state / "unused-runtime"
+        unused.write_text("No private startup on a stable database\n")
+        for _ in range(3):
+            prepare(state, generation, timeout=5, runtime=unused)
+            assert database_snapshot(state) == before
+        assert {name: (state / name).read_bytes() for name in bootstrap} == bootstrap
+        assert unused.read_text() == "No private startup on a stable database\n"
+
     def interrupt_preparation(state):
+        before = database_snapshot(state)
         environment = preparation_environment(state, "disabled")
         broken = state / "broken-sources"
         broken.mkdir()
@@ -124,7 +171,8 @@ in
                         process.terminate()
                         process.wait(timeout=25)
             assert_private_stopped(state)
-            # Failed preparation must not advance to the deleting pass.
+            # Failed preparation must not commit partially changed ownership.
+            assert database_snapshot(state) == before
             assert (state / "dashboards" / "minecraft.json").exists()
         except BaseException:
             print(log.read_text())
@@ -134,12 +182,24 @@ in
     def running(state, generation):
         settings = json.loads(json.dumps(generations[generation]["settings"]))
         if generation != "baseline":
-            environment = preparation_environment(state, generation)
-            # Execute the exact production ExecStartPre helper, changing only
-            # its configured state/runtime paths and disposable credentials.
-            subprocess.run([generations[generation]["prepare"]], env=environment, check=True, timeout=130)
-            assert_private_stopped(state)
+            # Execute the exact production ExecStartPre helper with disposable
+            # state and secrets, retaining its real database migration behavior.
+            prepare(state, generation)
             settings["providers"][0]["options"]["path"] = str(state / "dashboards")
+        foreign = state / "foreign-dashboards"
+        foreign.mkdir(parents=True, exist_ok=True)
+        (foreign / "minecraft.json").write_text(json.dumps({
+            "uid": foreign_uid,
+            "title": "Retained foreign provisioned dashboard",
+            "schemaVersion": 39,
+            "panels": [],
+        }))
+        settings["providers"].append({
+            "name": "Foreign",
+            "type": "file",
+            "disableDeletion": False,
+            "options": {"path": str(foreign)},
+        })
         provisioning = state / "provisioning"
         for directory in ["dashboards", "datasources", "alerting", "plugins"]:
             (provisioning / directory).mkdir(parents=True, exist_ok=True)
@@ -208,17 +268,15 @@ in
             raise
 
     def assert_game(enabled):
-        matches = api("/api/search?type=dash-db&query=Minecraft")
         if enabled:
-            assert len(matches) == 1 and matches[0]["uid"] == game_uid, matches
             game = dashboard(game_uid)
             assert game["meta"]["provisioned"], game
             assert game["meta"]["provisionedExternalId"] == "minecraft.json", game
             return game["dashboard"]["id"]
         api("/api/dashboards/uid/" + game_uid, expected=404)
-        assert matches == [], matches
 
     def assert_retained(originals, manual, annotation_id):
+        assert api("/api/org")["name"] == "Renamed Laplace organization"
         for uid, original in originals.items():
             current = dashboard(uid)
             assert current["meta"]["provisioned"], current
@@ -238,12 +296,21 @@ in
         assert set(uids) - {game_uid} == set(originals) | {manual_uid}, uids
 
     with tempfile.TemporaryDirectory() as temporary:
+        for generation in ["enabled", "disabled", "absent"]:
+            state = Path(temporary) / ("fresh-" + generation)
+            with running(state, generation):
+                assert_game(generation == "enabled")
+                for uid in ordinary_uids:
+                    assert dashboard(uid)["meta"]["provisioned"]
+            assert not (state / "runtime").exists(), "Fresh startup ran a private migration"
+            assert_bounded_preparation(state, generation)
+
         for first in ["disabled", "absent", "enabled"]:
-            # Every scenario starts with historical ownership and keeps the same
-            # SQLite path through all later starts; nothing resets or edits it.
+            # The organization display name changes before the first cutover.
+            # All later starts retain the same database, including its user data.
             state = Path(temporary) / first
             with running(state, "baseline"):
-                originals = {uid: dashboard(uid) for uid in ordinary_uids}
+                originals = {uid: dashboard(uid) for uid in ordinary_uids + [foreign_uid]}
                 game_id = assert_game(True)
                 annotation_id = api("/api/annotations", {
                     "dashboardUID": "laplace-fleet",
@@ -268,8 +335,13 @@ in
                     "overwrite": False,
                 })
                 manual = dashboard(manual_uid)
+                api("/api/org", {"name": "Renamed Laplace organization"}, method="PUT")
                 assert_retained(originals, manual, annotation_id)
             assert (state / "grafana.db").is_file()
+            legacy = state / "legacy.db"
+            copy_database(state / "grafana.db", legacy)
+            if first == "disabled":
+                interrupt_preparation(state)
 
             with running(state, first):
                 current_game_id = assert_game(first == "enabled")
@@ -277,6 +349,7 @@ in
                     assert current_game_id == game_id
                 assert_retained(originals, manual, annotation_id)
             previous_game_id = current_game_id
+            assert_bounded_preparation(state, first)
 
             # Disabled and absent declarations both reach real provisioning,
             # including when they are the first cutover from historical state.
@@ -287,14 +360,20 @@ in
                         assert current_game_id == previous_game_id
                     previous_game_id = current_game_id
                     assert_retained(originals, manual, annotation_id)
+                assert_bounded_preparation(state, generation)
 
             if first == "disabled":
-                # Interruption stops the private process and fails closed; a
-                # subsequent genuine preparation must still preserve the data.
-                interrupt_preparation(state)
+                # Restoring historical ownership must trigger adoption again,
+                # even though this filesystem has already completed a cutover.
+                copy_database(legacy, state / "grafana.db")
                 with running(state, "enabled"):
-                    assert_game(True)
+                    assert assert_game(True) == game_id
                     assert_retained(originals, manual, annotation_id)
+                assert_bounded_preparation(state, "enabled")
+                with running(state, "disabled"):
+                    assert_game(False)
+                    assert_retained(originals, manual, annotation_id)
+                assert_bounded_preparation(state, "disabled")
     PY
     touch "$out"
   ''

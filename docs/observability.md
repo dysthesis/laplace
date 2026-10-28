@@ -96,36 +96,41 @@ active receiver and game placements without relabelling historical host metrics.
   scrape contribution, rule group and provisioned dashboard.
 
 All generated dashboards keep the historical `Laplace` provider identity and use
-the real, stable `/var/lib/grafana/dashboards` directory. Grafana's `preStart`
-first runs a private, non-deleting provisioning pass against the configured
-database with all four dashboard files present. This rebinds old Nix store paths
-without changing dashboard identities or their associated data. It does not
-change managers or reset credentials.
+the stable `/var/lib/grafana/dashboards` directory. Before normal startup, the
+helper reads actual ownership from the configured SQLite database: unified
+resource annotations after Grafana's own storage migration, legacy provisioning
+rows otherwise. Only Laplace-owned known UIDs in numeric organization 1 with
+historical `/nix/store/` paths need adoption. Renaming that organization is safe;
+no anonymous access, organization display name or admin password is used.
 
-The private process exposes only a mode-0600 Unix socket, uses only staged
-dashboard provisioning, and must reconcile every dashboard and stop before normal
-startup. Reconciliation has a 90-second deadline; failures prevent normal startup
-and print its log. There is deliberately no migration marker that could disagree
-with a restored database. Each service start/restart therefore costs one extra
-private Grafana start. The helper then removes the Minecraft file when the
-instance is disabled or absent; normal Grafana starts the same provider with
-deletion enabled. Only the missing game dashboard is deleted, including on the
-first cutover. Ordinary provisioned and manually created dashboards remain.
-No direct database mutation or intermediate enabled deployment is required.
+Fresh and already-adopted databases skip private Grafana entirely. When adoption
+is needed, the helper copies SQLite into a private runtime directory and runs
+Grafana's native non-deleting provisioner against that copy. Foreign file-provider
+names remain registered without walking their files. The private process exposes
+only a mode-0600 Unix socket; readiness checks inspect persisted ownership, not
+HTTP. After all candidates have stable ownership and the process has stopped,
+SQLite's backup API transactionally copies the completed database back. Failed or
+interrupted preparation leaves the original ownership intact. Allow runtime space
+for the database copy and private index; reconciliation has a 90-second deadline.
+
+There is no separate completion marker: restoring historical ownership triggers
+adoption again. Normal provisioning sees the configured dashboard files with
+deletion enabled, so disabling Minecraft removes only its managed dashboard,
+including on the first cutover. Identities, annotations, manual dashboards and
+foreign ownership survive adoption; credentials are not reset.
 
 `nix build .#checks.x86_64-linux.observability-dashboards` validates dashboard
 identity, datasource references, PromQL, and aggregate LogsQL before deployment.
 
-`nix build .#checks.x86_64-linux.observability-dashboard-lifecycle` runs real
-Grafana against disposable SQLite state. It provisions the historical dashboard
-set, then reuses each database through a first disabled, absent or enabled
-cutover and subsequent enable/disable transitions. It also checks that the
-ordinary provisioned dashboards retain their numeric identities and an associated
-annotation, alongside a manually created dashboard's data. It runs the exact
-production preparation helper, checks that its private process stops, and covers
-interrupted preparation followed by recovery. No production credentials,
-deployment or VM support are needed; pinned Grafana uses disposable local state
-and loopback/Unix sockets, with plugin key retrieval disabled.
+`nix build .#checks.x86_64-linux.observability-dashboard-lifecycle` runs the exact
+production helper and real Grafana against disposable SQLite state. It covers
+fresh startup, a renamed organization before first adoption and later restarts,
+enabled/disabled/absent Minecraft transitions, numeric dashboard identities,
+annotations and manual/foreign dashboards. Repeated preparation of stable state
+must leave the database unchanged without needing a private runtime directory.
+Interrupted adoption must leave original ownership intact; restoring historical
+ownership after a completed cutover must adopt again. No production credentials,
+deployment or VM support are needed.
 
 ## Notification host
 

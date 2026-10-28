@@ -167,21 +167,19 @@
       #!${pkgs.python3}/bin/python3
       import configparser
       from contextlib import closing
-      import http.client
       import json
       import os
       from pathlib import Path
       import secrets
       import signal
-      import socket
+      import sqlite3
       import subprocess
+      import tempfile
       import time
 
       os.umask(0o077)
       state = Path(os.environ["GRAFANA_STATE_DIR"])
-      runtime = Path(os.environ["RUNTIME_DIRECTORY"]) / "dashboard-ownership"
-      runtime.mkdir(mode=0o700, parents=True, exist_ok=True)
-      runtime.chmod(0o700)
+      database = Path(os.environ["GRAFANA_DATABASE_PATH"])
       staged = state / "dashboards"
       staged.mkdir(mode=0o750, parents=True, exist_ok=True)
       # Initialise bootstrap material only when missing, as on ordinary startup.
@@ -190,137 +188,213 @@
           if not path.exists() or path.stat().st_size == 0:
               path.write_text(secrets.token_hex(size) + "\n")
 
-      expected = {}
-      for source in Path(os.environ["GRAFANA_DASHBOARD_SOURCES"]).glob("*.json"):
-          target = staged / source.name
-          target.unlink(missing_ok=True)
-          target.symlink_to(source)
-          expected[json.loads(source.read_text())["uid"]] = source.name
+      sources = {
+          json.loads(source.read_text())["uid"]: source
+          for source in Path(os.environ["GRAFANA_DASHBOARD_SOURCES"]).glob("*.json")
+      }
 
-      provisioning = runtime / "provisioning"
-      for directory in ["dashboards", "datasources", "alerting", "plugins"]:
-          (provisioning / directory).mkdir(parents=True, exist_ok=True)
-      (provisioning / "dashboards" / "laplace.yaml").write_text(json.dumps({
-          "apiVersion": 1,
-          "providers": [{
-              "name": "Laplace",
-              "type": "file",
-              "disableDeletion": True,
-              "updateIntervalSeconds": 30,
-              "options": {"path": str(staged)},
-          }],
-      }))
-      private_socket = runtime / "grafana.sock"
-      private_socket.unlink(missing_ok=True)
-      settings = configparser.ConfigParser(interpolation=None)
-      settings.read_dict({
-          "paths": {
-              "data": os.environ["GRAFANA_DATA_PATH"],
-              "logs": str(runtime / "logs"),
-              "plugins": str(runtime / "plugins"),
-              "provisioning": str(provisioning),
-          },
-          "database": {"type": "sqlite3", "path": os.environ["GRAFANA_DATABASE_PATH"]},
-          "server": {
-              "protocol": "socket",
-              "socket": str(private_socket),
-              "socket_mode": "0600",
-              "root_url": "http://localhost/",
-          },
-          "security": {
-              "admin_user": os.environ["GRAFANA_ADMIN_USER"],
-              "admin_password": os.environ["GRAFANA_ADMIN_PASSWORD"],
-              "secret_key": os.environ["GRAFANA_SECRET_KEY"],
-          },
-          # Read-only readiness checks use only the owner-only Unix socket.
-          "auth.anonymous": {"enabled": "true", "org_role": "Viewer"},
-          "analytics": {
-              "reporting_enabled": "false",
-              "check_for_updates": "false",
-              "check_for_plugin_updates": "false",
-          },
-          "plugins": {
-              "preinstall_disabled": "true",
-              "public_key_retrieval_disabled": "true",
-          },
-          "unified_alerting": {"enabled": "false"},
-          "log": {"mode": "console", "level": "warn"},
-      })
-      config = runtime / "grafana.ini"
-      with config.open("w") as output:
-          settings.write(output)
+      def dashboard_paths(path):
+          if not path.exists():
+              return {}
+          with closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True, timeout=2)) as db:
+              db.execute("BEGIN")
+              tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+              # Grafana 13 keeps legacy rows after moving dashboards to resource.
+              # Its own migration log selects the authoritative ownership schema;
+              # it is not a Laplace cutover marker and is restored with the DB.
+              unified = "unifiedstorage_migration_log" in tables and db.execute(
+                  "SELECT 1 FROM unifiedstorage_migration_log "
+                  "WHERE migration_id = ? AND success = 1 LIMIT 1",
+                  ("folders and dashboards migration",),
+              ).fetchone()
+              placeholders = ",".join("?" for _ in sources)
+              if unified:
+                  rows = db.execute(
+                      'SELECT name, value FROM resource WHERE namespace = ? AND "group" = ? '
+                      f'AND resource = ? AND name IN ({placeholders})',
+                      ("default", "dashboard.grafana.app", "dashboards", *sources),
+                  )
+                  result = {}
+                  for uid, value in rows:
+                      annotations = json.loads(value)["metadata"].get("annotations", {})
+                      if (annotations.get("grafana.app/managedBy") == "classic-file-provisioning"
+                              and annotations.get("grafana.app/managerId") == "Laplace"):
+                          result[uid] = annotations.get("grafana.app/sourcePath", "")
+                  return result
+              if {"dashboard", "dashboard_provisioning"} <= tables:
+                  # The provider's historical default is numeric org ID 1,
+                  # called "default" in unified storage, never its display name.
+                  return dict(db.execute(
+                      "SELECT d.uid, p.external_id FROM dashboard AS d "
+                      "JOIN dashboard_provisioning AS p ON p.dashboard_id = d.id "
+                      f"WHERE d.org_id = 1 AND p.name = ? AND d.uid IN ({placeholders})",
+                      ("Laplace", *sources),
+                  ))
+              return {}
 
-      class UnixConnection(http.client.HTTPConnection):
-          def connect(self):
-              self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-              self.sock.settimeout(self.timeout)
-              self.sock.connect(str(private_socket))
+      owned = dashboard_paths(database)
+      pending = {
+          uid: source.name for uid, source in sources.items()
+          if owned.get(uid, "").startswith("/nix/store/")
+          and Path(owned[uid]).name == source.name
+      }
 
-      stop_requested = False
+      def stage_dashboards(uids):
+          for uid, source in sources.items():
+              target = staged / source.name
+              target.unlink(missing_ok=True)
+              if uid in uids:
+                  target.symlink_to(source)
 
-      def interrupted(signum, frame):
-          global stop_requested
-          stop_requested = True
+      if pending:
+          # Only existing Laplace-owned dashboards take part in adoption.
+          # Fresh and already-stable databases need no extra Grafana process.
+          stage_dashboards(owned)
+          runtime = Path(os.environ["RUNTIME_DIRECTORY"]) / "dashboard-ownership"
+          runtime.mkdir(mode=0o700, parents=True, exist_ok=True)
+          runtime.chmod(0o700)
+          stop_requested = False
 
-      signal.signal(signal.SIGTERM, interrupted)
-      signal.signal(signal.SIGINT, interrupted)
-      log = runtime / "grafana.log"
-      try:
-          with log.open("w") as output:
-              process = subprocess.Popen(
-                  ["${lib.getExe config.services.grafana.package}", "server",
-                   "-homepath", "${config.services.grafana.package}/share/grafana",
-                   "-config", str(config)],
-                  stdout=output, stderr=subprocess.STDOUT,
-              )
+          def interrupted(signum, frame):
+              global stop_requested
+              stop_requested = True
+
+          signal.signal(signal.SIGTERM, interrupted)
+          signal.signal(signal.SIGINT, interrupted)
+
+          def copy_database(source, destination):
+              with closing(sqlite3.connect(source.as_uri() + "?mode=ro", uri=True)) as source_db:
+                  with closing(sqlite3.connect(destination)) as destination_db:
+                      source_db.backup(destination_db)
+
+          log = runtime / "grafana.log"
+          with tempfile.TemporaryDirectory(prefix="migration-", dir=runtime) as temporary:
+              work = Path(temporary)
+              private_database = work / "grafana.db"
+              # Native provisioning can temporarily unprovision a dashboard
+              # before importing it. Commit only a complete, stopped migration;
+              # failure or interruption must leave the original ownership intact.
+              copy_database(database, private_database)
+              provisioning = work / "provisioning"
+              for directory in ["dashboards", "datasources", "alerting", "plugins"]:
+                  (provisioning / directory).mkdir(parents=True, exist_ok=True)
+              # Grafana deletes dashboards whose file-provider names disappear
+              # from its config. Keep foreign providers registered but unwatched:
+              # a nonexistent path makes their readers return without changes.
+              provider_names = set()
+              with closing(sqlite3.connect(private_database.as_uri() + "?mode=ro", uri=True)) as db:
+                  tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+                  if "dashboard_provisioning" in tables:
+                      provider_names.update(row[0] for row in db.execute(
+                          "SELECT DISTINCT name FROM dashboard_provisioning"
+                      ) if row[0])
+                  if "resource" in tables:
+                      provider_names.update(row[0] for row in db.execute(
+                          'SELECT DISTINCT json_extract(value, ?) FROM resource WHERE "group" = ? '
+                          'AND resource = ? AND json_extract(value, ?) = ?',
+                          ('$.metadata.annotations."grafana.app/managerId"', "dashboard.grafana.app",
+                           "dashboards", '$.metadata.annotations."grafana.app/managedBy"',
+                           "classic-file-provisioning"),
+                      ) if row[0])
+              (provisioning / "dashboards" / "laplace.yaml").write_text(json.dumps({
+                  "apiVersion": 1,
+                  "providers": [{
+                      "name": "Laplace",
+                      "type": "file",
+                      "disableDeletion": True,
+                      "updateIntervalSeconds": 30,
+                      "options": {"path": str(staged)},
+                  }] + [{
+                      "name": name,
+                      "type": "file",
+                      "disableDeletion": True,
+                      "options": {"path": str(work / "unwatched")},
+                  } for name in sorted(provider_names - {"Laplace"})],
+              }))
+              private_socket = runtime / "grafana.sock"
+              private_socket.unlink(missing_ok=True)
+              settings = configparser.ConfigParser(interpolation=None)
+              settings.read_dict({
+                  "paths": {
+                      "data": str(work / "data"),
+                      "logs": str(work / "logs"),
+                      "plugins": str(work / "plugins"),
+                      "provisioning": str(provisioning),
+                  },
+                  "database": {"type": "sqlite3", "path": str(private_database)},
+                  "server": {
+                      "protocol": "socket",
+                      "socket": str(private_socket),
+                      "socket_mode": "0600",
+                      "root_url": "http://localhost/",
+                  },
+                  "security": {
+                      "disable_initial_admin_creation": "true",
+                      "secret_key": os.environ["GRAFANA_SECRET_KEY"],
+                  },
+                  "analytics": {
+                      "reporting_enabled": "false",
+                      "check_for_updates": "false",
+                      "check_for_plugin_updates": "false",
+                  },
+                  "plugins": {
+                      "preinstall_disabled": "true",
+                      "public_key_retrieval_disabled": "true",
+                  },
+                  "unified_alerting": {"enabled": "false"},
+                  "log": {"mode": "console", "level": "warn"},
+              })
+              config = work / "grafana.ini"
+              with config.open("w") as output:
+                  settings.write(output)
               try:
-                  deadline = time.monotonic() + 90
-                  pending = dict(expected)
-                  while pending:
-                      if stop_requested:
-                          raise RuntimeError("Dashboard reconciliation interrupted")
-                      if process.poll() is not None:
-                          raise RuntimeError("Private Grafana exited before dashboard reconciliation")
-                      for uid, filename in list(pending.items()):
+                  with log.open("w") as output:
+                      process = subprocess.Popen(
+                          ["${lib.getExe config.services.grafana.package}", "server",
+                           "-homepath", "${config.services.grafana.package}/share/grafana",
+                           "-config", str(config)],
+                          stdout=output, stderr=subprocess.STDOUT,
+                      )
+                      try:
+                          deadline = time.monotonic() + 90
+                          while pending:
+                              if stop_requested:
+                                  raise RuntimeError("Dashboard reconciliation interrupted")
+                              if process.poll() is not None:
+                                  raise RuntimeError("Private Grafana exited before dashboard reconciliation")
+                              paths = dashboard_paths(private_database)
+                              pending = {
+                                  uid: filename for uid, filename in pending.items()
+                                  if paths.get(uid) not in (filename, str(staged / filename))
+                              }
+                              if pending:
+                                  if time.monotonic() >= deadline:
+                                      raise RuntimeError(f"Dashboard reconciliation timed out: {pending}")
+                                  time.sleep(0.25)
+                      finally:
+                          if process.poll() is None:
+                              process.terminate()
                           try:
-                              with closing(UnixConnection("localhost", timeout=2)) as connection:
-                                  connection.request("GET", "/api/dashboards/uid/" + uid)
-                                  response = connection.getresponse()
-                                  body = json.loads(response.read())
-                              # Grafana reports the stored external ID relative to
-                              # this provider's current path; an old store path
-                              # contains ../ segments, not just the filename.
-                              if (response.status == 200 and body["meta"]["provisioned"]
-                                      and body["meta"]["provisionedExternalId"] == filename):
-                                  del pending[uid]
-                          except (OSError, http.client.HTTPException, ValueError):
-                              pass
-                      if pending:
-                          if time.monotonic() >= deadline:
-                              raise RuntimeError(f"Dashboard reconciliation timed out: {pending}")
-                          time.sleep(0.25)
-                  if private_socket.stat().st_mode & 0o777 != 0o600:
-                      raise RuntimeError("Private Grafana socket is not owner-only")
-              finally:
-                  if process.poll() is None:
-                      process.terminate()
-                  try:
-                      process.wait(timeout=10)
-                  except subprocess.TimeoutExpired:
-                      process.kill()
-                      process.wait(timeout=10)
-                      raise RuntimeError("Private Grafana did not stop within its shutdown deadline")
-      except BaseException:
-          print(log.read_text(), flush=True)
-          raise
+                              process.wait(timeout=10)
+                          except subprocess.TimeoutExpired:
+                              process.kill()
+                              process.wait(timeout=10)
+                              raise RuntimeError("Private Grafana did not stop within its shutdown deadline")
+                  if stop_requested:
+                      raise RuntimeError("Dashboard reconciliation interrupted")
+                  copy_database(private_database, database)
+                  if stop_requested:
+                      raise RuntimeError("Dashboard reconciliation interrupted")
+              except BaseException:
+                  print(log.read_text(), flush=True)
+                  raise
 
-      # The normal process starts only after the private process has stopped.
-      # Its deleting pass uses these same absolute paths, preserving every
-      # remaining dashboard while removing the now-missing game file.
-      if stop_requested:
-          raise SystemExit("Dashboard reconciliation interrupted")
-      if os.environ["GRAFANA_MINECRAFT_ENABLED"] != "1":
-          (staged / "minecraft.json").unlink()
+      # Normal deleting provisioning sees only the configured files, at the same
+      # stable paths. In particular a disabled game is never recreated on restart.
+      stage_dashboards({
+          uid for uid, source in sources.items()
+          if source.name != "minecraft.json" or os.environ["GRAFANA_MINECRAFT_ENABLED"] == "1"
+      })
     '';
     meta.mainProgram = "grafana-dashboard-ownership";
   };
@@ -747,17 +821,14 @@ in {
             wants = ["vmalert-logs.service"];
           };
           grafana = {
-            # Reconcile paths without deletion before the normal deleting pass.
+            # Adopt historical ownership only when the retained DB needs it.
             # ExecStartPre runs with the normal process stopped, including on restart.
             preStart = lib.mkBefore ''
               ${lib.getExe dashboardOwnership}
             '';
             environment = {
               GRAFANA_STATE_DIR = config.services.grafana.dataDir;
-              GRAFANA_DATA_PATH = config.services.grafana.settings.paths.data or "${config.services.grafana.dataDir}/data";
               GRAFANA_DATABASE_PATH = config.services.grafana.settings.database.path;
-              GRAFANA_ADMIN_USER = config.services.grafana.settings.security.admin_user;
-              GRAFANA_ADMIN_PASSWORD = config.services.grafana.settings.security.admin_password;
               GRAFANA_SECRET_KEY = config.services.grafana.settings.security.secret_key;
               GRAFANA_DASHBOARD_SOURCES = "${dashboardSources}";
               GRAFANA_MINECRAFT_ENABLED =
