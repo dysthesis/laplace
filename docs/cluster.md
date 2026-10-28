@@ -113,6 +113,9 @@ Service aliases include both `/32` IPv4 and `/128` IPv6 addresses. DNS publishes
 only the existing A records, from the frontend machine; no AAAA/public-DNS
 updates are implied. Forgejo and Headscale retain separate Portunus frontends,
 scoped LAN backend ingress, Forgejo's Anubis/client headers and SSE handling.
+Their backend `listenAddress` must be `0.0.0.0` or the backend host's declared
+LAN address. Loopback, IPv6-only and unrelated-address binds are rejected because
+the frontends and Forgejo runner dial the advertised IPv4 LAN endpoint.
 
 Headscale authorizes guest username groups; nftables admits their dynamic Tailnet
 address ranges only on allowed ports. Overlapping group memberships remain a

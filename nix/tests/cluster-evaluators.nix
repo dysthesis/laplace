@@ -101,6 +101,20 @@
       ];
     };
     sameRecipeConflict = rejected {laplace.services.minecraft.settings.port = 443;};
+    unreachableBackendBinds = lib.all (service:
+      lib.all (listenAddress:
+        rejected {
+          laplace.services.${service}.settings.listenAddress = lib.mkForce listenAddress;
+        }) ["127.0.0.1" "localhost" "::1" "[::1]" "192.0.2.99"]) ["forgejo" "headscale"];
+    reachableBackendBinds = lib.all (service: let
+      host = moved.cluster.manifest.services.${service}.host;
+    in
+      lib.all (listenAddress:
+        builtins.deepSeq
+        (build {
+          laplace.services.${service}.settings.listenAddress = lib.mkForce listenAddress;
+        }).cluster.manifest
+        true) ["0.0.0.0" moved.cluster.manifest.hosts.${host}.lan.ip]) ["forgejo" "headscale"];
     reassignment =
       !before.services.silverbullet.enable
       && after.services.silverbullet.enable

@@ -84,6 +84,10 @@ in {
         message = "headscale requires a persistent non-Tailnet control-plane server with a LAN address";
       }
       {
+        assertion = builtins.elem instance.settings.listenAddress ["0.0.0.0" host.lan.ip];
+        message = "headscale listenAddress must serve the advertised LAN backend: use 0.0.0.0 or the host LAN address";
+      }
+      {
         assertion = frontend != null && frontend.role == "server" && frontend.deployment != null && frontend.trust == "edge" && frontend.tailnet == null && frontend.lan.ip != null;
         message = "headscale frontendHost must be a deployable non-Tailnet edge server with a LAN address";
       }
