@@ -244,10 +244,12 @@ remote HTTPS transports. A remote writer becoming the receiver retains its
 identity material but uses loopback HTTP without client TLS options or loaded
 credentials. Moving it back to a remote role reuses that node identity.
 
-Writer names, certificates/fingerprints, source addresses and host labels remain
-machine-bound. Relocation needs an explicit remote credential/admission for the
-old receiver; the initial Argus loopback writer has no remote client key to move
-automatically.
+Writer admission and `expectedHosts` remain explicit site decisions. Admission
+must name a managed telemetry machine in `expectedHosts`; the reusable recipe has
+no site roster. Certificates/fingerprints, source addresses and host labels do not
+move with the receiver. Relocation needs an explicit remote credential/admission
+for the old receiver; the initial Argus loopback writer has no remote client key
+to move automatically.
 During a writer-identity rename, retaining the old admission also retains its
 `expectedHosts` monitoring obligation, while removing the old route before
 old clients switch rejects their writes. Plan the transition explicitly.

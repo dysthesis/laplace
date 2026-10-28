@@ -192,9 +192,8 @@
       assertion =
         typed.hosts ? ${e.host}
         && e.port <= e.endPort
-        && builtins.elem name catalogue.${s}.endpointNames
         && (e.shared != "caddy" || typed.hosts.${e.host}.caddy);
-      message = "cluster endpoint ${s}.${name}: invalid machine, interval, endpoint name or missing Caddy facility";
+      message = "cluster endpoint ${s}.${name}: invalid machine, interval or missing Caddy facility";
     })
     es)
   declaredEndpoints);

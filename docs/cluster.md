@@ -132,6 +132,11 @@ Their backend `listenAddress` must be `0.0.0.0` or the backend host's declared
 LAN address. Loopback, IPv6-only and unrelated-address binds are rejected because
 the frontends and Forgejo runner dial the advertised IPv4 LAN endpoint.
 
+Catalogue endpoint names define the finite policy-reference vocabulary.
+Instance-derived internal listeners, such as admitted telemetry writers, still
+receive typed listener/conflict validation without becoming grantable endpoints
+or requiring a site roster in the reusable recipe.
+
 Headscale authorizes guest username groups; nftables admits their dynamic Tailnet
 address ranges only on allowed ports. Overlapping group memberships remain a
 union. Known-node selectors expand to known tags, never a global guest wildcard.

@@ -1,9 +1,7 @@
 {lib}: let
   inherit (lib) mkOption types;
   writerOptions = builtins.removeAttrs (import ./writer-options.nix {inherit lib;}) ["sourceAddress" "certificateFile"];
-  writerNames = ["argus" "talos" "mneme" "mimir" "horos" "hermes" "charon" "loki" "hephaestus" "bifrost" "portunus"];
   remoteWriters = instance: lib.filterAttrs (name: _: name != instance.host) instance.settings.writers;
-  endpointNames = ["app" "http" "https" "metrics" "logs" "alertmanager" "alertmanager-cluster-tcp" "alertmanager-cluster-udp" "vmalert-metrics" "vmalert-logs" "blackbox" "metrics-ingress" "journal-ingress"];
   origin = endpoint: "https://${endpoint.domain}" + lib.optionalString (endpoint.port != 443) ":${toString endpoint.port}";
 in {
   settings = {
@@ -48,7 +46,9 @@ in {
       }));
     };
   };
-  endpointNames = endpointNames ++ map (name: "writer-${name}") writerNames;
+  # Publicly nameable endpoints stay finite; per-writer loopback listeners are
+  # generated from explicit admission declarations, not a second site roster.
+  endpointNames = ["app" "http" "https" "metrics" "logs" "alertmanager" "alertmanager-cluster-tcp" "alertmanager-cluster-udp" "vmalert-metrics" "vmalert-logs" "blackbox" "metrics-ingress" "journal-ingress"];
   endpoints = {instance, ...}: let
     local = port: {
       host = instance.host;
@@ -148,8 +148,8 @@ in {
       message = "observability expectedHosts must name managed machines with LAN addresses";
     }
     {
-      assertion = builtins.all (name: builtins.elem name writerNames && builtins.elem name instance.settings.expectedHosts) (builtins.attrNames instance.settings.writers);
-      message = "observability writer identities must belong to the explicit telemetry roster (Apollo is intentionally excluded)";
+      assertion = builtins.all (name: builtins.hasAttr name cluster.hosts && (!instance.enable || cluster.hosts.${name}.telemetry) && builtins.elem name instance.settings.expectedHosts) (builtins.attrNames instance.settings.writers);
+      message = "observability writer identities must name expectedHosts with telemetry enabled while the receiver is active";
     }
   ];
   activation = [

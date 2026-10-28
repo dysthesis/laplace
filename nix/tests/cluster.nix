@@ -95,6 +95,32 @@
       };
     };
   };
+  telemetry = {
+    hosts.alpha.telemetry = true;
+    hosts.beta.storage = ["observability-volumes"];
+    services = {
+      observability = {
+        host = "beta";
+        settings = {
+          domain = "observe.example.test";
+          sopsFile = "/fixture/observability.yaml";
+          expectedHosts = ["alpha"];
+          writers.alpha = {
+            metricsPort = 8430;
+            certificateFingerprint = lib.concatStrings (lib.replicate 64 "0");
+          };
+        };
+      };
+      ntfy = {
+        host = "beta";
+        settings = {
+          domain = "ntfy.example.test";
+          sopsFile = "/fixture/ntfy.yaml";
+        };
+      };
+      uptime-kuma = app "uptime" "beta";
+    };
+  };
   enabled = model {services.silverbullet = silver;};
   disabled = model {services.silverbullet = silver // {enable = false;};};
   grant = from: service: endpoint: {
@@ -296,6 +322,10 @@
         };
       };
     };
+    admittedWriterWithoutSiteRoster =
+      (model telemetry).endpoints.observability.writer-alpha.port == 8430;
+    writerRequiresTelemetry = rejected (lib.recursiveUpdate telemetry {hosts.alpha.telemetry = false;});
+    writerRequiresMonitoring = rejected (lib.recursiveUpdate telemetry {services.observability.settings.expectedHosts = [];});
     equivalentIPv6Listeners = lib.all (addresses:
       rejected (listenerPair (builtins.head addresses) (lib.last addresses))) [
       ["::1" "[::1]"]
