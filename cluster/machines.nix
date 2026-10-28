@@ -1,4 +1,4 @@
-{...}: let
+_: let
   server = ip: trust: tailnet: storage: {
     system = "x86_64-linux";
     role = "server";

@@ -143,7 +143,21 @@
         domain = null;
       }
     ])
-    caddyHosts;
+    caddyHosts
+    ++ concatLists (mapAttrsToList (host: _:
+      mapAttrsToList (name: port: {
+        inherit host name port;
+        service = "node-telemetry";
+        protocol = "tcp";
+        endPort = port;
+        listenAddress = "127.0.0.1";
+        shared = null;
+        domain = null;
+      }) {
+        node-exporter = 9100;
+        vmagent = 8429;
+      })
+    (filterAttrs (_: host: host.telemetry) typed.hosts));
   resourcesList = concatLists (mapAttrsToList (service: rs:
     map (r:
       r

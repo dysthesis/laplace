@@ -322,6 +322,20 @@
         };
       };
     };
+    telemetryFacilityConflict = lib.all (port:
+      rejected (lib.recursiveUpdate telemetry {
+        services.silverbullet = lib.recursiveUpdate silver {settings = {inherit port;};};
+      })) [9100 8429];
+    telemetryFacilityUnused = success [
+      machines
+      {laplace = telemetry;}
+      {
+        laplace.services.silverbullet = lib.recursiveUpdate silver {
+          host = "beta";
+          settings.port = 9100;
+        };
+      }
+    ];
     admittedWriterWithoutSiteRoster =
       (model telemetry).endpoints.observability.writer-alpha.port == 8430;
     writerRequiresTelemetry = rejected (lib.recursiveUpdate telemetry {hosts.alpha.telemetry = false;});
