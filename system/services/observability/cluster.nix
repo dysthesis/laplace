@@ -212,7 +212,6 @@ in {
         frontend = {
           enable = true;
           domain = settings.domain;
-          cloudflareSopsFile = settings.sopsFile;
         };
         ingress = {
           enable = true;

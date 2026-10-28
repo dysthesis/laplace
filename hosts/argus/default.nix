@@ -57,6 +57,15 @@
       telemetry = {
         role = "observability";
       };
+      caddy = {
+        enable = true;
+        email = "dysthesis@protonmail.com";
+        openFirewall = false;
+        cloudflare = {
+          enable = true;
+          sopsFile = ../../system/secrets/argus.yaml;
+        };
+      };
     };
   };
 

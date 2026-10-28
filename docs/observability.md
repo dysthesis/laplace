@@ -71,8 +71,11 @@ sudo cat /var/lib/grafana/bootstrap-admin-password
 updates `/var/backups/grafana/grafana.db`, which is on the PBS-backed root persist
 volume. Alertmanager state is persisted but remains operationally disposable.
 
-Frontend credentials are SOPS-backed. Do not replace an active Grafana secret
-key without following Grafana's key-rotation procedure.
+The machine owns shared Caddy activation, ACME identity and its SOPS-backed
+Cloudflare token. Observability contributes Grafana routes, telemetry ingress and
+application credentials only; disabling or relocating it does not remove that
+machine's Caddy facility. Do not replace an active Grafana secret key without
+following Grafana's key-rotation procedure.
 
 ## Dashboards
 

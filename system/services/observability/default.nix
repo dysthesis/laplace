@@ -441,15 +441,6 @@ in {
         type = types.str;
         default = "observe.dysthesis.com";
       };
-      email = mkOption {
-        type = types.str;
-        default = "dysthesis@protonmail.com";
-      };
-      cloudflareSopsFile = mkOption {
-        type = types.nullOr types.path;
-        default = null;
-        description = "SOPS file containing the Cloudflare DNS token.";
-      };
     };
 
     ingress = {
@@ -895,26 +886,17 @@ in {
     (mkIf cfg.frontend.enable {
       assertions = [
         {
-          assertion = cfg.frontend.cloudflareSopsFile != null;
-          message = "observability frontend needs frontend.cloudflareSopsFile";
+          assertion = config.laplace.services.caddy.enable && config.laplace.services.caddy.cloudflare.enable;
+          message = "observability frontend needs the machine's Cloudflare-backed Caddy facility";
         }
       ];
-      laplace.services.caddy = {
-        enable = true;
-        email = cfg.frontend.email;
-        openFirewall = false;
-        cloudflare = {
-          enable = true;
-          sopsFile = cfg.frontend.cloudflareSopsFile;
-          proxies.${cfg.frontend.domain} = "127.0.0.1:3000";
-        };
-      };
+      laplace.services.caddy.cloudflare.proxies.${cfg.frontend.domain} = "127.0.0.1:3000";
     })
 
     (mkIf cfg.ingress.enable {
       assertions = [
         {
-          assertion = cfg.frontend.enable && cfg.frontend.cloudflareSopsFile != null;
+          assertion = cfg.frontend.enable;
           message = "observability ingress needs the Cloudflare-backed Caddy frontend";
         }
         {

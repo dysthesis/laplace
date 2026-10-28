@@ -72,6 +72,14 @@
     };
   };
   postgres = colocated.hosts.nixosConfigurations.mneme.config;
+  withoutReceiver = build {
+    laplace.hosts = lib.mapAttrs (_: _: {telemetry = lib.mkForce false;}) moved.cluster.manifest.hosts;
+    laplace.services = {
+      observability.enable = lib.mkForce false;
+      silverbullet.host = lib.mkForce "argus";
+    };
+  };
+  remainingApp = withoutReceiver.hosts.nixosConfigurations.argus.config;
   cases = {
     desktop = rejected {laplace.services.minecraft.host = lib.mkForce "deimos";};
     installer = rejected {laplace.services.miniflux.host = lib.mkForce "chaos";};
@@ -124,6 +132,12 @@
       && moved.cluster.manifest.network.aliases.service-silverbullet-https-v6 == "fd7a:115c:a1e0::23/128"
       && moved.hive.nodes.horos.config.services.silverbullet.enable
       && lib.all (a: a.assertion) (before.assertions ++ after.assertions ++ moved.hive.nodes.horos.config.assertions);
+    independentCaddy =
+      remainingApp.services.caddy.enable
+      && remainingApp.services.caddy.virtualHosts ? "notes.example.test"
+      && !(remainingApp.services.caddy.virtualHosts ? "observe.example.test")
+      && !remainingApp.services.grafana.enable
+      && lib.all (a: a.assertion) remainingApp.assertions;
     sharedPostgres =
       postgres.services.miniflux.enable
       && postgres.services.immich.enable

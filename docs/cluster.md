@@ -104,7 +104,9 @@ and Kuma; declared Beszel/telemetry nodes require their providers. Removing a
 provider therefore requires an explicit consumer decision. An observability move
 also needs remote-writer identities for the former receiver; writer names,
 certificates/fingerprints, source addresses and host labels do not move with it.
-Optional Minecraft monitoring disappears when Minecraft is disabled.
+Shared Caddy activation and Cloudflare credentials remain machine-owned when
+observability moves or is disabled. Optional Minecraft monitoring disappears when
+Minecraft is disabled.
 
 The music recipe reconciles qBittorrent's owned host allowlist before startup when
 its domain changes; generated credentials and other mutable profile settings stay
