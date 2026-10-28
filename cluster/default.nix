@@ -217,7 +217,7 @@
       a,
       b,
     }: {
-      assertion = a.domain == null || b.domain == null || a.domain != b.domain;
+      assertion = a.domain == null || b.domain == null || lib.toLower a.domain != lib.toLower b.domain;
       message = "cluster domain conflict: ${a.service} and ${b.service} both own ${toString a.domain}";
     }) (pairs endpointsList)
     ++ map ({

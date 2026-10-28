@@ -173,7 +173,7 @@
     ])
     cfg.serviceGrants
     ++ map (r: {
-      assertion = nodes ? ${r.node} && !(builtins.elem r.name (map (record: record.name) appDNS));
+      assertion = nodes ? ${r.node} && !(builtins.elem (lib.toLower r.name) (map (record: lib.toLower record.name) appDNS));
       message = "cluster DNS: static record ${r.name} has an unknown node or conflicts with an application-owned name";
     })
     cfg.staticRecords

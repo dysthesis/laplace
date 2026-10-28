@@ -91,9 +91,11 @@ Listener overlaps, duplicate domains, exclusive/nested state paths, fixed UIDs
 (including NocoDB's host-side UID 999), database names/users and incompatible
 PostgreSQL versions are rejected. Listener comparison removes IPv6 brackets and
 normalises hexadecimal case, compression and leading zeroes, retaining scope
-identifiers; equivalent spellings cannot claim separate sockets. Caddy listeners
-and PostgreSQL provider state are explicitly shared. Metadata is a finite recipe
-contract, not a scheduler or a live process/port inventory.
+identifiers; equivalent spellings cannot claim separate sockets. Domain ownership
+and service/static DNS collisions are compared case-insensitively, without
+rewriting the configured hostnames. Caddy listeners and PostgreSQL provider state
+are explicitly shared. Metadata is a finite recipe contract, not a scheduler or
+a live process/port inventory.
 
 Hard consumers fail rather than silently changing another service: Miniflux's
 configured browser requires colocated Karakeep; the runner requires Forgejo;

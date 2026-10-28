@@ -250,14 +250,32 @@
       hosts.beta.dnsListenerAvailable = lib.mkForce false;
       services.adguardhome = resolver;
     };
-    domainConflict = rejected {
-      services = {
-        silverbullet = silver;
-        vikunja = silver;
+    domainConflict = lib.all (domain:
+      rejected {
+        services = {
+          silverbullet = silver;
+          vikunja = {
+            host = "beta";
+            settings = {inherit domain;};
+          };
+        };
+      }) ["notes.example.test" "NOTES.example.test" "NoTeS.ExAmPlE.TeSt"];
+    staticDomainConflict = lib.all (name:
+      rejected {
+        services.silverbullet = silver;
+        tailnet.staticRecords = [
+          {
+            inherit name;
+            node = "reader";
+            reason = "Fixture infrastructure";
+          }
+        ];
+      }) ["notes.example.test" "NOTES.example.test" "NoTeS.ExAmPlE.TeSt"];
+    mixedCaseServiceStaticConflict = rejected {
+      services.silverbullet = {
+        host = "alpha";
+        settings.domain = "NOTES.example.test";
       };
-    };
-    staticDomainConflict = rejected {
-      services.silverbullet = silver;
       tailnet.staticRecords = [
         {
           name = "notes.example.test";
