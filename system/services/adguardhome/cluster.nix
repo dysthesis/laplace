@@ -66,8 +66,8 @@ in {
         listenAddress = common.hostAddress instance.settings.listenAddress;
         exceptionClientAddress = cluster.nodes.${instance.settings.exceptionClient}.ip;
       };
-      # AdGuard owns :80; DNS-01 Caddy must not create its redirect listener there.
-      services.caddy.globalConfig = "auto_https disable_redirects";
+      # Only AdGuard's :80 listener conflicts with Caddy's HTTP redirects.
+      services.caddy.globalConfig = lib.mkIf (instance.settings.port == 80) "auto_https disable_redirects";
       laplace.services.caddy.cloudflare.proxies.${instance.settings.domain} = common.dial "localhost" (common.appEndpoint instance);
     };
 }

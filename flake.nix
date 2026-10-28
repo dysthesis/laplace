@@ -78,6 +78,10 @@
             inherit pkgs;
             sopsModule = inputs.sops-nix.nixosModules.sops;
           };
+          cluster-adguard-caddy = import ./nix/tests/adguard-caddy.nix {
+            inherit pkgs;
+            sopsModule = inputs.sops-nix.nixosModules.sops;
+          };
           music-domain = import ./nix/tests/music-domain.nix {inherit pkgs;};
           endpoint-dials = let
             contracts = import ./nix/tests/endpoint-dials.nix {inherit lib;};

@@ -16,6 +16,7 @@
       storage = ["persistent" "photos"];
       lan.ip = "192.0.2.10";
       caddy = true;
+      dnsListenerAvailable = true;
       deployment = {};
       tailnet = {
         ip = "100.64.1.10";
@@ -68,6 +69,16 @@
           allowPrivateNetworks = true;
         };
       };
+    adguardhome =
+      (app "dns.example.test")
+      // {
+        settings = {
+          domain = "dns.example.test";
+          port = 80;
+          upstreamDNS = ["https://dns.quad9.net/dns-query"];
+          exceptionClient = "owner";
+        };
+      };
     nocodb =
       (app "db.example.test")
       // {
@@ -108,6 +119,7 @@
     ../../modules/mnemosyne
     ../../system/docker
     ../../system/services/caddy
+    ../../system/services/adguardhome
     ../../system/services/miniflux
     ../../system/services/nocodb
     ../../system/services/silverbullet
@@ -180,6 +192,22 @@
   kumaOnly = evaluate {
     inherit (declarations) uptime-kuma;
     ntfy = declarations.ntfy // {enable = false;};
+  };
+  # Real evaluated projections consumed by the Caddy listener regression check.
+  adguardCaddy = {
+    on80 = evaluate {inherit (declarations) adguardhome;};
+    on8080 = evaluate {
+      adguardhome =
+        declarations.adguardhome
+        // {
+          settings = declarations.adguardhome.settings // {port = 8080;};
+        };
+      miniflux =
+        declarations.miniflux
+        // {
+          settings = declarations.miniflux.settings // {useKarakeepBrowser = false;};
+        };
+    };
   };
   hasUnit = name: f: builtins.hasAttr name f.config.systemd.services;
   hasRoute = domain: f: builtins.hasAttr domain f.config.services.caddy.virtualHosts;
@@ -271,7 +299,7 @@
       && !(kumaOnly.config.sops.secrets ? ntfy_admin_password);
   };
 in {
-  inherit fixture evaluate declarations commonModules;
+  inherit fixture evaluate declarations commonModules adguardCaddy;
   checks = assert lib.asserts.assertMsg (lib.all (v: v) (builtins.attrValues checks))
   "personal service projection failures: ${lib.concatStringsSep ", " (builtins.attrNames (lib.filterAttrs (_: v: !v) checks))}"; checks;
 }
