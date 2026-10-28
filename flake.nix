@@ -163,15 +163,9 @@
                 touch $out
               '';
 
-          minecraft-config-staging = let
-            services = serviceFixtures.minecraft.systemd.services;
-            server = services."minecraft-server-retirement-home";
-          in
-            assert !server.reloadIfChanged;
-            assert !server.restartIfChanged;
-              pkgs.runCommand "minecraft-config-staging-check" {} ''
-                touch $out
-              '';
+          minecraft-config-staging = import ./nix/tests/minecraft-config-staging.nix {
+            inherit pkgs inputs;
+          };
 
           forgejo-runner-address = import ./nix/tests/forgejo-runner-address.nix {inherit pkgs;};
 

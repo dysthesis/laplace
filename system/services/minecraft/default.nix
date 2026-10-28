@@ -87,6 +87,21 @@ in {
 
     mnemosyne.dirs = [cfg.dataDir];
 
+    # Content stays staged until restart. A listener change cannot: firewall and
+    # client artifacts switch immediately, so require the JVM to be stopped first.
+    system.preSwitchChecks.minecraftEndpoint = ''
+      case "$2" in
+        switch|test|dry-activate|check)
+          state=$(${config.systemd.package}/bin/systemctl show minecraft-server-retirement-home.service --property=ActiveState --value)
+          if [ "$state" != inactive ] && [ "$state" != failed ] &&
+             ! ${pkgs.gnugrep}/bin/grep -Fxq ${lib.escapeShellArg "server-port=${toString cfg.port}"} ${lib.escapeShellArg "${cfg.dataDir}/retirement-home/server.properties"}; then
+            echo "Minecraft port change requires maintenance: stop minecraft-server-retirement-home.service, switch, then start it if autoStart is disabled." >&2
+            exit 1
+          fi
+          ;;
+      esac
+    '';
+
     # Substitute Discord secrets at start without copying them to the store.
     services.minecraft-servers.environmentFile = mkIf cfg.discord.enable cfg.discord.environmentFile;
 

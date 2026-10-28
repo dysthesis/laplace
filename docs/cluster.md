@@ -170,6 +170,27 @@ activation can leave successful siblings active after another node fails.
 use canaries and explicit policy/DNS/edge/control-plane order, then verify every
 affected node converged. No production activation is performed by this refactor.
 
+### Minecraft endpoint maintenance
+
+Content-only Minecraft changes remain staged until a manual/nightly restart;
+switching does not reload files beneath the running JVM. A port change is a
+maintenance operation: `system.preSwitchChecks.minecraftEndpoint` compares the
+desired port with the running server's `server.properties` and rejects
+`switch`, `test`, `dry-activate` or `check` while they differ. This happens before
+activation changes the machine's firewall or client artifacts. Boot-only updates
+can stage the change for the next reboot.
+
+Build the affected closures first, then stop
+`minecraft-server-retirement-home.service` through systemd so its normal save/stop
+hook runs. Switch the game host, start the unit if `autoStart` is disabled, verify
+the new listener, and converge policy/DNS/client-facing hosts as applicable.
+This is a required maintenance window, not an atomic fleet transition; do not
+bypass pre-switch checks with `NIXOS_NO_CHECK=1`.
+
+`minecraft-config-staging` exercises content staging, rejection before activation,
+and stop/switch/start with a real vanilla 1.20.1 JVM in a disposable VM. It does
+not exercise the production modpack, Discord credentials or live Tailnet clients.
+
 ## Disable and decommission
 
 After a valid `enable = false` and successful fleet convergence, the service's
