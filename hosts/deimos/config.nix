@@ -9,6 +9,8 @@
   ];
   config = {
     boot.kernelPackages = pkgs.linuxPackages_cachyos;
+    boot.binfmt.emulatedSystems = ["aarch64-linux"];
+    programs.ccache.enable = true;
     environment.systemPackages = with pkgs; [
       android-tools
       usbutils

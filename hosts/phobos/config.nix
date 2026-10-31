@@ -6,6 +6,8 @@
   config = {
     services.resolved.enable = lib.mkForce true;
     boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
+    boot.binfmt.emulatedSystems = ["aarch64-linux"];
+    programs.ccache.enable = true;
     laplace = {
       services.tailscale = {
         enable = true;

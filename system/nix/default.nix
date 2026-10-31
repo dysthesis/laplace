@@ -10,6 +10,7 @@ in {
     # The Determinate module selects Nix; Nixd manages evaluator defaults,
     # its substituter, and rotating cache keys in /etc/nix/nix.conf.
     nix.settings = {
+      extra-sandbox-paths = lib.optionals config.programs.ccache.enable [config.programs.ccache.cacheDir];
       experimental-features =
         [
           "nix-command"

@@ -25,14 +25,7 @@ in {
         BROWSER = lib.getExe pkgs.configured.zen;
       };
 
-    boot.binfmt.emulatedSystems =
-      if (system != "aarch64-linux")
-      then ["aarch64-linux"]
-      else [];
     boot.zfs.forceImportRoot = false;
-    environment.systemPackages = with pkgs; [
-      pam_u2f
-    ];
 
     services = {
       openssh = {
@@ -49,7 +42,6 @@ in {
           22
         ];
       };
-      pcscd.enable = true;
     };
     console = {
       earlySetup = true;
@@ -70,10 +62,7 @@ in {
           zlib
         ];
       };
-      ccache.enable = true;
     };
-
-    nix.settings.extra-sandbox-paths = [config.programs.ccache.cacheDir];
   };
   imports = importInDirectory ./.;
 }

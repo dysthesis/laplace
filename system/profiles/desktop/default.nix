@@ -126,6 +126,7 @@ in {
       </fontconfig>
     '';
     services = {
+      pcscd.enable = true;
       # GNOME compiles these into its own schema directory; non-GNOME sessions
       # use the same overrides in the fallback package below.
       desktopManager.gnome.extraGSettingsOverrides = ''
@@ -190,7 +191,7 @@ in {
           mkIf (!gnomeOwnsSchemas)
           "${gsettingsOverrides}/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas";
       };
-      systemPackages = with pkgs; [xdg-utils gsettings-desktop-schemas];
+      systemPackages = with pkgs; [xdg-utils gsettings-desktop-schemas pam_u2f];
     };
     security = {
       # For electron stuff

@@ -5,6 +5,9 @@
   pkgs,
   ...
 }: {
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  programs.ccache.enable = true;
+
   networking = {
     useNetworkd = true;
     useDHCP = false;
