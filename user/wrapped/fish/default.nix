@@ -129,6 +129,7 @@
 
       if status is-interactive
         ${lib.fileContents ./interactive.fish}
+        abbr -a -g wat "${lib.getExe pkgs.configured.wezterm} imgcat --height 50%"
         set -gx STARSHIP_CONFIG ${./starship.toml}
         function starship_transient_prompt_func
           ${lib.getExe starship} module character
