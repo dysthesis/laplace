@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   config = {
     boot.kernelPackages = pkgs.linuxPackages_cachyos;
     boot.binfmt.emulatedSystems = ["aarch64-linux"];
@@ -10,11 +7,9 @@
       android-tools
       usbutils
 
-      signal-desktop
       polkit_gnome
     ];
 
-    security.polkit.enable = true;
     # Deimos-only pregen overrides; Loki keeps the pack defaults.
     services.minecraft-servers.servers.retirement-home = {
       # The pack's c2me config disables parallel worldgen (see

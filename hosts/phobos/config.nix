@@ -22,9 +22,6 @@
         enable = true;
         denySubnetRoutes = true;
       };
-      harden = [
-        # Zen needs its Zink workaround with global malloc hardening on this AMD GPU.
-      ];
       profiles = ["desktop"];
       hardware = {
         cpu = ["amd"];
