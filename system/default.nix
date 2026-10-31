@@ -5,7 +5,6 @@
   config,
   ...
 }: let
-  inherit (lib.laplace.modules) importInDirectory;
   system = pkgs.stdenv.hostPlatform.system;
   isDesktop = builtins.elem "desktop" config.laplace.profiles;
 in {
@@ -64,5 +63,24 @@ in {
       };
     };
   };
-  imports = importInDirectory ./.;
+  imports = [
+    ./boot
+    ./display
+    ./docker
+    ./filesystems
+    ./hardening
+    ./hardware
+    ./network
+    ./nh
+    ./nix
+    ./profiles
+    ./secrets
+    ./security
+    ./services
+    ./sound
+    ./tailnet
+    ./users
+    ./virtualisation
+    ./zram
+  ];
 }
