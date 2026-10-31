@@ -82,29 +82,6 @@ in rec {
     argv = resolveCommand deps entry.command (entry.args or []);
   };
 
-  locationToStartup = {
-    deps,
-    location,
-    ...
-  }:
-    optionals ((location.latitude != 0) || (location.longitude != 0)) [
-      {
-        argv = [
-          (lookup deps "wlsunset")
-          "-t"
-          "3700"
-          "-T"
-          "6200"
-          "-g"
-          "1.0"
-          "-l"
-          (toString location.latitude)
-          "-L"
-          (toString location.longitude)
-        ];
-      }
-    ];
-
   formatMode = monitor: let
     base = "${toString monitor.width}x${toString monitor.height}";
     suffix =

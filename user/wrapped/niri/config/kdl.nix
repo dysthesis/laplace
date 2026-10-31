@@ -62,19 +62,12 @@
 
   specialKeys = [
     "name"
-    "__name"
     "inline"
-    "__inline"
     "args"
-    "__args"
     "assign"
-    "__assign"
     "body"
-    "__body"
     "children"
-    "__children"
     "comment"
-    "__comment"
   ];
 
   bodyToNodes = body: let
@@ -88,18 +81,8 @@
     else if builtins.isList value
     then concatMap (v: valueToNodes name v) value
     else if builtins.isAttrs value
-    then let
-      spec =
-        value
-        // {
-          name =
-            lib.attrByPath
-            ["__name"]
-            (lib.attrByPath ["name"] name value)
-            value;
-        };
-    in [
-      (normaliseNode spec)
+    then [
+      (normaliseNode (value // {name = value.name or name;}))
     ]
     else if builtins.isBool value
     then
@@ -129,38 +112,15 @@
   normaliseNode = spec:
     if builtins.isAttrs spec
     then let
-      nodeName =
-        spec.name or (spec.__name or (throw "KDL node is missing a name"));
-
-      inline =
-        lib.attrByPath
-        ["inline"]
-        (lib.attrByPath ["__inline"] false spec)
-        spec;
-
-      args = lib.attrByPath ["args"] (lib.attrByPath ["__args"] [] spec) spec;
-      assignments =
-        lib.attrByPath
-        ["assign"]
-        (lib.attrByPath ["__assign"] {} spec)
-        spec;
-      userBody =
-        lib.attrByPath
-        ["body"]
-        (lib.attrByPath ["__body"] {} spec)
-        spec;
-      comment =
-        lib.attrByPath
-        ["comment"]
-        (lib.attrByPath ["__comment"] null spec)
-        spec;
+      nodeName = spec.name or (throw "KDL node is missing a name");
+      inline = spec.inline or false;
+      args = spec.args or [];
+      assignments = spec.assign or {};
+      userBody = spec.body or {};
+      comment = spec.comment or null;
       extraBody = removeAttrs spec specialKeys;
       childrenFromBody = bodyToNodes (userBody // extraBody);
-      rawChildren =
-        lib.attrByPath
-        ["children"]
-        (lib.attrByPath ["__children"] [] spec)
-        spec;
+      rawChildren = spec.children or [];
       childNodes = childrenFromBody ++ map normaliseNode rawChildren;
     in {
       inherit
@@ -176,7 +136,6 @@
 
   normaliseNodes = map normaliseNode;
 in {
-  node = attrs: attrs;
   statement = {
     name,
     args ? [],
@@ -204,14 +163,13 @@ in {
       args
       comment
       assign
+      body
+      children
       ;
     inline = false;
-    __body = body;
-    __children = children;
   };
   render = nodes:
     nodes
     |> normaliseNodes
     |> concatMapStringsSep "" (renderNode 0);
-  inherit renderNode;
 }

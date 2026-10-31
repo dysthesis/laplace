@@ -119,6 +119,11 @@
               touch $out
             '';
 
+          niri-config = import ./nix/tests/niri-config.nix {
+            inherit lib;
+            pkgs = nixosConfigurations.deimos.pkgs;
+          };
+
           commit-tools = import ./nix/tests/commit-tools.nix {
             inherit lib;
             pkgs = nixosConfigurations.deimos.pkgs;
