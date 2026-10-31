@@ -1,6 +1,10 @@
-_inputs: pkgs:
+pkgs:
 pkgs.mkShell {
   name = "laplace-dev";
+  shellHook = ''
+    export NIX_CONFIG="''${NIX_CONFIG:-}
+    extra-experimental-features = nix-command flakes pipe-operators"
+  '';
   packages = with pkgs; [
     nil
     nixd
@@ -24,15 +28,12 @@ pkgs.mkShell {
     npins
     sops
     rsync
-    # simplification: uses nixpkgs Colmena; add its flake for hermetic evaluation.
     colmena
 
     bash-language-server
     shfmt
     shellcheck
     mergiraf
-
-    npins
 
     fish-lsp
     fish

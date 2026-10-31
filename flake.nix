@@ -33,7 +33,7 @@
     {
       devShells = pkgs: let
         nixpkgs-unstable = import inputs.nixpkgs-unstable {system = pkgs.stdenv.hostPlatform.system;};
-      in {default = import ./nix/shell inputs nixpkgs-unstable;};
+      in {default = import ./nix/shell nixpkgs-unstable;};
 
       packages = pkgs:
         lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux
