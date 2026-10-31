@@ -119,6 +119,11 @@
               touch $out
             '';
 
+          commit-tools = import ./nix/tests/commit-tools.nix {
+            inherit lib;
+            pkgs = nixosConfigurations.deimos.pkgs;
+          };
+
           mk-wrapper = let
             argumentCheck = pkgs.writeShellScriptBin "argument check" ''
               test "$#" -eq 2

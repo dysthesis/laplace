@@ -31,8 +31,7 @@
         foot = pkgs.configured.foot;
       };
       generate-commit = callPackage ./generate-commit {
-        inherit lib pkgs;
-        inherit (pkgs.unstable) uutils-coreutils-noprefix;
+        inherit pkgs;
       };
     };
   };

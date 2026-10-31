@@ -13,10 +13,10 @@
           type = "menuFromCommand";
           title = "Select AI commit message";
           key = "msg";
-          command = "${lib.getExe generate-commit}";
+          command = "${lib.getExe generate-commit} --list";
         }
       ];
-      command = "git commit -m '{{.Form.msg}}'";
+      command = "git commit -m {{.Form.msg | quote}}";
     }
   ];
 }

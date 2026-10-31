@@ -142,7 +142,7 @@
 
       function git
           if test (count $argv) -eq 0
-              ${lib.getExe pkgs.lazygit}
+              ${lib.getExe pkgs.configured.lazygit}
           else
               command git $argv
           end

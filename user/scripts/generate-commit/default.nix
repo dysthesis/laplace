@@ -1,7 +1,9 @@
 {
   pkgs,
-  gawk,
-  uutils-coreutils-noprefix,
+  curl,
+  git,
+  jq,
+  jujutsu,
   gnused,
   fzf,
   ...
@@ -12,17 +14,18 @@
     runCommandLocal
     ;
   deps = [
-    gawk
-    uutils-coreutils-noprefix
+    curl
+    git
+    jq
+    jujutsu
     gnused
     fzf
   ];
   name = "generate-commit";
   script = runCommandLocal "script" {} ''
     mkdir -pv $out/bin
-    cp ${./generate-commit.sh} $out/bin/${name}
+    install -m755 ${./generate-commit.sh} $out/bin/${name}
     patchShebangs $out/bin/${name}
-    chmod +x  $out/bin/${name}
   '';
 in
   symlinkJoin rec {

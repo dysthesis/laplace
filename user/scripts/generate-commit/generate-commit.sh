@@ -18,23 +18,22 @@ else
 fi
 
 JSON="$(
-    curl -sS http://localhost:11434/api/chat \
-        -H 'Content-Type: application/json' \
-        -d @- <<JSON
-{
-  "model": "$MODEL",
-  "stream": false,
-  "format": {
-    "type": "object",
-    "properties": { "suggestions": { "type": "array", "items": { "type": "string" } } },
-    "required": ["suggestions"]
-  },
-  "messages": [
-    { "role": "system", "content": "You write succinct Conventional Commit messages." },
-    { "role": "user", "content": "Generate $N one-line commit subjects (<= 72 chars) for this diff:\\n\\n$DIFF" }
-  ]
-}
-JSON
+    jq -n --arg model "$MODEL" --arg count "$N" --arg diff "$DIFF" '{
+        model: $model,
+        stream: false,
+        format: {
+            type: "object",
+            properties: {suggestions: {type: "array", items: {type: "string"}}},
+            required: ["suggestions"]
+        },
+        messages: [
+            {role: "system", content: "You write succinct Conventional Commit messages."},
+            {role: "user", content: ("Generate " + $count + " one-line commit subjects (<= 72 chars) for this diff:\n\n" + $diff)}
+        ]
+    }' |
+        curl -sS http://localhost:11434/api/chat \
+            -H 'Content-Type: application/json' \
+            -d @-
 )"
 
 list() {
