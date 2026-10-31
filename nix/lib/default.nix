@@ -3,27 +3,18 @@ nixpkgs.lib.extend (
   final: _prev: let
     inherit (builtins) readDir attrNames;
 
-    getItemsOfType = dir: type:
-      dir
-      |> readDir
-      |> final.filterAttrs (_name: value: value == type)
-      |> attrNames;
-
-    getDirectories = dir: getItemsOfType dir "directory";
-
     # Select only child directories with default.nix.
     getModuleDirs = dir:
       dir
-      |> getDirectories
-      |> builtins.filter
-      (module: builtins.pathExists "${dir}/${module}/default.nix");
+      |> readDir
+      |> final.filterAttrs (name: type: type == "directory" && builtins.pathExists "${dir}/${name}/default.nix")
+      |> attrNames;
 
     # Path addition preserves flake context and relative imports.
     importInDirectory = dir:
       dir
       |> getModuleDirs
       |> map (module: dir + "/${module}");
-
   in {
     laplace = {
       forAllSystems = {
@@ -69,16 +60,13 @@ nixpkgs.lib.extend (
         inherit importInDirectory;
 
         # Imports child modules and exposes their names as an enum option.
-        # multiple selects a list; extra adds names; broken maps names to errors.
-        # active gates broken-member checks for disabled features.
+        # multiple selects a list; extra adds names outside the directory.
         mkSelector = {
           dir,
           option,
           description ? "",
           multiple ? true,
           extra ? [],
-          broken ? {},
-          active ? (_config: true),
           default ? (
             if multiple
             then []
@@ -86,20 +74,6 @@ nixpkgs.lib.extend (
           ),
         }: let
           base = final.types.enum (getModuleDirs dir ++ extra);
-          brokenAssertions = {config, ...}: let
-            value = final.getAttrFromPath option config;
-            chosen =
-              if multiple
-              then value
-              else [value];
-          in {
-            assertions =
-              final.mapAttrsToList (member: reason: {
-                assertion = !(active config && builtins.elem member chosen);
-                message = "${final.showOption option}: '${member}' is known broken: ${reason}";
-              })
-              broken;
-          };
         in {
           options = final.setAttrByPath option (final.mkOption {
             type =
@@ -108,7 +82,7 @@ nixpkgs.lib.extend (
               else base;
             inherit default description;
           });
-          imports = importInDirectory dir ++ final.optional (broken != {}) brokenAssertions;
+          imports = importInDirectory dir;
         };
       };
 
@@ -160,7 +134,6 @@ nixpkgs.lib.extend (
               outputsToInstall = ["out"];
             };
         };
-
     };
   }
 )

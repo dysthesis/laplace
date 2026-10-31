@@ -9,7 +9,6 @@
   cfg = config.laplace.display;
   enabled = elem "xorg" cfg.servers && cfg.xorg.session == "xmonad";
   hostSystem = pkgs.stdenv.hostPlatform.system;
-  # If broken, gate this payload too; its values are forced before selector assertions.
 in {
   config = lib.mkIf enabled {
     laplace.display.xorg.sessionCommand = "${pkgs.configured.xinit}/bin/startx";

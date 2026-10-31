@@ -19,9 +19,6 @@ in {
       description = "Which X11 session to run";
       multiple = false;
       default = "xmonad";
-      # Gate any future `broken` member on xorg actually being enabled, so a
-      # broken default cannot fail wayland-only hosts.
-      active = config: elem "xorg" config.laplace.display.servers;
     })
   ];
 
