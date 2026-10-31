@@ -1,6 +1,6 @@
 # Address syntax boundaries; the lifecycle VM exercises the generated IPv6 proxy.
 {lib}: let
-  common = import ../../system/services/personal-common.nix {inherit lib;};
+  common = import ../../system/services/service-common.nix {inherit lib;};
   dial = address:
     common.dial "127.0.0.1" {
       listenAddress = address;

@@ -4,7 +4,7 @@
   ...
 }: let
   cfg = config.laplace.services.radicale;
-  common = import ../personal-common.nix {inherit lib;};
+  common = import ../service-common.nix {inherit lib;};
   inherit (lib) mkEnableOption mkIf;
 in {
   options.laplace.services.radicale =

@@ -7,7 +7,7 @@
   ...
 }: let
   inherit (lib) mkIf mkMerge;
-  common = import ../system/services/personal-common.nix {inherit lib;};
+  common = import ../system/services/service-common.nix {inherit lib;};
   active = name: cluster.activeServices ? ${name};
   hasHub = active "beszel-hub";
   hasReceiver = active "observability";

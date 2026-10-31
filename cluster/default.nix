@@ -174,7 +174,7 @@
     list;
   shared = a: b: a.shared != null && a.shared == b.shared;
   normaliseBind = address: let
-    unbracketed = (import ../system/services/personal-common.nix {inherit lib;}).bindAddress address;
+    unbracketed = (import ../system/services/service-common.nix {inherit lib;}).bindAddress address;
     scoped = lib.splitString "%" unbracketed;
     ip = builtins.head scoped;
     pieces = lib.splitString ":" ip;

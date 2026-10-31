@@ -1,5 +1,5 @@
 {lib}: let
-  common = import ../personal-common.nix {inherit lib;};
+  common = import ../service-common.nix {inherit lib;};
 in {
   settings = import ./settings.nix {inherit lib;};
   endpointNames = ["app" "https" "http"];
