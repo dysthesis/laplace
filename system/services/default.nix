@@ -1,5 +1,23 @@
-{lib, ...}: let
-  inherit (lib.laplace.modules) importInDirectory;
-in {
-  imports = importInDirectory ./.;
+{
+  imports = [
+    ./adguardhome
+    ./altero
+    ./beszel
+    ./caddy
+    ./forgejo
+    ./forgejo-runner
+    ./headscale
+    ./immich
+    ./karakeep
+    ./minecraft
+    ./miniflux
+    ./music
+    ./nocodb
+    ./observability
+    ./radicale
+    ./silverbullet
+    ./tailscale
+    ./telemetry
+    ./vikunja
+  ];
 }

@@ -468,22 +468,6 @@ in {
         });
       };
     };
-
-    opnsenseSyslog = {
-      enable = mkEnableOption "OPNsense TLS syslog ingestion";
-      sourceAddress = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-      };
-      certificateFile = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-      };
-      keyFile = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-      };
-    };
   };
 
   config = mkIf cfg.enable (mkMerge [
@@ -1053,40 +1037,6 @@ in {
         writers);
 
       mnemosyne.dirs = map (name: "/var/cache/private/vmagent-ingress-${name}") writerNames;
-    })
-
-    (mkIf cfg.opnsenseSyslog.enable {
-      assertions = [
-        {
-          assertion = cfg.opnsenseSyslog.certificateFile != null && cfg.opnsenseSyslog.keyFile != null;
-          message = "OPNsense TLS syslog needs certificateFile and keyFile";
-        }
-        {
-          assertion = cfg.opnsenseSyslog.sourceAddress != null;
-          message = "OPNsense TLS syslog needs its explicit sourceAddress";
-        }
-        {
-          assertion = config.networking.nftables.enable;
-          message = "OPNsense syslog source scoping requires the nftables firewall backend";
-        }
-      ];
-      services.victorialogs.extraOptions = [
-        "-syslog.listenAddr.tcp=0.0.0.0:6514"
-        "-syslog.tls"
-        "-syslog.tlsCertFile=/run/credentials/victorialogs.service/syslog_cert"
-        "-syslog.tlsKeyFile=/run/credentials/victorialogs.service/syslog_key"
-        "-syslog.tlsMinVersion=TLS13"
-        "-syslog.extraFields.tcp={\"source\":\"opnsense\"}"
-        "-syslog.streamFields.tcp=[\"source\"]"
-        "-syslog.useRemoteIP.tcp"
-      ];
-      systemd.services.victorialogs.serviceConfig.LoadCredential = [
-        "syslog_cert:${cfg.opnsenseSyslog.certificateFile}"
-        "syslog_key:${cfg.opnsenseSyslog.keyFile}"
-      ];
-      networking.firewall.extraInputRules = mkIf (cfg.opnsenseSyslog.sourceAddress != null) ''
-        ip saddr ${cfg.opnsenseSyslog.sourceAddress} tcp dport 6514 accept
-      '';
     })
   ]);
 }

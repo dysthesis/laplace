@@ -102,26 +102,6 @@
           enable = true;
           denySubnetRoutes = true;
         };
-        llm = {
-          enable = false;
-          modelRegistry = {
-            "qwen3.6-35b-a3b" = {
-              url = "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q6_K.gguf";
-              sha256 = "sha256-SZNbBK2IPC89TaYfZbYJ1Efa1n0LCEU7kKuwmhuzVGQ=";
-            };
-          };
-
-          contextSize = 262144;
-          model = "qwen3.6-35b-a3b";
-
-          embedding = {
-            enable = false;
-            model = "nomic-embed-text";
-          };
-
-          search.enable = false;
-          webui.enable = false;
-        };
       };
 
       sound = {
