@@ -44,7 +44,6 @@ in {
           "podman"
           "libvirt"
           "render"
-          "ollama"
           "adbusers"
           "i2c"
         ];

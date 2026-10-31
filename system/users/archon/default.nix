@@ -35,7 +35,6 @@ in {
           "podman"
           "libvirt"
           "render"
-          "ollama"
         ];
     };
   };

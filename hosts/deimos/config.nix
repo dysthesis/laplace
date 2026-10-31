@@ -10,19 +10,6 @@
       polkit_gnome
     ];
 
-    # Deimos-only pregen overrides; Loki keeps the pack defaults.
-    services.minecraft-servers.servers.retirement-home = {
-      # The pack's c2me config disables parallel worldgen (see
-      # c2me-pregen.toml for the reasoning).
-      files."config/c2me.toml" = ./c2me-pregen.toml;
-      # World generation can exceed the watchdog limit; this host has no players.
-      serverProperties.max-tick-time = -1;
-    };
-
-    # Pregen wins CPU contention against the desktop session (default
-    # CPUWeight is 100). Only bites when cores are oversubscribed.
-    systemd.services.minecraft-server-retirement-home.serviceConfig.CPUWeight = 1000;
-
     networking = {
       hostId = "47494eeb";
       defaultGateway = {
