@@ -9,9 +9,12 @@
   writers = cfg.ingress.writers;
   writerNames = builtins.attrNames writers;
   writerPorts = mapAttrsToList (_: writer: writer.metricsPort) writers;
-  metricsUrl = "http://127.0.0.1:8428";
-  logsUrl = "http://127.0.0.1:9428";
-  alertmanagerUrl = "http://127.0.0.1:9093";
+  listeners = import ./listeners.nix;
+  telemetry = lib.laplace.telemetry;
+  socket = port: "${listeners.listenAddress}:${toString port}";
+  metricsUrl = "http://${socket listeners.metricsPort}";
+  logsUrl = "http://${socket listeners.logsPort}";
+  alertmanagerUrl = "http://${socket listeners.alertmanagerPort}";
   blackboxConfig = (pkgs.formats.yaml {}).generate "blackbox.yml" {
     modules = {
       http_2xx = {
@@ -93,7 +96,7 @@
         }
         rewrite * /api/v1/write?
         header Connection close
-        reverse_proxy 127.0.0.1:${toString writer.metricsPort}
+        reverse_proxy ${socket writer.metricsPort}
       }
     '')
     writers);
@@ -115,7 +118,7 @@
         }
         rewrite * /insert/journald/upload?_stream_fields=source&extra_fields=source%3D${name}
         header Connection close
-        reverse_proxy 127.0.0.1:9428 {
+        reverse_proxy ${socket listeners.logsPort} {
           header_up -AccountID
           header_up -ProjectID
           header_up -VL-*
@@ -274,7 +277,7 @@ in {
       services = {
         victoriametrics = {
           enable = true;
-          listenAddress = "127.0.0.1:8428";
+          listenAddress = socket listeners.metricsPort;
           stateDir = "victoriametrics";
           retentionPeriod = "90d";
           extraOptions = [
@@ -292,20 +295,20 @@ in {
             };
             scrape_configs =
               [
-                (scrape "victoriametrics" "127.0.0.1:8428")
-                (scrape "victorialogs" "127.0.0.1:9428")
-                (scrape "grafana" "127.0.0.1:3000")
-                (scrape "alertmanager" "127.0.0.1:9093")
-                (scrape "vmalert-metrics" "127.0.0.1:8880")
-                (scrape "vmalert-logs" "127.0.0.1:8881")
-                (scrape "vmagent" "127.0.0.1:8429")
-                (scrape "node" "127.0.0.1:9100")
-                (scrape "blackbox" "127.0.0.1:9115")
+                (scrape "victoriametrics" (socket listeners.metricsPort))
+                (scrape "victorialogs" (socket listeners.logsPort))
+                (scrape "grafana" (socket listeners.grafanaPort))
+                (scrape "alertmanager" (socket listeners.alertmanagerPort))
+                (scrape "vmalert-metrics" (socket listeners.metricsAlertPort))
+                (scrape "vmalert-logs" (socket listeners.logsAlertPort))
+                (scrape "vmagent" "${telemetry.listenAddress}:${toString telemetry.vmagentPort}")
+                (scrape "node" "${telemetry.listenAddress}:${toString telemetry.nodeExporterPort}")
+                (scrape "blackbox" (socket listeners.blackboxPort))
                 {
                   job_name = "blackbox-grafana";
                   metrics_path = "/probe";
                   params.module = ["http_2xx"];
-                  static_configs = [{targets = ["http://127.0.0.1:3000/api/health"];}];
+                  static_configs = [{targets = ["http://${socket listeners.grafanaPort}/api/health"];}];
                   relabel_configs = [
                     {
                       source_labels = ["__address__"];
@@ -317,18 +320,18 @@ in {
                     }
                     {
                       target_label = "__address__";
-                      replacement = "127.0.0.1:9115";
+                      replacement = socket listeners.blackboxPort;
                     }
                   ];
                 }
               ]
-              ++ mapAttrsToList (name: writer: scrape "vmagent-ingress-${name}" "127.0.0.1:${toString writer.metricsPort}") writers;
+              ++ mapAttrsToList (name: writer: scrape "vmagent-ingress-${name}" (socket writer.metricsPort)) writers;
           };
         };
 
         victorialogs = {
           enable = true;
-          listenAddress = "127.0.0.1:9428";
+          listenAddress = socket listeners.logsPort;
           stateDir = "victorialogs";
           extraOptions = [
             "-retentionPeriod=30d"
@@ -348,13 +351,13 @@ in {
           declarativePlugins = [pkgs.grafanaPlugins.victoriametrics-logs-datasource];
           settings = {
             server = {
-              http_addr = "127.0.0.1";
-              http_port = 3000;
+              http_addr = listeners.listenAddress;
+              http_port = listeners.grafanaPort;
               domain = cfg.frontend.domain;
               root_url =
                 if cfg.frontend.enable
                 then "https://${cfg.frontend.domain}/"
-                else "http://127.0.0.1:3000/";
+                else "http://${socket listeners.grafanaPort}/";
               enforce_domain = cfg.frontend.enable;
               enable_gzip = true;
             };
@@ -430,8 +433,8 @@ in {
           enable = true;
           # URL comes from SOPS via envsubst; validate substituted config at start.
           checkConfig = false;
-          listenAddress = "127.0.0.1";
-          port = 9093;
+          inherit (listeners) listenAddress;
+          port = listeners.alertmanagerPort;
           configuration = {
             global.resolve_timeout = "5m";
             route = {
@@ -507,7 +510,7 @@ in {
             settings = {
               "datasource.url" = metricsUrl;
               "notifier.url" = [alertmanagerUrl];
-              "httpListenAddr" = "127.0.0.1:8880";
+              "httpListenAddr" = socket listeners.metricsAlertPort;
               "remoteRead.url" = metricsUrl;
               "remoteWrite.url" = metricsUrl;
             };
@@ -518,7 +521,7 @@ in {
             settings = {
               "datasource.url" = logsUrl;
               "notifier.url" = [alertmanagerUrl];
-              "httpListenAddr" = "127.0.0.1:8881";
+              "httpListenAddr" = socket listeners.logsAlertPort;
               "remoteRead.url" = metricsUrl;
               "remoteWrite.url" = metricsUrl;
               "rule.defaultRuleType" = "vlogs";
@@ -529,8 +532,8 @@ in {
 
         prometheus.exporters.blackbox = {
           enable = true;
-          listenAddress = "127.0.0.1";
-          port = 9115;
+          inherit (listeners) listenAddress;
+          port = listeners.blackboxPort;
           configFile = blackboxConfig;
           openFirewall = false;
         };
@@ -647,7 +650,7 @@ in {
           message = "observability frontend needs the machine's Cloudflare-backed Caddy facility";
         }
       ];
-      laplace.services.caddy.cloudflare.proxies.${cfg.frontend.domain} = "127.0.0.1:3000";
+      laplace.services.caddy.cloudflare.proxies.${cfg.frontend.domain} = socket listeners.grafanaPort;
     })
 
     (mkIf cfg.ingress.enable {
@@ -685,7 +688,7 @@ in {
           message = "observability ingress writer metric ports must be unique";
         }
         {
-          assertion = all (port: !(builtins.elem port [3000 8428 8429 8880 8881 9093 9100 9115 9428])) writerPorts;
+          assertion = all (port: !(builtins.elem port ((builtins.attrValues (builtins.removeAttrs listeners ["listenAddress"])) ++ [telemetry.nodeExporterPort telemetry.vmagentPort]))) writerPorts;
           message = "observability ingress writer metric ports collide with the central stack";
         }
         {
@@ -751,7 +754,7 @@ in {
               CacheDirectory = "vmagent-ingress-${name}";
               ExecStart = escapeShellArgs [
                 "${config.services.victoriametrics.package}/bin/vmagent"
-                "-httpListenAddr=127.0.0.1:${toString writer.metricsPort}"
+                "-httpListenAddr=${socket writer.metricsPort}"
                 "-remoteWrite.url=${metricsUrl}/api/v1/write"
                 "-remoteWrite.tmpDataPath=%C/vmagent-ingress-${name}/remote_write_tmp"
                 "-remoteWrite.relabelConfig=${ingressRelabelConfigs.${name}}"

@@ -65,13 +65,13 @@ in {
       laplace.services.telemetry = mkIf telemetry.enable {
         metrics = {
           origin = lib.mkDefault (origin metrics);
-          remoteWriteUrl = mkIf localReceiver "http://127.0.0.1:8428/api/v1/write";
+          remoteWriteUrl = mkIf localReceiver "http://${common.dial cluster.endpoints.observability.metrics.listenAddress cluster.endpoints.observability.metrics}/api/v1/write";
           certificateFile = mkIf (!localReceiver) telemetry.clientIdentity.certificateFile;
           keyFile = mkIf (!localReceiver) telemetry.clientIdentity.keyFile;
         };
         journal = {
           origin = lib.mkDefault (origin journal);
-          url = mkIf localReceiver "http://127.0.0.1:9428/insert/journald";
+          url = mkIf localReceiver "http://${common.dial cluster.endpoints.observability.logs.listenAddress cluster.endpoints.observability.logs}/insert/journald";
           certificateFile = mkIf (!localReceiver) telemetry.clientIdentity.certificateFile;
           keyFile = mkIf (!localReceiver) telemetry.clientIdentity.keyFile;
         };

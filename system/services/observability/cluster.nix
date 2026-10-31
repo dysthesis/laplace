@@ -1,5 +1,7 @@
 {lib}: let
   inherit (lib) mkOption types;
+  telemetry = import ../telemetry/contract.nix {inherit lib;};
+  listeners = import ./listeners.nix;
   writerOptions = builtins.removeAttrs (import ./writer-options.nix {inherit lib;}) ["sourceAddress" "certificateFile"];
   remoteWriters = instance: lib.filterAttrs (name: _: name != instance.host) instance.settings.writers;
   origin = endpoint: "https://${endpoint.domain}" + lib.optionalString (endpoint.port != 443) ":${toString endpoint.port}";
@@ -9,15 +11,15 @@ in {
     sopsFile = mkOption {type = types.path;};
     ingressDomain = mkOption {
       type = types.str;
-      default = "telemetry.dysthesis.com";
+      default = telemetry.domain;
     };
     metricsIngressPort = mkOption {
       type = types.port;
-      default = 8443;
+      default = telemetry.metricsPort;
     };
     journalIngressPort = mkOption {
       type = types.port;
-      default = 8444;
+      default = telemetry.journalPort;
     };
     metricsMount = mkOption {
       type = types.str;
@@ -54,7 +56,7 @@ in {
       host = instance.host;
       protocol = "tcp";
       inherit port;
-      listenAddress = "127.0.0.1";
+      inherit (listeners) listenAddress;
       scope = "loopback";
     };
     frontend = port: {
@@ -78,10 +80,10 @@ in {
     };
   in
     {
-      app = local 3000;
-      metrics = local 8428;
-      logs = local 9428;
-      alertmanager = local 9093;
+      app = local listeners.grafanaPort;
+      metrics = local listeners.metricsPort;
+      logs = local listeners.logsPort;
+      alertmanager = local listeners.alertmanagerPort;
       alertmanager-cluster-tcp =
         (local 9094)
         // {
@@ -95,9 +97,9 @@ in {
           listenAddress = "0.0.0.0";
           scope = "lan";
         };
-      vmalert-metrics = local 8880;
-      vmalert-logs = local 8881;
-      blackbox = local 9115;
+      vmalert-metrics = local listeners.metricsAlertPort;
+      vmalert-logs = local listeners.logsAlertPort;
+      blackbox = local listeners.blackboxPort;
       http = frontend 80;
       https = frontend 443;
       metrics-ingress = ingress instance.settings.metricsIngressPort;

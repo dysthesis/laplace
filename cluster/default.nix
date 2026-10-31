@@ -4,6 +4,7 @@
 }: let
   inherit (lib) attrNames attrValues concatLists concatMap filter filterAttrs mapAttrs mapAttrsToList mkOption types unique;
   catalogue = import ./catalogue.nix {inherit lib;};
+  telemetry = import ../system/services/telemetry/contract.nix {inherit lib;};
   evaluated = lib.evalModules {
     specialArgs = {inherit catalogue;};
     modules = [./schema.nix] ++ modules;
@@ -150,12 +151,12 @@
         service = "node-telemetry";
         protocol = "tcp";
         endPort = port;
-        listenAddress = "127.0.0.1";
+        inherit (telemetry) listenAddress;
         shared = null;
         domain = null;
       }) {
-        node-exporter = 9100;
-        vmagent = 8429;
+        node-exporter = telemetry.nodeExporterPort;
+        vmagent = telemetry.vmagentPort;
       })
     (filterAttrs (_: host: host.telemetry) typed.hosts));
   resourcesList = concatLists (mapAttrsToList (service: rs:

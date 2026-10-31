@@ -7,6 +7,8 @@
   inherit (lib) mkEnableOption mkIf mkMerge mkOption optionalAttrs optionals types;
   cfg = config.laplace.services.telemetry;
   hostName = config.networking.hostName;
+  contract = lib.laplace.telemetry;
+  socket = port: "${contract.listenAddress}:${toString port}";
   endpoints = lib.laplace.telemetry.endpoints {
     writer = cfg.writer;
     metricsOrigin = cfg.metrics.origin;
@@ -221,8 +223,8 @@ in {
     (mkIf cfg.metrics.enable {
       services.prometheus.exporters.node = {
         enable = true;
-        listenAddress = "127.0.0.1";
-        port = 9100;
+        inherit (contract) listenAddress;
+        port = contract.nodeExporterPort;
         enabledCollectors = ["systemd"];
         openFirewall = false;
       };
@@ -248,13 +250,13 @@ in {
               job_name = "node-agent";
               sample_limit = 10000;
               label_limit = 40;
-              static_configs = [{targets = ["127.0.0.1:9100"];}];
+              static_configs = [{targets = [(socket contract.nodeExporterPort)];}];
             }
           ];
         };
         extraArgs =
           [
-            "-httpListenAddr=127.0.0.1:8429"
+            "-httpListenAddr=${socket contract.vmagentPort}"
             "-remoteWrite.maxDiskUsagePerURL=${cfg.metrics.queueSize}"
             "-remoteWrite.maxHourlySeries=${toString cfg.metrics.maxHourlySeries}"
             "-remoteWrite.maxDailySeries=${toString cfg.metrics.maxDailySeries}"
