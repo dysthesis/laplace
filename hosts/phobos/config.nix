@@ -5,6 +5,15 @@
 }: {
   config = {
     services.resolved.enable = lib.mkForce true;
+    services.xserver = {
+      dpi = 180;
+      displayManager.importedVariables = [
+        "GDK_SCALE"
+        "GDK_DPI_SCALE"
+        "QT_AUTO_SCREEN_SCALE_FACTOR"
+      ];
+    };
+    environment.variables._JAVA_OPTIONS = "-Dsun.java2d.uiScale=2";
     boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
     boot.binfmt.emulatedSystems = ["aarch64-linux"];
     programs.ccache.enable = true;
@@ -65,11 +74,12 @@
 
       display = {
         servers = ["wayland"];
+        foot.fontSize = 5;
+        fuzzel.fontSize = 13;
         wayland = {
           compositor = "niri";
           desktop.enable = true;
         };
-        hidpi = true;
       };
 
       users = ["demiurge"];

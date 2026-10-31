@@ -104,11 +104,7 @@
         inherit pkgs inputs lib direnv;
       };
       fuzzel = let
-        hostName = config.networking.hostName or "";
-        fontSize =
-          if hostName == "phobos"
-          then 13
-          else 11.5;
+        fontSize = config.laplace.display.fuzzel.fontSize;
         configFile =
           {
             main = {

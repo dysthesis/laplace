@@ -4,14 +4,10 @@
   lib,
   ...
 }: let
-  host = config.networking.hostName or "";
   desktop = lib.attrByPath ["laplace" "display" "wayland" "desktop" "enable"] false config;
   palette = import ../../../system/display/servers/wayland/desktop/palette.nix;
   hex = lib.removePrefix "#";
-  fontSize =
-    if host == "phobos"
-    then 5
-    else 9.5;
+  fontSize = config.laplace.display.foot.fontSize;
 
   lineHeight = fontSize * 1.5;
   padding = 10;
