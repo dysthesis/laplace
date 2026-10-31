@@ -57,6 +57,7 @@
           formatting = treefmt.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
         }
         // lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
+          artifact-cleanup = import ./nix/tests/artifact-cleanup.nix {inherit pkgs;};
           cluster-contracts = let
             contracts = import ./nix/tests/cluster.nix {inherit lib;};
           in

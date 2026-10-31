@@ -63,7 +63,13 @@ image DISK PROFILE="chaos":
   fi
 
 clean:
-  fd "core|result|out|test" --no-ignore-vcs -x rm
+  #!/usr/bin/env sh
+  set -eu
+  for link in result result-*; do
+    if [ -L "$link" ]; then
+      rm -- "$link"
+    fi
+  done
 
 proxmox HOST:
   nix build .#nixosConfigurations.{{HOST}}.config.system.build.proxmoxVMA
