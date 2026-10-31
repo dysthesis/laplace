@@ -866,11 +866,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    read = {
-      url = "github:dysthesis/read";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # This fork needs the Go toolchain from its own nixpkgs pin.
     headscale.url = "github:dysthesis/headscale?ref=feat/wg-only-peers";
 

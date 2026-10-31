@@ -34,13 +34,6 @@
         inherit lib pkgs;
         inherit (pkgs.unstable) wezterm;
       };
-      read = callPackage ./read {
-        inherit lib pkgs;
-        inherit (inputs.read.packages.${system}) read;
-      };
-      pi = callPackage ./pi {
-        inherit lib pkgs;
-      };
       serena = callPackage ./serena {
         inherit pkgs;
         serena = inputs.serena.packages.${system}.default;
@@ -58,12 +51,10 @@
         helixUnwrapped = pkgs.unstable.helix-unwrapped;
       };
       fzf = callPackage ./fzf {inherit lib pkgs;};
-      rofi = callPackage ./rofi {inherit lib pkgs;};
       bmm = callPackage ./bmm {inherit lib pkgs;};
       btop = callPackage ./btop {inherit pkgs lib;};
       irssi = callPackage ./irssi {inherit config pkgs lib;};
       wikiman = callPackage ./wikiman {inherit pkgs lib;};
-      todo-txt-cli = callPackage ./todo-txt {};
       river = callPackage ./river {inherit pkgs lib;};
       waybar = callPackage ./waybar {inherit config pkgs lib;};
       dwl = callPackage ./dwl {
@@ -170,36 +161,16 @@
           ;
       };
       mpv = callPackage ./mpv {inherit lib pkgs;};
-      ghostty = callPackage ./ghostty {
-        inherit
-          inputs
-          lib
-          pkgs
-          config
-          ;
-      };
       foot = callPackage ./foot {
         inherit lib pkgs config;
       };
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
-      spotify-player = callPackage ./spotify_player {inherit lib pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
-      khal = callPackage ./khal {inherit lib pkgs;};
       vdirsyncer = callPackage ./khal/vdirsyncer.nix {inherit lib pkgs;};
       # Taskwarrior 2 compatibility pin.
       taskwarrior-tui2 = callPackage ./taskwarrior-tui {inherit lib pkgs;};
       zen = guiPackage (
         callPackage ./zen {
-          inherit
-            lib
-            pkgs
-            config
-            inputs
-            ;
-        }
-      );
-      zotero = guiPackage (
-        callPackage ./zotero {
           inherit
             lib
             pkgs
