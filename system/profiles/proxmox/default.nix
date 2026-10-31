@@ -9,6 +9,7 @@
   enabled = elem "proxmox" config.laplace.profiles;
   cfg = config.laplace.proxmox;
   hostName = config.networking.hostName;
+  keys = import ../../users/keys.nix;
   rootTmpfsSize =
     if cfg.balloon != null && cfg.balloon > 0
     then "${toString (builtins.div (cfg.balloon * 3) 4)}M"
@@ -136,9 +137,8 @@ in {
 
     nix.settings.trusted-users = ["root" "@wheel"];
     users.users.root.openssh.authorizedKeys.keys = [
-      # Workstation deploy keys (mirror archon's; rotate together).
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJoKu8wF8Ts5xlCcKBQ8zRU7A4NsujnhzfsGfaP62kf2 demiurge@phobos"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUPaVrhCJ8fDKDYCcIeICgCv6W+0GdGmMDrngIg1oKg demiurge@deimos"
+      keys.phobos
+      keys.deimos
     ];
 
     mnemosyne.enable = true;

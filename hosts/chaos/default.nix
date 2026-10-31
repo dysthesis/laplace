@@ -7,9 +7,10 @@
 }: let
   inherit (lib) mkForce recursiveUpdate;
   system = pkgs.stdenv.hostPlatform.system;
+  workstationKeys = import ../../system/users/keys.nix;
   keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF4Rfg1TJZb861LSAJZn1xKNO1PXf7Oz2Mucq//9Dr9s demiurge@phobos"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUPaVrhCJ8fDKDYCcIeICgCv6W+0GdGmMDrngIg1oKg demiurge@deimos"
+    workstationKeys.phobosInstaller
+    workstationKeys.deimos
   ];
   users = [
     "root"
