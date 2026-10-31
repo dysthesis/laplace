@@ -5,7 +5,6 @@
   cluster,
   ...
 }: let
-  inherit (lib.laplace.system) mkSystem mkSystemModules;
   inherit (builtins) mapAttrs;
   hosts = cluster.manifest.hosts;
   defaultImports = [
@@ -15,7 +14,6 @@
     inputs.disko.nixosModules.disko
     inputs.nix-index-database.nixosModules.nix-index
   ];
-  extraModules = [inputs.determinate.nixosModules.default];
 
   # Colmena and nixosConfigurations share this package set.
   overlays = [
@@ -28,36 +26,35 @@
     (import ../nix/overlays/stc-timeout.nix)
   ];
 
-  # Shared inputs for nixosConfigurations and Colmena.
-  mkArgs = hostname: host: {
-    system = host.system;
-    inherit
-      hostname
-      self
-      inputs
-      extraModules
-      ;
-    # hardened.nix breaks Wi-Fi; equivalent manual options do not.
-    nixosProfiles = ["minimal"];
-    specialArgs = {
-      inherit lib;
-      cluster = cluster.manifest;
-    };
-    config = {
-      documentation.man.enable = true;
-      programs.nix-index-database.comma.enable = true;
-      nixpkgs.overlays = overlays;
-      imports =
-        [
-          ./${hostname}
-          (cluster.hostModule hostname)
-        ]
-        ++ defaultImports;
-    };
-  };
+  # Both evaluators receive the same module list and import-time arguments.
+  nodeModules =
+    mapAttrs (hostname: host: {
+      system = host.system;
+      specialArgs = {
+        inherit self inputs lib;
+        cluster = cluster.manifest;
+      };
+      modules = [
+        inputs.chaotic.nixosModules.nyx-cache
+        inputs.chaotic.nixosModules.nyx-overlay
+        inputs.chaotic.nixosModules.nyx-registry
+        {networking.hostName = hostname;}
+        {nixpkgs.hostPlatform = lib.mkDefault host.system;}
+        ({modulesPath, ...}: {
+          # hardened.nix breaks Wi-Fi; equivalent manual options do not.
+          imports = ["${modulesPath}/profiles/minimal.nix"];
+        })
+        {
+          documentation.man.enable = true;
+          programs.nix-index-database.comma.enable = true;
+          nixpkgs.overlays = overlays;
+          imports = [./${hostname} (cluster.hostModule hostname)] ++ defaultImports;
+        }
+        inputs.determinate.nixosModules.default
+      ];
+    })
+    hosts;
 in {
-  nixosConfigurations = mapAttrs (hostname: host: mkSystem (mkArgs hostname host)) hosts;
-  # Per-host {modules, specialArgs, system} for Colmena to instantiate itself.
-  nodeModules = mapAttrs (hostname: host: mkSystemModules (mkArgs hostname host)) hosts;
-  inherit overlays;
+  nixosConfigurations = mapAttrs (_: lib.nixosSystem) nodeModules;
+  inherit nodeModules overlays;
 }

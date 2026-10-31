@@ -10,7 +10,6 @@ nixpkgs.lib.extend (
       |> attrNames;
 
     getDirectories = dir: getItemsOfType dir "directory";
-    getFiles = dir: getItemsOfType dir "regular";
 
     # Select only child directories with default.nix.
     getModuleDirs = dir:
@@ -25,40 +24,6 @@ nixpkgs.lib.extend (
       |> getModuleDirs
       |> map (module: dir + "/${module}");
 
-    # Shared module list and specialArgs for nixosConfigurations and Colmena.
-    mkSystemModules = {
-      self,
-      system,
-      hostname,
-      config,
-      inputs,
-      specialArgs,
-      nixosProfiles ? [],
-      extraModules ? [],
-      ...
-    }: {
-      inherit system;
-      specialArgs = {inherit self inputs;} // specialArgs;
-      modules =
-        [
-          inputs.chaotic.nixosModules.nyx-cache
-          inputs.chaotic.nixosModules.nyx-overlay
-          inputs.chaotic.nixosModules.nyx-registry
-          {networking.hostName = hostname;}
-          {nixpkgs.hostPlatform = final.mkDefault system;}
-          (
-            {modulesPath, ...}: let
-              profilesPath = "${modulesPath}/profiles";
-              validProfiles = map (final.removeSuffix ".nix") (getFiles profilesPath);
-            in
-              (final.checkListOfEnum "valid modules" validProfiles nixosProfiles) {
-                imports = map (profile: "${profilesPath}/${profile}.nix") nixosProfiles;
-              }
-          )
-          config
-        ]
-        ++ extraModules;
-    };
   in {
     laplace = {
       forAllSystems = {
@@ -70,7 +35,6 @@ nixpkgs.lib.extend (
           system: f (import pkgs {inherit system overlays;})
         );
 
-      path = {inherit getItemsOfType getDirectories getFiles;};
       telemetry = let
         domain = "telemetry.dysthesis.com";
         metricsPort = 8443;
@@ -197,10 +161,6 @@ nixpkgs.lib.extend (
             };
         };
 
-      system = {
-        inherit mkSystemModules;
-        mkSystem = args: final.nixosSystem (mkSystemModules args);
-      };
     };
   }
 )
