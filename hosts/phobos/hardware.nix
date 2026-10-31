@@ -26,7 +26,6 @@
       ++ config.boot.initrd.luks.cryptoModules;
     initrd.kernelModules = [];
     kernelModules = [
-      "kvm-amd"
       "uinput"
     ];
     extraModulePackages = [];

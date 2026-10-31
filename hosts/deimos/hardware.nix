@@ -1,10 +1,13 @@
 {
+  inputs,
   config,
   modulesPath,
   ...
 }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
+    inputs.nixos-hardware.nixosModules.common-cpu-amd
+    inputs.nixos-hardware.nixosModules.common-gpu-amd
   ];
   hardware.i2c.enable = true;
   boot = {
@@ -26,7 +29,6 @@
       kernelModules = [];
     };
     kernelModules = [
-      "kvm-amd"
       "uinput"
     ];
     extraModulePackages = [];

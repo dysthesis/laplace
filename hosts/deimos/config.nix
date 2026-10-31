@@ -1,12 +1,7 @@
 {
   pkgs,
-  inputs,
   ...
 }: {
-  imports = [
-    inputs.nixos-hardware.nixosModules.common-cpu-amd
-    inputs.nixos-hardware.nixosModules.common-gpu-amd
-  ];
   config = {
     boot.kernelPackages = pkgs.linuxPackages_cachyos;
     boot.binfmt.emulatedSystems = ["aarch64-linux"];
