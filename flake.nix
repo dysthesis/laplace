@@ -269,6 +269,8 @@
             touch $out
           '';
 
+          telemetry-ca-rotation-plan = import ./nix/tests/telemetry-ca-rotation-plan.nix {inherit lib pkgs;};
+
           telemetry-boot-persistence = let
             talos = nixosConfigurations.talos.config;
             ready = talos.systemd.services.telemetry-journal-ready;
@@ -781,6 +783,11 @@
 
       inherit nixosConfigurations;
       laplace = cluster.manifest;
+      telemetryRotationPlan = import ./system/services/telemetry/rotation-plan.nix {
+        inherit lib nixosConfigurations;
+        cluster = cluster.manifest;
+        sourceRoot = ./.;
+      };
 
       colmena = import ./nix/deploy {
         inherit self inputs lib;

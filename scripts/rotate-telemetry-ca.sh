@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly hosts=(talos mneme mimir horos hermes charon loki hephaestus bifrost portunus)
-repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
 readonly repo_dir
-readonly secrets_dir="$repo_dir/system/secrets"
+source "$repo_dir/scripts/telemetry-rotation-paths.sh"
 
 die() {
     printf 'error: %s\n' "$*" >&2
     exit 1
 }
 
-for command in cmp jq mktemp openssl sops; do
+for command in cmp jq mktemp nix openssl realpath sops; do
     command -v "$command" >/dev/null ||
-        die "missing $command; run with: nix shell nixpkgs#jq nixpkgs#openssl nixpkgs#sops -c $0"
+        die "missing $command; run with: nix shell nixpkgs#coreutils nixpkgs#jq nixpkgs#openssl nixpkgs#sops -c $0"
 done
 
 [[ $# -eq 2 ]] || die "usage: $0 <new-ca-certificate.pem> <new-ca-private-key.pem>"
@@ -23,24 +22,25 @@ readonly ca_key_input=$2
 [[ -r $ca_key_input ]] || die "cannot read CA private key: $ca_key_input"
 
 [[ -w /dev/shm ]] || die '/dev/shm must be writable; plaintext keys must stay on tmpfs'
-[[ -r "$secrets_dir/telemetry-ca.yaml" ]] || die 'missing system/secrets/telemetry-ca.yaml'
-[[ -r "$secrets_dir/argus.yaml" ]] || die 'missing system/secrets/argus.yaml'
-for host in "${hosts[@]}"; do
-    [[ -r "$secrets_dir/$host.yaml" ]] || die "missing system/secrets/$host.yaml"
+plan=$(nix eval --extra-experimental-features 'nix-command flakes pipe-operators' --no-write-lock-file --json "$repo_dir#telemetryRotationPlan")
+readonly plan
+mapfile -t hosts < <(jq -r '.writers | keys[]' <<< "$plan")
+mapfile -t secret_files < <(jq -r '.files[]' <<< "$plan")
+readonly -a hosts secret_files
+declare -A source_files=()
+for file in "${secret_files[@]}"; do
+    source_files[$file]=$(telemetry_rotation_source "$repo_dir" "$file") ||
+        die "unsupported source mapping; no files staged"
 done
 
 umask 077
 work_dir=$(mktemp -d /dev/shm/laplace-telemetry-ca.XXXXXX)
 trap 'rm -rf -- "$work_dir"' EXIT HUP INT TERM
-mkdir "$work_dir/original" "$work_dir/staged"
+mkdir -p "$work_dir/original/system/secrets" "$work_dir/staged/system/secrets"
 
-secret_files=(telemetry-ca.yaml argus.yaml)
-for host in "${hosts[@]}"; do
-    secret_files+=("$host.yaml")
-done
 for file in "${secret_files[@]}"; do
-    cp -- "$secrets_dir/$file" "$work_dir/original/$file"
-    cp -- "$secrets_dir/$file" "$work_dir/staged/$file"
+    cp -- "${source_files[$file]}" "$work_dir/original/$file"
+    cp -- "${source_files[$file]}" "$work_dir/staged/$file"
 done
 
 openssl x509 -in "$ca_certificate_input" -out "$work_dir/ca.crt" 2>/dev/null ||
@@ -58,6 +58,23 @@ cmp -s \
 
 # Keep private key first so future `openssl pkey` extraction fails closed early.
 cat "$work_dir/ca.key" "$work_dir/ca.crt" >"$work_dir/ca.pem"
+
+set_secret() {
+    local target=$1 value=$2 file key_path
+    file=$(jq -r '.file' <<< "$target")
+    key_path=$(jq -r '.keyPath' <<< "$target")
+    sops set --value-file "$work_dir/staged/$file" "$key_path" "$value"
+}
+
+check_secret() {
+    local target=$1 expected=$2 file key_path
+    file=$(jq -r '.file' <<< "$target")
+    key_path=$(jq -r '.keyPath' <<< "$target")
+    cmp -s \
+        <(sops --decrypt --extract "$key_path" "$work_dir/staged/$file") \
+        "$expected" ||
+        die "$file $key_path failed staged SOPS validation"
+}
 
 declare -A fingerprints=()
 declare -A seen_fingerprints=()
@@ -106,70 +123,51 @@ for host in "${hosts[@]}"; do
     jq -Rs . <"$certificate" >"$certificate.json"
     jq -Rs . <"$key" >"$key.json"
 
-    host_sops_file="$work_dir/staged/$host.yaml"
-    sops set --value-file "$host_sops_file" '["telemetry_client_certificate"]' "$certificate.json"
-    sops set --value-file "$host_sops_file" '["telemetry_client_key"]' "$key.json"
-    sops set --value-file \
-        "$work_dir/staged/argus.yaml" \
-        "[\"telemetry_${host}_client_certificate\"]" \
-        "$certificate.json"
+    writer=$(jq -c --arg host "$host" '.writers[$host]' <<< "$plan")
+    set_secret "$(jq -c '.clientCertificate' <<< "$writer")" "$certificate.json"
+    set_secret "$(jq -c '.clientKey' <<< "$writer")" "$key.json"
+    set_secret "$(jq -c '.receiverCertificate' <<< "$writer")" "$certificate.json"
 done
 
 jq -Rs . <"$work_dir/ca.crt" >"$work_dir/ca.crt.json"
 jq -Rs . <"$work_dir/ca.pem" >"$work_dir/ca.pem.json"
-sops set --value-file \
-    "$work_dir/staged/argus.yaml" \
-    '["telemetry_ingress_client_ca"]' \
-    "$work_dir/ca.crt.json"
-sops set --value-file \
-    "$work_dir/staged/telemetry-ca.yaml" \
-    '["data"]' \
-    "$work_dir/ca.pem.json"
+receiver_ca=$(jq -c '.receiver.ca' <<< "$plan")
+ca_bundle=$(jq -c '.caBundle' <<< "$plan")
+set_secret "$receiver_ca" "$work_dir/ca.crt.json"
+set_secret "$ca_bundle" "$work_dir/ca.pem.json"
 
 for host in "${hosts[@]}"; do
-    cmp -s \
-        <(sops --decrypt --extract '["telemetry_client_certificate"]' "$work_dir/staged/$host.yaml") \
-        "$work_dir/$host.crt" ||
-        die "$host certificate failed staged SOPS validation"
-    cmp -s \
-        <(sops --decrypt --extract '["telemetry_client_key"]' "$work_dir/staged/$host.yaml") \
-        "$work_dir/$host.key" ||
-        die "$host private key failed staged SOPS validation"
-    cmp -s \
-        <(sops --decrypt --extract "[\"telemetry_${host}_client_certificate\"]" "$work_dir/staged/argus.yaml") \
-        "$work_dir/$host.crt" ||
-        die "$host Argus certificate failed staged SOPS validation"
+    writer=$(jq -c --arg host "$host" '.writers[$host]' <<< "$plan")
+    check_secret "$(jq -c '.clientCertificate' <<< "$writer")" "$work_dir/$host.crt"
+    check_secret "$(jq -c '.clientKey' <<< "$writer")" "$work_dir/$host.key"
+    check_secret "$(jq -c '.receiverCertificate' <<< "$writer")" "$work_dir/$host.crt"
 done
-cmp -s \
-    <(sops --decrypt --extract '["telemetry_ingress_client_ca"]' "$work_dir/staged/argus.yaml") \
-    "$work_dir/ca.crt" ||
-    die 'Argus CA certificate failed staged SOPS validation'
-cmp -s \
-    <(sops --decrypt --extract '["data"]' "$work_dir/staged/telemetry-ca.yaml") \
-    "$work_dir/ca.pem" ||
-    die 'CA bundle failed staged SOPS validation'
+check_secret "$receiver_ca" "$work_dir/ca.crt"
+check_secret "$ca_bundle" "$work_dir/ca.pem"
 
-printf '\nValidated supplied CA and generated ten client leaves. Staged encrypted updates for:\n'
+printf '\nValidated supplied CA and generated %d client leaves. Staged encrypted updates for:\n' "${#hosts[@]}"
 for file in "${secret_files[@]}"; do
-    printf '  system/secrets/%s\n' "$file"
+    printf '  %s\n' "$file"
 done
 printf '\nNo live system changes yet. Type ROTATE to replace these encrypted files: '
 read -r confirmation
 [[ $confirmation == ROTATE ]] || die 'aborted without modifying repository files'
 
 for file in "${secret_files[@]}"; do
-    cmp -s "$secrets_dir/$file" "$work_dir/original/$file" ||
-        die "system/secrets/$file changed while script ran; nothing published"
+    destination=$(telemetry_rotation_source "$repo_dir" "$file") ||
+        die "$file source mapping changed while script ran; nothing published"
+    cmp -s "$destination" "$work_dir/original/$file" ||
+        die "$file changed while script ran; nothing published"
 done
 
 for file in "${secret_files[@]}"; do
-    destination="$secrets_dir/$file"
+    destination="${source_files[$file]}"
     temporary=$(mktemp "$destination.rotate.XXXXXX")
     cp --preserve=mode -- "$work_dir/staged/$file" "$temporary"
     mv -- "$temporary" "$destination"
 done
 
-printf '\nEncrypted SOPS files updated. Do not deploy until Argus fingerprints are updated.\n'
+printf '\nEncrypted SOPS files updated. Do not deploy until writer fingerprints for receiver %s are updated.\n' "$(jq -r '.receiver.host' <<< "$plan")"
 printf 'Send only these fingerprints:\n\n'
 for host in "${hosts[@]}"; do
     printf '%s %s\n' "$host" "${fingerprints[$host]}"
