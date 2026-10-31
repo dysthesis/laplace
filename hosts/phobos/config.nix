@@ -52,7 +52,7 @@
         privesc = "doas";
         apparmor.enable = true;
         polkit.enable = true;
-        firewall.enable = true;
+        firewallPolicy.enable = true;
         fail2ban.enable = true;
       };
 

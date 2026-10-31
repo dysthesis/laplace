@@ -9,9 +9,9 @@
     mkIf
     ;
 
-  cfg = config.laplace.security.firewall.enable;
+  cfg = config.laplace.security.firewallPolicy.enable;
 in {
-  options.laplace.security.firewall.enable = mkEnableOption "Whether or not to enable firewall";
+  options.laplace.security.firewallPolicy.enable = mkEnableOption "Laplace firewall policy";
   config = mkIf cfg {
     networking.firewall = {
       enable = true;
