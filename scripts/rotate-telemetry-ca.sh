@@ -24,8 +24,8 @@ readonly ca_key_input=$2
 [[ -w /dev/shm ]] || die '/dev/shm must be writable; plaintext keys must stay on tmpfs'
 plan=$(nix eval --extra-experimental-features 'nix-command flakes pipe-operators' --no-write-lock-file --json "$repo_dir#telemetryRotationPlan")
 readonly plan
-mapfile -t hosts < <(jq -r '.writers | keys[]' <<< "$plan")
-mapfile -t secret_files < <(jq -r '.files[]' <<< "$plan")
+mapfile -t hosts < <(jq -r '.writers | keys[]' <<<"$plan")
+mapfile -t secret_files < <(jq -r '.files[]' <<<"$plan")
 readonly -a hosts secret_files
 declare -A source_files=()
 for file in "${secret_files[@]}"; do
@@ -61,15 +61,15 @@ cat "$work_dir/ca.key" "$work_dir/ca.crt" >"$work_dir/ca.pem"
 
 set_secret() {
     local target=$1 value=$2 file key_path
-    file=$(jq -r '.file' <<< "$target")
-    key_path=$(jq -r '.keyPath' <<< "$target")
+    file=$(jq -r '.file' <<<"$target")
+    key_path=$(jq -r '.keyPath' <<<"$target")
     sops set --value-file "$work_dir/staged/$file" "$key_path" "$value"
 }
 
 check_secret() {
     local target=$1 expected=$2 file key_path
-    file=$(jq -r '.file' <<< "$target")
-    key_path=$(jq -r '.keyPath' <<< "$target")
+    file=$(jq -r '.file' <<<"$target")
+    key_path=$(jq -r '.keyPath' <<<"$target")
     cmp -s \
         <(sops --decrypt --extract "$key_path" "$work_dir/staged/$file") \
         "$expected" ||
@@ -123,24 +123,24 @@ for host in "${hosts[@]}"; do
     jq -Rs . <"$certificate" >"$certificate.json"
     jq -Rs . <"$key" >"$key.json"
 
-    writer=$(jq -c --arg host "$host" '.writers[$host]' <<< "$plan")
-    set_secret "$(jq -c '.clientCertificate' <<< "$writer")" "$certificate.json"
-    set_secret "$(jq -c '.clientKey' <<< "$writer")" "$key.json"
-    set_secret "$(jq -c '.receiverCertificate' <<< "$writer")" "$certificate.json"
+    writer=$(jq -c --arg host "$host" '.writers[$host]' <<<"$plan")
+    set_secret "$(jq -c '.clientCertificate' <<<"$writer")" "$certificate.json"
+    set_secret "$(jq -c '.clientKey' <<<"$writer")" "$key.json"
+    set_secret "$(jq -c '.receiverCertificate' <<<"$writer")" "$certificate.json"
 done
 
 jq -Rs . <"$work_dir/ca.crt" >"$work_dir/ca.crt.json"
 jq -Rs . <"$work_dir/ca.pem" >"$work_dir/ca.pem.json"
-receiver_ca=$(jq -c '.receiver.ca' <<< "$plan")
-ca_bundle=$(jq -c '.caBundle' <<< "$plan")
+receiver_ca=$(jq -c '.receiver.ca' <<<"$plan")
+ca_bundle=$(jq -c '.caBundle' <<<"$plan")
 set_secret "$receiver_ca" "$work_dir/ca.crt.json"
 set_secret "$ca_bundle" "$work_dir/ca.pem.json"
 
 for host in "${hosts[@]}"; do
-    writer=$(jq -c --arg host "$host" '.writers[$host]' <<< "$plan")
-    check_secret "$(jq -c '.clientCertificate' <<< "$writer")" "$work_dir/$host.crt"
-    check_secret "$(jq -c '.clientKey' <<< "$writer")" "$work_dir/$host.key"
-    check_secret "$(jq -c '.receiverCertificate' <<< "$writer")" "$work_dir/$host.crt"
+    writer=$(jq -c --arg host "$host" '.writers[$host]' <<<"$plan")
+    check_secret "$(jq -c '.clientCertificate' <<<"$writer")" "$work_dir/$host.crt"
+    check_secret "$(jq -c '.clientKey' <<<"$writer")" "$work_dir/$host.key"
+    check_secret "$(jq -c '.receiverCertificate' <<<"$writer")" "$work_dir/$host.crt"
 done
 check_secret "$receiver_ca" "$work_dir/ca.crt"
 check_secret "$ca_bundle" "$work_dir/ca.pem"
@@ -167,7 +167,7 @@ for file in "${secret_files[@]}"; do
     mv -- "$temporary" "$destination"
 done
 
-printf '\nEncrypted SOPS files updated. Do not deploy until writer fingerprints for receiver %s are updated.\n' "$(jq -r '.receiver.host' <<< "$plan")"
+printf '\nEncrypted SOPS files updated. Do not deploy until writer fingerprints for receiver %s are updated.\n' "$(jq -r '.receiver.host' <<<"$plan")"
 printf 'Send only these fingerprints:\n\n'
 for host in "${hosts[@]}"; do
     printf '%s %s\n' "$host" "${fingerprints[$host]}"
