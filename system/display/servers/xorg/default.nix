@@ -22,7 +22,7 @@ in {
     })
   ];
 
-  # Selected Xorg command for VT1 login.
+  # VT1 login uses the selected Xorg command.
   options.laplace.display.xorg.sessionCommand = lib.mkOption {
     type = lib.types.nullOr lib.types.str;
     default = null;

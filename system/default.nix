@@ -13,7 +13,7 @@ in {
       {
         GH_TELEMETRY = "false";
         DO_NOT_TRACK = "true";
-        # Servers use Vim to avoid pulling the desktop Neovim closure.
+        # Servers use Vim to exclude the desktop Neovim closure.
         EDITOR = lib.getExe (
           if isDesktop
           then inputs.poincare.packages.${system}.default

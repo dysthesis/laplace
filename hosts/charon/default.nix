@@ -25,7 +25,7 @@
     proxmox = {
       cores = 1;
       memory = 1024; # MiB, ballooning ceiling
-      balloon = 256; # MiB, ballooning floor (tailscaled exit node idles ~30-50 MiB)
+      balloon = 256; # MiB. The tailscaled exit node uses approximately 30–50 MiB at idle.
       diskSize = "20G";
     };
 
@@ -45,7 +45,7 @@
       };
       tailscale = {
         enable = true;
-        # ip_forward + ipv6 forwarding come bundled with this option.
+        # This option enables IPv4 and IPv6 forwarding.
         advertiseExitNode = true;
       };
       beszel.agent = {

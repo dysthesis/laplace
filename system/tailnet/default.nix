@@ -1,4 +1,4 @@
-# Render only the independently validated cluster model. Live tags stay node-bound.
+# Render only the validated cluster model. Bind live tags to individual nodes.
 {
   lib,
   cluster,

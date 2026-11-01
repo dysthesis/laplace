@@ -1,4 +1,4 @@
-# Structured drift records: callers decide presentation; identities remain data.
+# Callers format drift records. Keep node identities as data.
 def node_name: .given_name // .name;
 def clean_tags: (.tags // []) | map(sub("^tag:"; "")) | sort;
 . as $live

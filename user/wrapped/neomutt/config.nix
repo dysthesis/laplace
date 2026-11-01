@@ -40,30 +40,30 @@ in
       set pager_context = 3
       set pager_stop
       set menu_scroll
-      set tilde        # pad short pages with ~
-      set move=no      # don't move read messages to mbox
+      set tilde        # Fill short pages with ~.
+      set move=no      # Keep read messages in the same mailbox.
       set mail_check = 30
       set imap_keepalive = 900 # 15 minutes
       set sleep_time = 0
-      set wait_key = no # no "press key to continue"
+      set wait_key = no # Disable the "press key to continue" prompt.
       set envelope_from
       set edit_headers
-      set fast_reply   # skip straight to compose when replying
+      set fast_reply   # Open the editor directly for replies.
       set askcc
       set fcc_attach
       set forward_format = "Fwd: %s"
       set forward_decode
       set forward_quote
-      set mime_forward # forward attachments inline, not as attachment
+      set mime_forward
       set attribution = "On %d, %n wrote:"
       set reply_to
-      set reverse_name # reply as whichever address it was sent to
+      set reverse_name # Use the message's recipient address for replies.
       set include
       set text_flowed=yes
       unset sig_dashes
       unset markers
 
-      # Sort by newest conversation first.
+      # Sort conversations by the last message date, from last to first.
       set charset = "utf-8"
       set uncollapse_jump
       set sort_re
@@ -109,7 +109,8 @@ in
       bind browser,alias l			select-entry
       bind index				/			search
       bind index,pager 			R			group-reply
-      # vim-style hjkl above shadows the default l/? /h bindings; relocate them
+      # The hjkl bindings replace l, ? and h.
+      # Use other keys for limit, help and display-toggle-weed.
       bind index				?			limit
       bind index,pager,attach			<F1>			help
       bind pager				H			display-toggle-weed
@@ -167,15 +168,15 @@ in
 
       color body brightcyan default "[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+" # Email addresses
       color body brightblue default "(https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+" # URL
-      color body green default "\`[^\`]*\`" # Green text between ` and `
-      color body brightblue default "^# \.*" # Headings as bold blue
-      color body brightcyan default "^## \.*" # Subheadings as bold cyan
-      color body brightgreen default "^### \.*" # Subsubheadings as bold green
-      color body yellow default "^(\t| )*(-|\\*) \.*" # List items as yellow
+      color body green default "\`[^\`]*\`" # Inline code
+      color body brightblue default "^# \.*"
+      color body brightcyan default "^## \.*"
+      color body brightgreen default "^### \.*"
+      color body yellow default "^(\t| )*(-|\\*) \.*" # List items
       color body brightcyan default "[;:][-o][)/(|]" # emoticons
       color body brightcyan default "[;:][)(|]" # emoticons
-      color body brightcyan default "[ ][*][^*]*[*][ ]?" # more emoticon?
-      color body brightcyan default "[ ]?[*][^*]*[*][ ]" # more emoticon?
+      color body brightcyan default "[ ][*][^*]*[*][ ]?" # Emphasis between asterisks
+      color body brightcyan default "[ ]?[*][^*]*[*][ ]" # Emphasis between asterisks
       color body red default "(BAD signature)"
       color body cyan default "(Good signature)"
       color body brightblack default "^gpg: Good signature .*"

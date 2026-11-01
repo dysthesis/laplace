@@ -8,16 +8,16 @@ right_format = "$status$cmd_duration$time"
 
 [character]
 success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)" # status code appears on the right
+error_symbol = "[❯](bold red)" # Show the status code on the right.
 vimcmd_symbol = "[❮](bold gray8)"
 
 [cmd_duration]
-min_time = 2000 # hide commands under 2 seconds
+min_time = 2000 # Hide durations of less than two seconds.
 style = "yellow"
 format = "[$duration]($style) "
 
-# A single jj log probes repo membership and renders the change without
-# snapshotting the working copy. Git modules still show colocated Git status.
+# One jj log command detects repository membership without a working-copy snapshot.
+# Git modules show Git status in colocated repositories.
 [custom.jj]
 disabled = false
 ignore_timeout = true
@@ -37,7 +37,7 @@ jj log -r @ -n 1 --ignore-working-copy --no-graph --color always -T 'separate(" 
     raw_escape_sequence("\e[38;2;85;85;85m") ++ "(no description)" ++ raw_escape_sequence("\e[0m")))' 2>/dev/null
 '''
 
-# Disabled: running task on every prompt costs more than its hourly data merits.
+# Keep task disabled to prevent a query on each prompt for data that changes each hour.
 [custom.task]
 disabled = true
 when = true
@@ -48,14 +48,14 @@ format = "([⚑$output]($style) )"
 
 [directory]
 style = "gray9"
-repo_root_style = "bold white" # emphasise repository name
-before_repo_root_style = "gray5" # dim parent path
+repo_root_style = "bold white"
+before_repo_root_style = "gray5"
 repo_root_format = "[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
 format = "[$path]($style)[$read_only]($read_only_style) "
 truncate_to_repo = true
 truncation_length = 4
-truncation_symbol = "…/" # explicit truncation marker
-read_only = " " # fires in /nix/store, mounted media, other users' homes
+truncation_symbol = "…/"
+read_only = " "
 read_only_style = "orange"
 
 [env_var.IN_VMSHELL]
@@ -68,12 +68,12 @@ style = "lack"
 format = "[$symbol$branch(:$remote_branch)]($style) "
 
 [git_commit]
-only_detached = true # hash appears exactly when "what am I on?" is the question
+only_detached = true
 style = "gray6"
 format = "[@$hash]($style) "
 
 [git_state]
-style = "bold orange" # highlight risky VCS operations
+style = "bold orange"
 format = '[\($state( $progress_current/$progress_total)\)]($style) '
 
 [git_status]
@@ -98,21 +98,21 @@ format = "[$symbol($version)]($style) "
 [hostname]
 ssh_only = true
 detect_env_vars = ["!IN_VMSHELL"]
-style = "orange" # remote = handle with care, not alarm
+style = "orange"
 format = "[$hostname]($style) "
 
 [jobs]
-symbol = "&" # the shell's own word for backgrounding
+symbol = "&"
 style = "lack"
 symbol_threshold = 1
-number_threshold = 2 # "&" for one job, "&2" beyond
+number_threshold = 2 # Show "&" for one job or "&2" for two jobs.
 format = "[$symbol$number]($style) "
 
 [nix_shell]
 symbol = " " # nf-linux-nixos
 style = "blue"
-heuristic = true # also catch `nix shell` (no IN_NIX_SHELL set)
-impure_msg = "" # hide the default impure state
+heuristic = true # Detect `nix shell` without IN_NIX_SHELL.
+impure_msg = ""
 pure_msg = "pure"
 unknown_msg = ""
 format = '[$symbol$state( $name)]($style) '
@@ -140,7 +140,6 @@ symbol = " "
 style = "gray6"
 format = '[$symbol($version)( \($virtualenv\))]($style) '
 
-# Runtime versions are reference data; keep them dim.
 [rust]
 symbol = " "
 style = "gray6"
@@ -150,10 +149,10 @@ format = "[$symbol($version)]($style) "
 disabled = false
 symbol = "✗"
 style = "red"
-format = "[$symbol$status]($style) " # 101 = rust panic, 127 = not found, 130 = ^C
+format = "[$symbol$status]($style) " # 101: Rust panic. 127: command not found. 130: ^C.
 
 [sudo]
-disabled = false # show cached credentials near the prompt
+disabled = false # Show cached credentials near the prompt.
 symbol = " " # nf-fa-key
 style = "orange"
 format = "[$symbol]($style)"
@@ -161,12 +160,12 @@ format = "[$symbol]($style)"
 [time]
 disabled = false
 time_format = "%H:%M"
-style = "gray5" # dim until needed in scrollback
+style = "gray5"
 format = "[$time]($style)"
 
 [username]
-# appears only when it deviates from the default: root, or over ssh.
-# A local sudo login may show only root@.
+# Show the username for root or SSH sessions.
+# A local sudo login can show only root@.
 show_always = false
 detect_env_vars = ["!IN_VMSHELL"]
 style_user = "gray8"

@@ -69,7 +69,7 @@
     import ./config.nix {
       vicinaeExe = lib.getExe pkgs.configured.vicinae;
       inherit config;
-      # Avoid a dependency cycle through the configured Niri shell bindings.
+      # Prevent a dependency cycle through the configured Niri shell bindings.
       niriExe = lib.getExe pkgs.niri;
     }
     |> pkgs.writers.writeTOML "config.toml"

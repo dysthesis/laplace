@@ -169,11 +169,6 @@ in {
         enable = true;
         openFirewall = false;
         settings = {
-          # auth = {
-          #   method = "Forms";
-          #   required = "Enabled";
-          #   trustCgnatIpAddresses = false;
-          # };
           server = {
             bindaddress = "127.0.0.1";
             port = 9696;
@@ -184,7 +179,7 @@ in {
 
       lidarr = {
         enable = true;
-        group = "navidrome"; # imported music is read-only to the Navidrome service
+        group = "navidrome"; # Navidrome has read-only access to imported music.
         openFirewall = false;
         settings = {
           auth = {
@@ -324,8 +319,8 @@ in {
             UMask = "0077";
           };
         qbittorrent = {
-          # Seed secure proxy/storage defaults once. Only the declared host follows
-          # later deployments; generated credentials and other WebUI edits persist.
+          # Initialise proxy and storage defaults once. Reconcile only the declared host on later starts.
+          # Keep generated credentials and other web interface changes.
           preStart = lib.mkBefore ''
             if [ ! -s ${lib.escapeShellArg qbitConfig} ]; then
               ${pkgs.coreutils}/bin/install -m 0600 ${qbitInitialConfig} ${lib.escapeShellArg qbitConfig}
@@ -357,7 +352,7 @@ in {
             group = "media-downloads";
           };
         };
-        # Override Navidrome's create-only defaults: Lidarr writes; Navidrome reads.
+        # Override create-only defaults so Lidarr can write and Navidrome can only read.
         navidromeDirs.${musicDir}.d = {
           mode = lib.mkForce "2750";
           user = lib.mkForce "lidarr";
@@ -378,7 +373,7 @@ in {
     laplace.services.caddy = {
       enable = true;
       virtualHosts.${musicHost} = {
-        # Service URLs can contain API keys; do not retain request URIs.
+        # Service URLs can contain API keys. Do not log request URIs.
         logFormat = null;
         extraConfig = ''
           tls {
@@ -410,7 +405,7 @@ in {
             handle /slskd/* {
               reverse_proxy 127.0.0.1:5030
             }
-            # qBittorrent has no URL-base setting; strip only its external prefix.
+            # qBittorrent has no URL-base setting. Remove only its external prefix.
             handle_path /qbittorrent/* {
               reverse_proxy 127.0.0.1:8080
             }

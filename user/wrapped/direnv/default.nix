@@ -25,7 +25,7 @@ in
     set.DIRENV_CONFIG = direnvConfigDir;
     binPath = [nix];
 
-    # direnv's hooks use os.Executable(), which would bypass this wrapper.
+    # Hook commands use os.Executable(), which returns the unwrapped executable.
     run = [
       ''
         if [[ "''${1-}" == hook ]]; then

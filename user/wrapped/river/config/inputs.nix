@@ -41,7 +41,6 @@
 
   mkInputConfig = config:
     config
-    # The value of each key (device) is now a list of strings specifying the option and value
     |> mapAttrs (_key: value: mapAttrsToList mkSingleConfig value)
     |> mapAttrsToList (key: value: mapList (val: "${key} ${val}") value)
     |> concatLists;

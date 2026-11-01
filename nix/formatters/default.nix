@@ -1,13 +1,13 @@
 _: {
   projectRootFile = "flake.nix";
-  # Formatting rewrites encrypted SOPS payloads; exclude all secret files.
+  # Formatters can change encrypted SOPS data.
   settings.global.excludes = [
     ".claude/**"
     ".serena/**"
     ".tokensave/**"
     "AGENTS.md"
     "system/secrets/*"
-    # Vendored shader DSL includes non-JSON files with .json extensions.
+    # Some third-party shader files use .json extensions but are not JSON.
     "system/services/minecraft/packwiz/**"
   ];
   programs = {

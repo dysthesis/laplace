@@ -28,15 +28,8 @@ python3Packages.buildPythonApplication (finalAttrs: {
         "return HeadroomMCPServer(proxy_url=proxy_url)" \
         'return HeadroomMCPServer(proxy_url=proxy_url, check_proxy=os.environ.get("HEADROOM_MCP_CHECK_PROXY", "1").lower() not in ("0", "false", "off"))'
 
-    # substituteInPlace headroom/cli/wrap.py \
-    #   --replace-fail \
-    #     'cmd = [sys.executable, "-m", "headroom.cli", "proxy", "--port", str(port)]' \
-    #     "cmd = [\"$out/bin/headroom\", \"proxy\", \"--port\", str(port)]"
-
-    # Disable Headroom's external beacon and local telemetry at the
-    # implementation boundary. Environment variables cannot re-enable them.
+    # Disable the external beacon and local telemetry in the source so environment variables cannot enable them.
     cat > headroom/telemetry/beacon.py <<'PY'
-    """Telemetry disabled by downstream packaging."""
 
     BEACON_DEFAULT_ON = False
 
@@ -64,7 +57,6 @@ python3Packages.buildPythonApplication (finalAttrs: {
   ];
 
   dependencies = with python3Packages; [
-    # Core.
     ast-grep-cli
     click
     litellm
@@ -96,8 +88,6 @@ python3Packages.buildPythonApplication (finalAttrs: {
   ];
 
   makeWrapperArgs = [
-    # Defence in depth. The source patch above already makes the Headroom
-    # beacon and local telemetry impossible to enable.
     "--set"
     "HEADROOM_TELEMETRY"
     "off"
@@ -118,8 +108,7 @@ python3Packages.buildPythonApplication (finalAttrs: {
     "DO_NOT_TRACK"
     "1"
 
-    # Headroom otherwise re-execs the bare Python interpreter to apply
-    # malloc tuning. That has the same Nix environment problem as wrap.
+    # Malloc tuning restarts the bare Python interpreter, which cannot use the wrapped Nix environment.
     "--set"
     "HEADROOM_MALLOC_TUNING"
     "0"

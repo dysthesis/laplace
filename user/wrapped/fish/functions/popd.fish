@@ -1,4 +1,4 @@
-# Keeps DIRSTACK in sync with pushd.
+# Use the same DIRSTACK as pushd.
 
 function popd --description "Pop directory from the stack and cd to it"
     if count $argv >/dev/null

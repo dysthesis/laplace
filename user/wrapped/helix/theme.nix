@@ -1,6 +1,5 @@
 {pkgs, ...}: let
   tomlFormat = pkgs.formats.toml {};
-  # Customised lackluster theme
   config = {
     comment = "comment";
     constant = "gray7";

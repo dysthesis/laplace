@@ -124,7 +124,7 @@ for entry in "${MENU_ENTRIES[@]}"; do
     authors=${rest%%$'\t'*}
     id=${entry##*$'\t'}
 
-    # bemenu collapses tabs, so keep a printable label separate from the citekey
+    # Store display labels and citation keys independently because bemenu removes tab spacing.
     if [[ -n $authors ]]; then
         MENU_LABELS+=("$title - $authors [$id]")
     else

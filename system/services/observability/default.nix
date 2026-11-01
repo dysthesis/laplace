@@ -128,8 +128,8 @@
       }
     '')
     writers);
-  # The source JSON remains a fixture; only the service-specific host selectors
-  # are rendered from placement. Fleet metrics and journal identities are untouched.
+  # Keep the source JSON as a fixture. Change only service-specific host selectors for placement.
+  # Do not change fleet metrics or journal identities.
   minecraftDashboardHost =
     if cfg.minecraftHost == null
     then "loki"
@@ -431,7 +431,7 @@ in {
 
         prometheus.alertmanager = {
           enable = true;
-          # URL comes from SOPS via envsubst; validate substituted config at start.
+          # SOPS supplies the URL through envsubst. Do a check of the substituted configuration at startup.
           checkConfig = false;
           inherit (listeners) listenAddress;
           port = listeners.alertmanagerPort;
@@ -572,7 +572,6 @@ in {
             wants = ["vmalert-logs.service"];
           };
           grafana = {
-            # Adopt historical ownership only when the retained DB needs it.
             # ExecStartPre runs with the normal process stopped, including on restart.
             preStart = lib.mkBefore ''
               ${lib.getExe dashboardOwnership}
@@ -720,7 +719,7 @@ in {
             }
           }
         '';
-        # Upload endpoints return tiny responses; skip encoding.
+        # Upload responses are small. Do not encode them.
         virtualHosts = {
           "${cfg.ingress.domain}:${toString cfg.ingress.metricsPort}".extraConfig = ''
             ${ingressTls}
@@ -787,7 +786,7 @@ in {
             ++ mapAttrsToList (name: writer: "telemetry_${name}_certificate:${writer.certificateFile}") writers;
         };
 
-      # simplification: token buckets cap wire bytes; disable compression to cap decoded input.
+      # Token buckets limit wire bytes. Disable compression to limit decoded input.
       networking.nftables.tables.telemetry-ingress = {
         family = "inet";
         content = ''

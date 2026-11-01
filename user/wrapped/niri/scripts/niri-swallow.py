@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Swallow tiled windows launched by Foot into the terminal's Niri column."""
+"""Move tiled child windows into their Foot terminal's Niri column."""
 
 import json
 import os
@@ -51,7 +51,7 @@ def ancestor_terminal(pid, all_windows, child_id):
         if matches:
             return matches[0]["id"] if len(matches) == 1 and matches[0]["app_id"] == "foot" else None
         try:
-            # The comm field may contain spaces or parentheses.
+            # The comm field can contain spaces or parentheses.
             with open(f"/proc/{pid}/stat") as proc:
                 stat = proc.read()
             pid = int(stat.rsplit(") ", 1)[1].split()[1])
@@ -73,7 +73,7 @@ def swallow(child_id):
     if not parent["workspace_id"]:
         return
     if not any(w["is_focused"] and w["id"] in (parent_id, child_id) for w in current.values()):
-        return  # Do not steal focus from another window.
+        return  # Change focus only when the parent or the child has focus.
 
     if parent["workspace_id"] != child["workspace_id"]:
         if not child["is_focused"]:
@@ -89,7 +89,7 @@ def swallow(child_id):
 
     parent_col, child_col = column(parent), column(child)
     if parent_col != child_col:
-        # Moving a shared column would also move unrelated windows.
+        # Do not move columns that contain more than one window.
         if sum(w["workspace_id"] == child["workspace_id"]
                and not w["is_floating"] and column(w) == child_col
                for w in current.values()) != 1:
@@ -101,7 +101,7 @@ def swallow(child_id):
             action("FocusWindow", id=child_id)
             action("MoveColumnToIndex", index=target)
 
-        # Check the actual positions before performing a toggling action.
+        # Read window positions before the consume-or-expel action.
         current = windows()
         parent, child = current.get(parent_id), current.get(child_id)
         if not parent or not child or parent["workspace_id"] != child["workspace_id"]:

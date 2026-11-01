@@ -24,7 +24,7 @@ in {
     useDHCP = false;
     nameservers = ["10.0.40.1"];
     firewall.allowedTCPPorts = [80 443];
-    # Beszel's scoped extraInputRules requires nftables.
+    # Beszel's extraInputRules must use nftables.
     nftables.enable = true;
   };
 
@@ -44,7 +44,7 @@ in {
     proxmox = {
       cores = 1;
       memory = 1024; # MiB, ballooning ceiling
-      balloon = 1024; # MiB, fixed to avoid swap pressure
+      balloon = 1024; # MiB. A fixed allocation prevents swapping.
       diskSize = "20G";
     };
     security = {
@@ -72,7 +72,7 @@ in {
     username = "token";
     passwordFile = config.sops.secrets.cloudflare_ddns_token.path;
     zone = fqdn;
-    # Public service CNAMEs follow this machine's DDNS identity.
+    # Public service CNAMEs use this machine's DDNS identity.
     domains = [ddnsHost];
     usev6 = "";
     interval = "5min";
@@ -81,7 +81,7 @@ in {
     '';
   };
 
-  # Avoid nixpkgs#350408: DynamicUser may be absent from NSS in ExecStartPre.
+  # NSS does not always contain the DynamicUser account during ExecStartPre. See nixpkgs#350408.
   users.groups.ddclient = {};
   users.users.ddclient = {
     isSystemUser = true;

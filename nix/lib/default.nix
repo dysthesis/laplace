@@ -3,14 +3,13 @@ nixpkgs.lib.extend (
   final: _prev: let
     inherit (builtins) readDir attrNames;
 
-    # Select only child directories with default.nix.
     getModuleDirs = dir:
       dir
       |> readDir
       |> final.filterAttrs (name: type: type == "directory" && builtins.pathExists "${dir}/${name}/default.nix")
       |> attrNames;
 
-    # Path addition preserves flake context and relative imports.
+    # Path addition keeps the flake context for relative imports.
     importInDirectory = dir:
       dir
       |> getModuleDirs
@@ -31,8 +30,7 @@ nixpkgs.lib.extend (
       modules = {
         inherit importInDirectory;
 
-        # Imports child modules and exposes their names as an enum option.
-        # multiple selects a list; extra adds names outside the directory.
+        # `extra` adds enum values that have no module directory.
         mkSelector = {
           dir,
           option,
@@ -58,11 +56,9 @@ nixpkgs.lib.extend (
         };
       };
 
-      # Wrap one or more binaries. args may be raw postBuild or a wrapper spec.
-      # Spec keys: program, addFlags, set, binPath, run, and postBuild.
-      # Each addFlags item is prepended as one argv.
-      # binPath is prepended to PATH, so wrapper dependencies shadow host tools.
-      # Values are escaped with escapeShellArgs.
+      # `args` accepts a wrapper specification or shell code for `postBuild`.
+      # Each `addFlags` item becomes one argument.
+      # PATH contains `binPath` directories before host directories.
       pkgs.mkWrapper = pkgs: package: args: let
         paths =
           if
@@ -98,7 +94,7 @@ nixpkgs.lib.extend (
           postBuild = wrapLine + (spec.postBuild or "");
           name = "${final.getName package}-wrapped";
           buildInputs = [pkgs.makeWrapper];
-          # Selected package outputs are flattened into the join's out.
+          # The join puts all selected package outputs in `out`.
           meta =
             (package.meta or {})
             // {

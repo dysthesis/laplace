@@ -26,10 +26,10 @@ in {
       isoImage.edition = "chaos";
       laplace = {
         profiles = ["desktop"];
-        # The hardened kernel is panic-prone on the installer.
+        # The hardened kernel can panic on the installer.
         harden = [];
       };
-      # The ISO cannot decrypt SOPS; keep root locked and use the nixos account.
+      # The ISO cannot decrypt SOPS secrets. Keep root locked and use the nixos account.
       users.users.root = {
         hashedPassword = mkForce null;
         initialHashedPassword = mkForce null;
@@ -52,7 +52,7 @@ in {
       ];
     }
     (lib.foldr (
-        # A shallow merge would discard keys for earlier users.
+        # A shallow merge discards keys for other users.
         curr: acc: recursiveUpdate acc {users.users.${curr}.openssh.authorizedKeys.keys = keys;}
       ) {}
       users);

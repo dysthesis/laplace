@@ -12,9 +12,9 @@ in {
       extraRules = [
         {
           groups = ["wheel"];
-          # persist caches the auth timestamp for the session (convenience).
+          # persist caches the session authentication timestamp.
           persist = true;
-          # Omit keepEnv to block caller-controlled LD_*; allow variables explicitly.
+          # Omit keepEnv to block caller-controlled LD_* variables. Permit variables explicitly.
         }
       ];
     };

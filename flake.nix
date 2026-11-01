@@ -84,7 +84,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
-    # Channel revisions have Hydra substitutes; raw master may not.
+    # Channel revisions have Hydra substitutes. Some master revisions do not.
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
@@ -94,7 +94,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # This fork needs the Go toolchain from its own nixpkgs pin.
+    # This fork must use the Go toolchain from its own nixpkgs input.
     headscale.url = "github:dysthesis/headscale?ref=feat/wg-only-peers";
 
     poincare = {
@@ -138,7 +138,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Not in nixpkgs.
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";

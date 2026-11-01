@@ -56,8 +56,8 @@
         }
       ])
       raw.hosts);
-  # Copy source paths into the store with their dependency context. Derivations
-  # already carry output context; never traverse their package-set passthru.
+  # Source paths must keep their dependency context in the store.
+  # Derivations have output context. Do not traverse their package sets.
   dataOnly = value:
     if builtins.isPath value
     then "${value}"
@@ -180,7 +180,7 @@
     ip = builtins.head scoped;
     pieces = lib.splitString ":" ip;
     last = lib.last pieces;
-    # nixpkgs' IPv6 parser needs a hexadecimal rather than dotted IPv4 tail.
+    # Use a hexadecimal IPv4 tail for the nixpkgs IPv6 parser, not dotted notation.
     octets = map lib.toInt (lib.splitString "." last);
     hextet = n: lib.toHexString (builtins.elemAt octets n * 256 + builtins.elemAt octets (n + 1));
     ipv6 =

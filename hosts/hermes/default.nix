@@ -20,7 +20,7 @@
     proxmox = {
       cores = 1;
       memory = 2048; # MiB, ballooning ceiling
-      balloon = 384; # MiB, AdGuard plus filter and log headroom
+      balloon = 384; # MiB. Keep memory available for AdGuard filters and logs.
       diskSize = "64G";
     };
 
@@ -47,14 +47,14 @@
       };
       tailscale = {
         enable = true;
-        # AdGuard owns port 53; do not start resolved.
+        # Do not start resolved because AdGuard owns port 53.
         denyDNS = true;
       };
 
       caddy = {
         enable = true;
         email = "dysthesis@protonmail.com";
-        openFirewall = false; # tailnet-only; :443 reached over tailscale0
+        openFirewall = false; # Open port 443 only on tailscale0.
         cloudflare = {
           enable = true;
           sopsFile = ../../system/secrets/hermes.yaml;

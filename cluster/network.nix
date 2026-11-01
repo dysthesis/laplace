@@ -121,8 +121,8 @@
     })
     cfg.staticRecords;
   dnsRecords = unique (appDNS ++ staticDNS);
-  # Check actual sources and destination hosts, not service/tag spelling. The
-  # one pre-existing game-origin exception is DNS on the resolver, never HTTPS.
+  # Use source and destination nodes, not service names, for this check.
+  # Game nodes can use DNS, but not HTTPS, on the resolver.
   gameSafe = c:
     !any (n: builtins.elem "game" nodes.${n}.tags) c.sourceNodes
     || all (dest: builtins.elem "game" nodes.${dest}.tags) c.destinationNodes

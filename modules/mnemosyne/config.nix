@@ -42,7 +42,7 @@ in {
       "/etc/secrets"
     ];
 
-    # Persist only host keys; mounting all of /etc/ssh would hide generated config.
+    # Persist only host keys. A mount over /etc/ssh hides the generated configuration.
     services.openssh.hostKeys = mkIf config.services.openssh.enable [
       {
         path = "${cfg.persistDir}/etc/ssh/ssh_host_ed25519_key";
@@ -58,8 +58,8 @@ in {
     # Create bind-mount sources in the systemd initrd before stage 2.
     boot.initrd.systemd.enable = mkDefault true;
     fileSystems = mkMounts cfg.dirs;
-    # RequiresMountsFor resolves the persisted submount without guessing its unit name.
-    # Write under /sysroot; ordering before sysroot.mount would deadlock.
+    # RequiresMountsFor resolves the unit name of the persistent submount.
+    # Write under /sysroot. Do not order this service before sysroot.mount because that causes a deadlock.
     boot.initrd.systemd.services.make-source-of-persistent-dirs = {
       wantedBy = ["initrd-fs.target"];
       before = ["initrd-fs.target"];
@@ -81,7 +81,7 @@ in {
       '';
     };
 
-    # Preserve the current identity before the next boot starts from tmpfs.
+    # Keep the machine identity before the next boot starts from tmpfs.
     system.activationScripts.mnemosyne-machine-id = ''
       mkdir -p ${cfg.persistDir}/etc
       if [ ! -s ${machineIdPath} ] && [ -s /etc/machine-id ]; then

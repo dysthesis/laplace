@@ -1,6 +1,5 @@
-# switch-to-configuration can spin forever after D-Bus drops, holding its lock.
-# An outer timeout fails the deploy and releases the lock.
-# simplification: the 20-minute cap can kill a valid slow activation; raise if measured.
+# switch-to-configuration can keep its lock after a D-Bus failure.
+# shortcut: The timeout can stop a slow activation. Increase it if activations run for more than 20 minutes.
 final: prev: {
   switch-to-configuration-ng = prev.switch-to-configuration-ng.overrideAttrs (old: {
     postInstall =

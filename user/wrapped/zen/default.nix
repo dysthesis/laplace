@@ -11,9 +11,8 @@
     inherit (pkgs) lib;
     inherit pkgs;
   };
-  # Zen already enables --enable-replace-malloc upstream, but with
-  # system-wide hardened_malloc on AMD it still crashes in
-  # radeonsi/libgallium/libLLVM. Route GL through Zink/RADV instead.
+  # With --enable-replace-malloc, Zen can crash in radeonsi/libgallium/libLLVM on AMD with system-wide hardened_malloc.
+  # Use Zink/RADV for GL in this configuration.
   useZinkForHardenedMalloc =
     elem "malloc" config.laplace.harden
     && elem "amd" config.laplace.hardware.gpu;

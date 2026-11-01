@@ -7,16 +7,13 @@
   inherit (lib) mkEnableOption mkIf mkOption types optionalAttrs mapAttrs' mapAttrsToList filterAttrs nameValuePair;
   cfg = config.laplace.services.headscale.acl;
 
-  # Policy v2 names a local user by "<username>@" (the part after @ is the OIDC
-  # domain, empty for headscale-local users).
+  # Policy v2 identifies local users as "<username>@".
+  # The OIDC domain follows @ and is empty for Headscale-local users.
   userRef = u: "${u}@";
 
-  # Each declared group becomes a "group:<name>" -> [members] entry...
   groups = mapAttrs' (n: g: nameValuePair "group:${n}" (map userRef g.members)) cfg.groups;
 
-  # ...and one accept rule "group:<name> -> destinations". Groups with no
-  # destinations emit no rule (members exist but reach nothing - a valid holding
-  # state), so we never emit a rule with an empty dst.
+  # Groups without destinations grant no access. Do not emit rules with an empty dst.
   groupRules = mapAttrsToList (n: g: {
     action = "accept";
     src = ["group:${n}"];
@@ -25,8 +22,8 @@
 
   acls =
     groupRules
-    # Raw escape hatch for sources that are not a group (tags, CIDRs, ...).
-    # Rebuilt explicitly so submodule internals never leak into the JSON.
+    # Use these rules for non-group sources, such as tags and CIDRs.
+    # Select fields explicitly to exclude submodule internals from the JSON.
     ++ map (r: {inherit (r) action src dst;}) cfg.rules;
 
   policy =
@@ -36,9 +33,8 @@
     // optionalAttrs (cfg.tagOwners != {}) {inherit (cfg) tagOwners;}
     // optionalAttrs (cfg.autoApprovers != {}) {inherit (cfg) autoApprovers;};
 
-  # JSON is valid HuJSON and toJSON guarantees well-formed output, so the only way
-  # to feed headscale a policy it rejects is a semantic mistake (undefined alias,
-  # empty groups), which the assertion and strict load both catch.
+  # toJSON supplies correct HuJSON syntax.
+  # Undefined aliases or empty groups can still make Headscale reject the policy.
   policyFile = pkgs.writeText "headscale-policy.hujson" (builtins.toJSON policy);
 in {
   options.laplace.services.headscale.acl = {
@@ -146,7 +142,6 @@ in {
       }
     ];
 
-    # Merges with the host's other headscale settings (server_url, dns, ...).
     services.headscale.settings.policy = {
       mode = "file";
       path = policyFile;

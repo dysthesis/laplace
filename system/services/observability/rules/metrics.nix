@@ -109,7 +109,7 @@
       }
       {
         # statfs counts shared Btrfs extents once, so alerts track physical free space.
-        # simplification: per-snapshot attribution would require costly qgroups.
+        # Btrfs qgroups add computation for per-snapshot accounting.
         name = "fleet-storage";
         interval = "1m";
         rules = let

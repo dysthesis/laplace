@@ -1,6 +1,6 @@
 {host}: {
-  # Thresholds from measured baselines: ~450 idle chunks, ~2 ms mean tick. The 2026-07
-  # incident hit 60k chunks, p95 tick 30 -> 209 ms. Every `for` outlasts the 05:01 restart.
+  # Thresholds use measured baselines: about 450 idle chunks and a 2 ms mean tick.
+  # All `for` durations are longer than the 05:01 restart.
   name = "minecraft";
   interval = "1m";
   rules = let
@@ -28,7 +28,7 @@
       };
     }
     {
-      # 50 ms tick budget; half gone precedes visible stutter.
+      # Set the warning at half the 50 ms tick budget, before players see stutter.
       alert = "MinecraftTickTimeHigh";
       expr = ''minecraft_mspt{host="${host}",type="mean"} > 25'';
       for = "10m";
@@ -59,7 +59,7 @@
       };
     }
     {
-      # DH server-generation leak signature: working set grows with nobody online.
+      # Detect Distant Horizons server-generation leaks when no players are online.
       alert = "MinecraftChunkLeak";
       expr = ''(${chunks} - sum(min_over_time(minecraft_total_loaded_chunks{host="${host}"}[3h]))) > 5000 and ${players} == 0'';
       for = "30m";

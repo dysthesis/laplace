@@ -58,8 +58,7 @@ in {
         enable = true;
         inherit (instance.settings) mediaLocation port;
         listenAddress = common.bindAddress instance.settings.listenAddress;
-        # Keep Mneme's existing mount boundary; a shared provider uses one parent
-        # mount instead of stacking a second version-specific bind beneath it.
+        # Shared PostgreSQL uses one parent mount to prevent nested version-specific bind mounts.
         postgresqlPersistenceRoot =
           if (cluster.activeServices.miniflux or null) != null && cluster.activeServices.miniflux.host == instance.host
           then "/var/lib/postgresql"

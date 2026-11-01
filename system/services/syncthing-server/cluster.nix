@@ -86,7 +86,7 @@ in {
         enable = true;
         dataDir = instance.settings.dataDir;
         guiAddress = common.hostPort instance.settings.listenAddress instance.settings.port;
-        # Transfer ingress remains the identity-aware node mesh, not a global port.
+        # Restrict transfers to the identity-aware node mesh, not a global port.
         openDefaultPorts = false;
       };
       mnemosyne.dirs = [config.services.syncthing.dataDir];
@@ -98,7 +98,7 @@ in {
           dns cloudflare {env.CF_API_TOKEN}
           resolvers 1.1.1.1
         }
-        # Shared HTTPS grants are not per-vhost authorization.
+        # Shared HTTPS grants do not authorise each virtual host.
         @syncClients remote_ip ${lib.concatStringsSep " " clientAddresses}
         handle @syncClients {
           reverse_proxy ${common.dial "127.0.0.1" (common.appEndpoint instance)} {

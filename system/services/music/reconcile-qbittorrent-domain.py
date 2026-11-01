@@ -42,8 +42,8 @@ if not found:
 updated = b"".join(lines)
 if updated != original:
     metadata = path.stat()
-    # A same-directory rename publishes the complete profile atomically. Retain
-    # its owner and mode rather than exposing the generated password on rewrite.
+    # A rename in the same directory publishes the complete profile atomically.
+    # Keep its owner and mode to protect the generated password.
     fd, temporary = tempfile.mkstemp(prefix=".qbittorrent-domain-", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as output:

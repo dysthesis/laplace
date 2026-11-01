@@ -12,7 +12,7 @@
   ];
 
   config.users = {
-    # Ephemeral roots require declarative user changes.
+    # User changes must be declarative on ephemeral roots.
     mutableUsers = !config.mnemosyne.enable;
     users.root.hashedPassword = "!";
   };

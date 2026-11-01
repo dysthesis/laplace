@@ -208,7 +208,7 @@ in {
     };
     weather.color = "on_surface_variant";
     notifications = {
-      hide_when_no_unread = false; # Keeps the notification/DND affordance available.
+      hide_when_no_unread = false; # Keep notification and do-not-disturb controls available.
       color = "on_surface_variant";
     };
     network = {
@@ -246,7 +246,7 @@ in {
     border_color = "outline";
     border_width = 1;
     offset_x = 12;
-    offset_y = 44; # Clear the 36 px edge bar.
+    offset_y = 44; # Keep notifications below the 36 px edge bar.
     follow_focused_output = true;
     max_visible = 2;
     keep_dismissed_in_history = true;
@@ -262,7 +262,7 @@ in {
     border_width = 1;
     offset_y = 24;
     follow_focused_output = true;
-    kinds.media = false; # Suppress repeated music-track popups.
+    kinds.media = false; # Do not show a popup for each music-track change.
   };
 
   calendar = {
@@ -280,15 +280,15 @@ in {
     };
     reminders = {
       enabled = true;
-      use_event_reminders = true; # honor per-event reminders; off = always use the default lead below
-      default_lead_minutes = 10; # used for events with no reminder of their own; 0 = at event start
-      all_day_digest_time = "09:00"; # one notification listing today's all-day events; "" disables it
+      use_event_reminders = true; # Use each event's reminders. Use default_lead_minutes when this is false.
+      default_lead_minutes = 10; # Use this delay for events without reminders. Use 0 for the event start.
+      all_day_digest_time = "09:00"; # Show today's all-day events in one notification. "" disables it.
     };
     idle = {
       behavior_order = ["lock" "screen-off" "suspend"];
-      # Seconds to fade a fullscreen surface-tint overlay, then run the idle command.
-      # 0 disables the overlay (the command runs as soon as the compositor reports idle).
-      # Parsed between 0 and 120; the in-app Settings stepper uses whole seconds 0–30.
+      # Fade the full-screen surface-tint overlay before the idle command.
+      # Use seconds between 0 and 120. At 0, run the command immediately after the compositor's idle signal.
+      # Settings accepts only integer seconds from 0 to 30.
       pre_action_fade_seconds = 2.0;
     };
   };
@@ -296,9 +296,9 @@ in {
   inherit (config) location;
   nightlight = {
     enabled = true;
-    force = false; # hold night temperature, ignoring the schedule
+    force = false; # Use the night temperature without the schedule.
 
-    temperature_day = 6500; # Kelvin (must be > temperature_night by at least 100)
+    temperature_day = 6500; # Kelvin. The minimum is temperature_night + 100.
     temperature_night = 4000; # Kelvin
   };
 

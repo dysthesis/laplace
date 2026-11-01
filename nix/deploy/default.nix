@@ -1,4 +1,4 @@
-# LAN transport remains independent of application DNS and Tailnet policy.
+# LAN deployment does not use application DNS or tailnet policy.
 {
   inputs,
   lib,
@@ -17,7 +17,7 @@ in
       meta = {
         nixpkgs = import inputs.nixpkgs.outPath {system = "x86_64-linux";};
         nodeNixpkgs = lib.mapAttrs (_: packageSet) hosts;
-        # Preserve Colmena's name/nodes arguments; share all our import-time args.
+        # Keep Colmena's name and nodes arguments separate from module arguments.
         nodeSpecialArgs = lib.mapAttrs (name: _: nodeModules.${name}.specialArgs) hosts;
       };
     }

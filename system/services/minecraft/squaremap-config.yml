@@ -1,5 +1,5 @@
-# Managed in squaremap's data directory; Fabric config/ is ignored.
-# Bind to loopback behind Caddy and cap rendering to protect game ticks.
+# squaremap reads this file from its data directory, not Fabric config/.
+# Use loopback behind Caddy. Limit rendering to protect game ticks.
 config-version: 2
 settings:
   web-address: "@MAP_ORIGIN@"

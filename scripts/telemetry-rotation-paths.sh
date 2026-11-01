@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# Sourced by rotation and its fixture check; never read or decrypt secret values.
+# This shared helper checks paths without reading or decrypting secrets.
 telemetry_rotation_source() {
     local root=$1 relative=$2 destination resolved
     if [[ $root != /* || $root == /nix/store || $root == /nix/store/* ||

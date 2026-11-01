@@ -1,6 +1,4 @@
-# linux-hardened kernel overlay.
-# Applies the upstream linux-hardened patch and local config to linux_latest.
-# Pin the exact kernel release because hardened patches do not follow moving branches.
+# The kernel and hardened patch must have the same release number.
 final: prev: let
   version = "7.2.5";
   suffix = "hardened1";
@@ -26,8 +24,7 @@ final: prev: let
       inherit (prev) lib stdenv;
       inherit version;
     };
-    # The patch sets EXTRAVERSION=-hardened1. Nixpkgs pads 7.1 to 7.1.0,
-    # so modDirVersion must include the padded release or modules will not load.
+    # Kernel modules load only when `modDirVersion` matches the padded release and the patch suffix.
     argsOverride = {
       pname = "linux-hardened";
       inherit src version modDirVersion;

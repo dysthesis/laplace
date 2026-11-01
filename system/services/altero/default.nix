@@ -26,7 +26,7 @@ in {
       volumes = ["${cfg.dataDir}:/data"];
       environment = {
         ALTERO_DATABASE_URL = "sqlite+aiosqlite:////data/altero.sqlite";
-        # Host-published Podman ports appear from the default bridge gateway.
+        # Podman forwards host-published connections through the default bridge gateway.
         ALTERO_FORWARDED_ALLOW_IPS = "10.88.0.1";
         ALTERO_PUBLIC_URL = "https://${cfg.domain}";
       };
@@ -38,7 +38,7 @@ in {
 
     systemd.tmpfiles.rules = ["d ${backupDir} 0700 root root -"];
 
-    # The image runs as uid 10001 and writes nowhere outside /data.
+    # The image uses UID 10001 and writes only to /data.
     systemd.services."podman-altero" = {
       unitConfig.RequiresMountsFor = cfg.dataDir;
       preStart = lib.mkBefore ''

@@ -25,13 +25,13 @@ in
       };
 
       dbus.policies = {
-        "org.kde.StatusNotifierWatcher" = "talk"; # For system tray icon
+        "org.kde.StatusNotifierWatcher" = "talk"; # Show the system tray icon.
         "${flatpak.appId}" = "own";
         "org.freedesktop.DBus" = "talk";
         "org.gtk.vfs.*" = "talk";
         "ca.desrt.dconf" = "talk";
-        "org.freedesktop.portal.Desktop" = "talk"; # Main portal interface
-        "org.freedesktop.portal.FileChooser" = "talk"; # File picker
+        "org.freedesktop.portal.Desktop" = "talk";
+        "org.freedesktop.portal.FileChooser" = "talk";
         "org.a11y.Bus" = "talk"; # Accessibility
       };
 
@@ -79,7 +79,7 @@ in
             sloth.xdgDownloadDir
 
             (sloth.concat' sloth.xdgConfigHome "/vesktop")
-            # Electron profile still lives under the legacy VencordDesktop name
+            # Electron stores its profile in VencordDesktop.
             (sloth.concat' sloth.xdgConfigHome "/VencordDesktop")
             (sloth.concat' sloth.xdgCacheHome "/mesa_shader_cache")
             [

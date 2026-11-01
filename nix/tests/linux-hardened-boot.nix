@@ -1,8 +1,7 @@
-# On-demand QEMU smoke test; reuses the production hardened kernel unchanged.
-# Exercises a synthetic systemd initrd, not production disks, secrets or bootloader.
+# The QEMU guest uses the production kernel with a test initrd.
 {pkgs}: let
   kernel = pkgs.linuxPackages_hardened.kernel;
-  # Keep these aligned with system/profiles/proxmox/default.nix.
+  # Use the modules from system/profiles/proxmox/default.nix.
   availableModules = [
     "virtio_pci"
     "virtio_blk"
@@ -26,14 +25,14 @@ in
         kernelPackages = pkgs.linuxPackages_hardened;
         supportedFilesystems = ["btrfs"];
         initrd = {
-          # The synthetic ext4 root cannot infer production's early Btrfs need.
+          # The ext4 test root does not cause the initrd to include Btrfs.
           supportedFilesystems = ["btrfs"];
           availableKernelModules = availableModules;
           kernelModules = earlyModules;
           systemd.enable = true;
         };
       };
-      # Inspect stage 1 explicitly before asking the driver to switch to stage 2.
+      # The driver must connect to stage 1 before it starts stage 2.
       testing.initrdBackdoor = true;
       assertions = [
         {
@@ -51,8 +50,7 @@ in
       print(machine.succeed("uname -r"))
       machine.succeed("test \"$(uname -r)\" = '${kernel.modDirVersion}'")
 
-      # Resolve and load the Proxmox drivers from the actual initrd module tree.
-      # Btrfs is the production persistent-storage filesystem.
+      # The initrd must contain the Proxmox drivers and Btrfs.
       machine.succeed("modprobe -a ${pkgs.lib.concatStringsSep " " modules}")
       machine.succeed("test ! -e /proc/kcore")
 
@@ -63,7 +61,7 @@ in
       machine.succeed("test \"$(uname -r)\" = '${kernel.modDirVersion}'")
       machine.succeed("modprobe -a ${pkgs.lib.concatStringsSep " " modules}")
 
-      # Missing /proc/kcore proves PROC_KCORE is disabled in both stages.
+      # PROC_KCORE must be disabled in the two boot stages.
       machine.succeed("test ! -e /proc/kcore")
     '';
   }

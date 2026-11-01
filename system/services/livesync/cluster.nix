@@ -68,7 +68,7 @@ in {
         databaseDir = instance.settings.dataDir;
         viewIndexDir = instance.settings.dataDir;
         configFile = "${instance.settings.dataDir}/local.ini";
-        # Pre-hashed [admins] INI preserves the persisted identity/password semantics.
+        # The [admins] INI contains password hashes and keeps the persistent administrator identity.
         extraConfigFiles = [config.sops.secrets.couchdb_admin_ini.path];
         extraConfig = {
           couchdb = {

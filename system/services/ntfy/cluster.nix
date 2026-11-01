@@ -48,7 +48,7 @@ in {
           sopsFile = instance.settings.sopsFile;
           restartUnits = ["ntfy-sh.service"];
         };
-        # Preserved for operator retrieval; only the hash reaches ntfy's environment.
+        # Operators can retrieve the password. Only its hash reaches the ntfy environment.
         ntfy_admin_password.sopsFile = instance.settings.sopsFile;
       };
       mnemosyne.dirs = ["/var/lib/private/ntfy-sh"];

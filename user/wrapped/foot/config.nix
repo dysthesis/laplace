@@ -12,7 +12,6 @@
   lineHeight = fontSize * 1.5;
   padding = 10;
 
-  # Foot expects INI.
   mkConfig = cfg:
     cfg
     |> lib.generators.toINI {}

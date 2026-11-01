@@ -308,9 +308,7 @@ in
     ];
     inherit configSpec;
     autostart = let
-      # Build wlr-randr argument list from configured monitors.
-      # Preserve source order and forward explicit positions so wlroots doesn't
-      # fall back to auto-layout.
+      # Keep monitor order and specified positions to prevent automatic layout in wlroots.
       wlrRandrArgs = builtins.concatLists (
         map (
           curr:

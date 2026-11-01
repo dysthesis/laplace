@@ -23,7 +23,7 @@
   };
   noctaliaBind = combo: title: args:
     spawnBind combo title "noctalia" (["msg"] ++ args);
-  # Hardware keys already carry their own labels; keep the overlay for learned chords.
+  # Show key combinations without hardware labels in the overlay.
   hardwareBind = combo: repeat: args:
     (noctaliaBind combo null args)
     // {
@@ -37,7 +37,7 @@ in {
     desktopBinds = {
       "Mod+R" = spawnBind "Mod+R" null "launcher" ["toggle"];
       "Mod+Shift+E" = noctaliaBind "Mod+Shift+E" "Session menu" ["panel-toggle" "session"];
-      # Mirror monitor focus (plain) and window moves (Shift) with workspace moves (Ctrl).
+      # Add Ctrl for workspace moves or Shift for window moves to the monitor-focus keys.
       "Mod+Shift+Tab" = actionBind "Mod+Ctrl+Comma" "Move workspace to left monitor" "move-workspace-to-monitor-left";
       "XF86AudioRaiseVolume" = hardwareBind "XF86AudioRaiseVolume" true ["volume-up" "5"];
       "XF86AudioLowerVolume" = hardwareBind "XF86AudioLowerVolume" true ["volume-down" "5"];

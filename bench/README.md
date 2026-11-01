@@ -178,22 +178,22 @@ isn't importable, so `python3 bench/stats.py …` still works from a bare python
 ## Usage
 
 ```sh
-# Everything, isolated + in-situ, on the current host:
+# Run all checks in isolated and current-session environments.
 nix run .#bench -- --modes isolated,in-situ
 
-# Just fish, just attribution (profiler + ablation):
+# Measure Fish startup costs with the profiler and ablation.
 nix run .#bench -- --targets fish --tiers attrib
 
-# Pin to a core, more samples, both spawn modes:
+# Use one CPU core and more samples in the two spawn modes.
 nix run .#bench -- --core 2 --runs 30 --iters 50 --spawns interactive,login
 
-# See the plan without building/running anything:
+# Show the plan without builds or measurements.
 nix run .#bench -- --dry-run
 
-# A/B two builds (e.g. current vs a branch's fish):
+# Compare two Fish builds.
 nix run .#bench -- --ab /nix/store/…-fish-A/bin/fish /nix/store/…-fish-B/bin/fish
 
-# Re-summarise raw results later:
+# Calculate statistics from saved results.
 python3 bench/stats.py summarize bench/results/<ts>/*.metrics.json
 python3 bench/stats.py compare  base.metrics.json variant.metrics.json
 ```

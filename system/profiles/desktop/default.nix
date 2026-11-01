@@ -51,7 +51,7 @@
       "text/plain" = ["Helix"];
       "inode/directory" = ["yazi"];
       "x-scheme-handler/magnet" = ["transmission-gtk"];
-      # Full entry is org.telegram.desktop.desktop
+      # The full entry is org.telegram.desktop.desktop.
       "x-scheme-handler/tg" = ["org.telegram.desktop"];
       "x-scheme-handler/tonsite" = ["org.telegram.desktop"];
     }
@@ -59,10 +59,10 @@
   );
 in {
   config = mkIf (elem "desktop" cfg) {
-    # Zotero LAN sync and discovery.
+    # Permit Zotero LAN synchronisation and discovery.
     networking.firewall = {
-      allowedTCPPorts = [23319]; # zotero
-      allowedUDPPorts = [23319]; # zotero
+      allowedTCPPorts = [23319];
+      allowedUDPPorts = [23319];
     };
     systemd = {
       user.services = {
@@ -127,16 +127,15 @@ in {
     '';
     services = {
       pcscd.enable = true;
-      # GNOME compiles these into its own schema directory; non-GNOME sessions
-      # use the same overrides in the fallback package below.
+      # GNOME compiles these overrides into its schema directory.
+      # Other sessions use the override package below.
       desktopManager.gnome.extraGSettingsOverrides = ''
         [org.gnome.desktop.interface]
         font-hinting='slight'
         font-antialiasing='grayscale'
       '';
-      # Interactive outbound-connection prompts need a GUI to answer them, so
-      # opensnitch belongs to the desktop profile rather than the generic
-      # firewall module (which headless servers also enable).
+      # A graphical interface is necessary for OpenSnitch connection prompts.
+      # Do not enable it on headless servers.
       opensnitch.enable = true;
       seatd = {
         enable = true;
@@ -185,8 +184,8 @@ in {
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
         HCC_AMDGPU_TARGET = "gfx1030";
         GTK_USE_PORTAL = "1";
-        # GNOME (including Flashback) owns this variable when enabled. The
-        # override package's schema subdirectory differs from its package name.
+        # GNOME and Flashback set this variable when enabled.
+        # The schema subdirectory differs from the override package name.
         NIX_GSETTINGS_OVERRIDES_DIR =
           mkIf (!gnomeOwnsSchemas)
           "${gsettingsOverrides}/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas";
@@ -194,11 +193,11 @@ in {
       systemPackages = with pkgs; [xdg-utils gsettings-desktop-schemas pam_u2f];
     };
     security = {
-      # For electron stuff
+      # Use the Chromium sandbox for Electron applications.
       chromiumSuidSandbox.enable = true;
       unprivilegedUsernsClone = true;
 
-      # `login` means TTY login
+      # The login service handles TTY login.
       pam.services = {
         login.enableGnomeKeyring = true;
       };

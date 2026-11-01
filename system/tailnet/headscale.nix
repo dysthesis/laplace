@@ -1,5 +1,5 @@
-# Alias destinations explicitly include both pinned address families. Headscale
-# still omits protocol; nftables supplies the protocol-specific second gate.
+# Alias destinations include pinned IPv4 and IPv6 addresses. Headscale omits the protocol.
+# nftables supplies the protocol-specific restriction.
 {
   config,
   lib,

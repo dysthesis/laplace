@@ -1,4 +1,4 @@
-# Forgejo runner client, independent from the server lifecycle and host.
+# The Forgejo runner does not depend on the server host or lifecycle.
 {
   config,
   lib,

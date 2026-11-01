@@ -12,13 +12,12 @@ in {
     // import ./settings.nix {inherit lib;};
 
   config = mkIf cfg.enable {
-    # settings.env holds the generated NEXTAUTH_SECRET, meilisearch holds the
-    # index; both must outlive the tmpfs root or each boot logs everyone out
-    # and reindexes.
+    # settings.env contains NEXTAUTH_SECRET. Meilisearch contains the index.
+    # Persist the two directories to keep login sessions and prevent a new index build at each boot.
     mnemosyne.dirs = ["/var/lib/karakeep" "/var/lib/private/meilisearch"];
 
-    # Build-time dep only. Overriding the marking instead rebuilds karakeep
-    # from source; drop when nixpkgs moves it to pnpm 10.
+    # pnpm is a build-time dependency. An override of its insecure marker rebuilds Karakeep from source.
+    # Remove this exception when nixpkgs uses pnpm 10.
     nixpkgs.config.permittedInsecurePackages = ["pnpm-9.15.9"];
 
     services.karakeep = {
@@ -26,7 +25,7 @@ in {
       package = pkgs.unstable.karakeep;
       browser.port = cfg.browserPort;
       extraEnvironment = {
-        # Next.js standalone defaults to 0.0.0.0, which escapes the tailnet.
+        # Next.js standalone defaults to 0.0.0.0, which permits connections outside the tailnet.
         HOSTNAME = cfg.listenAddress;
         PORT = toString cfg.port;
         NEXTAUTH_URL = "https://${cfg.domain}";

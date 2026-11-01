@@ -1,4 +1,4 @@
-# Tailnet-only music automation guest. Caddy is the sole web ingress.
+# Caddy is the only web ingress for this tailnet-only music automation guest.
 {
   cluster,
   pkgs,
@@ -25,8 +25,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 4;
-      memory = 4096; # MiB, Lidarr imports and Navidrome transcoding burst
-      balloon = 2048; # MiB, enough for the six idle daemons without swap churn
+      memory = 4096; # MiB. Keep memory available for Lidarr imports and Navidrome transcoding.
+      balloon = 2048; # MiB. Keep this minimum for the six idle daemons to prevent swapping.
       diskSize = "256G";
     };
 
@@ -45,7 +45,7 @@
       caddy = {
         enable = true;
         email = "dysthesis@protonmail.com";
-        openFirewall = false; # nftables admits :443 only from authorised tailnet identities
+        openFirewall = false; # nftables lets only approved tailnet identities use port 443.
         cloudflare = {
           enable = true;
           sopsFile = ../../system/secrets/apollo.yaml;

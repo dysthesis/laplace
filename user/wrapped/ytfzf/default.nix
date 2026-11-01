@@ -31,7 +31,7 @@
         ];
     });
 in
-  # PATH is *replaced* (not prefixed): ytfzf shells out to a fixed toolset.
+  # Replace PATH because ytfzf runs only these tools.
   mkWrapper pkgs ytfzf {
     set = {
       PATH = makeBinPath dependencies;

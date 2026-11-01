@@ -5,8 +5,7 @@
   self,
   serviceFixtures,
 }: {
-  # configtest needs writable state, so the sandbox redirects it to $TMPDIR.
-  # The cluster contracts cover references; this runs the pinned parser.
+  # configtest must have writable state in $TMPDIR.
   headscale-policy = let
     headscalePackage = serviceFixtures.headscale.services.headscale.package;
     emptyFixtures = import ./service-fixtures.nix {

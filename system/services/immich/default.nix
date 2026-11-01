@@ -27,7 +27,7 @@ in {
       }
     ];
 
-    # ML models exceed small tmpfs roots, so keep the cache on disk.
+    # Machine learning models are too large for small tmpfs roots. Keep the cache on disk.
     mnemosyne.dirs = [
       cfg.mediaLocation
       cfg.postgresqlPersistenceRoot
@@ -44,7 +44,7 @@ in {
       inherit (cfg) mediaLocation port;
       host = cfg.listenAddress;
       openFirewall = false;
-      # Local PostgreSQL uses peer auth; leave app settings mutable in the UI.
+      # Local PostgreSQL uses peer authentication. Users can change application settings in the web interface.
     };
   };
 }

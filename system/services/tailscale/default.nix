@@ -32,8 +32,8 @@ in {
           ++ optionals (operatorUser != null) ["--operator=${operatorUser}"];
       };
 
-      # mkForce: the upstream tailscale module mkDefault-enables resolved, whose
-      # 127.0.0.53 stub would squat :53 (see the denyDNS option description).
+      # The Tailscale module enables resolved by default.
+      # Its 127.0.0.53 stub occupies port 53.
       resolved.enable = mkIf cfg.denyDNS (mkForce false);
     };
 
@@ -45,29 +45,25 @@ in {
         enable = true;
         trustedInterfaces = [config.services.tailscale.interfaceName];
         allowedUDPPorts = [config.services.tailscale.port];
-        # Tailscale's asymmetric routing (and subnet-router/exit-node forwarding)
-        # is dropped by strict reverse-path filtering, so relax it to "loose" on
-        # tailnet hosts. mkDefault lets a host override per its needs.
+        # Strict reverse-path filtering rejects Tailscale asymmetric and forwarded traffic.
+        # Use loose mode. mkDefault lets each host select its own policy.
         checkReversePath = lib.mkDefault "loose";
       };
     };
 
-    # An exit node must forward IP, or the kernel drops the very traffic the
-    # --advertise-exit-node flag advertises a route for. Bundled into the option
-    # so enabling it is sufficient on its own.
+    # Exit nodes must forward IP traffic for --advertise-exit-node routes.
     boot.kernel.sysctl = mkIf cfg.advertiseExitNode {
       "net.ipv4.ip_forward" = 1;
       "net.ipv6.conf.all.forwarding" = 1;
     };
 
-    # Pin tailscaled's firewall backend to nftables; autodetect can fall back to
-    # the iptables-compat shim, which misbehaves on nftables-only hosts.
+    # Use nftables because automatic detection can select iptables-compat.
+    # The iptables-compat backend does not work on nftables-only hosts.
     systemd.services.tailscaled.serviceConfig.Environment = [
       "TS_DEBUG_FIREWALL_MODE=nftables"
     ];
 
-    # Don't block boot waiting for network-online: tailscaled brings the tunnel
-    # up itself, so the wait only stalls startup.
+    # tailscaled starts the tunnel itself. A network-online wait delays boot.
     systemd.network.wait-online.enable = false;
     boot.initrd.systemd.network.wait-online.enable = false;
   };

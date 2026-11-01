@@ -1,6 +1,4 @@
-# Pure assertions over actual NixOS modules, not stand-in option declarations.
-# API: import this file { inherit pkgs; sopsModule = inputs.sops-nix.nixosModules.sops; }
-# `checks` is suitable for an eval check; `fixture`/`evaluate` also drive the VM test.
+# Evaluate the service modules without production secrets.
 {
   pkgs,
   sopsModule,
@@ -45,7 +43,7 @@
         };
       }
     ];
-    # Shared HTTPS is a node-level transport grant, not per-vhost isolation.
+    # Shared HTTPS gives access to the node, not individual virtual hosts.
     tailnet.nodeFlows = [
       {
         from.knownNodes = true;
@@ -126,7 +124,7 @@
     {
       system.stateVersion = "24.11";
       mnemosyne.enable = true;
-      # These sources are never decrypted by projection evaluation.
+      # Evaluation does not decrypt these sources.
       sops.validateSopsFiles = false;
       laplace.services.caddy = {
         enable = true;
@@ -193,7 +191,6 @@
     inherit (declarations) uptime-kuma;
     ntfy = declarations.ntfy // {enable = false;};
   };
-  # Real evaluated projections consumed by the Caddy listener regression check.
   adguardCaddy = {
     on80 = evaluate {inherit (declarations) adguardhome;};
     on8080 = evaluate {

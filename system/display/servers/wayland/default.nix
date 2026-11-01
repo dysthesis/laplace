@@ -17,7 +17,7 @@ in {
     ./desktop
   ];
 
-  # Selected compositor command for VT1 login.
+  # VT1 login uses the selected compositor command.
   options.laplace.display.wayland.sessionCommand = lib.mkOption {
     type = lib.types.nullOr lib.types.str;
     default = null;

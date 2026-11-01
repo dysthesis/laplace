@@ -17,12 +17,11 @@ in {
     mnemosyne.dirs = ["/var/lib/sbctl"];
 
     environment.systemPackages = [
-      # For debugging and troubleshooting Secure Boot.
       pkgs.unstable.sbctl
     ];
 
     boot = {
-      # lanzaboote replaces the systemd-boot module; force off the usual default
+      # lanzaboote replaces systemd-boot. Override the default to disable the module.
       loader.systemd-boot.enable = lib.mkForce false;
       lanzaboote = {
         enable = true;

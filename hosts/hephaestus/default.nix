@@ -1,4 +1,4 @@
-# Git-segment guest; application placement is declared in the cluster inventory.
+# Use the cluster inventory for application placement on this Git-segment guest.
 {
   config,
   cluster,
@@ -20,7 +20,7 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["127.0.0.1" "10.0.70.1"];
-    # extraInputRules and SSH scoping require nftables.
+    # Use nftables for extraInputRules and SSH access limits.
     nftables.enable = true;
   };
 
@@ -40,9 +40,9 @@
     proxmox = {
       cores = 4;
       memory = 6144; # MiB, ballooning ceiling
-      balloon = 2048; # MiB, floor avoids swap pressure
+      balloon = 2048; # MiB. This minimum prevents swapping.
       diskSize = "128G";
-      # Proxmox assigns zero MACs during restore.
+      # Proxmox gives zero MAC addresses during restore.
     };
 
     security = {

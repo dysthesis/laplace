@@ -87,8 +87,7 @@ creation_rules:
           - *deimos
           - *phobos
           - *horos
-  # Catch-all MUST stay last: sops matches creation_rules first-match-wins, so
-  # any per-host rule below this line is dead.
+  # Keep this rule last. SOPS uses the first matching rule.
   - path_regex: system/secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:

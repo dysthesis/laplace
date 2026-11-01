@@ -23,7 +23,7 @@ in {
       kind = "path";
       value = "/var/backups/altero";
     }
-    # The container's fixed identity owns the host-mounted attachment/database tree.
+    # The fixed container identity owns the host-mounted attachments and database.
     {
       kind = "uid";
       value = "10001";

@@ -51,7 +51,7 @@ in {
       useNautilus = false;
     };
 
-    # Gate Niri's user services to avoid duplicates after compositor changes.
+    # Start these services only for Niri to prevent duplicate desktop services.
     systemd.user.services =
       {
         niri-swallow =

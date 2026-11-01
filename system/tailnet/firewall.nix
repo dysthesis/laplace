@@ -1,5 +1,5 @@
-# Guest authorization remains in Headscale; INPUT gates only dynamic guest
-# addresses/ports. Exit grants are FORWARD traffic, never an INPUT wildcard.
+# Headscale authorises guests. INPUT rules restrict dynamic guest addresses and ports.
+# Exit grants use FORWARD traffic, never wildcard INPUT rules.
 {
   config,
   lib,

@@ -1,7 +1,7 @@
 {lib, ...}: let
   inherit (lib.laplace.modules) importInDirectory;
 in {
-  # coredumps are an info leak and slow crashes down
+  # Core dumps can expose data and delay process termination.
   systemd.coredump.enable = false;
   # https://emudhra.we-have-a-problem.com/
   security.pki.caCertificateBlacklist = [

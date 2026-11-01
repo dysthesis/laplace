@@ -29,7 +29,7 @@ in {
         tailnet without exposing it on the LAN.'';
     };
 
-    # Internal names require DNS-01 because Let's Encrypt cannot reach them.
+    # Use DNS-01 for internal names because Let's Encrypt cannot reach them.
     cloudflare = {
       enable = mkEnableOption "DNS-01 certificates via Cloudflare";
 
@@ -65,7 +65,7 @@ in {
         enableReload = true;
         inherit (cfg) email openFirewall;
       };
-      # Persist ACME state to avoid reissue rate limits.
+      # Persist ACME state to prevent reissue rate-limit errors.
       mnemosyne.dirs = ["/var/lib/caddy"];
     }
 
@@ -77,14 +77,14 @@ in {
         }
       ];
 
-      # Bake in Cloudflare DNS support; update plugin version and hash together.
+      # Update the Cloudflare plugin version and hash together.
       services.caddy.package = pkgs.caddy.withPlugins {
         plugins = ["github.com/caddy-dns/cloudflare@v0.2.4"];
         hash = "sha256-xRJ5evsAJ2akg47j3Bt6YDXJOgX88B/rKNP50KSVyNY=";
       };
 
       # Use public DNS for ACME challenge lookups.
-      # Caddy 2.11 can buffer encoded SSE, so leave EventSource streams untouched.
+      # Caddy 2.11 can buffer encoded server-sent events. Do not encode EventSource streams.
       services.caddy.virtualHosts =
         mapAttrs (_host: upstream: {
           extraConfig = ''

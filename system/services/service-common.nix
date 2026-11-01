@@ -15,8 +15,7 @@
     then "[${bindAddress address}]"
     else address;
   hostPort = address: port: "${hostAddress address}:${toString port}";
-  # Wildcard listeners are dialled locally; preserve each route's historical
-  # IPv4 loopback spelling without redirecting specific non-loopback binds.
+  # Use loopback for wildcard listeners. Keep explicit non-loopback addresses unchanged.
   dial = defaultDial: endpoint:
     hostPort (
       if builtins.elem endpoint.listenAddress ["0.0.0.0" "127.0.0.1" "localhost"]

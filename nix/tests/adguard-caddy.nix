@@ -1,11 +1,10 @@
-# Runs real Caddy with evaluated recipe projections; no production credentials.
 {
   pkgs,
   sopsModule,
 }: let
   inherit (pkgs) lib;
   fixtures = import ./personal-services.nix {inherit pkgs sopsModule;};
-  # Keep the generated routes intact, replacing only external certificate issuance.
+  # Use the local CA without changing the generated routes.
   localTLS = lib.replaceStrings [
     "tls {\n  dns cloudflare {env.CF_API_TOKEN}\n  resolvers 1.1.1.1\n}"
   ] ["tls internal"];
@@ -19,7 +18,7 @@
             {
               services.caddy = {
                 package = lib.mkForce pkgs.caddy;
-                # Remap listeners for an unprivileged, native sandbox smoke test.
+                # The sandbox cannot bind privileged ports.
                 httpPort = 18080;
                 httpsPort = 18443;
                 globalConfig = lib.mkAfter ''
@@ -100,7 +99,7 @@ in
                 env=environment, stdout=log, stderr=subprocess.STDOUT,
             )
             try:
-                # Wait for a live HTTPS response, not merely an open admin socket.
+                # An open admin socket does not prove that HTTPS is ready.
                 for _ in range(100):
                     assert process.poll() is None, "Caddy exited before becoming ready"
                     try:
@@ -127,8 +126,7 @@ in
                     else:
                         raise AssertionError("Caddy opened the HTTP listener reserved for AdGuard")
 
-                # A separate global contribution must still affect live requests
-                # both with and without AdGuard's redirect suppression.
+                # Global options must apply with and without AdGuard redirect suppression.
                 status, _ = request(case, secure=True, headers={"X-Oversized": "x" * 32768})
                 assert status == 431, (case["name"], status)
                 print(case["name"] + ": listener and global-option behaviour passed")

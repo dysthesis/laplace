@@ -163,11 +163,11 @@ the reconciler does not delete omitted peers, and disabling it is not revocation
 ## Build, then converge
 
 ```sh
-# Mandatory all-target preflight for this cutover and every stateful move.
+# Build all targets before each deployment that moves stored data.
 just deploy build
-# Activate only after the build succeeds and an explicit rollout order is chosen.
+# After a successful build, select the deployment order before activation.
 just deploy switch
-# Existing authenticated LAN-copy workaround remains available.
+# Use authenticated LAN copy if Colmena cannot import the closure.
 just deploy-one mimir switch
 ```
 

@@ -17,7 +17,7 @@ rustPlatform.buildRustPackage rec {
   cargoHash = "sha256-HLygJDtea2E8m3KG8IvJBEH69Bi6Ojm+d21904ISpys=";
   nativeBuildInputs = [installShellFiles];
 
-  # Tests require a TTY.
+  # The tests must run in a TTY.
   doCheck = false;
 
   postInstall = ''

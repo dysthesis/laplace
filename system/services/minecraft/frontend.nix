@@ -9,8 +9,8 @@
     path = ./packwiz;
     name = "retirement-home-packwiz-template";
   };
-  # PackWiz verifies both the file and index hashes. Render the client-side
-  # signing exception with the selected endpoint and update both hash links.
+  # PackWiz compares the file and index hashes.
+  # Render the client signing exception for the selected endpoint and update the two hash links.
   preferencesPath = "config/NoChatReports/NCR-ServerPreferences.json";
   preferences =
     builtins.toJSON {
@@ -53,7 +53,7 @@
       mkdir -p work/minecraft "$out"
       cp ${packwizBootstrapJar} work/minecraft/packwiz-installer-bootstrap.jar
       cp ${packwizIcon} work/retirement-home.png
-      # Pre-seed the selected game's published endpoint without fixed NBT lengths.
+      # Add the published endpoint with its calculated Named Binary Tag (NBT) string length.
       {
         printf '\x0a\x00\x00\x09\x00\x07servers\x0a\x00\x00\x00\x01\x08\x00\x04name\x00\x0fRetirement Home\x08\x00\x02ip'
         printf '%b' "$(printf '\\x%02x\\x%02x' "$(( ''${#minecraftServerAddress} / 256 ))" "$(( ''${#minecraftServerAddress} % 256 ))")"

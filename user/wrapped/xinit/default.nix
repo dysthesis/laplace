@@ -14,7 +14,6 @@
   xinitrc = with pkgs;
     writeText ".xinitrc"
     ''
-      # turn off Display Power Management Service (DPMS)
       xset -dpms
       setterm -blank 0 -powerdown 0
 
@@ -37,7 +36,7 @@
     '';
 in
   mkWrapper pkgs xinit {
-    program = "startx"; # xinit's mainProgram is `xinit`; the wrapped binary is `startx`
+    program = "startx"; # Override xinit's mainProgram to wrap startx.
     set.XINITRC = xinitrc;
     binPath = [
       inputs.mandelbrot.packages.${system}.xmobar

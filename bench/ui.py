@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Rich status output with plain-text fallback; always writes to stderr.
+# Status output uses stderr, with plain text if Rich is not available.
 import sys
 
 try:

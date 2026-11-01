@@ -32,7 +32,7 @@ in {
     ...
   }: {...}:
     lib.optionalAttrs (hostName == instance.host) {
-      # Agent identities and hub consumers are machine facilities projected centrally.
+      # The machine model supplies agent identities and hub consumers.
       laplace.services.beszel.hub = {
         enable = true;
         appUrl = "https://${instance.settings.domain}";

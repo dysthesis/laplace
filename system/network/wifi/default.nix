@@ -33,11 +33,11 @@ in {
         };
       };
     };
-    # The integrated shell already owns network status and controls.
+    # The integrated shell has network status and controls.
     programs.nm-applet.enable =
       config.networking.networkmanager.enable
       && !config.laplace.display.wayland.desktop.enable;
-    # slows down boot time
+    # The wait service delays boot.
     systemd.services.NetworkManager-wait-online.enable = false;
   };
 }

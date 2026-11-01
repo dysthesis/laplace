@@ -15,7 +15,7 @@ state = Path(os.environ["GRAFANA_STATE_DIR"])
 database = Path(os.environ["GRAFANA_DATABASE_PATH"])
 staged = state / "dashboards"
 staged.mkdir(mode=0o750, parents=True, exist_ok=True)
-# Initialise bootstrap material only when missing, as on ordinary startup.
+# Initialise bootstrap secrets only when absent or empty.
 for name, size in [("secret-key", 32), ("bootstrap-admin-password", 24)]:
     path = state / name
     if not path.exists() or path.stat().st_size == 0:
@@ -32,9 +32,8 @@ def dashboard_paths(path):
     with closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True, timeout=2)) as db:
         db.execute("BEGIN")
         tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
-        # Grafana 13 keeps legacy rows after moving dashboards to resource.
-        # Its own migration log selects the authoritative ownership schema;
-        # it is not a Laplace cutover marker and is restored with the DB.
+        # The two dashboard schemas can contain rows.
+        # Use the Grafana migration log to select the active schema.
         unified = "unifiedstorage_migration_log" in tables and db.execute(
             "SELECT 1 FROM unifiedstorage_migration_log "
             "WHERE migration_id = ? AND success = 1 LIMIT 1",
@@ -55,8 +54,8 @@ def dashboard_paths(path):
                     result[uid] = annotations.get("grafana.app/sourcePath", "")
             return result
         if {"dashboard", "dashboard_provisioning"} <= tables:
-            # The provider's historical default is numeric org ID 1,
-            # called "default" in unified storage, never its display name.
+            # The provider uses organisation ID 1, named "default" in unified storage.
+            # Do not use its display name.
             return dict(db.execute(
                 "SELECT d.uid, p.external_id FROM dashboard AS d "
                 "JOIN dashboard_provisioning AS p ON p.dashboard_id = d.id "
@@ -80,8 +79,8 @@ def stage_dashboards(uids):
             target.symlink_to(source)
 
 if pending:
-    # Only existing Laplace-owned dashboards take part in adoption.
-    # Fresh and already-stable databases need no extra Grafana process.
+    # Reconcile only Laplace-owned dashboards with store paths.
+    # Do not start a private Grafana process for other databases.
     stage_dashboards(owned)
     runtime = Path(os.environ["RUNTIME_DIRECTORY"]) / "dashboard-ownership"
     runtime.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -104,16 +103,15 @@ if pending:
     with tempfile.TemporaryDirectory(prefix="migration-", dir=runtime) as temporary:
         work = Path(temporary)
         private_database = work / "grafana.db"
-        # Native provisioning can temporarily unprovision a dashboard
-        # before importing it. Commit only a complete, stopped migration;
-        # failure or interruption must leave the original ownership intact.
+        # Native provisioning can remove dashboard ownership before an import.
+        # Copy the result only after reconciliation completes and Grafana stops.
+        # Failures and interrupts must leave the original ownership unchanged.
         copy_database(database, private_database)
         provisioning = work / "provisioning"
         for directory in ["dashboards", "datasources", "alerting", "plugins"]:
             (provisioning / directory).mkdir(parents=True, exist_ok=True)
-        # Grafana deletes dashboards whose file-provider names disappear
-        # from its config. Keep foreign providers registered but unwatched:
-        # a nonexistent path makes their readers return without changes.
+        # Grafana deletes dashboards when a file provider disappears from its configuration.
+        # Keep other providers registered at an absent path to prevent changes.
         provider_names = set()
         with closing(sqlite3.connect(private_database.as_uri() + "?mode=ro", uri=True)) as db:
             tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
@@ -201,7 +199,7 @@ if pending:
                             if paths.get(uid) not in (filename, str(staged / filename))
                         }
                         if not pending:
-                            # Ownership is visible before Grafana releases its provisioning lease.
+                            # The database shows ownership before Grafana releases its provisioning lease.
                             with closing(sqlite3.connect(private_database.as_uri() + "?mode=ro", uri=True)) as db:
                                 locked = db.execute(
                                     "SELECT 1 FROM server_lock WHERE operation_uid = ?",
@@ -230,8 +228,8 @@ if pending:
             print(log.read_text(), flush=True)
             raise
 
-# Normal deleting provisioning sees only the configured files, at the same
-# stable paths. In particular a disabled game is never recreated on restart.
+# Stage only configured files for normal provisioning with deletion enabled.
+# Do not recreate a disabled game on restart.
 stage_dashboards({
     uid for uid, source in sources.items()
     if source.name != "minecraft.json" or os.environ["GRAFANA_MINECRAFT_ENABLED"] == "1"

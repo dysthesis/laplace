@@ -8,9 +8,9 @@
   inherit (lib) mkIf;
   cfg = config.laplace.services.forgejo;
 
-  # Static Iosevka faces need separate Medium and Bold font files.
+  # Static Iosevka Medium and Bold faces use different font files.
   cadmus = inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font;
-  # Convert copied TTFs to smaller WOFF2 files.
+  # WOFF2 reduces font download size.
   cadmusWoff2 = pkgs.runCommand "iosevka-cadmus-woff2" {nativeBuildInputs = [pkgs.woff2];} ''
     mkdir -p "$out"
     for w in Medium MediumItalic Bold BoldItalic; do
@@ -20,7 +20,7 @@
     done
   '';
 
-  # Harden Forgejo oneshots while leaving /var and /run writable.
+  # Harden oneshot services but keep /var and /run writable.
   hardenOneshot = {
     ProtectSystem = "full";
     ProtectHome = true;
@@ -56,7 +56,6 @@ in {
           "Z '${forgejo.stateDir}/log' - ${forgejo.user} ${forgejo.group} - -"
           "Z '${forgejo.stateDir}/repositories' - ${forgejo.user} ${forgejo.group} - -"
 
-          # Serve the custom theme and fonts from customDir/public.
           "d '${forgejo.stateDir}/custom/public' 0750 ${forgejo.user} ${forgejo.group} - -"
           "d '${forgejo.stateDir}/custom/public/assets' 0750 ${forgejo.user} ${forgejo.group} - -"
           "d '${forgejo.stateDir}/custom/public/assets/css' 0750 ${forgejo.user} ${forgejo.group} - -"
@@ -70,7 +69,6 @@ in {
           "L+ '${forgejo.stateDir}/custom/public/assets/fonts/AtkinsonHyperlegibleNext-Italic-var.ttf' - - - - ${pkgs.atkinson-hyperlegible-next}/share/fonts/truetype/AtkinsonHyperlegibleNext-Italic[wght].ttf"
         ];
 
-        # Harden only oneshots that exist in this configuration.
         services.forgejo-secrets.serviceConfig = hardenOneshot;
         services.forgejo-dump.serviceConfig =
           mkIf forgejo.dump.enable hardenOneshot;
@@ -79,7 +77,7 @@ in {
       services = {
         forgejo = {
           enable = true;
-          # Zoekt requires Forgejo 16 or newer.
+          # Use Forgejo 16 or later for Zoekt.
           package = pkgs.forgejo;
           inherit (cfg) stateDir;
           user = "git";
@@ -91,8 +89,8 @@ in {
           };
           lfs.enable = true;
 
-          # Weekly logical dumps aid major-version restores; VM backups remain primary.
-          # simplification: use pgBackRest if a shorter recovery point is needed.
+          # Weekly logical dumps help restores across major versions. VM backups are the primary recovery method.
+          # Use pgBackRest if the recovery point must be less than one week.
           dump = {
             enable = true;
             type = "tar.zst";
@@ -107,7 +105,8 @@ in {
             };
             DEFAULT.APP_NAME = "Hephaestus";
 
-            # simplification: Zoekt shards share the guest disk; limit repos or move them if needed.
+            # Zoekt shards share the guest disk.
+            # Limit repositories or move shards if disk space becomes insufficient.
             indexer = {
               REPO_INDEXER_ENABLED = true;
               REPO_INDEXER_TYPE = "zoekt";
@@ -123,10 +122,9 @@ in {
               SSH_PORT = lib.head config.services.openssh.ports;
             };
 
-            # Keep registration closed but public repositories readable.
             service = {
               DISABLE_REGISTRATION = true;
-              # Don't leak the admin's email in commit-author / API views.
+              # Hide the administrator email address in commit author and API views.
               DEFAULT_KEEP_EMAIL_PRIVATE = true;
             };
 
@@ -136,7 +134,7 @@ in {
               # PASSWORD_COMPLEXITY must be a comma-separated string.
               MIN_PASSWORD_LENGTH = 12;
               PASSWORD_COMPLEXITY = "lower,upper,digit,spec";
-              PASSWORD_HASH_ALGO = "argon2"; # memory-hard; applies to newly-set passwords
+              PASSWORD_HASH_ALGO = "argon2"; # The memory-hard algorithm applies when users set passwords.
               LOGIN_REMEMBER_DAYS = 7;
               # URL query tokens leak through logs and Referer headers.
               DISABLE_QUERY_AUTH_TOKEN = true;
@@ -146,7 +144,6 @@ in {
             # The module overrides Forgejo's HTTPS detection, so force secure cookies.
             session.COOKIE_SECURE = true;
 
-            # Force the custom dark theme.
             ui = {
               DEFAULT_THEME = "minimal";
               THEMES = "minimal";

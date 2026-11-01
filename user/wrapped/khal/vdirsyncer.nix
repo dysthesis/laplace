@@ -6,7 +6,7 @@
   inherit (lib.laplace.pkgs) mkWrapper;
   inherit (pkgs) writeText;
 
-  # Fetch the Radicale password from SOPS at runtime, outside the store.
+  # Read the Radicale password from SOPS at runtime, outside the store.
   config = writeText "vdirsyncer-config" ''
     [general]
     status_path = "~/.local/share/vdirsyncer/status/"

@@ -99,7 +99,7 @@
     };
   };
   defaultsFile = pkgs.writeText "vicinae-desktop-defaults.json" (builtins.toJSON {
-    # Each invocation starts in search, rather than an old clipboard/settings view.
+    # Open search on each invocation. Do not restore the last view.
     pop_to_root_on_close = true;
     favicon_service = "none";
     search_files_in_root = false;

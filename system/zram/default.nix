@@ -25,8 +25,8 @@ in {
       enable = true;
       inherit (cfg) memoryPercent algorithm;
     };
-    # Prefer compressed swap so ballooned guests retain less physical memory.
-    # swappiness 180 and page-cluster 0 suit cheap random zram access.
+    # Use compressed swap so ballooned guests keep less physical memory.
+    # zram gives low-cost random access. Use swappiness 180 and page-cluster 0.
     boot.kernel.sysctl = {
       "vm.swappiness" = mkDefault 180;
       "vm.page-cluster" = mkDefault 0;

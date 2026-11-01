@@ -40,8 +40,7 @@ pkgs.testers.runNixOSTest {
         viewDistance = 2;
         simulationDistance = 2;
       };
-      # Exercise the real JVM and upstream start/stop/property staging without
-      # downloading the production modpack or needing Discord credentials.
+      # Use vanilla Minecraft for JVM startup and property-staging checks without the modpack or Discord credentials.
       services.minecraft-servers.servers.retirement-home = {
         package = lib.mkForce (pkgs.vanillaServers.vanilla-1_20_1.override {
           jre_headless = pkgs.temurin-bin-17;

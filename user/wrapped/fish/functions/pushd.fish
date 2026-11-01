@@ -1,4 +1,4 @@
-# Exposes DIRSTACK for Starship.
+# Export DIRSTACK for Starship.
 function pushd --description 'Push directory to stack'
     set -l rot_r
     set -l rot_l

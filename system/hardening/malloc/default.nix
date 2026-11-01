@@ -9,7 +9,7 @@
 in {
   config = mkIf (elem "malloc" cfg) {
     environment = {
-      # Global hardened_malloc can crash Zen's AMD Mesa path; force Zink.
+      # Global hardened_malloc can crash Zen with AMD Mesa. Use Zink for Zen.
       memoryAllocator.provider = "graphene-hardened";
       variables.SCUDO_OPTIONS = "ZeroContents=1";
     };

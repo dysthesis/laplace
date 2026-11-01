@@ -108,7 +108,6 @@ def check_product_id_pattern(product_id):
 
 
 def main():
-    # Argument setup and management
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description="Get weather forecast from BOM and format it",
@@ -148,7 +147,6 @@ def main():
         print("Use --help for help")
         exit()
 
-    # Weather script
     ftp_filename = args.product_id + ".xml"
 
     if args.debug:

@@ -48,8 +48,7 @@ in {
       }));
     };
   };
-  # Publicly nameable endpoints stay finite; per-writer loopback listeners are
-  # generated from explicit admission declarations, not a second site roster.
+  # Explicit admission declarations define writer loopback listeners, not the public endpoint list.
   endpointNames = ["app" "http" "https" "metrics" "logs" "alertmanager" "alertmanager-cluster-tcp" "alertmanager-cluster-udp" "vmalert-metrics" "vmalert-logs" "blackbox" "metrics-ingress" "journal-ingress"];
   endpoints = {instance, ...}: let
     local = port: {

@@ -15,18 +15,18 @@
     inputs.nix-index-database.nixosModules.nix-index
   ];
 
-  # Colmena and nixosConfigurations share this package set.
+  # Colmena and nixosConfigurations use the same package set.
   overlays = [
     self.overlays.linux-hardened
     (import ../nix/pkgs)
     (import ../nix/overlays/unstable.nix inputs)
     (import ../nix/overlays/nix-output-monitor.nix)
     inputs.nix-minecraft.overlay
-    # Bound hung activations so they release the deployment lock.
+    # Stop activations at the time limit to release the deployment lock.
     (import ../nix/overlays/stc-timeout.nix)
   ];
 
-  # Both evaluators receive the same module list and import-time arguments.
+  # The two evaluators receive the same module list and import-time arguments.
   nodeModules =
     mapAttrs (hostname: host: {
       system = host.system;
@@ -41,7 +41,7 @@
         {networking.hostName = hostname;}
         {nixpkgs.hostPlatform = lib.mkDefault host.system;}
         ({modulesPath, ...}: {
-          # hardened.nix breaks Wi-Fi; equivalent manual options do not.
+          # hardened.nix causes Wi-Fi failures. Set the same options without this profile.
           imports = ["${modulesPath}/profiles/minimal.nix"];
         })
         {

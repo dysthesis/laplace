@@ -1,4 +1,4 @@
-# Real Grafana provisioning across retained-state cutovers; no production secrets.
+# Grafana provisioning must keep user data across configuration changes.
 {
   pkgs,
   lib,
@@ -16,7 +16,7 @@
     environment = config.systemd.services.grafana.environment;
   };
   generations = pkgs.writeText "grafana-dashboard-generations.json" (builtins.toJSON {
-    # Before placement-driven provisioning, this provider owned all four files.
+    # The baseline provider owns all four dashboard files.
     baseline.settings = {
       apiVersion = 1;
       providers = [
@@ -123,16 +123,14 @@ in
                     "SELECT 1 FROM server_lock WHERE operation_uid = ?",
                     ("provisioning_dashboards",),
                 ).fetchone() is None, "Preparation retained a provisioning lease"
-        # Check before the normal Foreign provider could hide a destructive
-        # private pass by importing its dashboard again with a different ID.
+        # Do this check before the Foreign provider can import a deleted dashboard with a different ID.
         assert foreign_record(state) == foreign_before
 
     def assert_bounded_preparation(state, generation):
         before = database_snapshot(state)
         bootstrap = {name: (state / name).read_bytes()
                      for name in ["secret-key", "bootstrap-admin-password"]}
-        # A stable database must not need any private-process runtime directory.
-        # Using a file here makes an unwanted extra migration fail immediately.
+        # A stable database must not use a private runtime directory.
         unused = state / "unused-runtime"
         unused.write_text("No private startup on a stable database\n")
         for _ in range(3):
@@ -149,7 +147,7 @@ in
         for source in Path(environment["GRAFANA_DASHBOARD_SOURCES"]).glob("*.json"):
             content = json.loads(source.read_text())
             if content["uid"] == game_uid:
-                # A real failed import keeps reconciliation pending until stopped.
+                # An empty title keeps the import pending until the process stops.
                 content["title"] = ""
             (broken / source.name).write_text(json.dumps(content))
         environment["GRAFANA_DASHBOARD_SOURCES"] = str(broken)
@@ -178,7 +176,7 @@ in
                         process.terminate()
                         process.wait(timeout=25)
             assert_private_stopped(state)
-            # Failed preparation must not commit partially changed ownership.
+            # An interrupted import must not change dashboard ownership.
             assert database_snapshot(state) == before
             assert (state / "dashboards" / "minecraft.json").exists()
         except BaseException:
@@ -189,8 +187,7 @@ in
     def running(state, generation):
         settings = json.loads(json.dumps(generations[generation]["settings"]))
         if generation != "baseline":
-            # Execute the exact production ExecStartPre helper with disposable
-            # state and secrets, retaining its real database migration behavior.
+            # Use the production ExecStartPre helper with disposable state and secrets.
             prepare(state, generation)
             settings["providers"][0]["options"]["path"] = str(state / "dashboards")
         foreign = state / "foreign-dashboards"
@@ -313,8 +310,7 @@ in
             assert_bounded_preparation(state, generation)
 
         for first in ["disabled", "absent", "enabled"]:
-            # The organization display name changes before the first cutover.
-            # All later starts retain the same database, including its user data.
+            # Configuration changes must keep the same database, user data and renamed organisation.
             state = Path(temporary) / first
             with running(state, "baseline"):
                 originals = {uid: dashboard(uid) for uid in ordinary_uids + [foreign_uid]}
@@ -358,8 +354,6 @@ in
             previous_game_id = current_game_id
             assert_bounded_preparation(state, first)
 
-            # Disabled and absent declarations both reach real provisioning,
-            # including when they are the first cutover from historical state.
             for generation in ["enabled", "disabled", "enabled", "absent"]:
                 with running(state, generation):
                     current_game_id = assert_game(generation == "enabled")
@@ -370,8 +364,7 @@ in
                 assert_bounded_preparation(state, generation)
 
             if first == "disabled":
-                # Restoring historical ownership must trigger adoption again,
-                # even though this filesystem has already completed a cutover.
+                # Dashboard ownership checks must use database state, not filesystem state.
                 copy_database(legacy, state / "grafana.db")
                 with running(state, "enabled"):
                     assert assert_game(True) == game_id

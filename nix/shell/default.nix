@@ -9,7 +9,6 @@ pkgs.mkShell {
     nil
     nixd
     alejandra
-    # Temporary Statix compatibility override.
     (statix.overrideAttrs (_o: rec {
       src = fetchFromGitHub {
         owner = "oppiliappan";
@@ -38,6 +37,6 @@ pkgs.mkShell {
     fish-lsp
     fish
 
-    packwiz # for modpack management
+    packwiz
   ];
 }

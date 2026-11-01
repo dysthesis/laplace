@@ -1,5 +1,4 @@
-# Exposes host-platform pkgs.unstable with stable nixpkgs config.
-# Pin mistral-common until nixpkgs-unstable reaches 1.11.
+# Remove the mistral-common override when nixpkgs-unstable has version 1.11 or newer.
 inputs: final: _prev: {
   unstable = import inputs.nixpkgs-unstable {
     system = final.stdenv.hostPlatform.system;
@@ -10,7 +9,7 @@ inputs: final: _prev: {
           (unstablePrev.pythonPackagesExtensions or [])
           ++ [
             (_pythonFinal: pythonPrev: {
-              # transformers 5.5 needs ReasoningEffort, absent in 1.8.8.
+              # transformers 5.5 must use `ReasoningEffort` from mistral-common 1.11.
               mistral-common = pythonPrev.mistral-common.overridePythonAttrs (old: rec {
                 version = "1.11.1";
                 src = unstableFinal.fetchFromGitHub {
@@ -33,7 +32,7 @@ inputs: final: _prev: {
                     '';
 
                   # Parse libstdc++ before HIP defines its __noinline__ macro.
-                  # CMake's CXXFLAGS initialization keeps this out of C/HIP flags.
+                  # CMake adds CXXFLAGS to C++ flags, but not C or HIP flags.
                   preConfigure =
                     (old.preConfigure or "")
                     + ''

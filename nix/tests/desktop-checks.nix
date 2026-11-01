@@ -3,7 +3,6 @@
   lib,
   nixosConfigurations,
 }: {
-  # Selected sessions provide their own validation commands.
   desktop-stack = let
     validateHost = name: host:
       lib.optionalString (host.config.laplace.display.checkCommands != []) ''

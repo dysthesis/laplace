@@ -1,6 +1,6 @@
-# WS mode: agents push with a KEY and TOKEN.
-# SSH mode: the hub pulls with public-key auth from hosts that must not reach it.
-# The hub binds loopback behind Caddy.
+# In WebSocket mode, agents send data with KEY and TOKEN.
+# In SSH mode, the hub uses public-key authentication to read data from hosts that must not reach it.
+# The hub listens on loopback behind Caddy.
 {
   config,
   lib,
@@ -34,7 +34,6 @@ in {
         description = "Machine-side connection mode; cluster supplies the hub endpoint and identity.";
       };
 
-      # Agent pushes to hub.
       hubUrl = mkOption {
         type = types.nullOr types.str;
         default = null;
@@ -54,7 +53,6 @@ in {
         '';
       };
 
-      # Hub pulls from agent.
       key = mkOption {
         type = types.nullOr types.str;
         default = null;
@@ -90,7 +88,7 @@ in {
 
   config = mkMerge [
     (mkIf cfg.hub.enable {
-      # Persist DynamicUser's private directory; it holds accounts and the hub SSH key.
+      # Persist the private DynamicUser directory. It contains accounts and the hub SSH key.
       mnemosyne.dirs = ["/var/lib/private/beszel-hub"];
 
       services.beszel.hub = {
@@ -112,7 +110,7 @@ in {
         services.beszel.agent.enable = true;
       }
 
-      # Push mode needs no inbound port.
+      # Push mode uses no inbound port.
       (mkIf (cfg.agent.hubUrl != null) {
         assertions = [
           {
@@ -135,7 +133,7 @@ in {
             message = "laplace.services.beszel.agent SSH mode (key set) needs trustedHubs — the hub's source IP(s); without it the host firewall drops the hub and the agent is unreachable.";
           }
           {
-            # Pull-mode scoping requires nftables extraInputRules.
+            # Restrict pull-mode access with nftables extraInputRules.
             assertion = !config.networking.firewall.enable || config.networking.firewall.backend == "nftables";
             message = "laplace.services.beszel.agent SSH mode emits a scoped nftables input rule, but this host's firewall backend is iptables, where networking.firewall.extraInputRules is ignored — the listen port would be left unreachable. Set networking.nftables.enable = true (safe without Docker).";
           }
@@ -145,7 +143,7 @@ in {
           environment = {
             KEY = cfg.agent.key;
             LISTEN = cfg.agent.listen;
-            # Persist the agent SSH key or the hub's pinned fingerprint breaks.
+            # Persist the agent SSH key to keep the fingerprint that the hub trusts.
             DATA_DIR = "/var/lib/beszel-agent";
           };
         };

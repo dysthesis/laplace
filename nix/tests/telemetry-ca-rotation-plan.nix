@@ -25,7 +25,7 @@
       host = "new-receiver";
       settings = {
         sopsFile = "${receiverSource}";
-        # Acknowledgement never creates admission, even after receiver relocation.
+        # expectedHosts does not grant receiver access if the receiver moves.
         expectedHosts = ["old-receiver" "new-receiver" "writer" "not-admitted"];
         writers = {
           old-receiver = {

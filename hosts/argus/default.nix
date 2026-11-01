@@ -20,8 +20,8 @@
     };
   };
 
-  # PVE attaches one 128 GiB virtio disk with backup=0. Its two ext4 partitions
-  # are labelled by the provisioning runbook in docs/observability.md.
+  # PVE attaches one 128 GiB virtio disk with backup=0.
+  # Use docs/observability.md to identify its two ext4 partitions with labels.
   fileSystems = {
     "/var/lib/private/victoriametrics" = {
       device = "/dev/disk/by-label/argus-metrics";

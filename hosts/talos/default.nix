@@ -1,4 +1,4 @@
-# Forgejo runner guest. VLAN80 limits untrusted CI; jobs use Forgejo on VLAN70.
+# Keep untrusted Forgejo CI jobs on VLAN80. The jobs use Forgejo on VLAN70.
 {
   config,
   cluster,
@@ -12,7 +12,7 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.80.1"];
-    # SSH scoping requires nftables.
+    # Use nftables for SSH access limits.
     nftables.enable = true;
   };
 
@@ -31,9 +31,9 @@
     harden = ["malloc" "kernel"];
     proxmox = {
       cores = 4;
-      memory = 6144; # MiB, ballooning ceiling (nix evals/builds burst)
-      balloon = 6144; # MiB, fixed allocation required by representative Nix CI
-      # simplification: 64G is an estimate; enable GC or enlarge it when measured.
+      memory = 6144; # MiB. Keep memory available for Nix evaluation and builds.
+      balloon = 6144; # MiB. Use a fixed allocation for Nix CI.
+      # The 64G capacity is an estimate. Enable garbage collection or increase capacity after measuring disk use.
       diskSize = "64G";
     };
 

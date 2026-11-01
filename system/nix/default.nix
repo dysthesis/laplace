@@ -7,8 +7,8 @@
   inherit (lib) optionals;
 in {
   config = {
-    # The Determinate module selects Nix; Nixd manages evaluator defaults,
-    # its substituter, and rotating cache keys in /etc/nix/nix.conf.
+    # The Determinate module selects Nix.
+    # Nixd manages evaluator defaults, its substituter and cache key rotation in /etc/nix/nix.conf.
     nix.settings = {
       extra-sandbox-paths = lib.optionals config.programs.ccache.enable [config.programs.ccache.cacheDir];
       experimental-features =
@@ -17,7 +17,7 @@ in {
           "flakes"
           "pipe-operators"
         ]
-        # Enables builtins.parallel; eval-cores is managed by Nixd.
+        # parallel-eval enables builtins.parallel. Nixd manages eval-cores.
         ++ optionals config.determinate.enable ["parallel-eval"];
       substituters = [
         "https://nix-community.cachix.org"
@@ -30,8 +30,8 @@ in {
 
     nixpkgs = {
       config = {
-        # mkWrapper renames derivations to "<name>-wrapped" but keeps the
-        # unfree meta.license, so match on the unwrapped name.
+        # mkWrapper names derivations "<name>-wrapped" but keeps the unfree meta.license.
+        # Match the name without the suffix.
         allowUnfreePredicate = pkg:
           builtins.elem (lib.removeSuffix "-wrapped" (lib.getName pkg)) [
             "rtk"

@@ -152,7 +152,7 @@ in {
       };
     };
     tailnet = {
-      # External identities are never application placement candidates.
+      # External peers cannot host applications.
       peers = {
         nyx = node "100.64.0.42" "fd7a:115c:a1e0::2a" ["pve"];
         phone = node "100.64.0.40" "fd7a:115c:a1e0::28" ["phone" "owner-device" "sync"];

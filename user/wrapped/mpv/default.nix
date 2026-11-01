@@ -16,14 +16,14 @@
   low1kParsed =
     low1k |> mapAttrsToList (k: v: "${k} ${v}") |> concatStringsSep "\n" |> writeText "inputs.conf";
 
-  # Only the background decoder needs Whisper; keep playback's FFmpeg unchanged.
+  # Use Whisper only in the background decoder. Do not change playback's FFmpeg.
   transcriptionFFmpeg =
     (pkgs.ffmpeg-full.override {
       whisper-cpp = (pkgs.whisper-cpp.override {vulkanSupport = true;}).overrideAttrs (old: {
         patches = (old.patches or []) ++ [./whisper-compute-queue.patch];
       });
     }).overrideAttrs (old: {
-      # Upstream's filter does not yet expose whisper_full_params.initial_prompt.
+      # The upstream filter has no whisper_full_params.initial_prompt option.
       patches = (old.patches or []) ++ [./whisper-prompt.patch];
     });
   transcriber = pkgs.mpv-unwrapped.override {ffmpeg = transcriptionFFmpeg;};

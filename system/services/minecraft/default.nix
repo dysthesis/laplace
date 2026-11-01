@@ -10,15 +10,15 @@
   cfg = config.laplace.services.minecraft.retirement-home;
   minecraftMaintenanceLock = "/run/lock/minecraft-maintenance.lock";
 
-  # Server and clients share this PackWiz manifest.
+  # The server and clients share this PackWiz manifest.
   packwizSource = builtins.path {
     path = ./packwiz;
     name = "retirement-home-packwiz";
   };
 
   serverPackage = pkgs.fabricServers.fabric-1_20_1.override {
-    loaderVersion = "0.19.2"; # matches the packwiz Fabric loader version
-    # Keep Java 17 for mod compatibility; Oracle's public GraalVM 17 is archived.
+    loaderVersion = "0.19.2"; # Match the PackWiz Fabric loader version.
+    # Keep Java 17 for mod compatibility.
     jre_headless = pkgs.temurin-bin-17;
   };
 
@@ -27,8 +27,8 @@
     hash = "sha512-RyPz/8Dv76Y9Scrhglo+w8vO+B3bd5ZfouYdDp17ho6gNydLVI2m9fU7K92eo0qB6scaOp0Hb2qC9u29QhoKvw==";
   };
 
-  # Server-only admin mods. Ledger 1.2.8 matches the bundled Kotlin runtime;
-  # upgrade Ledger after fabric-language-kotlin reaches 1.13.4.
+  # Ledger 1.2.8 matches the bundled Kotlin runtime.
+  # Upgrade Ledger only after fabric-language-kotlin reaches 1.13.4.
   ledger = pkgs.fetchurl {
     url = "https://cdn.modrinth.com/data/LVN9ygNV/versions/pOxgWfwI/ledger-1.2.8.jar";
     hash = "sha512-gjCufvVJXdQ7brwZ+yErf/sQ3FcfxYbsx+LMgXeYnapBwQKsOG2CWGyDoLSLnbop8JX/pLjXjjTXFeJYMBF/jQ==";
@@ -38,7 +38,6 @@
     hash = "sha512-4cjgvrjJUtvgoJAtAQIHqwx3SovdOXE2kxaVIIHgO3f7Vm6q2rWRK6MSStMNW5QZfQ2T7Nvdl/hsO/QBDKI97g==";
   };
 
-  # Render TOML with runtime secret placeholders and optional invite URL.
   discordIntegrationConfig =
     (pkgs.formats.toml {}).generate "Discord-Integration.toml"
     (recursiveUpdate (import ./discord-config.nix)
@@ -62,7 +61,7 @@
     (pkgs.fetchPackwizModpack {
       src = packwizSource;
       side = "server";
-      packHash = "sha256-ubSE4cKilWSYp+LonexjuaSoTnJHaT+WnD0TJCwywYo=";
+      packHash = "sha256-W0qo9zuvmWEoBsS+jROpkJXdYZ6msYd4UoemCcH0b34=";
     }).addFiles ({
         "mods/ledger-1.2.8.jar" = ledger;
         "mods/squaremap-fabric-mc1.20.1-1.2.0.jar" = squaremap;
@@ -87,8 +86,8 @@ in {
 
     mnemosyne.dirs = [cfg.dataDir];
 
-    # Content stays staged until restart. A listener change cannot: firewall and
-    # client artifacts switch immediately, so require the JVM to be stopped first.
+    # Content waits for restart. Firewall rules and client artefacts change immediately.
+    # Stop the JVM before a listener change.
     system.preSwitchChecks.minecraftEndpoint = ''
       case "$2" in
         switch|test|dry-activate|check)
@@ -102,27 +101,27 @@ in {
       esac
     '';
 
-    # Substitute Discord secrets at start without copying them to the store.
+    # Substitute Discord secrets at startup. Keep them outside the store.
     services.minecraft-servers.environmentFile = mkIf cfg.discord.enable cfg.discord.environmentFile;
 
-    # Avoid reload deleting managed files while the JVM still runs.
+    # A reload can delete managed files while the JVM runs.
     systemd = {
       tmpfiles.rules = ["d /nix/.mc-snapshots 0700 root root -"];
       services = {
         "minecraft-server-retirement-home" = {
           reloadIfChanged = lib.mkForce false;
 
-          # Supply async-profiler's native dependency only to this service.
+          # Limit the native async-profiler dependency to this service.
           environment.LD_LIBRARY_PATH =
             lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib];
 
-          # Keep AF_NETLINK: glibc needs it before DNS resolution.
+          # glibc uses AF_NETLINK before DNS resolution.
           serviceConfig.RestrictAddressFamilies =
             lib.mkForce ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
         };
 
         # Serialise snapshots and clean restarts through the server stdin socket.
-        # simplification: one host lock is enough while only one instance runs.
+        # One host lock serialises maintenance for the single server instance.
 
         mc-world-snapshot = {
           description = "Quiesce saves + read-only btrfs snapshot of the world";
@@ -189,7 +188,7 @@ in {
                   exit 1
                 fi
 
-                # Hold the pipe FD so cleanup cannot recreate its path as a file.
+                # Keep the pipe file descriptor open so cleanup cannot recreate the path as a regular file.
                 exec 8>"/proc/$main_pid/fd/0"
                 saves_disabled=true
                 printf '%s\n' 'save-off' >&8
@@ -198,7 +197,7 @@ in {
                   '^\[[0-9]{2}:[0-9]{2}:[0-9]{2}\] \[Server thread/INFO\]: (Automatic saving is now disabled|Saving is already turned off)$' \
                   'save-off'
 
-                # save-off acknowledgement is the queue barrier for this flush.
+                # The save-off acknowledgement is the queue barrier for this flush.
                 cursor=$(journal_cursor)
                 if [ -z "$cursor" ]; then
                   echo "could not establish a journal cursor before flushing saves" >&2
@@ -209,7 +208,7 @@ in {
                   'save-all flush' \
                   "data get storage $marker" \
                   >&8
-                # simplification: fail after 60 seconds; raise only from measured flushes.
+                # Fail after 60 seconds. Increase the limit only if measured flush times are longer.
                 wait_for_server_log \
                   "$cursor" \
                   '^\[[0-9]{2}:[0-9]{2}:[0-9]{2}\] \[Server thread/INFO\]: Saved the game$' \
@@ -250,12 +249,12 @@ in {
               echo "$unit changed from $server_state to $current_state; snapshot aborted" >&2
               exit 1
             fi
-            # Snapshot the whole persisted subvolume on the same Btrfs disk.
-            # simplification: split or send the world subvolume if local disk becomes limiting.
+            # The snapshot shares the Btrfs disk with persistent data.
+            # Split or send the world subvolume if local disk space is low.
             btrfs subvolume snapshot -r /nix/persist "/nix/.mc-snapshots/mc-$(date +%Y%m%d-%H%M%S)"
             restore_saves
             trap - EXIT
-            # keep the newest 24 (timestamped names sort chronologically)
+            # Keep the newest 24 snapshots. Timestamp names sort in date order.
             ls -1dr /nix/.mc-snapshots/mc-* 2>/dev/null | tail -n +25 | while read -r snap; do
               btrfs subvolume delete "$snap"
             done
@@ -280,7 +279,7 @@ in {
               printf '%s\n' 'say Nightly restart in 60s' >&8
               sleep 60
             fi
-            # try-restart preserves deliberate stops; ExecStop saves through stdin.
+            # try-restart does not start a stopped server. ExecStop saves through stdin.
             systemctl try-restart "$unit"
           '';
         };
@@ -303,7 +302,7 @@ in {
       };
     };
 
-    # Keep Simple Voice Chat exposure tied to the main Minecraft exposure switch.
+    # Use the Minecraft firewall switch for Simple Voice Chat.
     # See: https://modrepo.de/minecraft/voicechat/wiki/server_setup_self_hosted
     networking.firewall.allowedUDPPorts = optional cfg.openFirewall 24454;
 
@@ -331,8 +330,8 @@ in {
           view-distance = cfg.viewDistance;
           simulation-distance = cfg.simulationDistance;
           online-mode = true;
-          # Keep online auth and whitelist; allow unsigned chat for No Chat Reports.
-          # whitelist.json persists at the data root. An empty list locks out all players.
+          # Keep online authentication and the whitelist. Let No Chat Reports use unsigned chat.
+          # whitelist.json persists at the data root. An empty list prevents all player access.
           white-list = true;
           enforce-whitelist = true;
           enable-rcon = false;
@@ -347,12 +346,12 @@ in {
           {
             config = "${serverPack}/config";
             "server-icon.png" = serverIcon;
-            # Moonlight loads required datapacks from the pack root, not config/.
+            # Moonlight loads the necessary datapacks from the pack root, not config/.
             "moonlight-global-datapacks" = "${serverPack}/moonlight-global-datapacks";
-            # squaremap reads its data directory; pin bind address and render limits.
+            # squaremap reads its data directory. Set its bind address and render limits.
             "squaremap/config.yml" = squaremapConfig;
           }
-          # Recreate the runtime-secret config after each config-tree reset.
+          # Recreate the runtime-secret configuration after each configuration tree reset.
           // optionalAttrs cfg.discord.enable {
             "config/Discord-Integration.toml" = discordIntegrationConfig;
           };

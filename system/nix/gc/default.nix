@@ -10,7 +10,7 @@
       options = "--delete-older-than 7d";
     };
 
-    # Retain the daily seven-day generation policy with a single collector.
+    # Disable the Determinate collector to prevent duplicate garbage collection.
     environment.etc."determinate/config.json" = lib.mkIf config.determinate.enable {
       text = builtins.toJSON {
         garbageCollector.strategy = "disabled";

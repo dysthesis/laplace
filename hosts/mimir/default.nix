@@ -1,4 +1,4 @@
-# Application guest. Caddy fronts loopback services on tailnet-only port 443.
+# Caddy forwards tailnet-only port 443 to loopback services.
 {
   config,
   cluster,
@@ -38,8 +38,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 2;
-      memory = 5120; # MiB, ballooning ceiling (karakeep's node stack + headless chromium)
-      balloon = 1280; # MiB, ballooning floor (Postgres + app processes)
+      memory = 5120; # MiB. Keep memory available for Karakeep's Node.js processes and headless Chromium.
+      balloon = 1280; # MiB, minimum for Postgres and application processes
       diskSize = "32G";
     };
 
@@ -68,7 +68,7 @@
       caddy = {
         enable = true;
         email = "dysthesis@protonmail.com";
-        openFirewall = false; # tailnet-only; :443 reached over tailscale0
+        openFirewall = false; # Open port 443 only on tailscale0.
         cloudflare = {
           enable = true;
           sopsFile = ../../system/secrets/mimir.yaml;

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Reproducible shell-startup benchmark using exact Nix-built artefacts.
-# Measures coarse, perceptual, attribution, syscall, and A/B tiers.
+# Measure shell startup and latency with Nix-built artefacts.
 set -euo pipefail
 
 HERE="${BENCH_LIB:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
@@ -145,7 +144,7 @@ for t in nix jq python3; do need "$t"; done
 want_tier coarse && need hyperfine
 want_tier syscall && need strace
 
-# Merge N pty-probe JSON files into one (concatenating each metric's samples).
+# Combine each metric's samples from the probe JSON files.
 merge_pty() {
     local out="$1"
     shift
@@ -156,8 +155,8 @@ merge_pty() {
               .[$k] = ((.[$k] // []) + $x.samples[$k]))))}' "$@" >"$out"
 }
 
-# Isolated mode uses clean HOME and XDG_RUNTIME_DIR but keeps executable PATH.
-# In-situ mode leaves the session unchanged.
+# Isolated mode uses new HOME and XDG_RUNTIME_DIR directories but keeps PATH.
+# In-situ mode keeps the current session environment.
 mk_runenv() {
     local mode="$1"
     case "$mode" in
@@ -178,7 +177,7 @@ mk_runenv() {
     esac
 }
 
-# T1: coarse floor. Labelled clearly so nobody mistakes it for the headline.
+# This lower bound does not measure interactive readiness.
 tier_coarse() {
     local label="$1" shellbin="$2" login="$3"
     shift 3
@@ -194,7 +193,6 @@ tier_coarse() {
         warn "coarse failed for $label"
 }
 
-# T2: perceptual metrics via the PTY harness.
 tier_metrics() {
     local label="$1" shellbin="$2" login="$3" regex="$4"
     shift 4
@@ -205,7 +203,7 @@ tier_metrics() {
         --label "$label" --mode "${BENCH_MODE:-}" --spawn-mode "$([[ $login == 1 ]] && echo login || echo interactive)")
     [[ $login == 1 ]] && probeargs+=(--login)
     [[ -n $regex ]] && probeargs+=(--prompt-regex "$regex")
-    # Per-call extras, e.g. BENCH_PROBE_EXTRA=--no-raw for readline shells.
+    # Readline shells must use BENCH_PROBE_EXTRA=--no-raw.
     if [[ -n ${BENCH_PROBE_EXTRA:-} ]]; then
         local -a extra_probe_args
         read -r -a extra_probe_args <<<"$BENCH_PROBE_EXTRA"
@@ -221,7 +219,6 @@ tier_metrics() {
     python3 "$STATS" summarize "$out" || true
 }
 
-# T3a: fish-native per-init-line attribution.
 tier_profile_fish() {
     local label="$1" shellbin="$2"
     shift 2
@@ -231,18 +228,18 @@ tier_profile_fish() {
     [[ $DRYRUN == 1 ]] && return 0
     pin env "${runenv[@]}" "$shellbin" --profile-startup "$prof" -i -c exit \
         >/dev/null 2>&1 || warn "profile-startup failed for $label"
-    # fish profile columns: Time(us)  Sum(us)  Command. Rank by self-time.
+    # Fish columns: Time(us), Sum(us), Command. The first column is self-time.
     if [[ -s $prof ]]; then
         {
             printf 'top init lines by self-time (us):\n'
-            # `head` closing the pipe early SIGPIPEs `sort` under pipefail; don't die.
+            # When head closes the pipe, sort can exit with SIGPIPE under pipefail.
             tail -n +2 "$prof" | sort -t$'\t' -k1 -rn | head -25 || true
         } >"$OUTDIR/${label}.profile-top.txt"
         log "  -> $OUTDIR/${label}.profile-top.txt"
     fi
 }
 
-# Ablation measures each init line's full cost, including second-order effects.
+# Ablation measures each init line's cost, including its effect on other lines.
 tier_ablation_fish() {
     local label="$1" wrapped="$2" unwrapped_bin="$3"
     shift 3
@@ -262,7 +259,7 @@ tier_ablation_fish() {
     loadplugin="$(find "${dds//:/ }" -name load_plugin.fish 2>/dev/null | head -1 || true)"
     log "  config: $cfg"
 
-    # Each suspect regex matches runtime and build-time init forms.
+    # Each pattern matches runtime and build-time init forms.
     local -a names=(dbus task_startup zoxide starship_init direnv transience plugins)
     local -a regexes=(
         'dbus-update-activation-environment'
@@ -274,7 +271,7 @@ tier_ablation_fish() {
         'load_plugin |fish-plugin-paths'
     )
 
-    # Baseline uses the same binary with a regex that matches nothing.
+    # The baseline uses the same binary with no init lines disabled.
     local base_share base_json
     base_share="$(gen_ablation_config "$OUTDIR/abl/_baseline" "$cfg" "$loadplugin" '$^')"
     [[ $DRYRUN == 1 ]] && return 0
@@ -309,7 +306,6 @@ tier_ablation_fish() {
     done
 }
 
-# Count fork and exec calls behind startup time.
 tier_syscall() {
     local label="$1" shellbin="$2" login="$3"
     shift 3
@@ -410,15 +406,13 @@ for mode in "${MODE_LIST[@]}"; do
 
         if has_target bash && [[ -n "$BASH_WRAP$DRYRUN" ]]; then
             bb="${BASH_WRAP:-/dry}/bin/bash"
-            # pure bash
             declare -a BENV_PURE=("${RUNENV[@]}" "BASH_NO_FISH=1")
             lbl="bash-pure.${local_tag}"
             want_tier coarse && tier_coarse "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
-            # Readline needs terminal ECHO enabled for input-lag probes.
+            # Input-lag probes must enable terminal ECHO for Readline.
             want_tier metrics && BENCH_PROBE_EXTRA=--no-raw \
                 tier_metrics "$lbl" "$bb" "$login" "" "${BENV_PURE[@]}"
             want_tier syscall && tier_syscall "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
-            # real handoff bash -> fish (what a terminal actually does)
             lbl="bash-handoff.${local_tag}"
             want_tier coarse && tier_coarse "$lbl" "$bb" "$login" "${RUNENV[@]}"
             want_tier metrics && tier_metrics "$lbl" "$bb" "$login" "$FISH_PROMPT_REGEX" "${RUNENV[@]}"

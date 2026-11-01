@@ -58,25 +58,25 @@
     var(--fonts-emoji);
 
   /* Neutral UI palette. */
-  --steel-900: #080808; /* gray1 */
-  --steel-850: #0f0f0f; /* statusline */
-  --steel-800: #101010; /* main_background */
-  --steel-750: #191919; /* gray2 / menu_background */
-  --steel-700: #202020; /* whitespace */
-  --steel-650: #2a2a2a; /* gray3 */
-  --steel-600: #3a3a3a; /* dim comment */
-  --steel-550: #444444; /* gray4 */
-  --steel-500: #555555; /* gray5 */
-  --steel-450: #666666; /* keyword */
-  --steel-400: #7a7a7a; /* gray6 */
-  --steel-350: #8e8e8e; /* param */
-  --steel-300: #9e9e9e; /* interpolated */
-  --steel-250: #aaaaaa; /* gray7 */
-  --steel-200: #bbbbbb; /* interpolated */
-  --steel-150: #cccccc; /* gray8 */
-  --steel-100: #dddddd; /* gray9 */
+  --steel-900: #080808;
+  --steel-850: #0f0f0f;
+  --steel-800: #101010;
+  --steel-750: #191919;
+  --steel-700: #202020;
+  --steel-650: #2a2a2a;
+  --steel-600: #3a3a3a;
+  --steel-550: #444444;
+  --steel-500: #555555;
+  --steel-450: #666666;
+  --steel-400: #7a7a7a;
+  --steel-350: #8e8e8e;
+  --steel-300: #9e9e9e;
+  --steel-250: #aaaaaa;
+  --steel-200: #bbbbbb;
+  --steel-150: #cccccc;
+  --steel-100: #dddddd;
 
-  /* Blue tint and shade ladder. */
+  /* Blue tints and shades. */
   --color-primary: #7788aa;
   --color-primary-contrast: #000;
   --color-primary-dark-1: #919fba;
@@ -103,7 +103,6 @@
   --color-primary-alpha-80: #7788aacc;
   --color-primary-alpha-90: #7788aae1;
 
-  /* Actions console */
   --color-console-fg: #cccccc;
   --color-console-fg-subtle: #7a7a7a;
   --color-console-bg: #0f0f0f;
@@ -175,7 +174,6 @@
   --color-ansi-bright-magenta: #ffaa88;
   --color-ansi-bright-cyan: #708090;
 
-  /* Diff */
   --color-diff-removed-word-bg: #4d1f1f;
   --color-diff-added-word-bg: #2e4430;
   --color-diff-removed-row-bg: #2a1414;
@@ -201,7 +199,6 @@
   --color-info-bg: #262e3d;
   --color-info-text: #dddddd;
 
-  /* Badges */
   --color-red-badge: #d70000;
   --color-red-badge-bg: #d7000022;
   --color-red-badge-hover-bg: #d7000044;
@@ -215,7 +212,6 @@
   --color-orange-badge-bg: #ffaa8822;
   --color-orange-badge-hover-bg: #ffaa8844;
 
-  /* Misc literals */
   --color-header-wrapper-transparent: #0f0f0f00;
   --color-expand-button: #3a3a3a;
   --color-indicator-active: #7788aa;
@@ -224,7 +220,7 @@
   --color-indicator-idle-20: #7899781a;
   --color-indicator-offline: #7a7a7a;
   --color-indicator-offline-20: #7a7a7a1a;
-  /* Mute the oklch-derived graph/danger tints to fit the palette. */
+  /* Reduce the oklch-derived graph and danger tints to match the palette. */
   --regular-chroma: 0.11;
   --bg-chroma: 0.03;
 }

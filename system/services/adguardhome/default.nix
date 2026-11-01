@@ -11,14 +11,14 @@ in {
     // import ./settings.nix {inherit lib;};
 
   config = mkIf cfg.enable {
-    # Persist UI-managed rewrites and accounts.
+    # Persist DNS rewrites and accounts from the web interface.
     mnemosyne.dirs = ["/var/lib/private/AdGuardHome"];
 
     services.adguardhome = {
       enable = true;
-      # Preserve UI changes outside declared settings; declared settings still win.
+      # Keep web interface changes outside declared settings. Declared settings override them.
       mutableSettings = true;
-      # Keep the UI closed on the LAN; tailscale0 remains trusted.
+      # Prevent LAN access to the web interface. tailscale0 stays trusted.
       openFirewall = false;
 
       port = cfg.port;
@@ -28,14 +28,14 @@ in {
         # Caddy terminates TLS for DoH on the plain HTTP port.
         doh.insecure_enabled = true;
 
-        # Behind node-local Caddy, only loopback should be trusted to supply XFF.
+        # Trust X-Forwarded-For headers only from loopback proxies.
         dns.trusted_proxies = [
           "127.0.0.0/8"
           "::1/128"
         ];
 
-        # yaml-merge replaces lists wholesale on every start. Nix owns these
-        # lists; add blocklists and rules here, not in the web UI.
+        # yaml-merge replaces whole lists at each start.
+        # Define blocklists and rules here, not in the web interface.
         filters = [
           {
             enabled = true;
@@ -249,9 +249,9 @@ in {
           "@@||mccd.space^$important"
           "@@||notes.hella.cheap^$important"
 
-          # Miniflux feed hosts false-positived by the blocklists above. The
-          # .boats/.lol/.icu ones are collateral from HaGeZi's abused-TLD list;
-          # the rest come from a filter the UI added and Nix does not declare.
+          # Blocklists reject these Miniflux feed hosts.
+          # HaGeZi's abused-TLD list blocks .boats, .lol and .icu.
+          # Filters in the web interface cause the other false positives.
           "@@||0pointer.net^$important"
           "@@||agner.org^$important"
           "@@||bunniestudios.com^$important"
@@ -279,7 +279,7 @@ in {
       };
     };
 
-    # Open DNS to LAN and tailnet; keep the UI tailnet-only.
+    # Permit DNS on the LAN and tailnet. Restrict the web interface to the tailnet.
     networking.firewall = {
       allowedTCPPorts = [53];
       allowedUDPPorts = [53];

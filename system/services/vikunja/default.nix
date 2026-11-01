@@ -15,7 +15,7 @@ in {
 
     services.vikunja = {
       enable = true;
-      # The node-local Caddy fronts the loopback API and public frontend.
+      # The local Caddy instance serves the loopback API and public frontend.
       address = cfg.listenAddress;
       inherit (cfg) port;
       frontendScheme = lib.mkDefault "http";

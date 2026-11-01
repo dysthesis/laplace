@@ -61,7 +61,7 @@ in {
       sops.secrets.miniflux_admin.sopsFile = instance.settings.sopsFile;
       services.miniflux.config =
         {
-          # This deliberate direct-reader socket remains firewall-scoped by identity.
+          # The firewall restricts the direct-reader socket by node identity.
           LISTEN_ADDR = common.hostPort instance.settings.listenAddress instance.settings.port;
           BASE_URL = "https://${instance.settings.domain}";
           INTEGRATION_ALLOW_PRIVATE_NETWORKS =

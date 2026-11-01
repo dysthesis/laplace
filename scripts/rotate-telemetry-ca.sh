@@ -56,7 +56,7 @@ cmp -s \
     <(openssl pkey -in "$work_dir/ca.key" -pubout) ||
     die 'new CA certificate and private key do not match'
 
-# Keep private key first so future `openssl pkey` extraction fails closed early.
+# The PEM file starts with the private key for openssl pkey.
 cat "$work_dir/ca.key" "$work_dir/ca.crt" >"$work_dir/ca.pem"
 
 set_secret() {

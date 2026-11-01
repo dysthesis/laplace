@@ -17,7 +17,7 @@
 
     "Super Comma focus-output next"
 
-    # yoinks focused view into top of layout stack
+    # Move the focused view to the top of the layout stack.
     "Super+Shift F zoom"
 
     "Super H send-layout-cmd ${rivercarro} 'main-ratio -0.05'"

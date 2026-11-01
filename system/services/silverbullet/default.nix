@@ -11,7 +11,7 @@ in {
     // import ./settings.nix {inherit lib;};
 
   config = mkIf cfg.enable {
-    # spaceDir defaults to /var/lib/silverbullet (a StateDirectory); persist it.
+    # Persist the default spaceDir StateDirectory at /var/lib/silverbullet.
     mnemosyne.dirs = ["/var/lib/silverbullet"];
 
     services.silverbullet = {

@@ -16,7 +16,6 @@
     NC_DISABLE_MUX = "true";
     NC_ATTACHMENT_ACCESS_CONTROL_ENABLED = "true";
 
-    # Privacy
     NC_DISABLE_TELE = "true";
     NC_DISABLE_ERR_REPORTS = "true";
     NC_DISABLE_SUPPORT_CHAT = "true";

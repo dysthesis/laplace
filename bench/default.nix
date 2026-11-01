@@ -1,7 +1,6 @@
-# Pin benchmark tools; inherit Nix itself to build tested artefacts.
+# Use pinned benchmark tools, but keep the caller's Nix for builds.
 pkgs: let
   inherit (pkgs) lib;
-  # rich powers the progress bars + result tables in pty-probe.py / stats.py.
   pythonEnv = pkgs.python3.withPackages (ps: [ps.rich]);
   tools = lib.makeBinPath (with pkgs; [
     hyperfine
@@ -14,7 +13,7 @@ pkgs: let
     gnugrep
     findutils
     git
-    fish # fallback / unwrapped ablation runner
+    fish # Unwrapped shell for ablation
     bash
   ]);
 in

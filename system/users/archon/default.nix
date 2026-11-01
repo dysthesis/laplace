@@ -7,8 +7,7 @@
   inherit (builtins) filter hasAttr;
   cfg = elem "archon" config.laplace.users;
   keys = import ../keys.nix;
-  # Only attach to groups that some other module actually defines, so the user
-  # composes cleanly regardless of which services a given guest enables.
+  # Add optional groups only when another module defines them.
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
 in {
   config = mkIf cfg {

@@ -9,7 +9,7 @@
   inherit (lib) optionalString;
 
   configuration = let
-    # Null session commands must not be interpolated before selector assertions.
+    # Do not interpolate null session commands before the selector assertions.
     waylandSession = config.laplace.display.wayland.sessionCommand;
     xorgSession = config.laplace.display.xorg.sessionCommand;
     startWayland = ''

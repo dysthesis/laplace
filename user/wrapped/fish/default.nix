@@ -31,11 +31,11 @@
     autopair
   ];
 
-  # Build tool init scripts once instead of forking on every shell start.
+  # Generate initialisation scripts at build time to prevent new processes during shell startup.
   starshipInit = pkgs.runCommand "starship-init.fish" {} ''
     HOME="$TMPDIR" ${lib.getExe starship} init fish --print-full-init > $out
   '';
-  # Expand zoxide's alias at build time to avoid runtime source.
+  # Expand zoxide's alias at build time to prevent sourcing it at runtime.
   zoxideInit = pkgs.runCommand "zoxide-init.fish" {} ''
     HOME="$TMPDIR" ${lib.getExe zoxide} init fish --cmd cd \
       | sed "s|^alias cd=__zoxide_z\$|function cd --wraps=__zoxide_z --description 'alias cd=__zoxide_z'\n    __zoxide_z \$argv\nend|" \
@@ -50,7 +50,7 @@
   direnvHook = mkHook direnv "hook";
   atuinHook = mkHook atuin "init";
 
-  # Resolve plugin function and completion paths at build time; skip vendor_conf.d.
+  # Resolve function and completion paths at build time. Do not include vendor_conf.d.
   pluginPaths = pkgs.runCommand "fish-plugin-paths.fish" {} ''
     touch $out
     for p in ${concatStringsSep " " (map toString plugins)}; do
@@ -95,7 +95,6 @@
     }
     // ezaAliases;
 
-  # Generate alias functions once at build time.
   aliasesFile = let
     gen = pkgs.writeText "gen-aliases.fish" ''
       ${concatStringsSep "\n" (mapAttrsToList (name: value: "alias ${escapeShellArg name} ${escapeShellArg value}") aliases)}
@@ -156,7 +155,7 @@
       source ${zoxideInit}
     '';
 in
-  # Prefixes XDG_DATA_DIRS (not PATH), so needs raw postBuild.
+  # Use postBuild to extend XDG_DATA_DIRS, not PATH.
   mkWrapper pkgs fish {
     postBuild = ''
       wrapProgram $out/bin/fish \

@@ -62,7 +62,7 @@ in {
             config.system.path
             "/etc/profiles/per-user/demiurge"
           ];
-          # Match upstream: restarting the launcher must not kill apps it launched.
+          # A launcher restart must not stop applications that it started.
           serviceConfig.KillMode = "process";
         };
       polkit-gnome = sessionService "Polkit authentication agent" "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";

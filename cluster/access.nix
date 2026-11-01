@@ -16,8 +16,8 @@
   flow = from: to: ports: {inherit from to ports;};
 in {
   laplace.tailnet = {
-    # These permissions are intentionally machine-bound. In particular, the
-    # legacy phone full-node exceptions do not move with any application.
+    # These permissions apply to machines, not application placement.
+    # Phone exceptions apply to all ports on the node.
     nodeFlows =
       [
         (flow (role "owner-device") (role "owner-device") ["*"])

@@ -1,4 +1,4 @@
-# Discord config with runtime-substituted token and channel placeholders.
+# Discord configuration with runtime token and channel placeholders.
 # Field reference: https://wiki.erdbeerbaerlp.de/dcintegration.
 {
   general = {
@@ -122,7 +122,7 @@
         color = 15548997; # #ed4245
       };
     };
-    # Dark red remains visible on dark themes.
+    # You can see dark red on dark themes.
     deathMessage = {
       asEmbed = true;
       colorHexCode = "#992d22";
@@ -139,7 +139,7 @@
       colorHexCode = "#fee75c";
       customJSON = "";
     };
-    # Webhooks already show name and avatar.
+    # Webhooks show the name and avatar.
     chatMessages = {
       generateUniqueColors = true;
       asEmbed = false;
@@ -156,7 +156,7 @@
     baseAPIUrl = "https://discord.com";
   };
 
-  # forge-only options, kept for config compatibility (sendItemInfo works on fabric)
+  # Keep Forge-only fields for configuration compatibility. The Fabric mod also uses sendItemInfo.
   forgeSpecific = {
     IMC_modIdBlacklist = ["examplemod"];
     sendItemInfo = true;
@@ -185,8 +185,8 @@
     serverName = "Retirement Home";
     useServerNameForRcon = true;
     useServerNameForConsole = true;
-    # randomUUID bypasses Discord's avatar cache. The mod's default host
-    # (api.tydiumcraft.net) serves a parked 404 page, so every face 404s.
+    # randomUUID bypasses the Discord avatar cache.
+    # The default host, api.tydiumcraft.net, returns HTTP 404 instead of avatars.
     playerAvatarURL = "https://mc-heads.net/avatar/%uuid%/64?randomuuid=%randomUUID%";
     webhookName = "MC_DC_INTEGRATION";
   };

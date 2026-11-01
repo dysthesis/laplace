@@ -12,8 +12,7 @@
 in
   mkWrapper pkgs niri {
     set.NIRI_CONFIG = configPath;
-    # The extra binaries and session/service files need explicit handling that
-    # `wrapProgram $out/bin/niri` can't express.
+    # `wrapProgram $out/bin/niri` cannot configure the session binary, session files or service files.
     postBuild = ''
       if [ -x "$out/bin/niri-session" ]; then
         wrapProgram $out/bin/niri-session \

@@ -4,11 +4,10 @@
   pkgs,
   ...
 }: let
-  # Shared GPG key for commit signing and the encrypt filter.
+  # Use the same GPG key for commit signing and the encrypt filter.
   signingKey = "6008B52F296392B0";
 in
-  # Workstations only: system Git config would break Forgejo with a human identity
-  # and unavailable desktop helpers.
+  # Apply only to workstations. Forgejo cannot use a human identity or desktop helpers.
   lib.mkIf (lib.elem "demiurge" config.laplace.users) {
     environment.systemPackages = with pkgs; [
       cloudflared
@@ -17,7 +16,7 @@ in
     programs.git = {
       enable = true;
       lfs.enable = true;
-      # Build libsecret support so HTTPS tokens stay in the desktop keyring.
+      # Build with libsecret to keep HTTPS tokens in the desktop keyring.
       package = pkgs.git.override {withLibsecret = true;};
       config = {
         init.defaultBranch = "main";

@@ -1,13 +1,10 @@
-# Runnable derivation: import this file { inherit pkgs; sopsModule = inputs.sops-nix.nixosModules.sops; }
-# Uses real recipe projections, Miniflux, PostgreSQL, Caddy, nginx and Mnemosyne.
-# Only credentials and certificate issuance are replaced with test-local material.
+# The lifecycle test uses disposable credentials and a local CA.
 {
   pkgs,
   sopsModule,
 }: let
   inherit (pkgs) lib;
-  # Public, disposable fixture credentials. Exercise real SOPS provisioning,
-  # including consumer removal, without reading any production ciphertext.
+  # These credentials let SOPS checks run without production secrets.
   credentials = pkgs.runCommand "lifecycle-test-only-secrets" {nativeBuildInputs = [pkgs.age pkgs.sops];} ''
     mkdir -p "$out"
     age-keygen -o "$out/age.key"
@@ -29,8 +26,7 @@
       };
   };
   enabled = fixtures.evaluate (services true);
-  # Preserve the recipe's entire generated route, changing only DNS-01 TLS to
-  # Caddy's local CA. No Cloudflare plugin, network access or production secret.
+  # Use the local CA without changing the generated routes.
   localTLS = lib.replaceStrings [
     "tls {\n  dns cloudflare {env.CF_API_TOKEN}\n  resolvers 1.1.1.1\n}"
   ] ["tls internal"];
@@ -55,16 +51,14 @@
         })
     ];
     config = {
-      # The VM harness replaces fileSystems; retain Mnemosyne's real generated
-      # mounts for this generation rather than leaving application state unbound.
+      # The VM harness replaces fileSystems. Supply the Mnemosyne mounts for persistent application state.
       virtualisation.fileSystems = f.config.fileSystems;
       services.caddy.virtualHosts =
         lib.mapAttrs (_: route: {
           extraConfig = lib.mkForce (localTLS route.extraConfig);
         })
         f.config.services.caddy.virtualHosts;
-      # Removal must stop the daemon even with the staged-restart policy used
-      # by applications such as Minecraft.
+      # Removal must stop services when configuration changes do not trigger restarts.
       systemd.services = lib.optionalAttrs enable {
         miniflux = {
           restartIfChanged = false;
@@ -109,8 +103,7 @@ in
       };
       environment.systemPackages = [pkgs.curl pkgs.jq];
       specialisation.disabled.configuration = {
-        # Remove the enabled recipe projection as a whole, not just its daemon's
-        # enable flag. The replacement is compiled from enable=false in the model.
+        # Disabling the recipe must remove its full projection, not only its daemon.
         disabledModules = [enabledGeneration];
         imports = [disabledGeneration];
       };
@@ -135,8 +128,7 @@ in
       machine.wait_for_open_port(8087)
       machine.wait_for_open_port(443)
 
-      # Real Ethernet packets enter the exact interface matched by the generated
-      # Tailnet firewall. No overlay control plane or production enrollment.
+      # Use Ethernet traffic for tailnet firewall checks, without a control plane or production enrolment.
       machine.succeed("ip link set eth1 down; ip link set eth1 name tailscale0; ip link set tailscale0 up")
       machine.succeed("ip addr add 100.64.1.10/24 dev tailscale0")
       machine.succeed("ip -6 addr add fd7a:115c:a1e0::10/64 dev tailscale0 nodad")
@@ -204,7 +196,7 @@ in
           assert record["title"] == marker
           machine.succeed("test -s ${backingData}/PG_VERSION")
           machine.succeed("mountpoint /var/lib/postgresql")
-          # Force the committed row to disk before inspecting retained storage.
+          # Write the committed row to disk before the storage check.
           machine.succeed("su -s /bin/sh postgres -c 'psql -d miniflux -c CHECKPOINT'")
           cluster_identity = database_identity()
           nginx_invocation = machine.succeed(
@@ -218,7 +210,7 @@ in
           machine.succeed("test ! -e /etc/systemd/system/miniflux-dbsetup.service")
           machine.succeed("test ! -e /etc/systemd/system/postgresql.service")
           machine.fail(curl + "--connect-timeout 2 http://127.0.0.1:8087/healthcheck")
-          # Caddy's live config, not just a failed upstream, must lose this host.
+          # A stopped upstream service is not sufficient. Caddy must remove the route.
           live_routes = machine.succeed(curl + "http://127.0.0.1:2019/config/")
           assert "rss.example.test" not in live_routes
           assert "unrelated.example.test" in live_routes

@@ -8,7 +8,7 @@
   cfg = config.laplace.services.forgejo-runner;
 in {
   config = mkIf cfg.enable {
-    # Persist DynamicUser's private StateDirectory; mounting its symlink causes EBUSY.
+    # Persist the private DynamicUser StateDirectory. A mount over its symlink causes EBUSY.
     mnemosyne.dirs = ["/var/lib/private/gitea-runner"];
 
     services.gitea-actions-runner = {
@@ -20,15 +20,15 @@ in {
       };
     };
 
-    # DynamicUser provides the base sandbox; add kernel guards and resource caps.
-    # Do not add: MemoryDenyWriteExecute breaks V8; IP filters block Nix fetches;
-    # RestrictNamespaces conflicts with Nix; MemoryMax and MemoryHigh break valid CI.
-    # earlyoom remains the memory backstop.
-    # simplification: CPUQuota and TasksMax are estimates; tune if valid CI is throttled.
-    # Unit name assumes a DNS-clean instanceName (no systemd-path escaping).
+    # DynamicUser gives the base sandbox.
+    # MemoryDenyWriteExecute breaks V8. IP filters block Nix fetches.
+    # RestrictNamespaces conflicts with Nix.
+    # MemoryMax and MemoryHigh can stop correct CI jobs. earlyoom limits memory pressure.
+    # CPUQuota and TasksMax are estimates. Adjust them if they restrict correct CI jobs.
+    # Use a DNS-safe instanceName because the unit name has no systemd path escaping.
     systemd.services."gitea-runner-${cfg.instanceName}".serviceConfig = {
-      # Keep upstream's token/label registration gate first, then reconcile the
-      # address read by the daemon. Embedding cfg.url also restarts on URL changes.
+      # Reconcile the daemon address after the token and label checks.
+      # The embedded cfg.url restarts the daemon when the URL changes.
       ExecStartPre = lib.mkAfter [
         (pkgs.writeShellScript "forgejo-runner-reconcile-address-${cfg.instanceName}" ''
           set -eu
@@ -40,7 +40,7 @@ in {
             exit 0
           fi
 
-          # Same-directory rename is atomic; mktemp keeps the durable token private.
+          # A rename in the same directory is atomic. mktemp keeps the registration token private.
           temporary="$(${pkgs.coreutils}/bin/mktemp "$registration.XXXXXX")"
           trap '${pkgs.coreutils}/bin/rm -f -- "$temporary"' EXIT
           ${lib.getExe pkgs.jq} --arg address "$address" '.address = $address' "$registration" >"$temporary"
@@ -63,7 +63,6 @@ in {
       RestrictAddressFamilies = ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
     };
 
-    # Fail evaluation if no nix-prefixed runner label remains.
     assertions = [
       {
         assertion = any (hasPrefix "nix:") cfg.labels;

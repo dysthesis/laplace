@@ -41,7 +41,7 @@ in {
       containers.storage.settings = {
         storage = {
           driver = "overlay2";
-          graphroot = cfg.dataDir; # must live on disk, not tmpfs
+          graphroot = cfg.dataDir; # Store this on disk, not tmpfs.
           runroot = "/run/containers/storage";
         };
       };

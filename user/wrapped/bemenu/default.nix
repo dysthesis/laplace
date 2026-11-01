@@ -14,7 +14,6 @@
   });
   inherit (lib.laplace.pkgs) mkWrapper;
   inherit (builtins) concatStringsSep;
-  # Adaptive sizing based on primary monitor, similar to waybar/style.nix
   monitors = config.laplace.hardware.monitors or [];
   defaultMonitor =
     if monitors == []
@@ -67,7 +66,7 @@
   ];
   flags' = flags |> map (flag: ''--add-flags "${flag}"'') |> concatStringsSep " ";
 in
-  # Wraps every binary in the join (bemenu + bemenu-run), so needs raw postBuild.
+  # Use postBuild to wrap bemenu and bemenu-run.
   mkWrapper pkgs bemenu {
     postBuild = ''
       for file in $out/bin/*; do

@@ -14,29 +14,26 @@ in {
         "tcp_bbr"
       ];
       kernel.sysctl = {
-        # TCP hardening
-        # Prevent bogus ICMP errors from filling up logs.
+        # Prevent invalid ICMP errors from filling the logs.
         "net.ipv4.icmp_ignore_bogus_error_responses" = true;
-        # Reverse path filtering causes the kernel to do source validation of
-        # packets received from all interfaces. This can mitigate IP spoofing.
+        # Validate packet sources to reduce IP spoofing.
         "net.ipv4.conf.default.rp_filter" = true;
         "net.ipv4.conf.all.rp_filter" = true;
-        # Do not accept IP source route packets (we're not a router)
+        # This host is not a router.
         "net.ipv4.conf.all.accept_source_route" = false;
         "net.ipv6.conf.all.accept_source_route" = false;
-        # Don't send ICMP redirects (again, we're not a router)
         "net.ipv4.conf.all.send_redirects" = false;
         "net.ipv4.conf.default.send_redirects" = false;
-        # Refuse ICMP redirects (MITM mitigations)
+        # Reject ICMP redirects to limit man-in-the-middle attacks.
         "net.ipv4.conf.all.accept_redirects" = false;
         "net.ipv4.conf.default.accept_redirects" = false;
         "net.ipv4.conf.all.secure_redirects" = false;
         "net.ipv4.conf.default.secure_redirects" = false;
         "net.ipv6.conf.all.accept_redirects" = false;
         "net.ipv6.conf.default.accept_redirects" = false;
-        # Protects against SYN flood attacks
+        # Limit SYN flood attacks.
         "net.ipv4.tcp_syncookies" = true;
-        # Incomplete protection against TIME-WAIT assassination
+        # This does not give full protection against TIME-WAIT assassination.
         "net.ipv4.tcp_rfc1337" = true;
         "net.ipv4.conf.all.log_martians" = true;
         "net.ipv4.conf.default.log_martians" = true;
@@ -45,14 +42,12 @@ in {
         "net.ipv6.conf.all.accept_ra" = false;
         "net.ipv4.tcp_timestamps" = false;
 
-        # TCP optimization
-        # 3 = TCP Fast Open on both incoming and outgoing connections
+        # Value 3 enables TCP Fast Open for incoming and outgoing connections.
         "net.ipv4.tcp_fastopen" = 3;
-        # Bufferbloat mitigations + slight improvement in throughput & latency
+        # Reduce bufferbloat to improve throughput and latency.
         "net.ipv4.tcp_congestion_control" = "bbr";
         "net.core.default_qdisc" = "cake";
 
-        # buffer/backlog/conntrack sizing, taken as-is from the source above
         "net.core.optmem_max" = 65536;
         "net.core.rmem_default" = 1048576;
         "net.core.rmem_max" = 16777216;

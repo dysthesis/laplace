@@ -40,7 +40,7 @@
       if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
         eval $(dbus-launch --exit-with-session --sh-syntax)
       fi
-      # Syncthing tray needs the Qt theme.
+      # The Qt theme is necessary for the Syncthing tray.
       systemctl import-environment --user DISPLAY WAYLAND_DISPLAY XDG_SESSION_TYPE DBUS_SESSION_BUS_ADDRESS \
         QT_QPA_PLATFORMTHEME PATH XCURSOR_SIZE XCURSOR_THEME
 
@@ -103,12 +103,12 @@ in
       vfr = true;
       vrr = true;
 
-      enable_swallow = true; # hide windows that spawn other windows
+      enable_swallow = true;
       swallow_regex = "foot";
 
       mouse_move_enables_dpms = true;
       key_press_enables_dpms = true;
-      disable_autoreload = true; # config is store-path readonly on nixos anyway
+      disable_autoreload = true; # The Nix store configuration is read-only.
     };
 
     input = {

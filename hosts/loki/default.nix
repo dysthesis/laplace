@@ -18,12 +18,12 @@
   networking = {
     useNetworkd = true;
     useDHCP = false;
-    # Prefer local caching; keep the gateway as fallback.
+    # Use the local cache first. Use the gateway when the cache cannot supply records.
     nameservers = ["127.0.0.1" "10.0.60.1"];
   };
 
-  # Cache and serve stale records when the gateway DNS fails.
-  # The gateway remains the trust boundary, so DNSSEC validation stays off.
+  # Cache and serve stale records when the gateway DNS is not available.
+  # Disable DNSSEC validation because the gateway is the trust boundary.
   services.unbound = {
     enable = true;
     settings = {
@@ -45,7 +45,7 @@
     };
   };
 
-  # Isolate the modpack host on VLAN60; only telemetry and deploy pinholes cross VLANs.
+  # Keep the modpack host on VLAN60. Transmit only telemetry and deployment traffic between VLANs.
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
@@ -59,10 +59,10 @@
   laplace = {
     profiles = ["proxmox"];
     proxmox = {
-      cores = 4; # MC main-tick thread + chunk-gen/GC workers
+      cores = 4; # Minecraft uses a main-tick thread, chunk-generation workers and garbage-collection workers.
       memory = 12288; # MiB, 8 GiB heap plus 4 GiB overhead
-      balloon = 0; # fixed allocation avoids zram and GC stalls
-      diskSize = "64G"; # world + modpack; bump before a large chunk pregen
+      balloon = 0; # A fixed allocation prevents zram and garbage-collection stalls.
+      diskSize = "64G"; # Increase space for the world and modpack before a large chunk pregeneration.
     };
 
     security = {
@@ -82,18 +82,18 @@
       };
       tailscale = {
         enable = true;
-        # Avoid cold tailnet DNS links; this host only needs public names.
+        # Use only public DNS names to prevent tailnet DNS delays.
         denyDNS = true;
       };
 
       caddy = {
         enable = true;
-        email = "dysthesis@protonmail.com"; # ACME account, matches the rest of the fleet
-        # Policy rules expose ports 80 and 443 only on the tailnet.
+        email = "dysthesis@protonmail.com";
+        # Policy rules open ports 80 and 443 only on the tailnet.
         openFirewall = false;
         cloudflare = {
           enable = true;
-          sopsFile = ../../system/secrets/loki.yaml; # must hold a `cloudflare_api_key` key
+          sopsFile = ../../system/secrets/loki.yaml; # This file must contain a cloudflare_api_key key.
         };
       };
     };

@@ -85,7 +85,8 @@ deploy-one HOST *ARGS:
   target_user=$(nix eval --raw '.#colmena.{{HOST}}.deployment.targetUser')
   colmena apply build --impure --on {{HOST}} --keep-result
   system=$(readlink -f '.gcroots/node-{{HOST}}')
-  # Determinate Nix 3.22 aborts Colmena on unsigned imports; bypass only over authenticated root SSH.
+  # Determinate Nix 3.22 aborts Colmena on unsigned imports.
+  # Use this bypass only over authenticated root SSH.
   nix copy --no-check-sigs --to "ssh-ng://$target_user@$target" "$system"
   colmena apply --impure --on {{HOST}} {{ARGS}}
 

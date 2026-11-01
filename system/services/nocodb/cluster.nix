@@ -4,7 +4,7 @@ in {
   settings = import ./settings.nix {inherit lib;};
   endpointNames = ["app"];
   endpoints = {instance, ...}: {
-    # Existing DNS/site URL only: NocoDB deliberately has no Caddy vhost.
+    # This domain publishes DNS and the site URL without a Caddy virtual host.
     app = {
       host = instance.host;
       protocol = "tcp";
@@ -24,12 +24,12 @@ in {
       kind = "path";
       value = "/var/backups/nocodb";
     }
-    # Preparation chowns the host-mounted PostgreSQL/Redis trees to this UID.
+    # Preparation assigns this UID to the host-mounted PostgreSQL and Redis directories.
     {
       kind = "uid";
       value = "999";
     }
-    # Container listeners/databases are not the native PostgreSQL provider.
+    # Container databases and listeners do not use the native PostgreSQL provider.
     {
       kind = "database";
       value = "nocodb-container/nocodb";
