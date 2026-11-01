@@ -190,7 +190,7 @@ if pending:
                 )
                 try:
                     deadline = time.monotonic() + 90
-                    while pending:
+                    while True:
                         if stop_requested:
                             raise RuntimeError("Dashboard reconciliation interrupted")
                         if process.poll() is not None:
@@ -200,10 +200,18 @@ if pending:
                             uid: filename for uid, filename in pending.items()
                             if paths.get(uid) not in (filename, str(staged / filename))
                         }
-                        if pending:
-                            if time.monotonic() >= deadline:
-                                raise RuntimeError(f"Dashboard reconciliation timed out: {pending}")
-                            time.sleep(0.25)
+                        if not pending:
+                            # Ownership is visible before Grafana releases its provisioning lease.
+                            with closing(sqlite3.connect(private_database.as_uri() + "?mode=ro", uri=True)) as db:
+                                locked = db.execute(
+                                    "SELECT 1 FROM server_lock WHERE operation_uid = ?",
+                                    ("provisioning_dashboards",),
+                                ).fetchone()
+                            if locked is None:
+                                break
+                        if time.monotonic() >= deadline:
+                            raise RuntimeError(f"Dashboard reconciliation timed out: {pending}")
+                        time.sleep(0.25)
                 finally:
                     if process.poll() is None:
                         process.terminate()

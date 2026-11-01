@@ -116,6 +116,13 @@ in
             environment["RUNTIME_DIRECTORY"] = str(runtime)
         subprocess.run([generations[generation]["prepare"]], env=environment, check=True, timeout=timeout)
         assert_private_stopped(state)
+        database = state / "grafana.db"
+        if database.exists():
+            with closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)) as db:
+                assert db.execute(
+                    "SELECT 1 FROM server_lock WHERE operation_uid = ?",
+                    ("provisioning_dashboards",),
+                ).fetchone() is None, "Preparation retained a provisioning lease"
         # Check before the normal Foreign provider could hide a destructive
         # private pass by importing its dashboard again with a different ID.
         assert foreign_record(state) == foreign_before
