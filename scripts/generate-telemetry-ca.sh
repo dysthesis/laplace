@@ -29,7 +29,7 @@ openssl req \
     -key "$key" \
     -set_serial "0x$(openssl rand -hex 16)" \
     -days 3650 \
-    -subj '/CN=Laplace Telemetry Client CA 2026-07' \
+    -subj '/CN=Laplace Telemetry Client CA' \
     -addext 'basicConstraints=critical,CA:TRUE,pathlen:0' \
     -addext 'keyUsage=critical,keyCertSign,cRLSign' \
     -addext 'subjectKeyIdentifier=hash' \
