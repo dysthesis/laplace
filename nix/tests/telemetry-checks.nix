@@ -16,6 +16,37 @@
       touch $out
     '';
 
+  telemetry-ca-cleanup = pkgs.runCommand "telemetry-ca-cleanup" {nativeBuildInputs = [pkgs.bash pkgs.coreutils];} ''
+    mkdir bin
+    mkfifo finish
+    cat > bin/openssl <<'SH'
+    #!${pkgs.runtimeShell}
+    if [[ $1 == genpkey ]]; then
+      printf '%s\n' "$5" > "$TEST_ROOT/key-path"
+      read -r _ < "$TEST_ROOT/finish"
+      exit 0
+    fi
+    touch "$TEST_ROOT/continued"
+    exit 1
+    SH
+    chmod +x bin/openssl
+    TEST_ROOT="$PWD" PATH="$PWD/bin:$PATH" bash ${../../scripts/generate-telemetry-ca.sh} &
+    generator=$!
+    while [[ ! -s key-path ]]; do
+      kill -0 "$generator"
+      sleep 0.05
+    done
+    kill -TERM "$generator"
+    printf 'finish\n' > finish
+    if wait "$generator"; then
+      echo "CA generation succeeded after interruption" >&2
+      exit 1
+    fi
+    test ! -e continued
+    test ! -d "$(dirname "$(cat key-path)")"
+    touch "$out"
+  '';
+
   telemetry-endpoint-contract = let
     endpoints = lib.laplace.telemetry.endpoints;
     talosConfigWith = settings:

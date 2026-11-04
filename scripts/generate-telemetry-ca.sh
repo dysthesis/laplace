@@ -16,13 +16,8 @@ done
 
 umask 077
 output_dir=$(mktemp -d /dev/shm/laplace-new-ca.XXXXXX)
-complete=false
-cleanup() {
-    if [[ $complete != true ]]; then
-        rm -rf -- "$output_dir"
-    fi
-}
-trap cleanup EXIT HUP INT TERM
+trap 'rm -rf -- "$output_dir"' EXIT
+trap 'exit 1' HUP INT TERM
 
 key="$output_dir/new-ca.key"
 certificate="$output_dir/new-ca.crt"
@@ -49,7 +44,6 @@ cmp -s \
     <(openssl pkey -in "$key" -pubout) ||
     die 'generated CA certificate and private key do not match'
 
-complete=true
 printf 'Generated and validated CA in tmpfs:\n'
 printf '  certificate: %s\n' "$certificate"
 printf '  private key: %s\n\n' "$key"
@@ -66,3 +60,4 @@ printf '\nNext:\n'
 printf '  ./scripts/rotate-telemetry-ca.sh %q %q\n' "$certificate" "$key"
 printf '\nAfter successful rotation, remove plaintext material:\n'
 printf '  rm -rf -- %q\n' "$output_dir"
+trap - EXIT

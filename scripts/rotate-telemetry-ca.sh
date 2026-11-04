@@ -35,7 +35,8 @@ done
 
 umask 077
 work_dir=$(mktemp -d /dev/shm/laplace-telemetry-ca.XXXXXX)
-trap 'rm -rf -- "$work_dir"' EXIT HUP INT TERM
+trap 'rm -rf -- "$work_dir"' EXIT
+trap 'exit 1' HUP INT TERM
 mkdir -p "$work_dir/original/system/secrets" "$work_dir/staged/system/secrets"
 
 for file in "${secret_files[@]}"; do
