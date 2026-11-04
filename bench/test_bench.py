@@ -106,6 +106,7 @@ class CliTests(unittest.TestCase):
     def test_isolated_directories_are_removed_on_success_and_failure(self):
         cases = (
             (["--targets", "fish", "--tiers", "metrics"], False, 0),
+            (["--targets", "bash", "--tiers", "metrics"], False, 0),
             (["--ab", "/unused/A", "/unused/B", "--tiers", "metrics"], False, 7),
             (["--targets", "fish", "--tiers", "metrics"], True, 1),
         )
@@ -122,6 +123,7 @@ class CliTests(unittest.TestCase):
                         "python3": (
                             '[[ $1 != --version ]] || exit 0\n'
                             'printf "%s\\n" "$HOME" "$XDG_RUNTIME_DIR" >"$CAPTURE"\n'
+                            'printf "%s\\n" "$@" >>"$CAPTURE.args"\n'
                             "exit 7"
                         ),
                     }.items():
@@ -145,6 +147,9 @@ class CliTests(unittest.TestCase):
                         self.assertEqual(len(paths), 2)
                         self.assertTrue(all(Path(p).parent == root for p in paths))
                         self.assertTrue(all(not Path(p).exists() for p in paths))
+                        probe_args = Path(f"{capture}.args").read_text().splitlines()
+                        self.assertNotIn("--prompt-regex", probe_args)
+                        self.assertEqual(probe_args.count("--no-raw"), int("bash" in args))
                     else:
                         self.assertTrue(missing_runtime, result.stderr)
                     self.assertEqual(list(root.glob("bench-*")), [])

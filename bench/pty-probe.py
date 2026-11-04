@@ -196,24 +196,6 @@ class Pty:
             pass
 
 
-def prompt_predicate(regex: re.Pattern | None):
-    if regex is None:
-        return lambda _b: False
-    return lambda b: regex.search(b) is not None
-
-
-def wait_prompt(p: Pty, since_len, regex, quiesce_s, timeout_s):
-    def pred(stripped):
-        if regex is None:
-            return False
-        return regex.search(stripped[since_len:]) is not None
-
-    matched, t_event, _q = p.pump_until(
-        pred, timeout_s=timeout_s, quiesce_s=quiesce_s
-    )
-    return t_event
-
-
 def _drain(p, quiet_s=0.012, cap_s=0.04):
     p.pump_until(lambda _b: False, timeout_s=cap_s, quiesce_s=quiet_s)
 

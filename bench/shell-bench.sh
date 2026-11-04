@@ -24,7 +24,6 @@ DO_ABLATION=1
 AB=() # --ab SHELL_A SHELL_B
 DRYRUN=0
 export BENCH_CORE="${BENCH_CORE:-}"
-FISH_PROMPT_REGEX='(◎|○)' # starship [character] success/error symbols
 
 usage() {
     cat >&2 <<EOF
@@ -205,7 +204,7 @@ tier_coarse() {
 }
 
 tier_metrics() {
-    local label="$1" shellbin="$2" login="$3" regex="$4"
+    local label="$1" shellbin="$2" login="$3" no_raw="$4"
     shift 4
     local -a runenv=("$@")
     local out="$OUTDIR/${label}.metrics.json"
@@ -213,13 +212,7 @@ tier_metrics() {
         --prompt-runs "$RUNS" --inner-iters "$ITERS"
         --label "$label" --mode "${BENCH_MODE:-}" --spawn-mode "$([[ $login == 1 ]] && echo login || echo interactive)")
     [[ $login == 1 ]] && probeargs+=(--login)
-    [[ -n $regex ]] && probeargs+=(--prompt-regex "$regex")
-    # Readline shells must use BENCH_PROBE_EXTRA=--no-raw.
-    if [[ -n ${BENCH_PROBE_EXTRA:-} ]]; then
-        local -a extra_probe_args
-        read -r -a extra_probe_args <<<"$BENCH_PROBE_EXTRA"
-        probeargs+=("${extra_probe_args[@]}")
-    fi
+    [[ $no_raw == 1 ]] && probeargs+=(--no-raw)
     log "T2 metrics: $label"
     pin env "${runenv[@]}" python3 "$PROBE" "${probeargs[@]}" >"$out" ||
         {
@@ -285,7 +278,7 @@ tier_ablation_fish() {
     pin env "${runenv[@]}" XDG_DATA_DIRS="$base_share" python3 "$PROBE" \
         --shell "$unwrapped_bin" --cols "$COLS" --rows "$ROWS" \
         --prompt-runs "$RUNS" --inner-iters "$ITERS" \
-        --prompt-regex "$FISH_PROMPT_REGEX" --skip exit \
+        --skip exit \
         --label "${label}-baseline" >"$base_json" 2>/dev/null || {
         warn "ablation baseline failed"
         return 0
@@ -300,7 +293,7 @@ tier_ablation_fish() {
         pin env "${runenv[@]}" XDG_DATA_DIRS="$share" python3 "$PROBE" \
             --shell "$unwrapped_bin" --cols "$COLS" --rows "$ROWS" \
             --prompt-runs "$RUNS" --inner-iters "$ITERS" \
-            --prompt-regex "$FISH_PROMPT_REGEX" --skip exit \
+            --skip exit \
             --label "minus-$nm" >"$var_json" 2>/dev/null || {
             warn "ablation $nm failed"
             continue
@@ -341,11 +334,11 @@ run_ab() {
     for round in 1 2; do
         pin env "${RUNENV[@]}" python3 "$PROBE" --shell "$a" --cols "$COLS" --rows "$ROWS" \
             --prompt-runs $((RUNS / 2)) --inner-iters $((ITERS / 2)) \
-            --prompt-regex "$FISH_PROMPT_REGEX" --skip exit --label A \
+            --skip exit --label A \
             >"$OUTDIR/ab.A.$round.json"
         pin env "${RUNENV[@]}" python3 "$PROBE" --shell "$b" --cols "$COLS" --rows "$ROWS" \
             --prompt-runs $((RUNS / 2)) --inner-iters $((ITERS / 2)) \
-            --prompt-regex "$FISH_PROMPT_REGEX" --skip exit --label B \
+            --skip exit --label B \
             >"$OUTDIR/ab.B.$round.json"
         af+=("$OUTDIR/ab.A.$round.json")
         bf+=("$OUTDIR/ab.B.$round.json")
@@ -397,7 +390,7 @@ for mode in "${MODE_LIST[@]}"; do
             fb="$FISH_WRAP/bin/fish"
             lbl="fish.${local_tag}"
             want_tier coarse && tier_coarse "$lbl" "$fb" "$login" "${RUNENV[@]}"
-            want_tier metrics && tier_metrics "$lbl" "$fb" "$login" "$FISH_PROMPT_REGEX" "${RUNENV[@]}"
+            want_tier metrics && tier_metrics "$lbl" "$fb" "$login" 0 "${RUNENV[@]}"
             want_tier syscall && tier_syscall "$lbl" "$fb" "$login" "${RUNENV[@]}"
             if want_tier attrib; then
                 tier_profile_fish "$lbl" "$fb" "${RUNENV[@]}"
@@ -411,12 +404,11 @@ for mode in "${MODE_LIST[@]}"; do
             declare -a BENV_PURE=("${RUNENV[@]}" "BASH_NO_FISH=1")
             lbl="bash-pure.${local_tag}"
             want_tier coarse && tier_coarse "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
-            want_tier metrics && BENCH_PROBE_EXTRA=--no-raw \
-                tier_metrics "$lbl" "$bb" "$login" "" "${BENV_PURE[@]}"
+            want_tier metrics && tier_metrics "$lbl" "$bb" "$login" 1 "${BENV_PURE[@]}"
             want_tier syscall && tier_syscall "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
             lbl="bash-handoff.${local_tag}"
             want_tier coarse && tier_coarse "$lbl" "$bb" "$login" "${RUNENV[@]}"
-            want_tier metrics && tier_metrics "$lbl" "$bb" "$login" "$FISH_PROMPT_REGEX" "${RUNENV[@]}"
+            want_tier metrics && tier_metrics "$lbl" "$bb" "$login" 0 "${RUNENV[@]}"
             want_tier syscall && tier_syscall "$lbl" "$bb" "$login" "${RUNENV[@]}"
         fi
     done
