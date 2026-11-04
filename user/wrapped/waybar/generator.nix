@@ -1,7 +1,6 @@
 {
   pkgs,
   lib,
-  hostName,
   monitors,
   settings,
   weather,
@@ -53,10 +52,7 @@
 
   metrics = builtins.mapAttrs (_: scaleMetric) settings.theme.metrics;
 
-  baseHeight =
-    if builtins.isAttrs settings.bar.baseHeight
-    then settings.bar.baseHeight.${hostName} or settings.bar.baseHeight.default
-    else settings.bar.baseHeight;
+  baseHeight = settings.bar.baseHeight;
 
   bar = {
     inherit
@@ -203,8 +199,7 @@
       modules-center = model.layout.centre;
       modules-right = model.layout.right;
     }
-    // model.modules
-    // settings.rawSettings;
+    // model.modules;
 
   jsonFormat = pkgs.formats.json {};
 
@@ -366,8 +361,6 @@
                 margin-left: ${toString m.margin}px;
                 padding-left: ${toString m.padS}px;
             }
-
-      ${model.theme.extraCss}
     '';
 in {
   json = jsonFormat.generate "waybar-config.json" waybarConfig;

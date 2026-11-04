@@ -5,7 +5,6 @@
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
-  nixosConfig = config;
   settings = import ./config.nix {inherit pkgs lib config;};
   weather = import ./weather.nix {inherit pkgs;};
   generated = import ./generator.nix {
@@ -15,8 +14,7 @@
       settings
       weather
       ;
-    hostName = nixosConfig.networking.hostName or "";
-    monitors = nixosConfig.laplace.hardware.monitors or [];
+    monitors = config.laplace.hardware.monitors or [];
   };
 in
   mkWrapper pkgs pkgs.waybar {

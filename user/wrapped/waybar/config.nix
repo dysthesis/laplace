@@ -11,13 +11,10 @@
     exclusive = true;
     passthrough = false;
     gtkLayerShell = true;
-    baseHeight = {
-      default = 34.0;
-    };
+    baseHeight = 34.0;
   };
 
   scale = {
-    baselineHeight = 1080.0;
     min = 0.6;
     max = 1.2;
   };
@@ -296,9 +293,5 @@
       "custom-events"
       "tray"
     ];
-
-    extraCss = "";
   };
-
-  rawSettings = {};
 }
