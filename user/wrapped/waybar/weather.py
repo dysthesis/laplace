@@ -110,18 +110,10 @@ def extract_forecast(args, xml_content):
     debug(args, "Extracting forecast data")
     root = ET.fromstring(xml_content)
 
-    for forecast_period in root.findall(".//forecast-period"):
-        max_temp_element = forecast_period.find(
-            './/element[@type="air_temperature_maximum"]'
-        )
-        icon_code_element = forecast_period.find(
-            './/element[@type="forecast_icon_code"]'
-        )
-        precis_element = forecast_period.find('.//text[@type="precis"]')
-
-        max_temp = max_temp_element.text if max_temp_element is not None else None
-        icon_code = icon_code_element.text if icon_code_element is not None else None
-        precis = precis_element.text if precis_element is not None else None
+    for period in root.findall(".//forecast-period"):
+        max_temp = period.findtext('.//element[@type="air_temperature_maximum"]') or None
+        icon_code = period.findtext('.//element[@type="forecast_icon_code"]') or None
+        precis = period.findtext('.//text[@type="precis"]') or None
 
         if max_temp is not None and icon_code is not None and precis is not None:
             return {
