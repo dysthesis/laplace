@@ -226,12 +226,14 @@ tier_metrics() {
 }
 
 tier_profile_fish() {
-    local label="$1" shellbin="$2"
-    shift 2
+    local label="$1" shellbin="$2" login="$3"
+    shift 3
     local -a runenv=("$@")
+    local args=(-i -c exit)
+    [[ $login == 1 ]] && args=(-l "${args[@]}")
     local prof="$OUTDIR/${label}.profile-startup.log"
     log "T3 profile: $label (fish --profile-startup)"
-    pin env "${runenv[@]}" "$shellbin" --profile-startup "$prof" -i -c exit \
+    pin env "${runenv[@]}" "$shellbin" --profile-startup "$prof" "${args[@]}" \
         >/dev/null 2>&1 || warn "profile-startup failed for $label"
     # Fish columns: Time(us), Sum(us), Command. Time is the cost without child commands.
     if [[ -s $prof ]]; then
@@ -246,10 +248,16 @@ tier_profile_fish() {
 
 # Disable each init component to measure its cost and its effect on other components.
 tier_ablation_fish() {
-    local label="$1" wrapped="$2" unwrapped_bin="$3"
-    shift 3
+    local label="$1" wrapped="$2" unwrapped_bin="$3" login="$4"
+    shift 4
     local -a runenv=("$@")
-    [[ $DO_ABLATION == 1 ]] || return 0
+    local dir="$OUTDIR/abl/$label"
+    local spawn_mode=interactive
+    [[ $login == 1 ]] && spawn_mode=login
+    local -a probeargs=(--shell "$unwrapped_bin" --cols "$COLS" --rows "$ROWS"
+        --prompt-runs "$RUNS" --inner-iters "$ITERS" --skip exit
+        --mode "${BENCH_MODE:-}" --spawn-mode "$spawn_mode")
+    [[ $login == 1 ]] && probeargs+=(--login)
     log "T3 ablation: $label"
 
     local dds cfg
@@ -273,13 +281,10 @@ tier_ablation_fish() {
     )
 
     local base_share base_json
-    base_share="$(gen_ablation_config "$OUTDIR/abl/_baseline" "$cfg" '$^')"
-    base_json="$OUTDIR/abl/_baseline.json"
+    base_share="$(gen_ablation_config "$dir/_baseline" "$cfg" '$^')"
+    base_json="$dir/_baseline.json"
     pin env "${runenv[@]}" XDG_DATA_DIRS="$base_share" python3 "$PROBE" \
-        --shell "$unwrapped_bin" --cols "$COLS" --rows "$ROWS" \
-        --prompt-runs "$RUNS" --inner-iters "$ITERS" \
-        --skip exit \
-        --label "${label}-baseline" >"$base_json" 2>/dev/null || {
+        "${probeargs[@]}" --label "${label}-baseline" >"$base_json" 2>/dev/null || {
         warn "ablation baseline failed"
         return 0
     }
@@ -288,20 +293,17 @@ tier_ablation_fish() {
     for i in "${!names[@]}"; do
         local nm="${names[$i]}" rx="${regexes[$i]}"
         local share var_json
-        share="$(gen_ablation_config "$OUTDIR/abl/$nm" "$cfg" "$rx")"
-        var_json="$OUTDIR/abl/$nm.json"
+        share="$(gen_ablation_config "$dir/$nm" "$cfg" "$rx")"
+        var_json="$dir/$nm.json"
         pin env "${runenv[@]}" XDG_DATA_DIRS="$share" python3 "$PROBE" \
-            --shell "$unwrapped_bin" --cols "$COLS" --rows "$ROWS" \
-            --prompt-runs "$RUNS" --inner-iters "$ITERS" \
-            --skip exit \
-            --label "minus-$nm" >"$var_json" 2>/dev/null || {
+            "${probeargs[@]}" --label "${label}-minus-$nm" >"$var_json" 2>/dev/null || {
             warn "ablation $nm failed"
             continue
         }
         log "  delta from removing '$nm':"
         python3 "$STATS" compare "$base_json" "$var_json" || true
         python3 "$STATS" compare "$base_json" "$var_json" --json \
-            >"$OUTDIR/abl/$nm.compare.json" || true
+            >"$dir/$nm.compare.json" || true
     done
 }
 
@@ -395,9 +397,10 @@ for mode in "${MODE_LIST[@]}"; do
             want_tier metrics && tier_metrics "$lbl" "$fb" "$login" 0 "${RUNENV[@]}"
             want_tier syscall && tier_syscall "$lbl" "$fb" "$login" "${RUNENV[@]}"
             if want_tier attrib; then
-                tier_profile_fish "$lbl" "$fb" "${RUNENV[@]}"
-                [[ $DO_ABLATION == 1 ]] &&
-                    tier_ablation_fish "$lbl" "$FISH_WRAP" "$FISH_UNWRAP/bin/fish" "${RUNENV[@]}"
+                tier_profile_fish "$lbl" "$fb" "$login" "${RUNENV[@]}"
+                if [[ $DO_ABLATION == 1 ]]; then
+                    tier_ablation_fish "$lbl" "$FISH_WRAP" "$FISH_UNWRAP/bin/fish" "$login" "${RUNENV[@]}"
+                fi
             fi
         fi
 

@@ -174,6 +174,56 @@ class CliTests(unittest.TestCase):
                     if args:
                         self.assertIn("/missing/fish-A vs /missing/fish-B", result.stderr)
 
+    def test_attribution_keeps_spawn_modes_and_artefacts_separate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tools = root / "bin"
+            tools.mkdir()
+            vendor = root / "share/fish/vendor_conf.d"
+            vendor.mkdir(parents=True)
+            (vendor / "user_config.fish").write_text("source /nix/store/example-direnv.fish\n")
+            bodies = {
+                "nix": 'printf "%s\\n" "$STORE"',
+                "jq": "printf '{}\\n'",
+                "git": "exit 0",
+                "fish": (
+                    'if [[ $1 == --profile-startup ]]; then\n'
+                    '  printf "%s\\n" "$@" >>"$PROFILE_ARGS"\n'
+                    'else printf "%s\\n" "$VENDOR_SHARE"; fi'
+                ),
+                "python3": (
+                    'if [[ $1 == *pty-probe.py ]]; then printf "%s\\n" "$@" >>"$PROBE_ARGS"; fi\n'
+                    "printf '{}\\n'"
+                ),
+            }
+            for name, body in bodies.items():
+                tool = tools / name
+                tool.write_text(f"#!{shutil.which('bash')}\nset -eu\n{body}\n")
+                tool.chmod(0o755)
+            out = root / "results"
+            result = subprocess.run(
+                [shutil.which("bash"), str(HERE / "shell-bench.sh"),
+                 "--targets", "fish", "--tiers", "attrib",
+                 "--spawns", "interactive,login", "--out", str(out)],
+                cwd=tmp, env={
+                    **os.environ, "PATH": f"{tools}{os.pathsep}{os.environ['PATH']}",
+                    "STORE": str(root), "VENDOR_SHARE": str(root / "share"),
+                    "PROFILE_ARGS": str(root / "profiles"), "PROBE_ARGS": str(root / "probes"),
+                    "TMPDIR": tmp, "XDG_RUNTIME_DIR": tmp, "BENCH_LIB": str(HERE), "BENCH_CORE": "",
+                },
+                capture_output=True, text=True, timeout=10,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            profiles = (root / "profiles").read_text().splitlines()
+            self.assertEqual(profiles.count("-l"), 1)
+            probes = (root / "probes").read_text().splitlines()
+            self.assertEqual(probes.count("--login"), 6)
+            self.assertEqual(probes.count("--mode"), 12)
+            for spawn in ("interactive", "login"):
+                files = out / "abl" / f"fish.isolated.{spawn}"
+                self.assertTrue((files / "_baseline.json").is_file())
+                self.assertEqual(len(list(files.glob("*.compare.json"))), 5)
+
     def test_isolated_directories_are_removed_on_success_and_failure(self):
         cases = (
             (["--targets", "fish", "--tiers", "metrics"], False, 0),
