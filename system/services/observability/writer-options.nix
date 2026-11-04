@@ -21,32 +21,4 @@ in {
   metricsPort = mkOption {
     type = types.port;
   };
-  maxIngestionRate = mkOption {
-    type = types.ints.positive;
-    default = 1000;
-  };
-  maxHourlySeries = mkOption {
-    type = types.ints.positive;
-    default = 10000;
-  };
-  maxDailySeries = mkOption {
-    type = types.ints.positive;
-    default = 20000;
-  };
-  metricsBytesPerSecond = mkOption {
-    type = types.ints.positive;
-    default = 65536;
-  };
-  metricsBurstBytes = mkOption {
-    type = types.ints.positive;
-    default = 16777216;
-  };
-  journalBytesPerSecond = mkOption {
-    type = types.ints.positive;
-    default = 65536;
-  };
-  journalBurstBytes = mkOption {
-    type = types.ints.positive;
-    default = 134217728;
-  };
 }

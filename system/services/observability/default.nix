@@ -744,13 +744,13 @@ in {
                 "-remoteWrite.tmpDataPath=%C/vmagent-ingress-${name}/remote_write_tmp"
                 "-remoteWrite.relabelConfig=${ingressRelabelConfigs.${name}}"
                 "-remoteWrite.maxDiskUsagePerURL=500MiB"
-                "-remoteWrite.maxHourlySeries=${toString writer.maxHourlySeries}"
-                "-remoteWrite.maxDailySeries=${toString writer.maxDailySeries}"
+                "-remoteWrite.maxHourlySeries=10000"
+                "-remoteWrite.maxDailySeries=20000"
                 "-remoteWrite.queues=2"
                 "-maxInsertRequestSize=16MiB"
                 "-maxConcurrentInserts=2"
                 "-insert.maxQueueDuration=5s"
-                "-maxIngestionRate=${toString writer.maxIngestionRate}"
+                "-maxIngestionRate=1000"
                 "-memory.allowedPercent=25"
                 "-maxLabelsPerTimeseries=40"
                 "-maxLabelNameLen=256"
@@ -784,8 +784,8 @@ in {
             type filter hook input priority -10; policy accept;
             ${concatStringsSep "\n" (mapAttrsToList (_: writer: ''
               ct state new ip saddr ${writer.sourceAddress} tcp dport { ${toString cfg.ingress.metricsPort}, ${toString cfg.ingress.journalPort} } add @connections { ip saddr . tcp dport ct count over 8 } drop
-              ip saddr ${writer.sourceAddress} tcp dport ${toString cfg.ingress.metricsPort} limit rate over ${toString writer.metricsBytesPerSecond} bytes/second burst ${toString writer.metricsBurstBytes} bytes drop
-              ip saddr ${writer.sourceAddress} tcp dport ${toString cfg.ingress.journalPort} limit rate over ${toString writer.journalBytesPerSecond} bytes/second burst ${toString writer.journalBurstBytes} bytes drop
+              ip saddr ${writer.sourceAddress} tcp dport ${toString cfg.ingress.metricsPort} limit rate over 65536 bytes/second burst 16777216 bytes drop
+              ip saddr ${writer.sourceAddress} tcp dport ${toString cfg.ingress.journalPort} limit rate over 65536 bytes/second burst 134217728 bytes drop
             '')
             writers)}
           }
