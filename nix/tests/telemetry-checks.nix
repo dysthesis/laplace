@@ -3,19 +3,6 @@
   lib,
   nixosConfigurations,
 }: {
-  telemetry-boot-persistence = let
-    talos = nixosConfigurations.talos.config;
-    ready = talos.systemd.services.telemetry-journal-ready;
-    vmagent = talos.systemd.services.vmagent;
-    journalUpload = talos.systemd.services.systemd-journal-upload;
-  in
-    pkgs.runCommand "telemetry-boot-persistence-check" {} ''
-      test ${lib.escapeShellArg (lib.boolToString ready.unitConfig.DefaultDependencies)} = false
-      test ${lib.escapeShellArg vmagent.unitConfig.RequiresMountsFor} = /var/cache/private/vmagent
-      test ${lib.escapeShellArg journalUpload.unitConfig.RequiresMountsFor} = /var/lib/private/systemd/journal-upload
-      touch $out
-    '';
-
   telemetry-ca-cleanup = pkgs.runCommand "telemetry-ca-cleanup" {nativeBuildInputs = [pkgs.bash pkgs.coreutils];} ''
     mkdir bin
     mkfifo finish
