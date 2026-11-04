@@ -100,12 +100,6 @@
         name = "spawn";
         args = action.argv;
       }
-    else if action.type == "spawn-sh"
-    then
-      KDL.statement {
-        name = "spawn-sh";
-        args = [action.script];
-      }
     else if action.type == "action"
     then
       KDL.statement {

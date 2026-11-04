@@ -34,11 +34,6 @@ in rec {
       type = "spawn";
       argv = resolveCommand deps action.command (action.args or []);
     }
-    else if action.type == "spawn-sh"
-    then {
-      type = "spawn-sh";
-      inherit (action) script;
-    }
     else if action.type == "action"
     then {
       type = "action";
