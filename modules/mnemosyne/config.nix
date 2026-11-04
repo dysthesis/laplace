@@ -38,9 +38,8 @@ in {
       fsType = "none";
       options = cfg.mountOpts;
     });
-    # RequiresMountsFor resolves the unit name of the persistent submount.
-    # Write under /sysroot. Do not order this service before sysroot.mount because that causes a deadlock.
-    boot.initrd.systemd.services.make-source-of-persistent-dirs = {
+    # Wait for persistent storage under /sysroot; ordering before sysroot.mount deadlocks.
+    boot.initrd.systemd.services.persist-dirs = {
       wantedBy = ["initrd-fs.target"];
       before = ["initrd-fs.target"];
       unitConfig = {
