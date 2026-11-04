@@ -73,14 +73,6 @@ in {
         type = types.nullOr types.str;
         default = endpoints.metricsUrl;
       };
-      basicAuthUsername = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-      };
-      basicAuthPasswordFile = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-      };
       keyFile = mkOption {
         type = types.nullOr types.str;
         default = null;
@@ -151,10 +143,6 @@ in {
         {
           assertion = !cfg.journal.enable || cfg.journal.url != null;
           message = "telemetry journal upload needs journal.url";
-        }
-        {
-          assertion = (cfg.metrics.basicAuthUsername == null) == (cfg.metrics.basicAuthPasswordFile == null);
-          message = "telemetry metric basic-auth username and password file must be set together";
         }
         {
           assertion = (cfg.metrics.keyFile == null) == (cfg.metrics.certificateFile == null);
@@ -232,10 +220,7 @@ in {
       services.vmagent = {
         enable = true;
         openFirewall = false;
-        remoteWrite = {
-          url = cfg.metrics.remoteWriteUrl;
-          inherit (cfg.metrics) basicAuthUsername basicAuthPasswordFile;
-        };
+        remoteWrite.url = cfg.metrics.remoteWriteUrl;
         prometheusConfig = {
           global = {
             scrape_interval = "30s";
