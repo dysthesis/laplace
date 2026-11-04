@@ -3,13 +3,12 @@
   lib,
   ...
 }: let
-  inherit (lib) mkAliasOptionModule mkEnableOption mkIf mkOption types;
+  inherit (lib) mkEnableOption mkIf mkOption types;
   cfg = config.laplace.services.headscale;
 in {
   imports = [
     ./acl.nix
     ./wg-only.nix
-    (mkAliasOptionModule ["laplace" "services" "headscale" "settings"] ["services" "headscale" "settings"])
   ];
 
   options.laplace.services.headscale = {

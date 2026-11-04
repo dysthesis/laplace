@@ -144,11 +144,11 @@ in {
             inherit (settings.wgOnly) enable;
             inherit peers;
           };
-          settings.dns = {
-            override_local_dns = true;
-            nameservers.global = [cluster.hosts.${dns.host}.tailnet.ip];
-            extra_records = cluster.network.dnsRecords;
-          };
+        };
+        services.headscale.settings.dns = {
+          override_local_dns = true;
+          nameservers.global = [cluster.hosts.${dns.host}.tailnet.ip];
+          extra_records = cluster.network.dnsRecords;
         };
         networking = {
           nftables.enable = true;
@@ -161,10 +161,10 @@ in {
       (lib.optionalAttrs (hostName == settings.frontendHost) {
         laplace.services.caddy.enable = true;
         services.caddy.virtualHosts.${settings.domain}.extraConfig = ''
-            @notSSE not header Accept *text/event-stream*
-            encode @notSSE
-            reverse_proxy http://${backend}:${toString settings.port}
-          '';
+          @notSSE not header Accept *text/event-stream*
+          encode @notSSE
+          reverse_proxy http://${backend}:${toString settings.port}
+        '';
       })
     ];
 }
