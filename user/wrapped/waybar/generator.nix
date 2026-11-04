@@ -7,6 +7,7 @@
 }: let
   inherit
     (lib)
+    concatMap
     concatStringsSep
     elem
     findFirst
@@ -17,8 +18,6 @@
     optionalAttrs
     optionals
     ;
-
-  concatMap = f: values: builtins.concatLists (map f values);
 
   defaultMonitor =
     if monitors == []
