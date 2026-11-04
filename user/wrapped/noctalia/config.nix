@@ -284,16 +284,9 @@ in {
       default_lead_minutes = 10; # Events without reminders use this delay. Use 0 to notify at the event start.
       all_day_digest_time = "09:00"; # Show today's all-day events in one notification. Use "" to disable this notification.
     };
-    idle = {
-      behavior_order = ["lock" "screen-off" "suspend"];
-      # Fade the full-screen surface-tint overlay before the idle command.
-      # The duration is 0 to 120 seconds. At 0, run the command when the compositor signals idle.
-      # Settings accepts only integer seconds from 0 to 30.
-      pre_action_fade_seconds = 2.0;
-    };
   };
 
-  inherit (config) location;
+  location = {inherit (config.location) latitude longitude;};
   nightlight = {
     enabled = true;
     force = false; # A true value applies the night temperature without the schedule.
