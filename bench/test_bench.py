@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -23,6 +24,40 @@ def load_module(filename):
 
 probe = load_module(HERE / "pty-probe.py")
 stats = load_module(HERE / "stats.py")
+
+
+class TimeoutTests(unittest.TestCase):
+    def test_missing_echo_is_not_a_latency_sample(self):
+        p = mock.Mock(buf=bytearray())
+        p.pump_until.return_value = (False, 2.0, False)
+        with mock.patch.object(probe, "_drain"):
+            self.assertIsNone(probe._keystroke_lag(p, b"a", 0.1))
+        p.write.assert_any_call(b"\x7f")
+
+    def test_incomplete_redraw_is_not_a_latency_sample(self):
+        args = SimpleNamespace(
+            shell="/unused/fish", login=False, no_interactive=False,
+            shell_arg=[], no_raw=False, cols=120, rows=30,
+            prompt_regex=None, quiesce_ms=120, timeout_ms=100,
+            prompt_runs=1, inner_iters=1, longbuf_len=200,
+        )
+        p = mock.Mock(t0=1.0)
+        p.spawn.return_value = p
+        p.pump_until.side_effect = [(True, 2.0, False), (False, 3.0, False)]
+        with (
+            mock.patch.object(probe, "Pty", return_value=p),
+            mock.patch.object(probe, "_drain"),
+            mock.patch.object(probe, "_keystroke_lag", return_value=0.1),
+        ):
+            samples = probe.measure_spawn_metrics(args, {})
+        self.assertEqual(samples["command_lag_ms"], [None])
+        p.close.assert_called_once()
+
+    def test_exit_measurements_obey_the_probe_timeout(self):
+        args = SimpleNamespace(shell="/unused/fish", login=False, prompt_runs=1, timeout_ms=100)
+        with mock.patch("subprocess.run", side_effect=subprocess.TimeoutExpired("fish", 0.1)) as run:
+            self.assertEqual(probe.measure_exit_time(args, {}), [])
+        self.assertEqual(run.call_args.kwargs["timeout"], 0.1)
 
 
 class AblationTests(unittest.TestCase):

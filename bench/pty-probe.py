@@ -205,13 +205,13 @@ def _keystroke_lag(p, c, timeout_s):
     since = len(strip_ansi(bytes(p.buf)))
     t = time.monotonic()
     p.write(c)
-    _m, t_echo, _q = p.pump_until(
+    matched, t_echo, _q = p.pump_until(
         lambda s, c=c, since=since: c in s[since:],
         timeout_s=timeout_s, quiesce_s=None,
     )
     p.write(b"\x7f")          # Backspace restores the input line.
     _drain(p)
-    return (t_echo - t) * 1000.0
+    return (t_echo - t) * 1000.0 if matched else None
 
 
 def measure_spawn_metrics(args, env) -> dict:
@@ -246,10 +246,11 @@ def measure_spawn_metrics(args, env) -> dict:
                 _drain(p, quiet_s=0.05, cap_s=1.0)
                 t_send = time.monotonic()
                 p.write(b"\r")
-                _m, t_ready, _q = p.pump_until(
+                _m, t_ready, quiesced = p.pump_until(
                     lambda _b: False, timeout_s=timeout_s, quiesce_s=quiesce_s
                 )
-                out["command_lag_ms"].append((t_ready - t_send) * 1000.0)
+                out["command_lag_ms"].append(
+                    (t_ready - t_send) * 1000.0 if quiesced else None)
 
             charset = b"abcdefghijklmnopqrstuvwxyz"
             for i in range(args.inner_iters):
@@ -310,8 +311,12 @@ def measure_exit_time(args, env) -> list:
     samples = []
     for _ in range(args.prompt_runs):
         t = time.monotonic()
-        subprocess.run(argv, env=env, stdin=subprocess.DEVNULL,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            subprocess.run(argv, env=env, stdin=subprocess.DEVNULL,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                           timeout=args.timeout_ms / 1000.0)
+        except subprocess.TimeoutExpired:
+            continue
         samples.append((time.monotonic() - t) * 1000.0)
     return samples
 
