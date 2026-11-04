@@ -167,16 +167,16 @@
           (KDL.statement {name = "off";})
         ]
         ++ optionals (blur ? passes) [
-          (renderArgProperty "passes" blur.passes)
+          (property "passes" blur.passes)
         ]
         ++ optionals (blur ? offset) [
-          (renderArgProperty "offset" blur.offset)
+          (property "offset" blur.offset)
         ]
         ++ optionals (blur ? noise) [
-          (renderArgProperty "noise" blur.noise)
+          (property "noise" blur.noise)
         ]
         ++ optionals (blur ? saturation) [
-          (renderArgProperty "saturation" blur.saturation)
+          (property "saturation" blur.saturation)
         ];
     };
 
@@ -185,16 +185,16 @@
       name = "background-effect";
       children =
         optionals (effect ? xray) [
-          (renderBoolProperty "xray" effect.xray)
+          (property "xray" effect.xray)
         ]
         ++ optionals (effect ? blur) [
-          (renderBoolProperty "blur" effect.blur)
+          (property "blur" effect.blur)
         ]
         ++ optionals (effect ? noise) [
-          (renderArgProperty "noise" effect.noise)
+          (property "noise" effect.noise)
         ]
         ++ optionals (effect ? saturation) [
-          (renderArgProperty "saturation" effect.saturation)
+          (property "saturation" effect.saturation)
         ];
     };
 
@@ -237,13 +237,7 @@
         // optionalAttrs (dimension ? proportion) {inherit (dimension) proportion;};
     };
 
-  renderBoolProperty = name: value:
-    KDL.statement {
-      inherit name;
-      args = [value];
-    };
-
-  renderArgProperty = name: value:
+  property = name: value:
     KDL.statement {
       inherit name;
       args = [value];
@@ -277,49 +271,49 @@
           (renderPosition "default-floating-position" rule.defaultFloatingPosition)
         ]
         ++ optionals (rule ? openOnOutput) [
-          (renderArgProperty "open-on-output" rule.openOnOutput)
+          (property "open-on-output" rule.openOnOutput)
         ]
         ++ optionals (rule ? openOnWorkspace) [
-          (renderArgProperty "open-on-workspace" rule.openOnWorkspace)
+          (property "open-on-workspace" rule.openOnWorkspace)
         ]
         ++ optionals (rule ? openMaximized) [
-          (renderBoolProperty "open-maximized" rule.openMaximized)
+          (property "open-maximized" rule.openMaximized)
         ]
         ++ optionals (rule ? openMaximizedToEdges) [
-          (renderBoolProperty "open-maximized-to-edges" rule.openMaximizedToEdges)
+          (property "open-maximized-to-edges" rule.openMaximizedToEdges)
         ]
         ++ optionals (rule ? openFullscreen) [
-          (renderBoolProperty "open-fullscreen" rule.openFullscreen)
+          (property "open-fullscreen" rule.openFullscreen)
         ]
         ++ optionals (rule ? openFloating) [
-          (renderBoolProperty "open-floating" rule.openFloating)
+          (property "open-floating" rule.openFloating)
         ]
         ++ optionals (rule ? openFocused) [
-          (renderBoolProperty "open-focused" rule.openFocused)
+          (property "open-focused" rule.openFocused)
         ]
         ++ optionals (rule ? blockOutFrom) [
-          (renderArgProperty "block-out-from" rule.blockOutFrom)
+          (property "block-out-from" rule.blockOutFrom)
         ]
         ++ optionals (rule ? variableRefreshRate) [
-          (renderBoolProperty "variable-refresh-rate" rule.variableRefreshRate)
+          (property "variable-refresh-rate" rule.variableRefreshRate)
         ]
         ++ optionals (rule ? defaultColumnDisplay) [
-          (renderArgProperty "default-column-display" rule.defaultColumnDisplay)
+          (property "default-column-display" rule.defaultColumnDisplay)
         ]
         ++ optionals (rule ? scrollFactor) [
-          (renderArgProperty "scroll-factor" rule.scrollFactor)
+          (property "scroll-factor" rule.scrollFactor)
         ]
         ++ optionals (rule ? drawBorderWithBackground) [
-          (renderBoolProperty "draw-border-with-background" rule.drawBorderWithBackground)
+          (property "draw-border-with-background" rule.drawBorderWithBackground)
         ]
         ++ optionals (rule ? geometryCornerRadius) [
-          (renderArgProperty "geometry-corner-radius" rule.geometryCornerRadius)
+          (property "geometry-corner-radius" rule.geometryCornerRadius)
         ]
         ++ optionals (rule ? clipToGeometry) [
-          (renderBoolProperty "clip-to-geometry" rule.clipToGeometry)
+          (property "clip-to-geometry" rule.clipToGeometry)
         ]
         ++ optionals (rule ? tiledState) [
-          (renderBoolProperty "tiled-state" rule.tiledState)
+          (property "tiled-state" rule.tiledState)
         ]
         ++ optionals (rule ? backgroundEffect) [
           (renderBackgroundEffect rule.backgroundEffect)
