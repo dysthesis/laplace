@@ -3,6 +3,8 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import shutil
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
@@ -79,6 +81,26 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(probe.collect(None, {}, {"spawn", "first_command", "exit"}), {})
             for measurement in (spawn, command, exit_time):
                 measurement.assert_not_called()
+
+
+class CliTests(unittest.TestCase):
+    def test_dry_run_needs_no_tools_and_writes_no_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for args in ([], ["--ab", "/missing/fish-A", "/missing/fish-B"]):
+                with self.subTest(args=args):
+                    out = Path(tmp) / "results"
+                    result = subprocess.run(
+                        [shutil.which("bash"), str(HERE / "shell-bench.sh"),
+                         "--dry-run", "--out", str(out), *args],
+                        env={"PATH": tmp, "BENCH_LIB": str(HERE)},
+                        capture_output=True, text=True, timeout=5,
+                    )
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(result.stdout, "")
+                    self.assertIn("no builds, measurements or output files", result.stderr)
+                    self.assertFalse(out.exists())
+                    if args:
+                        self.assertIn("/missing/fish-A vs /missing/fish-B", result.stderr)
 
 
 if __name__ == "__main__":

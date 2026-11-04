@@ -127,7 +127,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 : "${OUTDIR:=bench/results/$(date +%Y%m%dT%H%M%S)}"
-mkdir -p "$OUTDIR"
 
 log "laplace shell-bench" || true
 printf '\n[run plan]\n' >&2 || true
@@ -136,12 +135,21 @@ printf '  %s\n' \
     "spawns=$SPAWNS" "tiers=$TIERS" "runs=$RUNS" "iters=$ITERS" \
     "core=${BENCH_CORE:-none}" "out=$OUTDIR" >&2 || true
 
+if [[ $DRYRUN == 1 ]]; then
+    if [[ ${#AB[@]} -eq 2 ]]; then
+        log "A/B: ${AB[0]} vs ${AB[1]} (interleaved)"
+    fi
+    log "Dry run: no builds, measurements or output files."
+    exit 0
+fi
+
 want_tier() { [[ $TIERS == all ]] || [[ ",$TIERS," == *",$1,"* ]]; }
 has_target() { [[ ",$TARGETS," == *",$1,"* ]]; }
 
 for t in nix jq python3; do need "$t"; done
 want_tier coarse && need hyperfine
 want_tier syscall && need strace
+mkdir -p "$OUTDIR"
 
 merge_pty() {
     local out="$1"
@@ -184,7 +192,6 @@ tier_coarse() {
     [[ $login == 1 ]] && args=("-l" "${args[@]}")
     local out="$OUTDIR/${label}.coarse.json"
     log "T1 coarse: $label  ($shellbin ${args[*]})"
-    [[ $DRYRUN == 1 ]] && return 0
     pin env "${runenv[@]}" hyperfine --warmup "$WARMUP" --runs "$RUNS" \
         --export-json "$out" --shell=none -- \
         "$shellbin ${args[*]}" >/dev/null 2>&1 ||
@@ -208,7 +215,6 @@ tier_metrics() {
         probeargs+=("${extra_probe_args[@]}")
     fi
     log "T2 metrics: $label"
-    [[ $DRYRUN == 1 ]] && return 0
     pin env "${runenv[@]}" python3 "$PROBE" "${probeargs[@]}" >"$out" ||
         {
             warn "metrics failed for $label"
@@ -223,7 +229,6 @@ tier_profile_fish() {
     local -a runenv=("$@")
     local prof="$OUTDIR/${label}.profile-startup.log"
     log "T3 profile: $label (fish --profile-startup)"
-    [[ $DRYRUN == 1 ]] && return 0
     pin env "${runenv[@]}" "$shellbin" --profile-startup "$prof" -i -c exit \
         >/dev/null 2>&1 || warn "profile-startup failed for $label"
     # Fish columns: Time(us), Sum(us), Command. Time is the cost without child commands.
@@ -270,7 +275,6 @@ tier_ablation_fish() {
 
     local base_share base_json
     base_share="$(gen_ablation_config "$OUTDIR/abl/_baseline" "$cfg" "$loadplugin" '$^')"
-    [[ $DRYRUN == 1 ]] && return 0
     base_json="$OUTDIR/abl/_baseline.json"
     pin env "${runenv[@]}" XDG_DATA_DIRS="$base_share" python3 "$PROBE" \
         --shell "$unwrapped_bin" --cols "$COLS" --rows "$ROWS" \
@@ -310,7 +314,6 @@ tier_syscall() {
     [[ $login == 1 ]] && args=("-l" "${args[@]}")
     local out="$OUTDIR/${label}.strace.txt"
     log "T4 syscall: $label"
-    [[ $DRYRUN == 1 ]] && return 0
     pin env "${runenv[@]}" strace -f -c -o "$out" \
         "$shellbin" "${args[@]}" >/dev/null 2>&1 || warn "strace -c failed for $label"
     pin env "${runenv[@]}" strace -f -e trace=execve -o "$OUTDIR/${label}.execve.txt" \
@@ -358,15 +361,13 @@ FISH_WRAP=""
 FISH_UNWRAP=""
 BASH_WRAP=""
 if has_target fish || [[ $DO_ABLATION == 1 ]]; then
-    if [[ $DRYRUN == 0 ]]; then
-        FISH_WRAP="$(resolve_store "$FLAKE" "nixosConfigurations.$HOST.pkgs.configured.fish")"
-        FISH_UNWRAP="$(resolve_store "$FLAKE" "nixosConfigurations.$HOST.pkgs.fish")"
-    fi
-    log "  fish (wrapped):   ${FISH_WRAP:-<dry>}"
+    FISH_WRAP="$(resolve_store "$FLAKE" "nixosConfigurations.$HOST.pkgs.configured.fish")"
+    FISH_UNWRAP="$(resolve_store "$FLAKE" "nixosConfigurations.$HOST.pkgs.fish")"
+    log "  fish (wrapped):   $FISH_WRAP"
 fi
 if has_target bash; then
-    [[ $DRYRUN == 0 ]] && BASH_WRAP="$(resolve_store "$FLAKE" "nixosConfigurations.$HOST.pkgs.configured.bash")"
-    log "  bash (wrapped):   ${BASH_WRAP:-<dry>}"
+    BASH_WRAP="$(resolve_store "$FLAKE" "nixosConfigurations.$HOST.pkgs.configured.bash")"
+    log "  bash (wrapped):   $BASH_WRAP"
 fi
 
 capture_provenance "$OUTDIR/provenance.json" \
@@ -387,8 +388,8 @@ for mode in "${MODE_LIST[@]}"; do
         declare -a RUNENV
         mapfile -t RUNENV < <(mk_runenv "$mode")
 
-        if has_target fish && [[ -n "$FISH_WRAP$DRYRUN" ]]; then
-            fb="${FISH_WRAP:-/dry}/bin/fish"
+        if has_target fish; then
+            fb="$FISH_WRAP/bin/fish"
             lbl="fish.${local_tag}"
             want_tier coarse && tier_coarse "$lbl" "$fb" "$login" "${RUNENV[@]}"
             want_tier metrics && tier_metrics "$lbl" "$fb" "$login" "$FISH_PROMPT_REGEX" "${RUNENV[@]}"
@@ -400,8 +401,8 @@ for mode in "${MODE_LIST[@]}"; do
             fi
         fi
 
-        if has_target bash && [[ -n "$BASH_WRAP$DRYRUN" ]]; then
-            bb="${BASH_WRAP:-/dry}/bin/bash"
+        if has_target bash; then
+            bb="$BASH_WRAP/bin/bash"
             declare -a BENV_PURE=("${RUNENV[@]}" "BASH_NO_FISH=1")
             lbl="bash-pure.${local_tag}"
             want_tier coarse && tier_coarse "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
@@ -416,7 +417,7 @@ for mode in "${MODE_LIST[@]}"; do
     done
 done
 
-if has_target devshell && want_tier coarse && [[ $DRYRUN == 0 ]]; then
+if has_target devshell && want_tier coarse; then
     log "T1 coarse: devshell (nix develop ${FLAKE}#default --command true) [warm]"
     pin hyperfine --warmup "$WARMUP" --runs "$WARMUP" --shell=none \
         --export-json "$OUTDIR/devshell.coarse.json" -- \
