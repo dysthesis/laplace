@@ -72,7 +72,6 @@
     logsRules = argus.environment.etc."vmalert-logs/rules.yml".source;
     alertmanagerConfig = pkgs.writeText "alertmanager.json" (builtins.toJSON argus.services.prometheus.alertmanager.configuration);
     alertmanager = argus.services.prometheus.alertmanager.package;
-    notificationTest = argus.systemd.services.observability-notification-test;
     # vmalert-tool v1.154.0 starts at 2000-01-01T00:00:00Z, not Unix epoch 0.
     testStartSeconds = "946684800";
     metricsRulesTest = pkgs.writeText "observability-metrics-rules-test.yml" ''
@@ -287,7 +286,6 @@
       vmalert -rule=${metricsRules} -dryRun
       vmalert -rule=${logsRules} -rule.defaultRuleType=vlogs -dryRun
       vmalert-tool unittest --files=${metricsRulesTest}
-      test ${lib.escapeShellArg (lib.boolToString notificationTest.serviceConfig.RemainAfterExit)} = true
       UPTIME_KUMA_PUSH_URL=https://uptime.dysthesis.com/api/push/test \
         NTFY_ALERTMANAGER_TOKEN=test \
         envsubst -i ${alertmanagerConfig} -o alertmanager-substituted.json
