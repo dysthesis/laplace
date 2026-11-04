@@ -62,7 +62,7 @@ in {
       laplace.services.adguardhome = {
         enable = true;
         inherit (instance.settings) port upstreamDNS;
-        # Upstream appends :port to host when generating http.address.
+        # Upstream appends :port to host to form http.address.
         listenAddress = common.hostAddress instance.settings.listenAddress;
         exceptionClientAddress = cluster.nodes.${instance.settings.exceptionClient}.ip;
       };

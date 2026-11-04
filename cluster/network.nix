@@ -121,8 +121,7 @@
     })
     cfg.staticRecords;
   dnsRecords = unique (appDNS ++ staticDNS);
-  # Use source and destination nodes, not service names, for this check.
-  # Game nodes can use DNS, but not HTTPS, on the resolver.
+  # Use node identities, not service names. Game nodes can use DNS, but not HTTPS, on the resolver.
   gameSafe = c:
     !any (n: builtins.elem "game" nodes.${n}.tags) c.sourceNodes
     || all (dest: builtins.elem "game" nodes.${dest}.tags) c.destinationNodes

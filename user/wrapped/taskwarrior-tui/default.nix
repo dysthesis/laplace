@@ -6,7 +6,7 @@
 }:
 rustPlatform.buildRustPackage rec {
   pname = "taskwarrior-tui";
-  # Taskwarrior 2 compatibility pin.
+  # Keep this version for Taskwarrior 2 compatibility.
   version = "0.25.4";
   src = fetchFromGitHub {
     owner = "kdheepak";

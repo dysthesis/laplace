@@ -1,11 +1,10 @@
-
 local mp = require("mp")
 local options = { enabled = true, language = "auto" }
 require("mp.options").read_options(options, "auto-subs")
 
--- FFmpeg makes audio chunks, runs inference and gives them timestamps.
+-- FFmpeg divides audio into chunks and transcribes them with timestamps.
 -- The child mpv reads yt-dlp edit decision lists and other resolved inputs.
--- It does not change playback audio.
+-- The child mpv does not change playback audio.
 local job, loaded, blocked, duration
 
 local function tracks()
@@ -38,7 +37,7 @@ local function stop()
     os.remove(old.dir)
 end
 
--- Read the end timestamp of the last SRT cue, in playback seconds.
+-- Return the last SRT cue's end time in playback seconds.
 local function srt_last_end(srt)
     local h, m, s, ms = srt:match(".*%-%-> (%d%d):(%d%d):(%d%d),(%d%d%d)")
     if not h then return nil end
@@ -64,7 +63,6 @@ local function refresh(current)
     end
     if not current.pending then return end
 
-    -- Fast transcription can write many cues before playback.
     -- Do not reload while subtitles extend more than 10 seconds after the playback position.
     local now = mp.get_property_number("time-pos") or 0
     if current.published and not current.finished and current.coverage_end
@@ -148,8 +146,8 @@ local function start()
             if track.type == "audio" and track.id == audio.id then break end
         end
     end
-    -- Whisper uses transcript context, not instructions.
-    -- The examples give British spelling and profanity as spoken, not language or translation instructions.
+    -- Whisper uses the prompt as transcript context, not instructions.
+    -- The examples keep British spelling and profanity in the transcript.
     local prompt = ""
     if options.language == "auto" or options.language == "en" then
         prompt = ":prompt=My favourite colour is grey. The neighbours organised a programme at the theatre."
@@ -218,7 +216,7 @@ end)
 
 mp.register_event("file-loaded", function()
     loaded = true
-    blocked = tracks() -- A supplied subtitle track stops transcription for the full file. This includes sid=no.
+    blocked = tracks() -- Supplied subtitles stop transcription for the full file, even with sid=no.
     schedule()
 end)
 mp.observe_property("track-list", "native", function()

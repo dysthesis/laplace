@@ -1,16 +1,14 @@
 {
   lib,
-  # Use wrapper aliases as the command source.
   jjAliases,
 }: let
   inherit (lib) concatMapStringsSep mapAttrsToList;
 
-  # Actions replace @ in alias arguments with the selected change ID.
   bindKeys = {
     tug = "T";
   };
 
-  # Alias arguments enter Lua literals without escaping. Do not use quotes or backslashes.
+  # Lua literals contain unescaped alias arguments. Do not use quotes or backslashes in those arguments.
   mkAction = name: key: let
     argList = concatMapStringsSep ", " (arg: ''"${arg}"'') jjAliases.${name};
   in {

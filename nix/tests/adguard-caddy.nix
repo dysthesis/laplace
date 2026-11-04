@@ -126,7 +126,6 @@ in
                     else:
                         raise AssertionError("Caddy opened the HTTP listener reserved for AdGuard")
 
-                # Global options must apply with and without AdGuard redirect suppression.
                 status, _ = request(case, secure=True, headers={"X-Oversized": "x" * 32768})
                 assert status == 431, (case["name"], status)
                 print(case["name"] + ": listener and global-option behaviour passed")

@@ -1,5 +1,5 @@
 # switch-to-configuration can keep its lock after a D-Bus failure.
-# shortcut: The timeout can stop a slow activation. Increase it if activations run for more than 20 minutes.
+# shortcut: Slow activations can stop at 20 minutes. Increase the timeout if activations take longer.
 final: prev: {
   switch-to-configuration-ng = prev.switch-to-configuration-ng.overrideAttrs (old: {
     postInstall =

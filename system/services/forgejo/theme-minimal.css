@@ -1,7 +1,6 @@
 /* Map Forgejo's palette to minimal.nvim dark colours. */
 @import "theme-forgejo-dark.css";
 
-/* Static Iosevka Medium 400 and Bold 700 faces. */
 @font-face {
   font-family: "IosevkaCadmus Nerd Font";
   src: url("/assets/fonts/IosevkaCadmusNerdFont-Medium.woff2") format("woff2");
@@ -57,7 +56,6 @@
     Monaco, Consolas, "Liberation Mono", "Courier New", monospace,
     var(--fonts-emoji);
 
-  /* Neutral UI palette. */
   --steel-900: #080808;
   --steel-850: #0f0f0f;
   --steel-800: #101010;
@@ -76,7 +74,6 @@
   --steel-150: #cccccc;
   --steel-100: #dddddd;
 
-  /* Blue tints and shades. */
   --color-primary: #7788aa;
   --color-primary-contrast: #000;
   --color-primary-dark-1: #919fba;
@@ -111,7 +108,7 @@
   --color-console-menu-bg: #191919;
   --color-console-menu-border: #444444;
 
-  /* Limited hue palette: map related colours to the nearest available hue. */
+  /* Map related colours to the nearest available hue. */
   --color-red: #d70000;
   --color-red-light: #e13333;
   --color-red-dark-1: #c00000;
@@ -158,7 +155,7 @@
   --color-black-dark-2: #080808;
   --color-gold: #abab77;
 
-  /* Actions log ANSI colours. */
+  /* These ANSI colours apply to Actions logs. */
   --color-ansi-black: #000000;
   --color-ansi-red: #d70000;
   --color-ansi-green: #789978;
@@ -183,7 +180,6 @@
   --color-diff-moved-row-border: #57573a;
   --color-diff-added-row-border: #2e4430;
 
-  /* Alert boxes */
   --color-error-border: #7a2020;
   --color-error-bg: #4d1414;
   --color-error-bg-active: #5f1a1a;
@@ -225,7 +221,7 @@
   --bg-chroma: 0.03;
 }
 
-/* Server-side syntax colours. */
+/* These colours apply to server-side syntax highlights. */
 .chroma .c,
 .chroma .c1,
 .chroma .ch,

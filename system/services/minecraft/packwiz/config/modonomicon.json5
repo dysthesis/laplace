@@ -1,11 +1,9 @@
 {
-	// Quality of Life Settings
 	"qol": {
-		// Enable smooth zoom in book categories
 		"enableSmoothZoom": true,
-		// Enable keeping the last open page stored when closing an entry. Regardless of this setting it will be stored when closing the entire book with Esc.
+		// Esc always saves the last page when the entire book closes.
 		"storeLastOpenPageWhenClosingEntry": false,
-		// If your locale is not supported by the default Modonomicon font, indicated by the book just rendering blocky shapes instead of characters, add your locale to this list to fall back to the builtin Minecraft font.
+		// Use the Minecraft font for these locales if Modonomicon shows blocks rather than characters.
 		"fontFallbackLocales": [
 			"zh_cn",
 			"ja_jp",

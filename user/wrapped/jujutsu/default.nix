@@ -10,6 +10,6 @@
 in
   (mkWrapper pkgs pkgs.unstable.jujutsu {set.JJ_CONFIG = config;})
   .overrideAttrs (old: {
-    # Give jjui access to aliases. Keep the same derivation hash.
+    # Give jjui access to aliases without a new derivation hash.
     passthru = (old.passthru or {}) // {inherit jjConfig;};
   })

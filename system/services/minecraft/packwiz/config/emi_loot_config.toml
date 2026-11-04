@@ -1,4 +1,4 @@
-# Don't change this! Version used to track needed updates.
+# Do not change this version. It controls configuration updates.
 version = 1
 debugMode = false
 parseChestLoot = true

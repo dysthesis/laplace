@@ -163,7 +163,6 @@
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
       vdirsyncer = callPackage ./khal/vdirsyncer.nix {inherit lib pkgs;};
-      # Taskwarrior 2 compatibility pin.
       taskwarrior-tui2 = callPackage ./taskwarrior-tui {inherit lib pkgs;};
       zen = guiPackage (
         callPackage ./zen {

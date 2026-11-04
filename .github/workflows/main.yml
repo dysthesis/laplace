@@ -8,14 +8,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check flake inputs
-        # The downloaded action binary fails with EACCES on this runner.
+        # The action binary cannot execute on this runner (EACCES).
         run: nix run --extra-experimental-features 'nix-command flakes' nixpkgs#flake-checker
   check-expressions:
     name: Check flake expressions
     runs-on: nix
     steps:
       - uses: actions/checkout@v4
-      # The runner has Nix, but these features can be disabled in its configuration.
+      # The runner can disable these Nix features.
       # Cache downloads can stop before completion.
       - run: |
           for attempt in 1 2 3; do

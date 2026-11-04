@@ -1,13 +1,13 @@
 ["Configs for End's Delight"]
-	#The range size of gristle teleport (Default: 24 (1 ~ 32))
+	#Default: 24
 	#Range: 1 ~ 32
 	teleportRangeSize = 24
-	#Dragon Tooth Knife can cause more damage when attacking following mobs 
+	# The Dragon Tooth Knife deals extra damage to these mobs.
 	#(Default: ["minecraft:enderman", "minecraft:endermite", "minecraft:ender_dragon", "minecraft:shulker"])
 	allowedMobs = ["minecraft:enderman", "minecraft:endermite", "minecraft:ender_dragon", "minecraft:shulker"]
-	#Whether teleport after consuming an Enderman Gristle Item or an Enderman Gristle Stew Item 
+	# Teleport after Enderman Gristle or Enderman Gristle Stew consumption.
 	#Default: true
 	enableGristleTeleport = true
-	#The max height of gristle teleport (Default: 32 (1 ~ 64))
+	#Default: 32
 	#Range: 1 ~ 64
 	teleportMaxHeight = 32

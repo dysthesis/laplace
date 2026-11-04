@@ -1,31 +1,31 @@
 
-# The amount of damage applied to the player when they land.
 damageOnFall = 19
 
-# List of dimension ids to be allowed for Forgiving Void. Options triggerInOverworld etc. take priority.
+# Allow these dimension IDs. Options such as triggerInOverworld take priority.
 dimensionAllowList = [  ]
 
-# List of additional dimension ids to be deny-listed from Forgiving Void. Options triggerInOverworld etc. take priority. Ignored if dimensionAllowList is set.
+# Deny these dimension IDs only if dimensionAllowList is empty. Options such as triggerInOverworld take priority.
 dimensionDenyList = [  ]
 
-# Set to true if players are rubber-banding while falling through the void. If you're hosting a public server, you should only do this if you have proper anti-cheat installed.
+# Disable vanilla anti-cheat if void falls cause rubber-banding.
+# Public servers must have another anti-cheat system before this option is enabled.
 disableVanillaAntiCheatWhileFalling = true
 
-# The height from which the player will be falling after falling through the void.
+# Set the return height after a void fall.
 fallingHeight = 300
 
-# Prevent death on void fall (limits damage to leave at least 0.5 hearts)
+# Limit fall damage to leave at least 0.5 hearts.
 preventDeath = false
 
-# The distance to the minimum y level at which Forgiving Void should forgive the player and send them towards the sky.
+# Return players to the sky at this distance below the minimum Y level.
 triggerAtDistanceBelow = 32
 
-# Set to false to make Forgiving Void not trigger in the end void (dimension 1).
+# False disables Forgiving Void in the End (dimension 1).
 triggerInEnd = true
 
-# Set to false to make Forgiving Void not trigger in the nether void (dimension -1).
+# False disables Forgiving Void in the Nether (dimension -1).
 triggerInNether = true
 
-# Set to false to make Forgiving Void not trigger in the overworld void (dimension 0).
+# False disables Forgiving Void in the Overworld (dimension 0).
 triggerInOverworld = true
 

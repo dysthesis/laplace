@@ -14,136 +14,90 @@ version = 3
 #        ) - if(is_client, 2, 0)
 #    )
 # )  
-#  The expression for the default value of global executor parallelism. 
-#  This is used when the parallelism isn't overridden.
-#  Available variables: is_windows, is_j9vm, is_client, cpus, mem_gb
-# 
+# This expression sets global executor parallelism unless an override supplies it.
+# Available variables: is_windows, is_j9vm, is_client, cpus, mem_gb
 defaultGlobalExecutorParallelismExpression = "default"
-# (Default: 5) Configures the parallelism of global executor
+# (Default: 5) Set global executor parallelism.
 globalExecutorParallelism = "default"
 
 [fixes]
-	# (Default: true)  
-	#  Whether to disable the shutdown hook of log4j2 on dedicated servers.
-	#  Enabling this also makes the JVM exit when the dedicated server is considered fully shut down.
-	#  This option have no effect on client-side.
-	#  We has historically been doing this, and this config option allows you to disable this behavior.
-	# 
+	# (Default: true)
+	# Disable the log4j2 shutdown hook on dedicated servers.
+	# The JVM exits when the server completes shutdown. Clients ignore this option.
 	disableLoggingShutdownHook = "default"
-	# (Default: true) Enforces safe world random access.  
-	# This feature detects unsafe off-thread world random access, helping to find the causes  
-	# of mysterious "Accessing LegacyRandomSource from multiple threads" crash.  
-	# The default behavior is to fail hard when such bad things happens.  
-	# Disabling this option will replace this behavior with a warning.  
-	# 
-	# It is generally not recommended to disable this settings unless you know what you are doing  
-	# 
-	# 
+	# (Default: true)
+	# Unsafe off-thread world random access causes "Accessing LegacyRandomSource from multiple threads" crashes.
+	# Keep this check enabled to fail on unsafe access. False produces only a warning.
 	enforceSafeWorldRandomAccess = "default"
 
 	[clientSideConfig.modifyMaxVDConfig]
-		# (Default: true) Whether to modify maximum view distance
+		# (Default: true) Permit a different maximum view distance.
 		enabled = "default"
-		# (Default: 61) Max render distance allowed in game options
+		# (Default: 61) Set the maximum render distance in game options.
 		maxViewDistance = "default"
 
 [noTickViewDistance]
-	# (Default: true) Whether to enable no-tick view distance
+	# (Default: true) Enable no-tick view distance.
 	enabled = "default"
-	# (Default: 6) No-tick view distance max concurrent chunk loads 
-	#  Lower this for a better latency and higher this for a faster loading
+	# (Default: 6) Limit concurrent no-tick chunk loads.
+	# Lower values reduce latency. Higher values load chunks faster.
 	maxConcurrentChunkLoads = 3
-	# (Default: true) Whether to use compatibility mode to send chunks 
-	#  This may fix some mod compatibility issues
+	# (Default: true) Compatibility mode can resolve chunk transfer conflicts with other mods.
 	compatibilityMode = "default"
-	# (Default: false) Whether to ensure correct chunks within normal render distance 
-	#  This will send chunks twice increasing network load
+	# (Default: false) Send chunks twice to keep them correct within the normal render distance.
+	# This increases network load.
 	ensureChunkCorrectness = "default"
 
 [generalOptimizations]
-	# (Default: true) Whether to let async chunk request no longer block server thread
-	# (may cause incompatibility with other mods)
+	# (Default: true) Async chunk requests do not block the server thread.
+	# This can conflict with other mods.
 	optimizeAsyncChunkRequest = "default"
-	# (Default: 100000) The task interval of mid-tick chunk tasks in nanoseconds (-1 to disable)  
-	# Mid-tick chunk tasks is to execute chunk tasks during server tick loop  
-	# to speed up chunk loading and generation  
-	# This helps chunks loading and generating under high MSPT but may raise  
-	# MSPT when chunks are loading or generating  
-	#  
-	# It is generally not recommended to adjust this value unless you know  
-	# what you are doing  
-	#  
-	# Incompatible with Dimensional Threading (dimthread)
-	# 
+	# (Default: 100000) Set the mid-tick chunk task interval in nanoseconds. Use -1 to disable it.
+	# Tasks run within the server tick loop to improve chunk loads and generation under high MSPT.
+	# This can increase MSPT during chunk loads and generation.
+	# This conflicts with Dimensional Threading (dimthread).
 	midTickChunkTasksInterval = "default"
 
 	[generalOptimizations.autoSave]
-		# (Default: ENHANCED) Defines how auto save should be handled  
-		# VANILLA: Use vanilla auto-save behavior (auto-save performed every tick during ticking)  
-		# ENHANCED: Use C2ME enhanced auto-save (auto-save performed when the server have spare time after ticking)  
-		# PERIODIC: Use pre-1.18 vanilla auto-save behavior (auto-save performed every 6000 ticks during ticking)  
-		#  
-		# Please preserve quotes so this config don't break
-		# 
+		# (Default: ENHANCED)
+		# VANILLA saves during each tick. ENHANCED saves when the server has spare time after a tick.
+		# PERIODIC saves every 6000 ticks. Keep the quotes.
 		mode = "default"
-		# (Default: 20000) Defines the delay in milliseconds between performing auto-save for a chunk  
-		# This is only used when mode is set to ENHANCED
-		# 
+		# (Default: 20000) Set the delay between chunk auto-saves in milliseconds for ENHANCED mode.
 		delay = "default"
 
 [ioSystem]
-	# (Default: 8192) Soft limit for io worker nbt cache
+	# (Default: 8192) Set the NBT cache soft limit for I/O workers.
 	chunkDataCacheSoftLimit = "default"
-	# (Default: 32678) Hard limit for io worker nbt cache
+	# (Default: 32678) Set the NBT cache hard limit for I/O workers.
 	chunkDataCacheLimit = "default"
-	# (Default: -1) Defines which chunk compression should be used 
-	# -1 for Vanilla default  
-	# 1  for GZip (RFC1952) (Vanilla compatible) 
-	# 2  for Zlib (RFC1950) (Vanilla default) (Vanilla compatible) 
-	# 3  for Uncompressed (Fastest, but higher disk usage) (Vanilla compatible) 
-	#  
-	# Original chunk data will still readable after modifying this option  
-	# as this option only affects newly stored chunks 
-	# Invalid values will fall back to vanilla default
-	# 
+	# (Default: -1)
+	# Compression formats: -1 uses the vanilla default, 1 uses GZip (RFC1952), 2 uses Zlib (RFC1950), 3 uses no compression.
+	# Each format is vanilla-compatible. No compression gives the highest speed but uses more disk space.
+	# Changes affect only new chunk writes. Existing chunks remain readable. Invalid values use the vanilla default.
 	chunkStreamVersion = "default"
-	# (Default: false) EXPERIMENTAL FEATURE
-	# This replaces the way your chunks are saved.
-	# Please keep regular backups of your world if you are using this feature,
-	# and report any world issues you encounter with this feature to our GitHub.
-	# 
-	# Whether to use the fast reduced allocation chunk serializer
-	# (may cause incompatibility with other mods)
-	# 
-	# Set to false for the following reasons: 
-	# Incompatible with architectury@9.2.14 (*) (defined in c2me) 
+	# (Default: false)
+	# This experimental serialiser changes chunk writes and can conflict with other mods.
+	# Keep regular world backups and report world errors to the C2ME GitHub project.
+	# This conflicts with architectury@9.2.14 (*) (defined in c2me).
 	gcFreeChunkSerializer = "default"
-	# (Default: true) Whether to use the optimized implementation of IO system
+	# (Default: true) Use the optimised I/O system.
 	replaceImpl = "default"
-	# (Default: true) Whether to use async chunk loading & unloading
+	# (Default: true) Load and unload chunks asynchronously.
 	async = "default"
 
 [threadedWorldGen]
-	# (Default: true) Whether to enable this feature
 	enabled = false
-	# (Default: true) Whether to allow feature generation (world decorations like trees, ores and etc.) run in parallel
-	# (may cause incompatibility with other mods)
+	# (Default: true) Generate world features, such as trees and ores, in parallel.
+	# This can conflict with other mods.
 	allowThreadedFeatures = false
-	# (Default: true) Whether to allow reducing lock radius 
-	# (may cause incompatibility with other mods)
+	# (Default: true) Reduce the lock radius. This can conflict with other mods.
 	reduceLockRadius = false
-	# (Default: true) Whether to enable async and parallel scheduling 
-	# This will reduce server thread load 
-	# (may cause incompatibility with other mods)
-	# 
+	# (Default: true) Async and parallel schedules reduce server thread load but can conflict with other mods.
 	asyncScheduling = false
 
 [vanillaWorldGenOptimizations]
-	# (Default: true) Whether to enable aquifer optimizations to accelerate overworld worldgen
-	# (may cause incompatibility with other mods)
+	# (Default: true) Aquifer optimisation speeds up Overworld generation but can conflict with other mods.
 	optimizeAquifer = false
-	# (Default: true) Whether to enable End Biome Cache to accelerate The End worldgen 
-	# This is no longer included in lithium-fabric 
-	# (may cause incompatibility with other mods)
-	# 
+	# (Default: true) The End Biome Cache speeds up End generation but can conflict with other mods.
 	useEndBiomeCache = false

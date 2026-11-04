@@ -159,7 +159,6 @@
           key = "XKB_KEY_w";
           function = "spawn";
           argument = [(lib.getExe pkgs.configured.zen)];
-          comment = "Launch Zen";
         }
         {
           modifiers = [
@@ -179,7 +178,6 @@
               '';
           in
             mkShCmd (lib.getExe screenshot);
-          comment = "Screenshot";
         }
         {
           modifiers = [
@@ -189,7 +187,6 @@
           key = "XKB_KEY_L";
           function = "spawn";
           argument = mkShCmd (lib.getExe pkgs.configured.swaylock);
-          comment = "Lock screen";
         }
         {
           modifiers = [
@@ -204,8 +201,6 @@
             };
           in
             mkShCmd (lib.getExe bemenu-zk);
-
-          comment = "Launch notes picker";
         }
         {
           modifiers = ["MODKEY"];
@@ -215,8 +210,6 @@
             bemenu-sys = pkgs.scripts.bemenu-sys.override {inherit (pkgs.configured) bemenu;};
           in
             mkShCmd (lib.getExe bemenu-sys);
-
-          comment = "Open power menu";
         }
         {
           modifiers = [
@@ -231,8 +224,6 @@
             };
           in
             mkShCmd (lib.getExe bemenu-bib);
-
-          comment = "Open bibliography";
         }
         {
           modifiers = ["MODKEY"];
@@ -245,7 +236,6 @@
             };
           in
             mkShCmd (lib.getExe zk-capture);
-          comment = "Capture note";
         }
         {
           modifiers = [
@@ -261,14 +251,12 @@
             };
           in
             mkShCmd (lib.getExe zk-journal);
-          comment = "Capture journal";
         }
         {
           modifiers = ["MODKEY"];
           key = "XKB_KEY_Return";
           function = "spawn";
           argument = mkShCmd (lib.getExe terminal.package);
-          comment = "Terminal";
         }
         {
           modifiers = ["MODKEY"];
@@ -278,7 +266,7 @@
             union = "i";
             value = "+1";
           };
-          comment = "Increase number of master clients";
+          comment = "Increase the number of master clients.";
         }
         {
           modifiers = ["MODKEY"];
@@ -288,7 +276,7 @@
             union = "i";
             value = "-1";
           };
-          comment = "Decrease number of master clients";
+          comment = "Decrease the number of master clients.";
         }
       ];
     };

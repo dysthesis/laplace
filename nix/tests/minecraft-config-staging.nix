@@ -40,7 +40,7 @@ pkgs.testers.runNixOSTest {
         viewDistance = 2;
         simulationDistance = 2;
       };
-      # Use vanilla Minecraft for JVM startup and property-staging checks without the modpack or Discord credentials.
+      # Vanilla Minecraft starts without the modpack or Discord credentials.
       services.minecraft-servers.servers.retirement-home = {
         package = lib.mkForce (pkgs.vanillaServers.vanilla-1_20_1.override {
           jre_headless = pkgs.temurin-bin-17;

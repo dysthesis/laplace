@@ -124,7 +124,7 @@ for entry in "${MENU_ENTRIES[@]}"; do
     authors=${rest%%$'\t'*}
     id=${entry##*$'\t'}
 
-    # Store display labels and citation keys independently because bemenu removes tab spacing.
+    # Keep labels and citation keys separate because bemenu removes tab spacing.
     if [[ -n $authors ]]; then
         MENU_LABELS+=("$title - $authors [$id]")
     else

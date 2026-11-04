@@ -197,7 +197,6 @@ in {
       chromiumSuidSandbox.enable = true;
       unprivilegedUsernsClone = true;
 
-      # The login service handles TTY login.
       pam.services = {
         login.enableGnomeKeyring = true;
       };

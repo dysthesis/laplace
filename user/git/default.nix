@@ -4,10 +4,9 @@
   pkgs,
   ...
 }: let
-  # Use the same GPG key for commit signing and the encrypt filter.
   signingKey = "6008B52F296392B0";
 in
-  # Apply only to workstations. Forgejo cannot use a human identity or desktop helpers.
+  # Forgejo cannot use a human identity or desktop helpers.
   lib.mkIf (lib.elem "demiurge" config.laplace.users) {
     environment.systemPackages = with pkgs; [
       cloudflared

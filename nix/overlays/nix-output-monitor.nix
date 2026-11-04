@@ -1,5 +1,5 @@
-# Compatibility patch for unknown Nix events: https://github.com/maralorn/nix-output-monitor/pull/321
-# Remove this patch when the nixpkgs package supports those events.
+# https://github.com/maralorn/nix-output-monitor/pull/321
+# Remove this patch when nixpkgs includes the upstream fix.
 final: prev: {
   nix-output-monitor = prev.nix-output-monitor.override (old: {
     extraComposeFunctions =

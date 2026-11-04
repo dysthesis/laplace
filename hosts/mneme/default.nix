@@ -19,8 +19,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 4;
-      memory = 8096; # MiB, ballooning ceiling
-      balloon = 2048; # MiB, ballooning floor
+      memory = 8096; # MiB, maximum
+      balloon = 2048; # MiB, minimum
       diskSize = "256G";
     };
 

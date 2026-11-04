@@ -251,7 +251,6 @@ in {
 
           # Blocklists reject these Miniflux feed hosts.
           # HaGeZi's abused-TLD list blocks .boats, .lol and .icu.
-          # Filters in the web interface cause the other false positives.
           "@@||0pointer.net^$important"
           "@@||agner.org^$important"
           "@@||bunniestudios.com^$important"
@@ -274,7 +273,7 @@ in {
           ""
         ];
 
-        # Ordered site forwarding belongs to the service inventory.
+        # The service inventory defines the DNS forwarding order.
         dns.upstream_dns = cfg.upstreamDNS;
       };
     };

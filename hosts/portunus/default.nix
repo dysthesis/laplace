@@ -43,8 +43,8 @@ in {
     harden = ["malloc" "kernel"];
     proxmox = {
       cores = 1;
-      memory = 1024; # MiB, ballooning ceiling
-      balloon = 1024; # MiB. A fixed allocation prevents swapping.
+      memory = 1024; # MiB
+      balloon = 1024; # MiB, fixed memory
       diskSize = "20G";
     };
     security = {
@@ -81,7 +81,7 @@ in {
     '';
   };
 
-  # NSS does not always contain the DynamicUser account during ExecStartPre. See nixpkgs#350408.
+  # NSS does not always contain the DynamicUser account during ExecStartPre (nixpkgs#350408).
   users.groups.ddclient = {};
   users.users.ddclient = {
     isSystemUser = true;

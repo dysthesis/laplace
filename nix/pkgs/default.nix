@@ -6,7 +6,7 @@ final: prev: {
   literata = final.callPackage ./literata {};
   soularr = final.callPackage ./soularr {};
 
-  # Karakeep 0.32 must use better-sqlite3 11.3. Remove this override when Karakeep supports Node 24.
+  # Karakeep 0.32 uses better-sqlite3 11.3. Remove this override when Karakeep is compatible with Node 24.
   karakeep = prev.karakeep.override {nodejs = final.nodejs_22;};
 
   proxmox-vma = final.callPackage ./proxmox-vma {};

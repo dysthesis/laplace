@@ -1,16 +1,16 @@
 {
-	// Set this to true to disable advancement locking for ALL books, making all entries visible at all times. Config Flag: advancements_disabled
+	// Show all entries in all books. Config Flag: advancements_disabled
 	"disableAdvancementLocking": false,
-	// Granular list of Book ID's to disable advancement locking for, e.g. [ "botania:lexicon" ]. Config Flags: advancements_disabled_<bookid>
+	// Unlock these book IDs, such as "botania:lexicon". Config Flags: advancements_disabled_<bookid>
 	"noAdvancementBooks": [],
-	// Enable testing mode. By default this doesn't do anything, but you can use the config flag in your books if you want. Config Flag: testing_mode
+	// Books can use this flag for tests. Config Flag: testing_mode
 	"testingMode": false,
-	// Set this to the ID of a book to have it show up in players' inventories, replacing the recipe book.
+	// Replace the inventory recipe book with this book ID.
 	"inventoryButtonBook": "",
-	// Set this to true to use Shift instead of Ctrl for the inventory quick lookup feature.
 	"useShiftForQuickLookup": false,
-	// Set how to handle text overflow: OVERFLOW the text off the page, TRUNCATE overflowed text, or RESIZE everything to fit. Relogin after changing.
+	// OVERFLOW extends past the page. TRUNCATE cuts excess text. RESIZE fits all text.
+	// Reconnect to apply changes.
 	"textOverflowMode": "RESIZE",
-	// How long in ticks the quick lookup key needs to be pressed before the book opens
+	// Hold the quick lookup key for this many ticks to open the book.
 	"quickLookupTime": 10
 }

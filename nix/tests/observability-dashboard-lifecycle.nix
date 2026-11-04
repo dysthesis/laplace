@@ -16,7 +16,6 @@
     environment = config.systemd.services.grafana.environment;
   };
   generations = pkgs.writeText "grafana-dashboard-generations.json" (builtins.toJSON {
-    # The baseline provider owns all four dashboard files.
     baseline.settings = {
       apiVersion = 1;
       providers = [
@@ -123,7 +122,7 @@ in
                     "SELECT 1 FROM server_lock WHERE operation_uid = ?",
                     ("provisioning_dashboards",),
                 ).fetchone() is None, "Preparation retained a provisioning lease"
-        # Do this check before the Foreign provider can import a deleted dashboard with a different ID.
+        # Compare before the Foreign provider can import a deleted dashboard under a different ID.
         assert foreign_record(state) == foreign_before
 
     def assert_bounded_preparation(state, generation):
@@ -176,7 +175,6 @@ in
                         process.terminate()
                         process.wait(timeout=25)
             assert_private_stopped(state)
-            # An interrupted import must not change dashboard ownership.
             assert database_snapshot(state) == before
             assert (state / "dashboards" / "minecraft.json").exists()
         except BaseException:
@@ -187,7 +185,6 @@ in
     def running(state, generation):
         settings = json.loads(json.dumps(generations[generation]["settings"]))
         if generation != "baseline":
-            # Use the production ExecStartPre helper with disposable state and secrets.
             prepare(state, generation)
             settings["providers"][0]["options"]["path"] = str(state / "dashboards")
         foreign = state / "foreign-dashboards"
@@ -310,7 +307,7 @@ in
             assert_bounded_preparation(state, generation)
 
         for first in ["disabled", "absent", "enabled"]:
-            # Configuration changes must keep the same database, user data and renamed organisation.
+            # Keep the database, user data and renamed organisation across configuration changes.
             state = Path(temporary) / first
             with running(state, "baseline"):
                 originals = {uid: dashboard(uid) for uid in ordinary_uids + [foreign_uid]}

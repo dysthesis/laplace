@@ -20,12 +20,11 @@
     useNetworkd = true;
     useDHCP = false;
     nameservers = ["10.0.50.1"];
-    # extraInputRules must use nftables.
+    # extraInputRules uses nftables.
     nftables.enable = true;
-    # Only portunus can connect to Headscale from VLAN40 to VLAN50.
     firewall = {
-      # Open the control-plane segment only for ingress from service recipes.
-      # Keep loopback trusted so c-ares can connect to resolved on 127.0.0.53.
+      # Service rules control network ingress.
+      # c-ares must connect to resolved at 127.0.0.53 through loopback.
       trustedInterfaces = lib.mkForce ["lo"];
     };
   };
@@ -45,8 +44,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
-      memory = 2048; # MiB, ballooning ceiling
-      balloon = 384; # MiB. Headscale and Headplane can operate with this minimum.
+      memory = 2048; # MiB
+      balloon = 384; # MiB, minimum
       diskSize = "64G";
     };
 

@@ -1,48 +1,44 @@
-#General mod settings
 [general]
-	#SETTING THESE SERVER SIDE SETTINGS TO FALSE WILL OVERRIDE ANY OF THE SAME CLIENT SETTINGS THAT ARE SET TO TRUE (for all clients)
+	# False server values override true client values for all clients.
 	dummySetting = true
-	#Disable new dynamic gui system and use old simple visual.
+	# Use the simple GUI visual.
 	dynamicGuiUseOldSimpleGUIVisual = false
-	#Delay in ticks before sending a new image of a gui to other clients, 10 = twice a second, 0 = no delay, 20 = once a second, more frequent might affect performance and network load
+	# Set the GUI image update interval in ticks. Use 10 for two updates per second.
+	# Shorter intervals increase CPU and network load.
 	#Range: > 5
 	dynamicGuiTickSendRateOfGUIUpdates = 10
-	#If enabled, only sends the initial image of a players gui, does not constantly update after it's been opened.
+	# Send only the first GUI image, without later updates.
 	dynamicGuiDontSendConstantGUIUpdates = false
-	#Blur is used to prevent nasty aliasing/flicker artifacts at the cost of clarity
+	# Blur reduces aliasing and flicker but also reduces clarity.
 	#Range: 0 ~ 2
 	dynamicGuiBlurLevel = 1
-	#Adjust the size of the circle used to cut off extra info beyond their main area of their gui, visual issues may occur of too big. Set to -1 to disable
+	# Limit the GUI display circle radius in pixels. Large values can cause visual errors.
+	# Use -1 to disable the limit.
 	#Range: 4.9E-324 ~ 1.7976931348623157E308
 	dynamicGuiSizeRadiusInPixelsToShow = 112.0
-	#Show a clients entire screen instead of using dynamicGuiSizeRadiusInPixelsToShow for a circle fade in a 512x512 area, WARNING: experimental, has cpu and network performance impact. Tweak dynamicGuiSizeRadiusInPixelsToShow to -1 or something large if you use this setting.
+	# Show the entire client screen. This experimental option increases CPU and network load.
+	# Set dynamicGuiSizeRadiusInPixelsToShow to -1 or a large value.
 	dynamicGuiShowClientsEntireScreen = false
-	#Disables the background rendering for most guis, might hide things like JEI or other things count as background rendering
+	# Omit GUI backgrounds. This can hide JEI and other background content.
 	dynamicGuiDisableBackgroundRendering = true
-	#Show items being transferred between player and container
 	showItemsBeingTransferredBetweenPlayerAndContainer = true
-	#How close another player has to be to another player to see what they're doing in GUI, item transferring, mouse movement, etc
+	# Show GUI activity, item transfers and mouse movements within this distance of another player.
 	#Range: > 0
 	distanceRequiredToShowGUIInfo = 10
-	#Enables or disables idle visual in the server player list tab screen
 	showIdleStatesInPlayerList = true
-	#Enables or disables idle visual above player head
 	showIdleStatesInPlayerAboveHead = true
-	#Setting false disables all animations
 	showPlayerAnimations = true
-	#Enables or disables typing animation
 	showPlayerAnimation_Typing = true
-	#Enables or disables idle animation
 	showPlayerAnimation_Idle = true
-	#Enables or disables the non typing animations used when showing the open Gui, such as head looking, arms moving up, arms pointing and clicking
+	# Show non-typing GUI animations, such as head turns, arm movements, and mouse clicks.
 	showPlayerAnimation_Gui = true
-	#Show any Gui they're using that isn't chat typing related in world
+	# Show non-chat GUIs in the world.
 	showPlayerActiveNonChatGui = true
-	#Show the chat typing Gui in world
+	# Show the chat GUI in the world.
 	showPlayerActiveChatGui = true
-	#Show 'Player is typing...' on the chat screen
+	# Show 'Player is typing...' on the chat screen.
 	screenTypingVisible = true
-	#Plays a sound when a player opens some Guis
+	# Play a sound when players open supported GUIs.
 	playScreenOpenSounds = true
-	#Plays a sutble sound when a player clicks their mouse in a Gui
+	# Play a quiet sound for mouse clicks in GUIs.
 	playMouseClickSounds = true

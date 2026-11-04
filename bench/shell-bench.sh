@@ -8,15 +8,15 @@ source "$HERE/lib.sh"
 PROBE="$HERE/pty-probe.py"
 STATS="$HERE/stats.py"
 UI="$HERE/ui.py"
-ui() { python3 "$UI" "$@" || true; } # rich status banners (stderr), best-effort
+ui() { python3 "$UI" "$@" || true; } # Status output must not stop measurements.
 
 FLAKE="."
 HOST="$(hostname 2>/dev/null || echo unknown)"
 TARGETS="fish,bash,devshell"
 MODES="isolated"
 SPAWNS="interactive"
-RUNS=10  # cold spawns for first_prompt/first_command/exit
-ITERS=30 # inner iterations for command_lag/input_lag
+RUNS=10  # Shell sessions for startup and exit measurements.
+ITERS=30 # Command and input measurements per session.
 WARMUP=3
 COLS=120
 ROWS=30
@@ -144,7 +144,6 @@ for t in nix jq python3; do need "$t"; done
 want_tier coarse && need hyperfine
 want_tier syscall && need strace
 
-# Combine each metric's samples from the probe JSON files.
 merge_pty() {
     local out="$1"
     shift
@@ -177,7 +176,7 @@ mk_runenv() {
     esac
 }
 
-# This lower bound does not measure interactive readiness.
+# Process exit time does not measure prompt readiness.
 tier_coarse() {
     local label="$1" shellbin="$2" login="$3"
     shift 3
@@ -228,7 +227,7 @@ tier_profile_fish() {
     [[ $DRYRUN == 1 ]] && return 0
     pin env "${runenv[@]}" "$shellbin" --profile-startup "$prof" -i -c exit \
         >/dev/null 2>&1 || warn "profile-startup failed for $label"
-    # Fish columns: Time(us), Sum(us), Command. The first column is self-time.
+    # Fish columns: Time(us), Sum(us), Command. Time is the cost without child commands.
     if [[ -s $prof ]]; then
         {
             printf 'top init lines by self-time (us):\n'
@@ -239,7 +238,7 @@ tier_profile_fish() {
     fi
 }
 
-# Ablation measures each init line's cost, including its effect on other lines.
+# Disable each init component to measure its cost and its effect on other components.
 tier_ablation_fish() {
     local label="$1" wrapped="$2" unwrapped_bin="$3"
     shift 3
@@ -259,7 +258,6 @@ tier_ablation_fish() {
     loadplugin="$(find "${dds//:/ }" -name load_plugin.fish 2>/dev/null | head -1 || true)"
     log "  config: $cfg"
 
-    # Each pattern matches runtime and build-time init forms.
     local -a names=(dbus task_startup zoxide starship_init direnv transience plugins)
     local -a regexes=(
         'dbus-update-activation-environment'
@@ -271,7 +269,6 @@ tier_ablation_fish() {
         'load_plugin |fish-plugin-paths'
     )
 
-    # The baseline uses the same binary with no init lines disabled.
     local base_share base_json
     base_share="$(gen_ablation_config "$OUTDIR/abl/_baseline" "$cfg" "$loadplugin" '$^')"
     [[ $DRYRUN == 1 ]] && return 0
@@ -409,7 +406,6 @@ for mode in "${MODE_LIST[@]}"; do
             declare -a BENV_PURE=("${RUNENV[@]}" "BASH_NO_FISH=1")
             lbl="bash-pure.${local_tag}"
             want_tier coarse && tier_coarse "$lbl" "$bb" "$login" "${BENV_PURE[@]}"
-            # Input-lag probes must enable terminal ECHO for Readline.
             want_tier metrics && BENCH_PROBE_EXTRA=--no-raw \
                 tier_metrics "$lbl" "$bb" "$login" "" "${BENV_PURE[@]}"
             want_tier syscall && tier_syscall "$lbl" "$bb" "$login" "${BENV_PURE[@]}"

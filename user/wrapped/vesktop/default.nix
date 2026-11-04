@@ -32,7 +32,7 @@ in
         "ca.desrt.dconf" = "talk";
         "org.freedesktop.portal.Desktop" = "talk";
         "org.freedesktop.portal.FileChooser" = "talk";
-        "org.a11y.Bus" = "talk"; # Accessibility
+        "org.a11y.Bus" = "talk"; # Let accessibility tools connect.
       };
 
       fonts = {

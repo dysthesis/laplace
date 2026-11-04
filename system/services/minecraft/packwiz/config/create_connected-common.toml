@@ -1,12 +1,8 @@
-#.
-#Migrate copycats to Create: Copycats+ when they receive a block update
 migrateCopycatsOnBlockUpdate = true
-#.
-#Migrate copycats to Create: Copycats+ when their block entities are initialized
+# Migrate copycats to Create: Copycats+ at block entity initialisation.
 migrateCopycatsOnInitialize = true
 
-#.
-#Enable/disable features. Values on server override clients
+# Server values override client values.
 [features]
 	large_crank_wheel = true
 	crank_wheel = true
@@ -39,26 +35,15 @@ migrateCopycatsOnInitialize = true
 	cross_connector = true
 	redstone_link_wildcard = true
 	freewheel_clutch = true
-	#.
 	kinetic_bridge = true
 	kinetic_battery = true
 
-#.
-#Enable/disable categories of features. Disabling a category hides all related features. Values on server override clients
+# Disable a category to hide all its features. Server values override client values.
 [feature_categories]
-	#.
-	#All components related to item and fluid transport
+	# Control item and fluid transport components.
 	logistics = true
-	#.
-	#All building palette blocks
 	palette = true
-	#.
-	#.
-	#All kinetic components, such as gearboxes and crank wheels
 	kinetic = true
-	#.
-	#All copycats (Install Create: Copycats+ to upgrade)
+	# Install Create: Copycats+ to upgrade copycats.
 	copycats = true
-	#.
-	#All redstone components, such as linked transmitter and sequenced pulse generator
 	redstone = true

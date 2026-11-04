@@ -35,7 +35,7 @@
   starshipInit = pkgs.runCommand "starship-init.fish" {} ''
     HOME="$TMPDIR" ${lib.getExe starship} init fish --print-full-init > $out
   '';
-  # Expand zoxide's alias at build time to prevent sourcing it at runtime.
+  # Expand zoxide's alias at build time to prevent a source command at runtime.
   zoxideInit = pkgs.runCommand "zoxide-init.fish" {} ''
     HOME="$TMPDIR" ${lib.getExe zoxide} init fish --cmd cd \
       | sed "s|^alias cd=__zoxide_z\$|function cd --wraps=__zoxide_z --description 'alias cd=__zoxide_z'\n    __zoxide_z \$argv\nend|" \
@@ -64,7 +64,7 @@
     done
   '';
 
-  # Autoload functions on first use.
+  # Use vendor_functions.d to load functions on first use.
   functionsDir = pkgs.runCommand "fish-vendor-functions" {} ''
     install -Dm444 ${./functions/pushd.fish} $out/share/fish/vendor_functions.d/pushd.fish
     install -Dm444 ${./functions/popd.fish} $out/share/fish/vendor_functions.d/popd.fish

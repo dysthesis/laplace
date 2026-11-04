@@ -4,9 +4,8 @@
   journalPort = 8444;
   defaultMetricsOrigin = "https://${domain}:${toString metricsPort}";
   defaultJournalOrigin = "https://${domain}:${toString journalPort}";
-  # Make sure that origins contain only the scheme and authority before URL construction.
-  # The hostname, IPv6 and port syntax can still be incorrect.
-  # The code does not normalise full-URL overrides.
+  # Accept only a scheme and authority. Hostname, IPv6 and port syntax can still be incorrect.
+  # Do not normalise full-URL overrides.
   validOrigin = origin:
     builtins.isString origin && builtins.match "https?://([A-Za-z0-9.-]+|[[][0-9A-Fa-f:.]+[]])(:[0-9]+)?" origin != null;
 in {

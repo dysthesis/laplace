@@ -78,8 +78,7 @@ in {
     };
   };
 
-  # Mount /nix/persist in the initrd for mnemosyne's first-boot directory creation.
-  # SOPS must use this mount if its age key is in /nix/persist.
-  # See deimos/disks.nix and the proxmox profile.
+  # Mnemosyne creates directories on this mount in the initrd.
+  # SOPS also uses this mount when the age key is in /nix/persist.
   fileSystems."/nix/persist".neededForBoot = true;
 }

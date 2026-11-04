@@ -73,7 +73,7 @@ def swallow(child_id):
     if not parent["workspace_id"]:
         return
     if not any(w["is_focused"] and w["id"] in (parent_id, child_id) for w in current.values()):
-        return  # Change focus only when the parent or the child has focus.
+        return  # Do not take focus from an unrelated window.
 
     if parent["workspace_id"] != child["workspace_id"]:
         if not child["is_focused"]:
@@ -101,7 +101,7 @@ def swallow(child_id):
             action("FocusWindow", id=child_id)
             action("MoveColumnToIndex", index=target)
 
-        # Read window positions before the consume-or-expel action.
+        # Read the updated positions after the column move.
         current = windows()
         parent, child = current.get(parent_id), current.get(child_id)
         if not parent or not child or parent["workspace_id"] != child["workspace_id"]:

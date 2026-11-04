@@ -1,6 +1,3 @@
-Expose whisper.cpp's existing initial prompt through FFmpeg's whisper filter.
-Keep the default unset so other users of this private FFmpeg build are unchanged.
-
 --- a/libavfilter/af_whisper.c
 +++ b/libavfilter/af_whisper.c
 @@ -48,6 +48,7 @@ typedef struct WhisperContext {

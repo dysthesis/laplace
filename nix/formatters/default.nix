@@ -7,7 +7,7 @@ _: {
     ".tokensave/**"
     "AGENTS.md"
     "system/secrets/*"
-    # Some third-party shader files use .json extensions but are not JSON.
+    # Some shader files have a .json extension but do not contain JSON.
     "system/services/minecraft/packwiz/**"
   ];
   programs = {

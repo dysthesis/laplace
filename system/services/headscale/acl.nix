@@ -33,7 +33,6 @@
     // optionalAttrs (cfg.tagOwners != {}) {inherit (cfg) tagOwners;}
     // optionalAttrs (cfg.autoApprovers != {}) {inherit (cfg) autoApprovers;};
 
-  # toJSON supplies correct HuJSON syntax.
   # Undefined aliases or empty groups can still make Headscale reject the policy.
   policyFile = pkgs.writeText "headscale-policy.hujson" (builtins.toJSON policy);
 in {
@@ -53,7 +52,7 @@ in {
       example = lib.literalExpression ''
         {
           admin.members = ["demiurge"];
-          admin.destinations = ["group:admin:*"]; # full mesh among your nodes
+          admin.destinations = ["group:admin:*"]; # Permit all connections between group members.
           friends = {
             members = ["sheva"];
             destinations = ["mc:25565" "adguard:53"];

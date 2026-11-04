@@ -1,4 +1,4 @@
-# Keep untrusted Forgejo CI jobs on VLAN80. The jobs use Forgejo on VLAN70.
+# Keep untrusted CI jobs on VLAN80, separate from Forgejo on VLAN70.
 {
   config,
   cluster,
@@ -31,9 +31,9 @@
     harden = ["malloc" "kernel"];
     proxmox = {
       cores = 4;
-      memory = 6144; # MiB. Keep memory available for Nix evaluation and builds.
-      balloon = 6144; # MiB. Use a fixed allocation for Nix CI.
-      # The 64G capacity is an estimate. Enable garbage collection or increase capacity after measuring disk use.
+      memory = 6144; # MiB, for Nix evaluation and builds
+      balloon = 6144; # MiB. Fixed memory is necessary for Nix CI.
+      # This capacity is an estimate. Measure disk use before you increase it or enable garbage collection.
       diskSize = "64G";
     };
 

@@ -9,21 +9,18 @@ die() {
 
 need() { command -v "$1" >/dev/null 2>&1 || die "missing tool: $1 (provision via bench/default.nix)"; }
 
-# Build the installable if necessary. Print its store path.
 resolve_store() {
     local flake="$1" inst="$2"
     nix build --no-link --print-out-paths "${flake}#${inst}" ||
         die "could not build ${flake}#${inst}"
 }
 
-# Print the wrapped Fish XDG_DATA_DIRS value.
 fish_xdg_data_dirs() {
     local wrapped="$1"
     "${wrapped}/bin/fish" --no-config -c "printf '%s\n' \"\$XDG_DATA_DIRS\"" 2>/dev/null ||
         "${wrapped}/bin/fish" -c "printf '%s\n' \"\$XDG_DATA_DIRS\""
 }
 
-# Find user_config.fish in directories separated by colons or spaces.
 find_fish_user_config() {
     local dirs="$1" d
     for d in ${dirs//:/ }; do
@@ -35,7 +32,6 @@ find_fish_user_config() {
     return 1
 }
 
-# Record the machine, build and external conditions as JSON.
 capture_provenance() {
     local out="$1"
     shift
@@ -74,12 +70,12 @@ capture_provenance() {
       targets:$extra}' >"$out"
 }
 
-# Disable init lines that match the pattern. Print the share path.
+# Disable matching init lines. Return the share path.
 gen_ablation_config() {
     local outdir="$1" cfg="$2" loadplugin="$3" regex="$4"
     local vd="$outdir/share/fish/vendor_conf.d"
     mkdir -p "$vd"
-    # If the optional config is not present, set -e must not stop the script.
+    # A missing optional config must not trigger set -e.
     if [[ -f $loadplugin ]]; then cp "$loadplugin" "$vd/load_plugin.fish"; fi
     # Use \x01 as the delimiter because the patterns contain |.
     local d=$'\x01'

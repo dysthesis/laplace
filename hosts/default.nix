@@ -22,11 +22,10 @@
     (import ../nix/overlays/unstable.nix inputs)
     (import ../nix/overlays/nix-output-monitor.nix)
     inputs.nix-minecraft.overlay
-    # Stop activations at the time limit to release the deployment lock.
     (import ../nix/overlays/stc-timeout.nix)
   ];
 
-  # The two evaluators receive the same module list and import-time arguments.
+  # Colmena and nixosConfigurations use the same modules and arguments.
   nodeModules =
     mapAttrs (hostname: host: {
       system = host.system;
@@ -41,7 +40,7 @@
         {networking.hostName = hostname;}
         {nixpkgs.hostPlatform = lib.mkDefault host.system;}
         ({modulesPath, ...}: {
-          # hardened.nix causes Wi-Fi failures. Set the same options without this profile.
+          # The hardened.nix profile causes Wi-Fi failures.
           imports = ["${modulesPath}/profiles/minimal.nix"];
         })
         {

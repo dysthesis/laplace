@@ -84,7 +84,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
-    # Channel revisions have Hydra substitutes. Some master revisions do not.
+    # Use a channel revision for Hydra substitutes.
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
@@ -112,7 +112,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # gungnir fails under Determinate Nix, but no host enables Xorg.
+    # gungnir does not build with Determinate Nix. Xorg is disabled on all hosts.
     gungnir = {
       url = "github:dysthesis/gungnir";
       inputs.nixpkgs.follows = "nixpkgs";

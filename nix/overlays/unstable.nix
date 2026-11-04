@@ -9,7 +9,7 @@ inputs: final: _prev: {
           (unstablePrev.pythonPackagesExtensions or [])
           ++ [
             (_pythonFinal: pythonPrev: {
-              # transformers 5.5 must use `ReasoningEffort` from mistral-common 1.11.
+              # transformers 5.5 uses ReasoningEffort from mistral-common 1.11.
               mistral-common = pythonPrev.mistral-common.overridePythonAttrs (old: rec {
                 version = "1.11.1";
                 src = unstableFinal.fetchFromGitHub {

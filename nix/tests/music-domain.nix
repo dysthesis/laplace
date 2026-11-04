@@ -1,4 +1,3 @@
-# Use the qbittorrent.preStart reconciler with INI files.
 {pkgs}:
 pkgs.runCommand "music-domain" {
   nativeBuildInputs = [pkgs.python3];
@@ -53,7 +52,6 @@ pkgs.runCommand "music-domain" {
               expected = fixture.replace(b"[Preferences]" + newline, b"[Preferences]" + newline + entry)
 
           actual = profile.read_bytes()
-          # Only the Preferences entry can change. All other bytes must stay the same.
           assert actual == expected, (name, domain, actual)
           assert credentials.replace(b"\n", newline) in actual
           assert unrelated.replace(b"\n", newline) in actual

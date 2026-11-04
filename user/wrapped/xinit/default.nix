@@ -31,12 +31,11 @@
       systemctl import-environment --user DISPLAY WAYLAND_DISPLAY XDG_SESSION_TYPE DBUS_SESSION_BUS_ADDRESS \
         QT_QPA_PLATFORMTHEME PATH XCURSOR_SIZE XCURSOR_THEME
 
-
       exec ${xmonad}/bin/xmonad-configured
     '';
 in
   mkWrapper pkgs xinit {
-    program = "startx"; # Override xinit's mainProgram to wrap startx.
+    program = "startx";
     set.XINITRC = xinitrc;
     binPath = [
       inputs.mandelbrot.packages.${system}.xmobar

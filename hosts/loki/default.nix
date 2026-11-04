@@ -18,11 +18,10 @@
   networking = {
     useNetworkd = true;
     useDHCP = false;
-    # Use the local cache first. Use the gateway when the cache cannot supply records.
     nameservers = ["127.0.0.1" "10.0.60.1"];
   };
 
-  # Cache and serve stale records when the gateway DNS is not available.
+  # Serve expired DNS records if the gateway is not available.
   # Disable DNSSEC validation because the gateway is the trust boundary.
   services.unbound = {
     enable = true;
@@ -45,7 +44,7 @@
     };
   };
 
-  # Keep the modpack host on VLAN60. Transmit only telemetry and deployment traffic between VLANs.
+  # Transmit only telemetry and deployment traffic between VLANs.
   systemd.network.networks."10-lan" = {
     matchConfig.Name = "en* eth*";
     networkConfig = {
@@ -59,10 +58,10 @@
   laplace = {
     profiles = ["proxmox"];
     proxmox = {
-      cores = 4; # Minecraft uses a main-tick thread, chunk-generation workers and garbage-collection workers.
-      memory = 12288; # MiB, 8 GiB heap plus 4 GiB overhead
-      balloon = 0; # A fixed allocation prevents zram and garbage-collection stalls.
-      diskSize = "64G"; # Increase space for the world and modpack before a large chunk pregeneration.
+      cores = 4; # Chunk generation and garbage collection use threads separate from the main tick thread.
+      memory = 12288; # MiB: 8 GiB heap, 4 GiB overhead
+      balloon = 0; # Fixed memory prevents zram and garbage-collection stalls.
+      diskSize = "64G"; # Increase this before large chunk-generation jobs.
     };
 
     security = {
@@ -93,7 +92,7 @@
         openFirewall = false;
         cloudflare = {
           enable = true;
-          sopsFile = ../../system/secrets/loki.yaml; # This file must contain a cloudflare_api_key key.
+          sopsFile = ../../system/secrets/loki.yaml;
         };
       };
     };

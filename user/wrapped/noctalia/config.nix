@@ -280,14 +280,14 @@ in {
     };
     reminders = {
       enabled = true;
-      use_event_reminders = true; # Use each event's reminders. Use default_lead_minutes when this is false.
-      default_lead_minutes = 10; # Use this delay for events without reminders. Use 0 for the event start.
-      all_day_digest_time = "09:00"; # Show today's all-day events in one notification. "" disables it.
+      use_event_reminders = true; # Use default_lead_minutes when use_event_reminders is false.
+      default_lead_minutes = 10; # Events without reminders use this delay. Use 0 to notify at the event start.
+      all_day_digest_time = "09:00"; # Show today's all-day events in one notification. Use "" to disable this notification.
     };
     idle = {
       behavior_order = ["lock" "screen-off" "suspend"];
       # Fade the full-screen surface-tint overlay before the idle command.
-      # Use seconds between 0 and 120. At 0, run the command immediately after the compositor's idle signal.
+      # The duration is 0 to 120 seconds. At 0, run the command when the compositor signals idle.
       # Settings accepts only integer seconds from 0 to 30.
       pre_action_fade_seconds = 2.0;
     };
@@ -296,10 +296,10 @@ in {
   inherit (config) location;
   nightlight = {
     enabled = true;
-    force = false; # Use the night temperature without the schedule.
+    force = false; # A true value applies the night temperature without the schedule.
 
-    temperature_day = 6500; # Kelvin. The minimum is temperature_night + 100.
-    temperature_night = 4000; # Kelvin
+    temperature_day = 6500; # The two temperatures are in kelvin. The minimum is temperature_night + 100.
+    temperature_night = 4000;
   };
 
   dock.enabled = false;

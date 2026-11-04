@@ -62,7 +62,6 @@ in {
   };
 
   config = mkIf enabled {
-    # Proxmox rejects a balloon minimum greater than the configured memory.
     assertions = [
       {
         assertion = cfg.balloon == null || cfg.balloon <= cfg.memory;

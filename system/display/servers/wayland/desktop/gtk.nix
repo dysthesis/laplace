@@ -1,5 +1,5 @@
 palette: ''
-  /* GTK 3 / Graphite and GTK 4 / libadwaita semantic colours. */
+  /* These colours support GTK 3 with Graphite and GTK 4 with libadwaita. */
   @define-color theme_bg_color ${palette.background};
   @define-color theme_fg_color ${palette.foreground};
   @define-color theme_base_color ${palette.inset};

@@ -1,4 +1,3 @@
-# Caddy forwards tailnet-only port 443 to loopback services.
 {
   config,
   cluster,
@@ -6,7 +5,7 @@
   ...
 }: {
   sops.secrets = {
-    # Beszel KEY and TOKEN environment file.
+    # The environment file supplies Beszel's KEY and TOKEN.
     beszel_agent_env.sopsFile = ../../system/secrets/mimir.yaml;
     telemetry_client_certificate = {
       sopsFile = ../../system/secrets/mimir.yaml;
@@ -38,8 +37,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 2;
-      memory = 5120; # MiB. Keep memory available for Karakeep's Node.js processes and headless Chromium.
-      balloon = 1280; # MiB, minimum for Postgres and application processes
+      memory = 5120; # MiB, for Karakeep's Node.js processes and Chromium
+      balloon = 1280; # MiB, minimum for PostgreSQL and application processes
       diskSize = "32G";
     };
 

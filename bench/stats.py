@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# Shell-latency statistics and A/B comparisons.
 from __future__ import annotations
 
 import argparse
@@ -9,7 +8,7 @@ import random
 import statistics as st
 import sys
 
-random.seed(0xCAFE)  # The same data gives repeatable confidence intervals.
+random.seed(0xCAFE)  # Keep confidence intervals repeatable for the same samples.
 
 try:
     from rich.console import Console
@@ -43,7 +42,7 @@ def percentile(xs, q):
 
 
 def mad(xs):
-    """Median absolute deviation, scaled to estimate the standard deviation."""
+    """Return the median absolute deviation, scaled for the standard deviation."""
     if len(xs) < 2:
         return 0.0
     med = st.median(xs)
@@ -87,7 +86,7 @@ def summarize_metric(xs):
 def mann_whitney_u(a, b):
     """Return (U, p) with a tie-corrected, two-sided normal approximation.
 
-    Give the sample sizes with the result. Small samples give less accurate results.
+    Small samples give less accurate results.
     """
     na, nb = len(a), len(b)
     if na == 0 or nb == 0:
@@ -203,7 +202,6 @@ def cmd_compare(base_path, var_path, as_json):
         ma, mb = st.median(a), st.median(b)
         delta = mb - ma
         pct = (delta / ma * 100.0) if ma else float("nan")
-        # Bootstrap the confidence interval for the difference between medians.
         n = min(2000, 10000)
         diffs = []
         for _ in range(n):

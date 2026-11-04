@@ -1,10 +1,8 @@
-# The lifecycle test uses disposable credentials and a local CA.
 {
   pkgs,
   sopsModule,
 }: let
   inherit (pkgs) lib;
-  # These credentials let SOPS checks run without production secrets.
   credentials = pkgs.runCommand "lifecycle-test-only-secrets" {nativeBuildInputs = [pkgs.age pkgs.sops];} ''
     mkdir -p "$out"
     age-keygen -o "$out/age.key"
@@ -51,7 +49,7 @@
         })
     ];
     config = {
-      # The VM harness replaces fileSystems. Supply the Mnemosyne mounts for persistent application state.
+      # The VM harness replaces fileSystems. Keep the Mnemosyne mounts for persistent state.
       virtualisation.fileSystems = f.config.fileSystems;
       services.caddy.virtualHosts =
         lib.mapAttrs (_: route: {
@@ -103,7 +101,6 @@ in
       };
       environment.systemPackages = [pkgs.curl pkgs.jq];
       specialisation.disabled.configuration = {
-        # Disabling the recipe must remove its full projection, not only its daemon.
         disabledModules = [enabledGeneration];
         imports = [disabledGeneration];
       };
@@ -128,7 +125,7 @@ in
       machine.wait_for_open_port(8087)
       machine.wait_for_open_port(443)
 
-      # Use Ethernet traffic for tailnet firewall checks, without a control plane or production enrolment.
+      # The test uses Ethernet without Headscale or production enrolment.
       machine.succeed("ip link set eth1 down; ip link set eth1 name tailscale0; ip link set tailscale0 up")
       machine.succeed("ip addr add 100.64.1.10/24 dev tailscale0")
       machine.succeed("ip -6 addr add fd7a:115c:a1e0::10/64 dev tailscale0 nodad")
@@ -210,7 +207,6 @@ in
           machine.succeed("test ! -e /etc/systemd/system/miniflux-dbsetup.service")
           machine.succeed("test ! -e /etc/systemd/system/postgresql.service")
           machine.fail(curl + "--connect-timeout 2 http://127.0.0.1:8087/healthcheck")
-          # A stopped upstream service is not sufficient. Caddy must remove the route.
           live_routes = machine.succeed(curl + "http://127.0.0.1:2019/config/")
           assert "rss.example.test" not in live_routes
           assert "unrelated.example.test" in live_routes

@@ -30,7 +30,7 @@ nixpkgs.lib.extend (
       modules = {
         inherit importInDirectory;
 
-        # `extra` adds enum values that have no module directory.
+        # extra adds enum values that have no module directory.
         mkSelector = {
           dir,
           option,
@@ -56,9 +56,8 @@ nixpkgs.lib.extend (
         };
       };
 
-      # `args` accepts a wrapper specification or shell code for `postBuild`.
-      # Each `addFlags` item becomes one argument.
-      # PATH contains `binPath` directories before host directories.
+      # args accepts a wrapper specification or postBuild shell code.
+      # Each addFlags item is one argument. binPath directories come first in PATH.
       pkgs.mkWrapper = pkgs: package: args: let
         paths =
           if

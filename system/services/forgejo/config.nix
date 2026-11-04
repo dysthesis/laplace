@@ -8,9 +8,8 @@
   inherit (lib) mkIf;
   cfg = config.laplace.services.forgejo;
 
-  # Static Iosevka Medium and Bold faces use different font files.
   cadmus = inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font;
-  # WOFF2 reduces font download size.
+  # WOFF2 decreases font download size.
   cadmusWoff2 = pkgs.runCommand "iosevka-cadmus-woff2" {nativeBuildInputs = [pkgs.woff2];} ''
     mkdir -p "$out"
     for w in Medium MediumItalic Bold BoldItalic; do

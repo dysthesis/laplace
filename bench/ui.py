@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# Status output uses stderr, with plain text if Rich is not available.
 import sys
 
 try:

@@ -28,7 +28,7 @@ _ANSI = re.compile(
     rb"\x1b\[[0-9;?]*[ -/]*[@-~]"      # CSI
     rb"|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)"  # OSC terminator: BEL or ST
     rb"|\x1b[@-Z\\-_]"                 # 2-byte escapes
-    rb"|[\x00-\x08\x0e-\x1f]"          # C0 controls outside the whitespace range
+    rb"|[\x00-\x08\x0e-\x1f]"          # C0 controls other than whitespace
 )
 
 
@@ -36,13 +36,13 @@ def strip_ansi(b: bytes) -> bytes:
     return _ANSI.sub(b"", b)
 
 
-# Reply to terminal queries so shells do not consume probe keystrokes as answers.
+# Send replies to terminal queries so shells do not read probe keystrokes as replies.
 _QUERY = re.compile(
     rb"\x1b\[(?:0)?c"                       # DA1
     rb"|\x1b\[>(?:0)?c"                     # DA2
     rb"|\x1b\[6n"                           # CPR (cursor position)
     rb"|\x1b\[5n"                           # DSR (device status)
-    rb"|\x1b\]1[01];\?(?:\x07|\x1b\\)"      # OSC 10/11 foreground/background colour query
+    rb"|\x1b\]1[01];\?(?:\x07|\x1b\\)"      # OSC 10/11: foreground and background colours
     rb"|\x1b\[>(?:0)?q"                     # XTVERSION
     rb"|\x1bP\+q[0-9A-Za-z;]*\x1b\\"        # XTGETTCAP (termcap)
     rb"|\x1b\[\?u"                          # kitty keyboard flags query
@@ -82,9 +82,9 @@ class Pty:
         self.raw = raw
         self.pid = -1
         self.fd = -1
-        self.buf = bytearray()           # All bytes read, including control sequences
+        self.buf = bytearray()           # All bytes read, with control sequences
         self.t0 = 0.0                    # Monotonic time at spawn
-        self._qpos = 0                   # Position for terminal-query detection
+        self._qpos = 0                   # First byte not scanned for terminal queries
 
     def spawn(self):
         self.t0 = time.monotonic()
@@ -101,7 +101,7 @@ class Pty:
         winsz = struct.pack("HHHH", self.rows, self.cols, 0, 0)
         fcntl.ioctl(self.fd, termios.TIOCSWINSZ, winsz)
         # Raw mode measures shell echo, not kernel echo.
-        # Readline suppresses echo if ECHO is off at startup. Use --no-raw for Readline.
+        # If ECHO is off at startup, Readline suppresses echo. Use --no-raw for Readline.
         if self.raw:
             try:
                 tty.setraw(self.fd)
@@ -123,7 +123,6 @@ class Pty:
         return chunk
 
     def _answer_queries(self):
-        """Answer terminal queries so the shell can accept keystrokes."""
         region = bytes(self.buf[self._qpos:])
         matches = list(_QUERY.finditer(region))
         if not matches:
@@ -143,10 +142,10 @@ class Pty:
         os.write(self.fd, data)
 
     def pump_until(self, predicate, timeout_s, quiesce_s=None):
-        """Read until the predicate matches, output stays quiet for quiesce_s, or the timeout expires.
+        """Read until a match, a quiet period or the timeout.
 
-        Return (matched, t_event, quiesced). The quiet period starts only after the first byte.
-        t_event is the monotonic time of the matching byte, or the last byte before the quiet period.
+        Return (matched, t_event, quiesced). The quiet period starts after the first byte.
+        t_event is the match time or the time of the last byte before the quiet period.
         """
         deadline = time.monotonic() + timeout_s
         last_byte_t = None
@@ -204,14 +203,12 @@ class Pty:
 
 
 def prompt_predicate(regex: re.Pattern | None):
-    """A missing pattern cannot match, so the caller uses the quiet period."""
     if regex is None:
         return lambda _b: False
     return lambda b: regex.search(b) is not None
 
 
 def wait_prompt(p: Pty, since_len, regex, quiesce_s, timeout_s):
-    """Wait for new prompt output. Return the monotonic event time."""
     def pred(stripped):
         if regex is None:
             return False
@@ -224,12 +221,10 @@ def wait_prompt(p: Pty, since_len, regex, quiesce_s, timeout_s):
 
 
 def _drain(p, quiet_s=0.012, cap_s=0.04):
-    """Wait for pending screen updates to stop before the measurement."""
     p.pump_until(lambda _b: False, timeout_s=cap_s, quiesce_s=quiet_s)
 
 
 def _keystroke_lag(p, c, timeout_s):
-    """Measure the shell echo of one keypress after output becomes quiet."""
     _drain(p)
     since = len(strip_ansi(bytes(p.buf)))
     t = time.monotonic()
@@ -244,7 +239,6 @@ def _keystroke_lag(p, c, timeout_s):
 
 
 def measure_spawn_metrics(args, env, step=None) -> dict:
-    """Measure prompt, command and input latency in one shell session."""
     regex = re.compile(args.prompt_regex.encode()) if args.prompt_regex else None
     quiesce_s = args.quiesce_ms / 1000.0
     timeout_s = args.timeout_ms / 1000.0
@@ -267,12 +261,11 @@ def measure_spawn_metrics(args, env, step=None) -> dict:
                 first_pred, timeout_s=timeout_s, quiesce_s=quiesce_s
             )
             if not matched and not quiesced:
-                # Do not record a sample if the prompt is not ready.
                 continue
             out["first_prompt_lag_ms"].append((t_event - p.t0) * 1000.0)
 
-            # Wait for the full prompt, not its first character.
-            # t_ready records the last byte before the quiet period.
+            # Measure the full prompt, not its first character.
+            # t_ready is the time of the last byte before the quiet period.
             for _i in range(args.inner_iters):
                 _drain(p, quiet_s=0.05, cap_s=1.0)
                 t_send = time.monotonic()
@@ -287,7 +280,7 @@ def measure_spawn_metrics(args, env, step=None) -> dict:
                 c = charset[i % len(charset):i % len(charset) + 1]
                 out["input_lag_ms"].append(_keystroke_lag(p, c, timeout_s))
 
-            # This measures the cost of Fish highlighting the full buffer on each keypress.
+            # Fish updates syntax colours for the full buffer on each keypress.
             p.write(b"echo " + b"x" * args.longbuf_len)
             _drain(p)
             for i in range(args.inner_iters):
@@ -306,7 +299,7 @@ def measure_spawn_metrics(args, env, step=None) -> dict:
 def measure_first_command(args, env, step=None) -> list:
     """Measure command latency from process startup, before the first prompt.
 
-    The environment supplies the marker so echoed input cannot match the command output.
+    The environment supplies the marker so echoed input cannot match command output.
     """
     timeout_s = args.timeout_ms / 1000.0
     samples = []
@@ -338,10 +331,7 @@ def measure_first_command(args, env, step=None) -> list:
 
 
 def measure_exit_time(args, env, step=None) -> list:
-    """Measure elapsed time for `shell -i -c exit` without a pseudo-terminal.
-
-    This lower bound does not measure interactive readiness.
-    """
+    """Measure elapsed time for `shell -i -c exit`, not interactive readiness."""
     import subprocess
 
     argv = [args.shell] + (["-l"] if args.login else []) + ["-i", "-c", "exit"]
@@ -357,7 +347,7 @@ def measure_exit_time(args, env, step=None) -> list:
 
 
 def collect(args, env, skip) -> dict:
-    """Collect metrics. Show progress on stderr, if available, so stdout contains only JSON."""
+    """Collect metrics. Keep progress output on stderr so stdout contains only JSON."""
     samples = {}
 
     def run_groups(stepper):

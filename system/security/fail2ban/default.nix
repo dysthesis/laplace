@@ -18,7 +18,7 @@ in {
         # Do not exempt tailnet peers. Rate limits must still apply to compromised nodes.
       ];
       extraPackages = [pkgs.ipset]; # The iptables branch uses ipset.
-      # Match ban actions to the firewall backend. Bans fail without the necessary backend.
+      # Ban actions fail if their firewall backend is unavailable.
       banaction =
         if config.networking.nftables.enable
         then "nftables-multiport"

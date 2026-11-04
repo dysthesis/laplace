@@ -24,8 +24,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
-      memory = 1024; # MiB, ballooning ceiling
-      balloon = 256; # MiB. The tailscaled exit node uses approximately 30–50 MiB at idle.
+      memory = 1024; # MiB
+      balloon = 256; # MiB. tailscaled uses approximately 30–50 MiB at idle.
       diskSize = "20G";
     };
 

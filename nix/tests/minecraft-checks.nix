@@ -19,7 +19,7 @@
     runtime = pkgs.temurin-bin-17;
     minecraft = serviceFixtures.minecraft.laplace.services.minecraft.retirement-home;
     server = serviceFixtures.minecraft.services.minecraft-servers.servers.retirement-home;
-    # Keep production Xmx for G1 heap sizing. Set a low Xms to decrease AlwaysPreTouch memory use in CI.
+    # Keep Xmx for G1 heap sizing. Lower Xms to decrease AlwaysPreTouch memory use in CI.
     smokeJvmOpts = builtins.replaceStrings ["-Xms${toString minecraft.memoryGb}G"] ["-Xms128M"] server.jvmOpts;
   in
     assert lib.versionAtLeast runtime.version "17.0.19";

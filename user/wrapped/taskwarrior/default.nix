@@ -28,7 +28,7 @@
     search.case.sensitive=no
     data.location=~/.local/share/task
 
-    # Prevent priority inversion
+    # Let blocking tasks inherit urgency to prevent priority inversion.
     urgency.inherit=1
     urgency.blocking.coefficient=0
     urgency.blocked.coefficient=0

@@ -1,8 +1,5 @@
 {
-  // If disabled, some mod compat features will be turned off to prioritize parity with vanilla seeds.
-  // The following features will break if disabled:
-  // - Custom wood type shipwrecks
-  // - Structure optimizations
+  // False preserves vanilla seed parity but disables custom wood shipwrecks and structure optimisations.
   "breaks_seed_parity": true,
   "log_debug_messages": false
 }

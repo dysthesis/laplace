@@ -1,9 +1,9 @@
 {
-	// Whether villagers should use Numismatic currency for trading
+	// Villagers use Numismatic currency for trades.
 	"enableVillagerTrading": true,
-	// Whether Numismatic currency should be injected into the loot tables of loot chests
+	// Add Numismatic currency to chest loot.
 	"generateCurrencyInChests": true,
-	// Where the notification for adding/removing money from the purse should be (requires rejoining to apply)
+	// Reconnect to apply changes to the purse notification position.
 	"moneyMessageLocation": "ACTIONBAR",
 	"purseOffsets": {
 		"survivalX": 0,
@@ -14,32 +14,24 @@
 		"merchantY": 0
 	},
 	"lootOptions": {
-		// Affects money gained from Desert Temple chests
+		// Set money limits for Desert Temple chests.
 		"desertMinLoot": 300,
-		// Affects money gained from Desert Temple chests
 		"desertMaxLoot": 1200,
-		// Affects money gained from Dungeon and Mineshaft chests
+		// Set money limits for Dungeon and Mineshaft chests.
 		"dungeonMinLoot": 500,
-		// Affects money gained from Dungeon and Mineshaft chests
 		"dungeonMaxLoot": 2000,
-		// Affects money gained from Bastion, Stronghold, Outpost and Buried Treasure chests
+		// Set money limits for Bastion, Stronghold, Outpost and Buried Treasure chests.
 		"structureMinLoot": 1500,
 		"structureMaxLoot": 4000,
 		"strongholdLibraryMinLoot": 2000,
 		"strongholdLibraryMaxLoot": 6000
 	},
-	/* Sets the base value of money dropped for an entity. This value is multiplied by the moneyMobDropVariancePercentage gamerule.
-	   Example of having pillagers drop around 80 Bronze Coins:
-	   "mobsToBaseValues": {
-	       "minecraft:pillager": 80,
-	   }
-	   Requires a restart to reload correctly!
-	*/
+	// The moneyMobDropVariancePercentage game rule scales each entity's base drop.
+	// For about 80 Bronze Coins per pillager, use "minecraft:pillager": 80.
+	// Restart to apply changes.
 	"mobsToBaseValues": { },
-	// Scales the money dropped based on the mobs max health. Money dropped is multiplied by '(mob max health) / (20 * healthScaleReduction)'
+	// Multiply drops by '(mob max health) / (20 * healthScaleReduction)'.
 	"scaleOnHealth": false,
-	/* Reduces the impact that health scaling has on money dropped from mobs.
-	   Requires a restart to reload correctly!
-	*/
+	// Reduce the effect of mob health on money drops. Restart to apply changes.
 	"healthScaleReduction": 1.0
 }

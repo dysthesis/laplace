@@ -15,7 +15,6 @@ state = Path(os.environ["GRAFANA_STATE_DIR"])
 database = Path(os.environ["GRAFANA_DATABASE_PATH"])
 staged = state / "dashboards"
 staged.mkdir(mode=0o750, parents=True, exist_ok=True)
-# Initialise bootstrap secrets only when absent or empty.
 for name, size in [("secret-key", 32), ("bootstrap-admin-password", 24)]:
     path = state / name
     if not path.exists() or path.stat().st_size == 0:
@@ -229,7 +228,7 @@ if pending:
             raise
 
 # Stage only configured files for normal provisioning with deletion enabled.
-# Do not recreate a disabled game on restart.
+# Do not restore the Minecraft dashboard when Minecraft is disabled.
 stage_dashboards({
     uid for uid, source in sources.items()
     if source.name != "minecraft.json" or os.environ["GRAFANA_MINECRAFT_ENABLED"] == "1"

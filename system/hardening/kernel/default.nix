@@ -20,7 +20,7 @@ in {
       protectKernelImage = mkForce true; # This disables hibernation.
 
       # virtd, WireGuard and iptables load modules at runtime.
-      # Module locking can prevent boot if necessary modules do not load first.
+      # Module locks can prevent boot if necessary modules do not load first.
       lockKernelModules = mkForce false;
 
       # Limit Meltdown attacks and some KASLR bypasses.
@@ -34,7 +34,7 @@ in {
     };
 
     boot = {
-      kernelPackages = mkDefault pkgs.linuxPackages_hardened; # This kernel causes a kernel panic.
+      kernelPackages = mkDefault pkgs.linuxPackages_hardened; # The hardened kernel can panic.
       kernelParams = [
         "slab_nomerge"
         "page_poison=1" # Overwrite freed pages.
@@ -81,7 +81,7 @@ in {
 
         "kernel.ftrace_enabled" = mkForce false;
 
-        # Reject packets that fail strict reverse path filtering. Log them as martians.
+        # Reject packets that do not pass strict reverse path filtering. Log them as martians.
         "net.ipv4.conf.all.log_martians" = mkForce true;
         "net.ipv4.conf.all.rp_filter" = mkForce true;
         "net.ipv4.conf.default.log_martians" = mkForce true;
@@ -90,7 +90,7 @@ in {
         # Ignore broadcast ICMP to limit SMURF attacks.
         "net.ipv4.icmp_echo_ignore_broadcasts" = mkForce true;
 
-        # Apply the ICMP redirect policy to all interfaces, including new interfaces.
+        # Use the ICMP redirect policy on all current and new interfaces.
         "net.ipv4.conf.all.accept_redirects" = mkForce false;
         "net.ipv4.conf.all.secure_redirects" = mkForce false;
         "net.ipv4.conf.default.accept_redirects" = mkForce false;

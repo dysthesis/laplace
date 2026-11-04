@@ -1,103 +1,76 @@
 {
-	// The duration in milliseconds ingame recipe/unlock popups stay on the screen
+	// Recipe and unlock popups stay visible for this duration in milliseconds.
 	"ToastTimeMilliseconds": 7500,
-	// The reverb decay time for sound effects in Spectrum's dimension
 	"DimensionReverbDecayTime": 8.0,
-	// The reverb density for sound effects in Spectrum's dimension
 	"DimensionReverbDensity": 0.5,
-	// Graphical options for spectrum's dimension
 	"WindSim": true,
 	"ReducedParticles": false,
-	// Affects how often the wind simulation updates - A lower number makes the simulation smoother, but increases the performance impact significantly
+	// Lower intervals make wind simulation smoother but increase computation.
 	"WindSimInterval": 3,
-	// Story accurate dimension lighting. Deepens the dimension's darkness and prevents night vision from cutting through it. WARNING - This makes traversal significantly harder
+	// Extra darkness blocks night vision and makes travel harder.
 	"ExtraDarkDimension": false,
-	// Items transported by a Pastel Network spawn particles
+	// Pastel Network items produce particles.
 	"PastelNetworkParticles": true,
-	// Adjusts the general brightness of the dimension (an increase of 1 is a lot, for reference)
+	// A change of 1 has a large effect on dimension brightness.
 	"DimensionBrightnessMod": 1.0,
-	// Mod Integration Packs to not load (in case of mod compat errors). Put the mod id of the mod with integration pack conflict here
+	// List mod IDs with integration pack conflicts to skip those packs.
 	"IntegrationPacksToSkipLoading": [],
-	// Add some advanced tooltips to items, like if Sculk Shriekers are able to summon the Warden
+	// Tooltips include details such as whether Sculk Shriekers can summon the Warden.
 	"AddItemTooltips": true,
-	// Replaces the ornate models of spectrum's transfer system with something simpler for increased visibility. Great for technical players!
+	// Use simpler transfer models for better visibility.
 	"MinimalNodes": false,
-	/* The vanilla anvil caps enchantment levels at the max level for the enchantment
-	   So enchanted books that exceed the enchantments natural max level get capped
-	   If true the bedrock anvil will not cap the enchantments level to it's natural max level
-	*/
+	// True lets the bedrock anvil exceed vanilla enchantment limits, including those on enchanted books.
 	"BedrockAnvilCanExceedMaxVanillaEnchantmentLevel": false,
-	/* The chance that an Enderman is holding a special treasure block on spawn
-	   Separate value for Endermen spawning in the end, since there are LOTS of them there
-	   Those blocks do not gate progression, so it is not that drastic not finding any right away.
-	   Better to let players stumble about them organically instead of forcing it.
-	*/
+	// Endermen spawn with treasure at separate rates in the End and other dimensions.
+	// Treasure blocks are not necessary for progression.
 	"EndermanHoldingEnderTreasureChance": 0.10000000149011612,
 	"EndermanHoldingEnderTreasureInEndChance": 0.007499999832361937,
-	// Worlds where shooting stars spawn for players. Shooting Stars will only spawn for players with sufficient progress in the mod
+	// Shooting stars require sufficient player progression in these worlds.
 	"ShootingStarWorlds": [
 		"minecraft:overworld",
 		"starry_skies:overworld",
 		"paradise_lost:paradise_lost"
 	],
-	// Worlds where lightning strikes can spawn Storm Stones
+	// Lightning can produce Storm Stones in these worlds.
 	"StormStonesWorlds": [
 		"minecraft:overworld",
 		"starry_skies:overworld",
 		"paradise_lost:paradise_lost"
 	],
-	// Chance for a lightning strike to spawn a Storm Stone
 	"StormStonesChance": 0.4000000059604645,
-	/* Enables quitoxic reed tag-based spawning.
-	   By default, the reeds spawn in any biome that is
-	   wet, hot, and not an ocean.
-	   This can be swapped to using a tag, for more delicate filtering.
-	*/
+	// Use a biome tag for Quitoxic reed spawns rather than hot, wet, non-ocean biomes.
 	"QuitoxicSpawnTag": false,
-	/* Shooting star spawns are checked every night between time 13000 and 22000, every 100 ticks (so 100 chances per night).
-	   By default, there is a 0.0075 ^= 0.75 % chance at each of those check times. Making it ~1 shooting star spawn
-	   per night per player that unlocked the required progression.
-	*/
+	// Check for shooting stars every 100 ticks between time 13000 and 22000.
+	// The default chance of 0.75% gives about one star per night for each eligible player.
 	"ShootingStarChance": 0.007499999832361937,
-	/* The time in ticks it takes a Pigment Pedestal to craft a vanilla Crafting Table recipe without upgrades
-	   Setting this to <=0 will make the Pedestal not able to be used for crafting Crafting Table recipes.
-	*/
+	// Set the Pigment Pedestal time in ticks for Crafting Table recipes without upgrades.
+	// Use 0 or less to disable these recipes.
 	"VanillaRecipeCraftingTimeTicks": 40,
-	/* How fast decay will be spreading on random tick
-	   can be used to slow down propagation speed of decay in the worlds
-	   decay does use very few resources, but if your fear of someone letting decay
-	   spread free or using higher random tick rates than vanilla you can limit the spreading rate here
-	   
-	   Fading and Failing do no real harm to the world. If you turn up these values too high players
-	   may lack the feedback they need that what they are doing is correct
-	   
-	   1.0: Every random tick (default)
-	   0.5: Every second random tick
-	   0.0: Never (forbidden - players would be unable to progress)
-	*/
+	// Set the fraction of random ticks that spread decay.
+	// High rates can remove the feedback that players need for progression.
+	// A value of 1.0 uses every random tick. A value of 0.5 uses every second random tick.
+	// Do not use 0.0. It prevents progression.
 	"FadingDecayTickRate": 1.0,
 	"FailingDecayTickRate": 1.0,
 	"RuinDecayTickRate": 1.0,
 	"ForfeitureDecayTickRate": 1.0,
-	// Whether bottles can be used to pick up decay. Default is true.
+	// Bottles can collect decay when these options are true.
 	"CanBottleUpFading": true,
 	"CanBottleUpFailing": true,
 	"CanBottleUpRuin": true,
 	"CanBottleUpForfeiture": true,
-	// Whether decay can take over block entities. Defaults to false.
+	// These options let decay replace block entities.
 	"FadingCanDestroyBlockEntities": false,
 	"FailingCanDestroyBlockEntities": false,
 	"RuinCanDestroyBlockEntities": false,
 	"ForfeitureCanDestroyBlockEntities": true,
-	// When a player places decay, add an entry to the server log
 	"LogPlacingOfDecay": true,
-	// The audio volume for Spectrums crafting blocks. Set to 0.0 to turn those sounds off completely.
+	// Use 0.0 to mute Spectrum crafting blocks.
 	"BlockSoundVolume": 0.5,
-	// When empty, enchantments that the player has not unlocked show up with a scattered name. You can use a different name here
+	// An empty name scrambles enchantment names until the player unlocks them.
 	"NameForUnrevealedEnchantments": "",
-	/* Enable or disable specific enchantments. Resonance and Voiding can not be disabled.
-	   This does only disable the registration of said Enchantments, not all recipes based on them (except for Enchantment Upgrade Recipes)
-	*/
+	// Resonance and Voiding cannot be disabled.
+	// Other enchantment switches disable registration and Enchantment Upgrade Recipes, but leave other recipes active.
 	"FoundryEnchantmentEnabled": true,
 	"ExuberanceEnchantmentEnabled": true,
 	"InventoryInsertionEnchantmentEnabled": true,
@@ -116,7 +89,6 @@
 	"SerendipityReelEnchantmentEnabled": true,
 	"RazingEnchantmentEnabled": true,
 	"InexorableEnchantmentEnabled": true,
-	// The max levels for all Enchantments
 	"TreasureHunterMaxLevel": 3,
 	"DisarmingMaxLevel": 2,
 	"FirstStrikeMaxLevel": 2,
@@ -126,22 +98,20 @@
 	"TightGripMaxLevel": 2,
 	"BigCatchMaxLevel": 3,
 	"SerendipityReelMaxLevel": 2,
-	// Exuberance increases experience gained when killing mobs. With 25% bonus XP and 5 levels this would mean 2,25x XP on max level
+	// Exuberance increases XP from mob kills. Five levels at 25% per level give 2.25 times the normal XP.
 	"ExuberanceMaxLevel": 5,
 	"ExuberanceBonusExperiencePercentPerLevel": 0.25,
-	// In vanilla, crits are a flat 50 % damage bonus. Improved Critical increases this damage by additional 50 % per level by default
+	// Vanilla critical hits add 50% damage. Improved Critical adds another 50% per level by default.
 	"ImprovedCriticalExtraDamageMultiplierPerLevel": 0.5,
-	// Flat additional damage dealt with each level of the First Strike enchantment
 	"FirstStrikeDamagePerLevel": 2.0,
-	// The percentile a mobs armor/hand stacks are being dropped when hit with a Disarming enchanted weapon per the enchantments level
+	// Set the chance per enchantment level that Disarming removes a mob's armour or held items.
 	"DisarmingChancePerLevelMobs": 0.009999999776482582,
-	// If > 0 the Disarming Enchantment is able to remove armor and hand tools from a hit player. Should be a far smaller chance than for mobs
+	// Values above 0 let Disarming remove player equipment. Keep this chance much lower than the mob chance.
 	"DisarmingChancePerLevelPlayers": 0.0010000000474974513,
-	// The % attack speed boost each level of Tight Grip gives to a tool
 	"TightGripAttackSpeedBonusPercentPerLevel": 0.0625,
-	// The duration a glow ink sac gives night vision when wearing a glow vision helmet in seconds
+	// Set the night vision duration in seconds per glow ink sac with a glow vision helmet.
 	"GlowVisionGogglesDuration": 240,
-	// If the Omni Accelerator should be able to have interactions in PvP that can drain the targets XP, modify their equipment, ... (configured via the requires_omni_accelerator_pvp_enabled item tag)
+	// The requires_omni_accelerator_pvp_enabled item tag controls Omni Accelerator actions that drain player XP or change equipment.
 	"OmniAcceleratorPvP": false,
 	"GemstoneArmorHelmetProtection": 3,
 	"GemstoneArmorChestplateProtection": 7,
@@ -163,19 +133,13 @@
 	"BedrockArmorKnockbackResistance": 0.30000001192092896,
 	"MaxLevelForEffectsInLesserPotionPendant": 3,
 	"MaxLevelForEffectsInGreaterPotionPendant": 1,
-	/* True will prevent the spread of Decay blocks in claims.
-	   Only enable when necessary and communicate to your players that those blocks will not work in their claims.
-	   If any player comes to the Spectrum devs claiming that decay does not spread for them, and therefore they could not progress
-	   You will get put on the 'bad pack devs' list and this config setting removed again
-	*/
+	// True stops Decay in claims and can prevent player progression.
+	// Tell players that Decay does not work in their claims.
 	"DecayIsStoppedByClaimMods": false,
-	/* By Default, Roughly Enough Items will show a 'recipe not unlocked yet' screen for not yet unlocked recipes.
-	   Setting this value to false will instead not show this screen, showing no recipes whatsoever, until unlocked
-	*/
+	// True shows the Roughly Enough Items screen for locked recipes. False hides recipes until the player unlocks them.
 	"REIListsRecipesAsNotUnlocked": true,
-	/* If the player has Azure Dike Charges: Where should they be rendered on the screen. Default: Over the food bar
-	   Only touch those values if you have other mods that render GUI overlays!
-	*/
+	// Azure Dike Charges appear above the food bar by default.
+	// Change these offsets only to avoid other GUI overlays.
 	"AzureDikeHudOffsetX": 0,
 	"AzureDikeHudOffsetY": 0,
 	"AzureDikeHudOffsetYWithArmor": -10,

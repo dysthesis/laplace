@@ -11,7 +11,6 @@
     ;
   inherit (lib.generators) toINI;
   inherit (lib.laplace.pkgs) mkWrapper;
-  # From home-manager
   yesNo = value:
     if value
     then "yes"

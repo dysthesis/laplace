@@ -63,7 +63,6 @@ in
       unset sig_dashes
       unset markers
 
-      # Sort conversations by the last message date, from last to first.
       set charset = "utf-8"
       set uncollapse_jump
       set sort_re
@@ -109,8 +108,7 @@ in
       bind browser,alias l			select-entry
       bind index				/			search
       bind index,pager 			R			group-reply
-      # The hjkl bindings replace l, ? and h.
-      # Use other keys for limit, help and display-toggle-weed.
+      # Keep limit, help and display-toggle-weed available with the hjkl bindings.
       bind index				?			limit
       bind index,pager,attach			<F1>			help
       bind pager				H			display-toggle-weed
@@ -126,7 +124,7 @@ in
       color index_number blue default
       color index_subject white default '.*'
 
-      # ~N = new mail
+      # ~N matches new mail.
       color index brightyellow black "~N"
       color index_author brightgreen black "~N"
       color index_subject brightwhite black "~N"

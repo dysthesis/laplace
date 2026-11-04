@@ -431,7 +431,7 @@ in {
 
         prometheus.alertmanager = {
           enable = true;
-          # SOPS supplies the URL through envsubst. Do a check of the substituted configuration at startup.
+          # SOPS supplies the URL through envsubst. Validate the substituted configuration at startup.
           checkConfig = false;
           inherit (listeners) listenAddress;
           port = listeners.alertmanagerPort;
@@ -572,7 +572,7 @@ in {
             wants = ["vmalert-logs.service"];
           };
           grafana = {
-            # ExecStartPre runs with the normal process stopped, including on restart.
+            # The normal process stops before ExecStartPre runs, also on restart.
             preStart = lib.mkBefore ''
               ${lib.getExe dashboardOwnership}
             '';

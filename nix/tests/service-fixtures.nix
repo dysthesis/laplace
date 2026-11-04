@@ -4,7 +4,7 @@
   self,
   extraModules ? [],
 }: let
-  # Explicit test declarations keep service checks active when production instances are absent.
+  # Keep service checks active even when production instances are absent.
   cluster = import ../../cluster {
     inherit lib;
     modules =

@@ -1,5 +1,5 @@
 # In WebSocket mode, agents send data with KEY and TOKEN.
-# In SSH mode, the hub uses public-key authentication to read data from hosts that must not reach it.
+# In SSH mode, the hub uses public-key authentication for hosts that must not reach the hub.
 # The hub listens on loopback behind Caddy.
 {
   config,

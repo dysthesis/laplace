@@ -5,8 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf getExe elem;
-  # phobos and chaos have no age key for /run/secrets/caldav.
-  # Disable their sync units to prevent failures on each timer tick. See system/secrets.
+  # phobos and chaos have no age key for /run/secrets/caldav. See system/secrets.
   hostName = config.networking.hostName or "";
   enabled =
     elem "demiurge" config.laplace.users

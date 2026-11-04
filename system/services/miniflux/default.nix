@@ -46,7 +46,7 @@ in {
         ${getExe config.services.miniflux.package} r,
         /run/miniflux/** rw,
 
-        # PostgreSQL socket mediation can report disconnected paths on newer kernels.
+        # PostgreSQL socket mediation can report disconnected paths.
         /run/postgresql/ r,
         /run/postgresql/.s.PGSQL.5432 rw,
         /run/postgresql/.s.PGSQL.5432.lock r,

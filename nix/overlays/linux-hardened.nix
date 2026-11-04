@@ -24,7 +24,7 @@ final: prev: let
       inherit (prev) lib stdenv;
       inherit version;
     };
-    # Kernel modules load only when `modDirVersion` matches the padded release and the patch suffix.
+    # modDirVersion must match the padded release and patch suffix for modules to load.
     argsOverride = {
       pname = "linux-hardened";
       inherit src version modDirVersion;

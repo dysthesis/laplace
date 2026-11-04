@@ -7,7 +7,6 @@
   inherit (builtins) filter hasAttr;
   cfg = elem "archon" config.laplace.users;
   keys = import ../keys.nix;
-  # Add optional groups only when another module defines them.
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
 in {
   config = mkIf cfg {

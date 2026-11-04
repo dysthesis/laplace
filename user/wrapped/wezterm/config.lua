@@ -75,7 +75,7 @@ config.keys = {
 		mods = "CTRL|SHIFT",
 		action = act.IncreaseFontSize,
 	},
-	-- zk.nvim keybinds
+	-- Send modified Enter keys to zk.nvim.
 	{
 		key = "Enter",
 		mods = "CTRL",

@@ -1,4 +1,4 @@
-# The lifecycle VM checks the generated IPv6 proxy.
+# See the lifecycle VM for the IPv6 proxy test.
 {lib}: let
   common = import ../../system/services/service-common.nix {inherit lib;};
   dial = address:

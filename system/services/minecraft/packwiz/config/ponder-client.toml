@@ -1,19 +1,11 @@
-#.
-#Slow down a ponder scene whenever there is text on screen.
+# Slow Ponder scenes while text is visible.
 comfyReading = false
-#.
-#Show additional info in the ponder view and reload scene scripts more frequently.
+# Show more Ponder information and reload scene scripts more often.
 editingMode = false
 
-#.
-#Settings for the Placement Assist
 [placementAssist]
-	#.
-	#Change the size of the Indicator by this multiplier
 	#Range: 0.0 ~ 3.4028234663852886E38
 	indicatorScale = 1.0
-	#.
-	#What indicator should be used when showing where the assisted placement ends up relative to your crosshair
-	#Choose 'NONE' to disable the Indicator altogether
+	# Show the placement result relative to the crosshair. Use 'NONE' to hide the indicator.
 	#Allowed Values: TEXTURE, TRIANGLE, NONE
 	indicatorType = "TEXTURE"

@@ -44,7 +44,7 @@ def extract_tags_from(json_obj):
 
     if 'tags' in json_obj:
         if type(json_obj['tags']) is str:
-            # tasklib may serialise tags as CSV; taskpirate#11.
+            # tasklib can serialise tags as CSV. See taskpirate#11.
             tags.extend(json_obj['tags'].split(','))
         else:
             tags.extend(json_obj['tags'])

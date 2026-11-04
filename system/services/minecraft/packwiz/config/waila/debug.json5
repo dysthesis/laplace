@@ -1,5 +1,4 @@
-// Debug options, restart the game to apply
+// Restart the game to apply changes.
 {
-  // Show test plugin on plugin toggle screen
   showTestPluginToggle: false
 }

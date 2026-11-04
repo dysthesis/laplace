@@ -1,4 +1,4 @@
-# Use pinned benchmark tools, but keep the caller's Nix for builds.
+# Pin benchmark tools, but use the caller's Nix for builds.
 pkgs: let
   inherit (pkgs) lib;
   pythonEnv = pkgs.python3.withPackages (ps: [ps.rich]);
@@ -13,7 +13,7 @@ pkgs: let
     gnugrep
     findutils
     git
-    fish # Unwrapped shell for ablation
+    fish # Use an unwrapped shell to measure init costs.
     bash
   ]);
 in

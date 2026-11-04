@@ -69,7 +69,7 @@ python3Packages.buildPythonApplication (finalAttrs: {
 
     truststore
 
-    # headroom-ai[proxy].
+    # These dependencies provide headroom-ai[proxy].
     fastapi
     h2
     httpx

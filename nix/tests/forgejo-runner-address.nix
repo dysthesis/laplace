@@ -74,7 +74,7 @@ in
         def do_POST(self):
             self.rfile.read(int(self.headers.get("Content-Length", "0")))
             requests.put((self.path, self.headers))
-            # A 401 response is sufficient for checks of the connection address and saved credentials.
+            # A 401 response is sufficient to verify the address and saved credentials.
             body = b'{"code":"unauthenticated","message":"disposable address probe"}'
             self.send_response(401)
             self.send_header("Content-Type", "application/json")
@@ -165,7 +165,6 @@ in
                 for name, content in gates.items():
                     assert (instance / name).read_text() == content
 
-                # An unchanged address does not rewrite or replace private state.
                 content = registration.read_bytes()
                 unchanged = registration.stat()
                 startup(state)
@@ -173,7 +172,6 @@ in
                 assert registration.stat().st_ino == unchanged.st_ino
                 assert registration.stat().st_mtime_ns == unchanged.st_mtime_ns
 
-                # A failed JSON update must not damage the saved registration.
                 registration.write_text('{"token":"retained-invalid-state",')
                 broken = registration.read_bytes()
                 code, _ = startup(state, check=False)
@@ -182,7 +180,6 @@ in
                 assert not list(instance.glob(".runner.*"))
                 registration.write_bytes(content)
 
-                # The daemon must use the saved address and identity.
                 code, output = run(shlex.split(fixture["start"]), state, check=False)
                 path, headers = requests.get(timeout=2)
                 assert path == "/api/actions/runner.v1.RunnerService/Declare", (path, output)

@@ -1,4 +1,3 @@
-# Use the cluster inventory for application placement on this Git-segment guest.
 {
   config,
   cluster,
@@ -39,10 +38,9 @@
     harden = ["malloc"];
     proxmox = {
       cores = 4;
-      memory = 6144; # MiB, ballooning ceiling
-      balloon = 2048; # MiB. This minimum prevents swapping.
+      memory = 6144; # MiB
+      balloon = 2048; # MiB, minimum
       diskSize = "128G";
-      # Proxmox gives zero MAC addresses during restore.
     };
 
     security = {

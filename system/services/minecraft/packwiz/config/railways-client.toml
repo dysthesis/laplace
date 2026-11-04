@@ -1,67 +1,39 @@
-#.
-#Client-only settings - If you're looking for general settings, look inside your worlds serverconfig folder!
+# General settings are in the world's serverconfig folder.
 [client]
-	#.
-	#Use a scanline shader when spying through a conductor
+	# Use a scanline shader for the conductor spy view.
 	useConductorSpyShader = true
-	#.
-	#Whether to actually apply the dev cape (ignored for non-devs)
-	#This setting may require a relog to take effect
+	# Apply developer capes only for developers. Reconnect if the change has no effect.
 	useDevCape = true
-	#.
-	#Allow all wrenches to auto-fill `/snr shadow_realm banish` when sneak-used, without requiring the tag ShadowHammer.
+	# Let all wrenches fill `/snr shadow_realm banish` on sneak-use without the ShadowHammer tag.
 	universalShadowWrench = false
-	#.
-	#Show extended debug info in coupler goggle overlay
 	showExtendedCouplerDebug = false
-	#.
-	#Should the normal create conductor cap be rendered on top of the conductors existing hat?
+	# Render the standard Create conductor cap above the existing hat.
 	renderNormalCap = true
-	#.
-	#Vertical offset for track overlays
 	#Range: -256.0 ~ 256.0
 	trackOverlayOffset = 0.0
-	#.
-	#Skip clientside train derailing. This prevents stuttering when a train places tracks, but trains will not appear derailed when they crash
+	# Skip client derailment to prevent stutter as trains place tracks.
+	# Crashed trains will not look derailed.
 	skipClientDerailing = false
-	#.
-	#Should flywheels and blocks extending the FlywheelBlock class be animated when apart of trains?
+	# Animate flywheels and FlywheelBlock subclasses on trains.
 	animatedFlywheels = true
 
-	#.
-	#Smoke Settings
 	[client.smoke]
-		#.
-		#Smoke particle style
 		#Allowed Values: VANILLA, OLD, CARTOON
 		smokeType = "CARTOON"
 
-		#.
-		#Cartoon-style Smoke Settings
 		[client.smoke.cartoon]
-			#.
-			#Spawn faster-rising small puffs of smoke on an interval
+			# Produce faster small smoke puffs at intervals.
 			spawnFasterPuffs = true
-			#.
-			#Spawn steam on an interval
+			# Produce steam at intervals.
 			spawnSteam = false
 
-		#.
-		#Old-style Smoke Settings
 		[client.smoke.old]
-			#.
-			#Smoke emission rate on contraptions
 			#Range: 0.0 ~ 10.0
 			smokePercentage = 0.75
-			#.
-			#Thicker smoke (renders 2 extra layers per particle)
+			# Add two layers per particle for thicker smoke.
 			thickerSmoke = true
-			#.
 			#[in Ticks]
-			#Lifetime of smoke particles emitted by contraptions
 			#Range: 20 ~ 1000
 			smokeLifetime = 500
-			#.
-			#Smoke texture quality
 			#Allowed Values: LOW, MEDIUM, HIGH, ULTRA
 			smokeQuality = "HIGH"

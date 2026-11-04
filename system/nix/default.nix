@@ -7,7 +7,6 @@
   inherit (lib) optionals;
 in {
   config = {
-    # The Determinate module selects Nix.
     # Nixd manages evaluator defaults, its substituter and cache key rotation in /etc/nix/nix.conf.
     nix.settings = {
       extra-sandbox-paths = lib.optionals config.programs.ccache.enable [config.programs.ccache.cacheDir];
@@ -30,8 +29,7 @@ in {
 
     nixpkgs = {
       config = {
-        # mkWrapper names derivations "<name>-wrapped" but keeps the unfree meta.license.
-        # Match the name without the suffix.
+        # mkWrapper adds "-wrapped" to derivation names but keeps the unfree meta.license.
         allowUnfreePredicate = pkg:
           builtins.elem (lib.removeSuffix "-wrapped" (lib.getName pkg)) [
             "rtk"

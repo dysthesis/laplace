@@ -21,7 +21,7 @@ in {
     ];
 
     boot = {
-      # lanzaboote replaces systemd-boot. Override the default to disable the module.
+      # lanzaboote replaces the systemd-boot module.
       loader.systemd-boot.enable = lib.mkForce false;
       lanzaboote = {
         enable = true;

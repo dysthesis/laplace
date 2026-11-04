@@ -15,8 +15,7 @@
     typeOf
     ;
 
-  # river has no zwp_idle_inhibit_manager_v1 protocol.
-  # Use playerctl status to prevent swayidle actions.
+  # river does not support zwp_idle_inhibit_manager_v1.
   idle = x: ''"sh -c \"${getExe pkgs.playerctl} status || ${x}\""'';
 
   configs = {

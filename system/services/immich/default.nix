@@ -19,7 +19,7 @@ in {
     // import ./settings.nix {inherit lib;};
 
   config = mkIf cfg.enable {
-    # Bind to the trusted tailnet interface without opening a firewall port.
+    # Bind to the trusted tailnet interface without an open firewall port.
     assertions = [
       {
         assertion = config.laplace.services.tailscale.enable;
@@ -44,7 +44,7 @@ in {
       inherit (cfg) mediaLocation port;
       host = cfg.listenAddress;
       openFirewall = false;
-      # Local PostgreSQL uses peer authentication. Users can change application settings in the web interface.
+      # Local PostgreSQL uses peer authentication. The web interface controls application settings.
     };
   };
 }

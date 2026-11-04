@@ -1,4 +1,4 @@
-# Discord configuration with runtime token and channel placeholders.
+# The Discord token and channel use runtime placeholders.
 # Field reference: https://wiki.erdbeerbaerlp.de/dcintegration.
 {
   general = {
@@ -122,7 +122,6 @@
         color = 15548997; # #ed4245
       };
     };
-    # You can see dark red on dark themes.
     deathMessage = {
       asEmbed = true;
       colorHexCode = "#992d22";

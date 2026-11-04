@@ -19,8 +19,8 @@
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
-      memory = 2048; # MiB, ballooning ceiling
-      balloon = 384; # MiB. Keep memory available for AdGuard filters and logs.
+      memory = 2048; # MiB
+      balloon = 384; # MiB, for AdGuard filters and logs
       diskSize = "64G";
     };
 
@@ -47,7 +47,7 @@
       };
       tailscale = {
         enable = true;
-        # Do not start resolved because AdGuard owns port 53.
+        # AdGuard uses port 53, so resolved must not start.
         denyDNS = true;
       };
 

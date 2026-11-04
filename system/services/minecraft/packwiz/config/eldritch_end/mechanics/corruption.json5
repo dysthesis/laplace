@@ -1,8 +1,7 @@
 {
   "show_icon_only_when_corrupted": false,
   "temporary_corruption_amount_per_stack": 10,
-  // Effects caused by corruption
-  // You can set the starting corruption level for each effect, setting it to -1 will disable the effect.
+  // Set the corruption threshold for each effect. Use -1 to disable the effect.
   "corruption_effects": {
     "received_damage_increment": {
       "damage_amount": 0.1,

@@ -50,7 +50,6 @@ in
       print(machine.succeed("uname -r"))
       machine.succeed("test \"$(uname -r)\" = '${kernel.modDirVersion}'")
 
-      # The initrd must contain the Proxmox drivers and Btrfs.
       machine.succeed("modprobe -a ${pkgs.lib.concatStringsSep " " modules}")
       machine.succeed("test ! -e /proc/kcore")
 
@@ -61,7 +60,6 @@ in
       machine.succeed("test \"$(uname -r)\" = '${kernel.modDirVersion}'")
       machine.succeed("modprobe -a ${pkgs.lib.concatStringsSep " " modules}")
 
-      # PROC_KCORE must be disabled in the two boot stages.
       machine.succeed("test ! -e /proc/kcore")
     '';
   }

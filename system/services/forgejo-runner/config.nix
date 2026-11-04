@@ -20,7 +20,6 @@ in {
       };
     };
 
-    # DynamicUser gives the base sandbox.
     # MemoryDenyWriteExecute breaks V8. IP filters block Nix fetches.
     # RestrictNamespaces conflicts with Nix.
     # MemoryMax and MemoryHigh can stop correct CI jobs. earlyoom limits memory pressure.

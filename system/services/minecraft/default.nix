@@ -120,8 +120,7 @@ in {
             lib.mkForce ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
         };
 
-        # Serialise snapshots and clean restarts through the server stdin socket.
-        # One host lock serialises maintenance for the single server instance.
+        # One host lock serialises snapshots and restarts for the single server instance.
 
         mc-world-snapshot = {
           description = "Quiesce saves + read-only btrfs snapshot of the world";

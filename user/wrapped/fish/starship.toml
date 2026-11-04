@@ -8,15 +8,15 @@ right_format = "$status$cmd_duration$time"
 
 [character]
 success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)" # Show the status code on the right.
+error_symbol = "[❯](bold red)"
 vimcmd_symbol = "[❮](bold gray8)"
 
 [cmd_duration]
-min_time = 2000 # Hide durations of less than two seconds.
+min_time = 2000 # Hide durations below two seconds.
 style = "yellow"
 format = "[$duration]($style) "
 
-# One jj log command detects repository membership without a working-copy snapshot.
+# Use one jj log command to detect the repository without a working-copy snapshot.
 # Git modules show Git status in colocated repositories.
 [custom.jj]
 disabled = false
@@ -37,7 +37,7 @@ jj log -r @ -n 1 --ignore-working-copy --no-graph --color always -T 'separate(" 
     raw_escape_sequence("\e[38;2;85;85;85m") ++ "(no description)" ++ raw_escape_sequence("\e[0m")))' 2>/dev/null
 '''
 
-# Keep task disabled to prevent a query on each prompt for data that changes each hour.
+# Keep task disabled to prevent a query on each prompt.
 [custom.task]
 disabled = true
 when = true
@@ -77,7 +77,6 @@ style = "bold orange"
 format = '[\($state( $progress_current/$progress_total)\)]($style) '
 
 [git_status]
-# Order: urgency, working tree, index, untracked, stash, remote.
 conflicted = "=$count "
 deleted = "×$count "
 renamed = "»$count "
