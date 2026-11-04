@@ -67,7 +67,7 @@ class OutputTests(unittest.TestCase):
             with self.subTest(as_json=as_json):
                 output = io.StringIO()
                 with contextlib.redirect_stdout(output):
-                    stats.cmd_summarize([self.path], as_json)
+                    stats.cmd_summarise([self.path], as_json)
                 if as_json:
                     metric = json.loads(output.getvalue())[0]["metrics"]["first_prompt_lag_ms"]
                     self.assertEqual(metric["n"], 2)
@@ -87,6 +87,15 @@ class OutputTests(unittest.TestCase):
                 else:
                     self.assertIn("baseline: sample", output.getvalue())
                     self.assertIn("first_prompt_lag_ms", output.getvalue())
+
+    def test_statistics_cli_uses_british_spelling(self):
+        output = io.StringIO()
+        with (
+            mock.patch("sys.argv", ["stats.py", "summarise", self.path, "--json"]),
+            contextlib.redirect_stdout(output),
+        ):
+            stats.main()
+        self.assertEqual(json.loads(output.getvalue())[0]["label"], "sample")
 
     def test_collect_keeps_group_selection_and_stdout_clean(self):
         with (

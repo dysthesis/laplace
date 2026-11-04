@@ -27,7 +27,7 @@ export BENCH_CORE="${BENCH_CORE:-}"
 
 usage() {
     cat >&2 <<EOF
-shell-bench.sh - benchmark this flake's shells (Nix artifacts, pinned).
+shell-bench.sh - benchmark this flake's shells (Nix artefacts, pinned).
 
   --flake REF        flake to benchmark (default: .)
   --host NAME        nixos host whose pkgs.configured.* to build (default: $(hostname))
@@ -222,7 +222,7 @@ tier_metrics() {
             warn "metrics failed for $label"
             return 0
         }
-    python3 "$STATS" summarize "$out" || true
+    python3 "$STATS" summarise "$out" || true
 }
 
 tier_profile_fish() {
@@ -355,7 +355,7 @@ if [[ ${#AB[@]} -eq 2 ]]; then
     exit 0
 fi
 
-log "Resolving Nix artifacts for host '$HOST' from flake '$FLAKE' ..."
+log "Resolving Nix artefacts for host '$HOST' from flake '$FLAKE' ..."
 FISH_WRAP=""
 FISH_UNWRAP=""
 BASH_WRAP=""
@@ -424,6 +424,6 @@ if has_target devshell && want_tier coarse; then
         warn "devshell coarse failed (first eval can be slow / needs network)"
 fi
 
-printf '\nresults: %s\nsummaries: python3 bench/stats.py summarize %s/*.metrics.json\ncompare: python3 bench/stats.py compare A.metrics.json B.metrics.json\n' \
+printf '\nresults: %s\nsummaries: python3 bench/stats.py summarise %s/*.metrics.json\ncompare: python3 bench/stats.py compare A.metrics.json B.metrics.json\n' \
     "$OUTDIR" "$OUTDIR" >&2 || true
 log "Done. Results in $OUTDIR"

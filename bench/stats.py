@@ -57,7 +57,7 @@ def bootstrap_median_ci(xs, iters=10000, alpha=0.05):
     return (lo, hi)
 
 
-def summarize_metric(xs):
+def summarise_metric(xs):
     xs = [x for x in xs if x is not None]
     if not xs:
         return None
@@ -132,7 +132,7 @@ def fmt(x, w=8, p=2):
     return f"{x:{w}.{p}f}"
 
 
-def cmd_summarize(paths, as_json):
+def cmd_summarise(paths, as_json):
     blobs = [load(p) for p in paths]
     if as_json:
         out = []
@@ -140,7 +140,7 @@ def cmd_summarize(paths, as_json):
             row = {"file": path, "label": blob.get("label", ""),
                    "metrics": {}}
             for m in METRIC_ORDER:
-                s = summarize_metric(blob.get("samples", {}).get(m, []))
+                s = summarise_metric(blob.get("samples", {}).get(m, []))
                 if s:
                     row["metrics"][m] = s
             out.append(row)
@@ -154,7 +154,7 @@ def cmd_summarize(paths, as_json):
         print(f"{'metric':22} {'n':>4} {'median':>9} {'95% CI':>20} "
               f"{'MAD':>8} {'p90':>9} {'p99':>9}")
         for m in METRIC_ORDER:
-            s = summarize_metric(blob.get("samples", {}).get(m, []))
+            s = summarise_metric(blob.get("samples", {}).get(m, []))
             if not s:
                 continue
             ci = f"[{fmt(s['ci95_lo'],0)},{fmt(s['ci95_hi'],0)}]"
@@ -212,7 +212,7 @@ def cmd_compare(base_path, var_path, as_json):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    s = sub.add_parser("summarize")
+    s = sub.add_parser("summarise")
     s.add_argument("paths", nargs="+")
     s.add_argument("--json", action="store_true")
     c = sub.add_parser("compare")
@@ -220,8 +220,8 @@ def main():
     c.add_argument("variant")
     c.add_argument("--json", action="store_true")
     args = ap.parse_args()
-    if args.cmd == "summarize":
-        cmd_summarize(args.paths, args.json)
+    if args.cmd == "summarise":
+        cmd_summarise(args.paths, args.json)
     else:
         cmd_compare(args.baseline, args.variant, args.json)
 
