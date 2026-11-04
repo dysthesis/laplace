@@ -114,37 +114,12 @@
       backlight = (configuredModules.backlight or {}) // {device = settings.hardware.backlight;};
     };
 
-  normaliseSection = section: let
-    defaults = {
-      groups = [];
-      before = [];
-      after = [];
-    };
-    raw =
-      if builtins.isList section
-      then defaults // {groups = section;}
-      else defaults // section;
-  in {
-    groups = builtins.filter (group: group != []) (map stripDisabled raw.groups);
-    before = stripDisabled raw.before;
-    after = stripDisabled raw.after;
-  };
-
   mkPill = group: [settings.layout.cap.left] ++ group ++ [settings.layout.cap.right];
 
-  mkSection = section: let
-    section' = normaliseSection section;
-  in
+  mkSection = groups:
     [settings.layout.padding]
-    ++ section'.before
-    ++ concatMap mkPill section'.groups
-    ++ section'.after
+    ++ concatMap mkPill (builtins.filter (group: group != []) (map stripDisabled groups))
     ++ [settings.layout.padding];
-
-  sectionNames = section: let
-    section' = normaliseSection section;
-  in
-    section'.before ++ concatMap (group: group) section'.groups ++ section'.after;
 
   layout = {
     left = mkSection settings.layout.left;
@@ -152,10 +127,7 @@
     right = mkSection settings.layout.right;
   };
 
-  layoutModuleNames =
-    sectionNames settings.layout.left
-    ++ sectionNames settings.layout.centre
-    ++ sectionNames settings.layout.right;
+  layoutModuleNames = builtins.concatLists (builtins.attrValues layout);
 
   missingCustomModules =
     builtins.filter (

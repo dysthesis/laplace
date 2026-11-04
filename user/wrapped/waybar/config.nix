@@ -37,20 +37,17 @@
       right = "custom/r_end";
     };
 
-    left = {
-      groups = [
-        [
-          "cpu"
-          "memory"
-          "disk"
-        ]
-        [
-          "niri/workspaces"
-          "niri/window"
-        ]
-      ];
-      after = [];
-    };
+    left = [
+      [
+        "cpu"
+        "memory"
+        "disk"
+      ]
+      [
+        "niri/workspaces"
+        "niri/window"
+      ]
+    ];
 
     centre = [
       [
