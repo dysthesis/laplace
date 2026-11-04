@@ -15,23 +15,6 @@
   metricsUrl = "http://${socket listeners.metricsPort}";
   logsUrl = "http://${socket listeners.logsPort}";
   alertmanagerUrl = "http://${socket listeners.alertmanagerPort}";
-  blackboxConfig = (pkgs.formats.yaml {}).generate "blackbox.yml" {
-    modules = {
-      http_2xx = {
-        prober = "http";
-        timeout = "10s";
-        http.preferred_ip_protocol = "ip4";
-      };
-      tcp_connect = {
-        prober = "tcp";
-        timeout = "10s";
-      };
-      icmp = {
-        prober = "icmp";
-        timeout = "10s";
-      };
-    };
-  };
   localLabels = {
     host = config.networking.hostName;
     role = "observability";
@@ -534,7 +517,13 @@ in {
           enable = true;
           inherit (listeners) listenAddress;
           port = listeners.blackboxPort;
-          configFile = blackboxConfig;
+          configFile = (pkgs.formats.yaml {}).generate "blackbox.yml" {
+            modules.http_2xx = {
+              prober = "http";
+              timeout = "10s";
+              http.preferred_ip_protocol = "ip4";
+            };
+          };
           openFirewall = false;
         };
       };
