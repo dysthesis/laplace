@@ -14,20 +14,11 @@ cleanup() { rm -f "$CAPTURE_FILE" "$SENTINEL_FILE"; }
 trap cleanup EXIT
 
 export ZK_CAPTURE_SENTINEL="$SENTINEL_FILE"
-nvim_command=(
-    "nvim"
-    '-c "let g:zk_capture_written = 0"'
-    '-c "augroup ZkJournalCapture | autocmd! |'
-    "autocmd BufWritePost <buffer> let g:zk_capture_written = 1 | call writefile(['written'], expand('$ZK_CAPTURE_SENTINEL')) |"
-    "autocmd VimLeavePre * if !get(g:, 'zk_capture_written', 0) | cquit | endif | augroup END\""
-    '-c "setlocal filetype=markdown"'
-    "\"$CAPTURE_FILE\""
-)
-
-printf -v nvim_invocation '%s ' "${nvim_command[@]}"
-nvim_invocation="${nvim_invocation% }"
-
-if ! foot --app-id="$app_id" -e "$nvim_invocation"; then
+if ! foot --app-id="$app_id" -e nvim \
+    -c 'let g:zk_capture_written = 0' \
+    -c "augroup ZkJournalCapture | autocmd! | autocmd BufWritePost <buffer> let g:zk_capture_written = 1 | call writefile(['written'], expand('\$ZK_CAPTURE_SENTINEL')) | autocmd VimLeavePre * if !get(g:, 'zk_capture_written', 0) | cquit | endif | augroup END" \
+    -c 'setlocal filetype=markdown' \
+    "$CAPTURE_FILE"; then
     exit 0
 fi
 
