@@ -20,7 +20,6 @@ in
 
     nativeBuildInputs = [
       python3
-      python3Packages.tomli
       python3Packages.tomli-w
       hyprcursor
     ];

@@ -3,7 +3,7 @@ from sys import argv
 import os
 from os import path
 from pathlib import Path
-import tomli
+import tomllib
 import tomli_w
 
 
@@ -34,7 +34,7 @@ def construct_meta(config, name, sizes):
 
 
 with open(argv[1], "rb") as file:
-    config = tomli.load(file)["cursors"]
+    config = tomllib.load(file)["cursors"]
 
 os.chdir(argv[2])
 
