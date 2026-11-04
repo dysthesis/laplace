@@ -31,8 +31,7 @@ def dashboard_paths(path):
     with closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True, timeout=2)) as db:
         db.execute("BEGIN")
         tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
-        # The two dashboard schemas can contain rows.
-        # Use the Grafana migration log to select the active schema.
+        # Both schemas can hold rows; Grafana's migration log identifies the active one.
         unified = "unifiedstorage_migration_log" in tables and db.execute(
             "SELECT 1 FROM unifiedstorage_migration_log "
             "WHERE migration_id = ? AND success = 1 LIMIT 1",
@@ -53,8 +52,7 @@ def dashboard_paths(path):
                     result[uid] = annotations.get("grafana.app/sourcePath", "")
             return result
         if {"dashboard", "dashboard_provisioning"} <= tables:
-            # The provider uses organisation ID 1, named "default" in unified storage.
-            # Do not use its display name.
+            # Organisation ID 1 is namespace "default"; its display name can change.
             return dict(db.execute(
                 "SELECT d.uid, p.external_id FROM dashboard AS d "
                 "JOIN dashboard_provisioning AS p ON p.dashboard_id = d.id "
@@ -78,8 +76,7 @@ def stage_dashboards(uids):
             target.symlink_to(source)
 
 if pending:
-    # Reconcile only Laplace-owned dashboards with store paths.
-    # Do not start a private Grafana process for other databases.
+    # Start private Grafana only for Laplace-owned store-path dashboards.
     stage_dashboards(owned)
     runtime = Path(os.environ["RUNTIME_DIRECTORY"]) / "dashboard-ownership"
     runtime.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -102,9 +99,8 @@ if pending:
     with tempfile.TemporaryDirectory(prefix="migration-", dir=runtime) as temporary:
         work = Path(temporary)
         private_database = work / "grafana.db"
-        # Native provisioning can remove dashboard ownership before an import.
-        # Copy the result only after reconciliation completes and Grafana stops.
-        # Failures and interrupts must leave the original ownership unchanged.
+        # Native provisioning can drop ownership before an import fails.
+        # Reconcile a copy; publish only after Grafana finishes and stops.
         copy_database(database, private_database)
         provisioning = work / "provisioning"
         for directory in ["dashboards", "datasources", "alerting", "plugins"]:

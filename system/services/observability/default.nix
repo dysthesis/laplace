@@ -88,8 +88,7 @@
       }
     '')
     writers);
-  # Keep the source JSON as a fixture. Change only service-specific host selectors for placement.
-  # Do not change fleet metrics or journal identities.
+  # Placement changes selectors, not historical host identities.
   minecraftDashboardHost =
     if cfg.minecraftHost == null
     then "loki"
@@ -511,7 +510,6 @@ in {
         "/var/backups/grafana"
       ];
 
-      # Render once for provisioning, the home dashboard and build-time checks.
       system.build = {
         observabilityDashboards = dashboards;
         observabilityDashboardOwnership = dashboardOwnership;
