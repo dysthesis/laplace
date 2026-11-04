@@ -38,7 +38,7 @@ def write_cache(path, content):
     tmp.replace(path)
 
 
-def download_xml_from_bom_ftp(args, filename):
+def download(args, filename):
     ftp = None
     chunks = []
 
@@ -72,7 +72,7 @@ def load_xml(args, filename):
             return cached, False
 
     try:
-        xml_content = download_xml_from_bom_ftp(args, filename)
+        xml_content = download(args, filename)
         write_cache(path, xml_content)
         return xml_content, False
     except WeatherError:
@@ -82,7 +82,7 @@ def load_xml(args, filename):
         raise
 
 
-def map_icon_code_to_description(icon_code):
+def icon(icon_code):
     icon_mapping = {
         "1": "☀️",
         "2": "🌙",
@@ -126,7 +126,7 @@ def extract_forecast(args, xml_content):
         if max_temp is not None and icon_code is not None and precis is not None:
             return {
                 "temperature": max_temp,
-                "icon": map_icon_code_to_description(icon_code),
+                "icon": icon(icon_code),
                 "precis": precis.rstrip("."),
             }
 
