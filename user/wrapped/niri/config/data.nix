@@ -135,8 +135,6 @@
     }
   ];
 
-  startup = [];
-
   binds = [
     {
       combo = "Mod+Return";

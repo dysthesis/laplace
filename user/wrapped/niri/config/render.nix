@@ -320,12 +320,6 @@
         ];
     };
 
-  renderStartup = command:
-    KDL.statement {
-      name = "spawn-at-startup";
-      args = command.argv;
-    };
-
   toKdlTree = model:
     [
       (KDL.block {
@@ -369,8 +363,7 @@
       })
     ]
     ++ map renderWindowRule (model.windowRules or [])
-    ++ map renderOutput model.outputs
-    ++ map renderStartup model.startup;
+    ++ map renderOutput model.outputs;
 in {
   inherit toKdlTree;
   render = model: KDL.render (toKdlTree model);

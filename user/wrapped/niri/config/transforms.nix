@@ -72,10 +72,6 @@ in rec {
     actions = map (resolveAction deps) bind.actions;
   };
 
-  resolveStartup = deps: entry: {
-    argv = resolveCommand deps entry.command (entry.args or []);
-  };
-
   formatMode = monitor: let
     base = "${toString monitor.width}x${toString monitor.height}";
     suffix =

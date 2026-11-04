@@ -128,15 +128,10 @@ in {
             ];
         };
     binds = map (transforms.resolveBind context.deps) settings.binds;
-    startup = map (transforms.resolveStartup context.deps) settings.startup;
     outputs = map transforms.monitorToOutput context.monitors;
   in
     transforms.validateModel {
-      inherit
-        binds
-        outputs
-        startup
-        ;
+      inherit binds outputs;
       inherit
         (settings)
         environment
