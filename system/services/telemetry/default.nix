@@ -14,21 +14,6 @@
     metricsOrigin = cfg.metrics.origin;
     journalOrigin = cfg.journal.origin;
   };
-  uploadSettings =
-    {
-      URL = cfg.journal.url;
-      NetworkTimeoutSec = cfg.journal.networkTimeoutSec;
-      TrustedCertificateFile = cfg.journal.trustFile;
-      Compression = false;
-      Header = [
-        "VL-Extra-Fields: source=${hostName}"
-        "VL-Stream-Fields: source"
-      ];
-    }
-    // optionalAttrs (cfg.journal.keyFile != null) {
-      ServerKeyFile = "/run/credentials/systemd-journal-upload.service/client_key";
-      ServerCertificateFile = "/run/credentials/systemd-journal-upload.service/client_certificate";
-    };
 in {
   options.laplace.services.telemetry = {
     enable = mkEnableOption "bounded host metrics and journal forwarding";
@@ -81,18 +66,6 @@ in {
         type = types.nullOr types.str;
         default = null;
       };
-      queueSize = mkOption {
-        type = types.str;
-        default = "500MiB";
-      };
-      maxHourlySeries = mkOption {
-        type = types.ints.positive;
-        default = 10000;
-      };
-      maxDailySeries = mkOption {
-        type = types.ints.positive;
-        default = 20000;
-      };
     };
 
     journal = {
@@ -110,10 +83,6 @@ in {
         default = endpoints.journalBaseUrl;
         description = "Journal base URL; systemd-journal-upload appends /upload when sending.";
       };
-      trustFile = mkOption {
-        type = types.str;
-        default = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
-      };
       keyFile = mkOption {
         type = types.nullOr types.str;
         default = null;
@@ -121,14 +90,6 @@ in {
       certificateFile = mkOption {
         type = types.nullOr types.str;
         default = null;
-      };
-      maxUse = mkOption {
-        type = types.str;
-        default = "64M";
-      };
-      networkTimeoutSec = mkOption {
-        type = types.str;
-        default = "10m";
       };
     };
   };
@@ -165,13 +126,27 @@ in {
       services.journald = {
         storage = "persistent";
         extraConfig = lib.mkForce ''
-          SystemMaxUse=${cfg.journal.maxUse}
+          SystemMaxUse=64M
           RuntimeMaxUse=16M
           Compress=yes
         '';
         upload = mkIf cfg.journal.enable {
           enable = true;
-          settings.Upload = uploadSettings;
+          settings.Upload =
+            {
+              URL = cfg.journal.url;
+              NetworkTimeoutSec = "10m";
+              TrustedCertificateFile = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+              Compression = false;
+              Header = [
+                "VL-Extra-Fields: source=${hostName}"
+                "VL-Stream-Fields: source"
+              ];
+            }
+            // optionalAttrs (cfg.journal.keyFile != null) {
+              ServerKeyFile = "/run/credentials/systemd-journal-upload.service/client_key";
+              ServerCertificateFile = "/run/credentials/systemd-journal-upload.service/client_certificate";
+            };
         };
       };
 
@@ -242,9 +217,9 @@ in {
         extraArgs =
           [
             "-httpListenAddr=${socket contract.vmagentPort}"
-            "-remoteWrite.maxDiskUsagePerURL=${cfg.metrics.queueSize}"
-            "-remoteWrite.maxHourlySeries=${toString cfg.metrics.maxHourlySeries}"
-            "-remoteWrite.maxDailySeries=${toString cfg.metrics.maxDailySeries}"
+            "-remoteWrite.maxDiskUsagePerURL=500MiB"
+            "-remoteWrite.maxHourlySeries=10000"
+            "-remoteWrite.maxDailySeries=20000"
             "-promscrape.maxScrapeSize=8MiB"
             "-memory.allowedPercent=25"
             "-maxLabelsPerTimeseries=40"
