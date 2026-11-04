@@ -66,10 +66,9 @@ in
       name = "escaped";
       args = ["quote\" slash\\ line\nreturn\rtab\t"];
       assign.active = true;
-      comment = "fixture";
     })
   ]
-  == "// fixture\nescaped \"quote\\\" slash\\\\ line\\nreturn\\rtab\\t\" active=true\n";
+  == "escaped \"quote\\\" slash\\\\ line\\nreturn\\rtab\\t\" active=true\n";
   assert rejects (kdl.render [
     {
       name = "inline";

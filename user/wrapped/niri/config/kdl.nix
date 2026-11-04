@@ -5,7 +5,6 @@
     concatMapStringsSep
     concatStringsSep
     mapAttrsToList
-    optionalString
     replicate
     ;
 
@@ -47,18 +46,15 @@
   renderNode = level: node: let
     indent = indentStr level;
     header = "${indent}${node.name}${renderArgs node.args}${renderAssignments node.assignments}";
-    commentBlock = optionalString (
-      node.comment != null && node.comment != ""
-    ) "${indent}// ${node.comment}\n";
   in
     if node.inline || node.children == []
     then
       if node.children != []
       then throw "Inline nodes cannot have children (${node.name})"
-      else "${commentBlock}${header}\n"
+      else "${header}\n"
     else let
       body = concatMapStringsSep "" (renderNode (level + 1)) node.children;
-    in "${commentBlock}${header} {\n${body}${indent}}\n";
+    in "${header} {\n${body}${indent}}\n";
 
   specialKeys = [
     "name"
@@ -67,7 +63,6 @@
     "assign"
     "body"
     "children"
-    "comment"
   ];
 
   bodyToNodes = body: let
@@ -94,7 +89,6 @@
           args = [];
           assignments = {};
           children = [];
-          comment = null;
         }
       ]
       else []
@@ -105,7 +99,6 @@
         args = [value];
         assignments = {};
         children = [];
-        comment = null;
       }
     ];
 
@@ -117,7 +110,6 @@
       args = spec.args or [];
       assignments = spec.assign or {};
       userBody = spec.body or {};
-      comment = spec.comment or null;
       extraBody = removeAttrs spec specialKeys;
       childrenFromBody = bodyToNodes (userBody // extraBody);
       rawChildren = spec.children or [];
@@ -127,7 +119,6 @@
         inline
         args
         assignments
-        comment
         ;
       name = nodeName;
       children = childNodes;
@@ -140,12 +131,10 @@ in {
     name,
     args ? [],
     assign ? {},
-    comment ? null,
   }: {
     inherit
       name
       args
-      comment
       assign
       ;
     inline = true;
@@ -156,12 +145,10 @@ in {
     assign ? {},
     body ? {},
     children ? [],
-    comment ? null,
   }: {
     inherit
       name
       args
-      comment
       assign
       body
       children
