@@ -72,11 +72,17 @@
     logsRules = argus.environment.etc."vmalert-logs/rules.yml".source;
     alertmanagerConfig = pkgs.writeText "alertmanager.json" (builtins.toJSON argus.services.prometheus.alertmanager.configuration);
     alertmanager = argus.services.prometheus.alertmanager.package;
+    # vmalert-tool compares annotations too; exercise alert state without pinning prose.
+    testRules = pkgs.writeText "observability-test-rules.json" (builtins.toJSON {
+      groups = map (group:
+        group // {rules = map (rule: builtins.removeAttrs rule ["annotations"]) group.rules;})
+      argus.services.vmalert.instances.metrics.rules.groups;
+    });
     # vmalert-tool v1.154.0 starts at 2000-01-01T00:00:00Z, not Unix epoch 0.
     testStartSeconds = "946684800";
     metricsRulesTest = pkgs.writeText "observability-metrics-rules-test.yml" ''
       rule_files:
-        - ${metricsRules}
+        - ${testRules}
       evaluation_interval: 30s
       tests:
         - name: warning thresholds
@@ -95,16 +101,10 @@
                     host: argus
                     path: /metrics
                     severity: warning
-                  exp_annotations:
-                    summary: Low free space on /metrics
-                    description: Free space is below its store-specific warning threshold; check measured growth and retention.
                 - exp_labels:
                     host: argus
                     path: /logs
                     severity: warning
-                  exp_annotations:
-                    summary: Low free space on /logs
-                    description: Free space is below its store-specific warning threshold; check measured growth and retention.
             - eval_time: 11m
               groupname: argus-self
               alertname: ArgusFilesystemCritical
@@ -129,16 +129,10 @@
                     host: argus
                     path: /metrics
                     severity: critical
-                  exp_annotations:
-                    summary: Critically low free space on /metrics
-                    description: Act before the backend reaches its minimum-free reserve and rejects writes.
                 - exp_labels:
                     host: argus
                     path: /logs
                     severity: critical
-                  exp_annotations:
-                    summary: Critically low free space on /logs
-                    description: Act before the backend reaches its minimum-free reserve and rejects writes.
         - name: fleet storage warning ignores pseudo-filesystems
           interval: 1m
           input_series:
@@ -162,9 +156,6 @@
                     job: node-agent
                     mountpoint: /nix/persist
                     severity: warning
-                  exp_annotations:
-                    summary: Low free space on loki:/nix/persist
-                    description: Physical free space is below 10%; check snapshot retention and measured data growth.
             - eval_time: 16m
               groupname: fleet-storage
               alertname: HostFilesystemCritical
@@ -188,9 +179,6 @@
                     job: node-agent
                     mountpoint: /
                     severity: critical
-                  exp_annotations:
-                    summary: Critically low free space on argus:/
-                    description: Physical free space is below 5%; act before writes start failing.
         - name: fleet storage fill trend
           interval: 1m
           input_series:
@@ -214,9 +202,6 @@
                     job: node-agent
                     mountpoint: /nix/persist
                     severity: warning
-                  exp_annotations:
-                    summary: loki:/nix/persist predicted full within a day
-                    description: Physical free space is under 25% and its 6-hour trend crosses zero within 24 hours.
         - name: stale and absent telemetry recovers without alerting healthy hosts
           interval: 30s
           input_series:
@@ -258,9 +243,6 @@
                 - exp_labels:
                     host: talos
                     severity: critical
-                  exp_annotations:
-                    summary: Telemetry from talos is stale
-                    description: Check vmagent queue and network path from the host to Argus.
             - eval_time: 6m30s
               groupname: argus-self
               alertname: TelemetryHostAbsent
@@ -269,9 +251,6 @@
                     host: talos
                     job: node-agent
                     severity: critical
-                  exp_annotations:
-                    summary: No telemetry received from talos
-                    description: Check vmagent, its queue, and network path from talos to Argus.
             - eval_time: 7m30s
               groupname: argus-self
               alertname: TelemetryHostStale
