@@ -28,13 +28,12 @@
   in
     assert lib.assertMsg (path != null && builtins.length matches == 1) "telemetry rotation needs an explicit node-owned SOPS credential for ${toString path}";
       target (builtins.head matches);
-  configFor = name: nixosConfigurations.${name}.config;
   instance = cluster.activeServices.observability or null;
-  receiverConfig = configFor instance.host;
+  receiverConfig = nixosConfigurations.${instance.host}.config;
   ingress = receiverConfig.laplace.services.observability.ingress;
   admitted = lib.filterAttrs (name: _: name != instance.host) instance.settings.writers;
   writers = lib.mapAttrs (name: writer: let
-    config = configFor name;
+    config = nixosConfigurations.${name}.config;
     identity = config.laplace.services.telemetry.clientIdentity;
     certificate = receiverConfig.sops.secrets.${writer.certificateSecret};
     receiverCertificate = target certificate;
