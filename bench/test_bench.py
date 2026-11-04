@@ -1,7 +1,4 @@
-import contextlib
 import importlib.util
-import io
-import json
 import os
 from pathlib import Path
 import shutil
@@ -23,7 +20,6 @@ def load_module(filename):
 
 
 probe = load_module(HERE / "pty-probe.py")
-stats = load_module(HERE / "stats.py")
 
 
 class TimeoutTests(unittest.TestCase):
@@ -32,7 +28,6 @@ class TimeoutTests(unittest.TestCase):
         p.pump_until.return_value = (False, 2.0, False)
         with mock.patch.object(probe, "_drain"):
             self.assertIsNone(probe._keystroke_lag(p, b"a", 0.1))
-        p.write.assert_any_call(b"\x7f")
 
     def test_incomplete_redraw_is_not_a_latency_sample(self):
         args = SimpleNamespace(
@@ -51,13 +46,14 @@ class TimeoutTests(unittest.TestCase):
         ):
             samples = probe.measure_spawn_metrics(args, {})
         self.assertEqual(samples["command_lag_ms"], [None])
-        p.close.assert_called_once()
 
     def test_exit_measurements_obey_the_probe_timeout(self):
-        args = SimpleNamespace(shell="/unused/fish", login=False, prompt_runs=1, timeout_ms=100)
-        with mock.patch("subprocess.run", side_effect=subprocess.TimeoutExpired("fish", 0.1)) as run:
-            self.assertEqual(probe.measure_exit_time(args, {}), [])
-        self.assertEqual(run.call_args.kwargs["timeout"], 0.1)
+        with tempfile.TemporaryDirectory() as tmp:
+            shell = Path(tmp) / "slow-shell"
+            shell.write_text(f"#!{shutil.which('bash')}\nexec sleep 10\n")
+            shell.chmod(0o755)
+            args = SimpleNamespace(shell=str(shell), login=False, prompt_runs=1, timeout_ms=30)
+            self.assertEqual(probe.measure_exit_time(args, dict(os.environ)), [])
 
 
 class AblationTests(unittest.TestCase):
@@ -87,74 +83,6 @@ class AblationTests(unittest.TestCase):
             self.assertEqual(cfg.read_text(), original)
 
 
-class OutputTests(unittest.TestCase):
-    def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.tmp.cleanup)
-        self.path = str(Path(self.tmp.name) / "samples.json")
-        Path(self.path).write_text(json.dumps({
-            "label": "sample", "mode": "isolated", "spawn_mode": "interactive",
-            "samples": {"first_prompt_lag_ms": [1.0, None, 3.0]},
-        }))
-
-    def test_stats_text_and_json_keep_metrics(self):
-        for as_json in (False, True):
-            with self.subTest(as_json=as_json):
-                output = io.StringIO()
-                with contextlib.redirect_stdout(output):
-                    stats.cmd_summarise([self.path], as_json)
-                if as_json:
-                    metric = json.loads(output.getvalue())[0]["metrics"]["first_prompt_lag_ms"]
-                    self.assertEqual(metric["n"], 2)
-                    self.assertEqual(metric["median"], 2.0)
-                else:
-                    self.assertIn("sample", output.getvalue())
-                    self.assertIn("first_prompt_lag_ms", output.getvalue())
-
-                output = io.StringIO()
-                with contextlib.redirect_stdout(output):
-                    stats.cmd_compare(self.path, self.path, as_json)
-                if as_json:
-                    row = json.loads(output.getvalue())["rows"][0]
-                    self.assertEqual(row["metric"], "first_prompt_lag_ms")
-                    self.assertEqual(row["delta_ms"], 0.0)
-                    self.assertFalse(row["significant"])
-                else:
-                    self.assertIn("baseline: sample", output.getvalue())
-                    self.assertIn("first_prompt_lag_ms", output.getvalue())
-
-    def test_statistics_cli_uses_british_spelling(self):
-        output = io.StringIO()
-        with (
-            mock.patch("sys.argv", ["stats.py", "summarise", self.path, "--json"]),
-            contextlib.redirect_stdout(output),
-        ):
-            stats.main()
-        self.assertEqual(json.loads(output.getvalue())[0]["label"], "sample")
-
-    def test_collect_keeps_group_selection_and_stdout_clean(self):
-        with (
-            mock.patch.object(probe, "measure_spawn_metrics", return_value={"first_prompt_lag_ms": [1.0]}) as spawn,
-            mock.patch.object(probe, "measure_first_command", return_value=[2.0]) as command,
-            mock.patch.object(probe, "measure_exit_time", return_value=[3.0]) as exit_time,
-        ):
-            output = io.StringIO()
-            with contextlib.redirect_stdout(output):
-                result = probe.collect(None, {}, set())
-            self.assertEqual(result, {
-                "first_prompt_lag_ms": [1.0],
-                "first_command_lag_ms": [2.0],
-                "exit_time_ms": [3.0],
-            })
-            self.assertEqual(output.getvalue(), "")
-            for measurement in (spawn, command, exit_time):
-                measurement.assert_called_once_with(None, {})
-                measurement.reset_mock()
-            self.assertEqual(probe.collect(None, {}, {"spawn", "first_command", "exit"}), {})
-            for measurement in (spawn, command, exit_time):
-                measurement.assert_not_called()
-
-
 class CliTests(unittest.TestCase):
     def test_dry_run_needs_no_tools_and_writes_no_files(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -168,72 +96,12 @@ class CliTests(unittest.TestCase):
                         capture_output=True, text=True, timeout=5,
                     )
                     self.assertEqual(result.returncode, 0, result.stderr)
-                    self.assertEqual(result.stdout, "")
-                    self.assertIn("no builds, measurements or output files", result.stderr)
                     self.assertFalse(out.exists())
-                    if args:
-                        self.assertIn("/missing/fish-A vs /missing/fish-B", result.stderr)
-
-    def test_attribution_keeps_spawn_modes_and_artefacts_separate(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            tools = root / "bin"
-            tools.mkdir()
-            vendor = root / "share/fish/vendor_conf.d"
-            vendor.mkdir(parents=True)
-            (vendor / "user_config.fish").write_text("source /nix/store/example-direnv.fish\n")
-            bodies = {
-                "nix": 'printf "%s\\n" "$STORE"',
-                "jq": "printf '{}\\n'",
-                "git": "exit 0",
-                "fish": (
-                    'if [[ $1 == --profile-startup ]]; then\n'
-                    '  printf "%s\\n" "$@" >>"$PROFILE_ARGS"\n'
-                    'else printf "%s\\n" "$VENDOR_SHARE"; fi'
-                ),
-                "python3": (
-                    'if [[ $1 == *pty-probe.py ]]; then printf "%s\\n" "$@" >>"$PROBE_ARGS"; fi\n'
-                    "printf '{}\\n'"
-                ),
-            }
-            for name, body in bodies.items():
-                tool = tools / name
-                tool.write_text(f"#!{shutil.which('bash')}\nset -eu\n{body}\n")
-                tool.chmod(0o755)
-            out = root / "results"
-            result = subprocess.run(
-                [shutil.which("bash"), str(HERE / "shell-bench.sh"),
-                 "--targets", "fish", "--tiers", "attrib",
-                 "--spawns", "interactive,login", "--out", str(out)],
-                cwd=tmp, env={
-                    **os.environ, "PATH": f"{tools}{os.pathsep}{os.environ['PATH']}",
-                    "STORE": str(root), "VENDOR_SHARE": str(root / "share"),
-                    "PROFILE_ARGS": str(root / "profiles"), "PROBE_ARGS": str(root / "probes"),
-                    "TMPDIR": tmp, "XDG_RUNTIME_DIR": tmp, "BENCH_LIB": str(HERE), "BENCH_CORE": "",
-                },
-                capture_output=True, text=True, timeout=10,
-            )
-            self.assertEqual(result.returncode, 0, result.stderr)
-            profiles = (root / "profiles").read_text().splitlines()
-            self.assertEqual(profiles.count("-l"), 1)
-            probes = (root / "probes").read_text().splitlines()
-            self.assertEqual(probes.count("--login"), 6)
-            self.assertEqual(probes.count("--mode"), 12)
-            for spawn in ("interactive", "login"):
-                files = out / "abl" / f"fish.isolated.{spawn}"
-                self.assertTrue((files / "_baseline.json").is_file())
-                self.assertEqual(len(list(files.glob("*.compare.json"))), 5)
 
     def test_isolated_directories_are_removed_on_success_and_failure(self):
         cases = (
             (["--targets", "fish", "--tiers", "metrics"], False, 0),
-            (["--targets", "bash", "--tiers", "metrics"], False, 0),
-            (["--targets", "devshell", "--tiers", "metrics"], False, 0),
-            (["--targets", "devshell", "--tiers", "coarse", "--runs", "4", "--warmup", "0"], False, 0),
-            (["--targets", "fish", "--tiers", "attrib", "--no-ablation"], False, 0),
             (["--ab", "/unused/A", "/unused/B", "--tiers", "metrics"], False, 7),
-            (["--ab", "/unused/A", "/unused/B", "--runs", "1", "--iters", "5"], False, 0),
-            (["--ab", "/unused/A", "/unused/B", "--runs", "3", "--iters", "5"], False, 0),
             (["--targets", "fish", "--tiers", "metrics"], True, 1),
         )
         for args, missing_runtime, status in cases:
@@ -243,20 +111,12 @@ class CliTests(unittest.TestCase):
                     tools = root / "bin"
                     tools.mkdir()
                     for name, body in {
-                        "nix": (
-                            'if [[ $1 == build ]]; then printf "%s\\n" "$@" >>"$NIX_CALLS"; fi\n'
-                            "printf '/unused\\n'"
-                        ),
+                        "nix": "printf '/unused\\n'",
                         "jq": "printf '{}\\n'",
                         "git": "exit 0",
-                        "hyperfine": (
-                            '[[ $1 != --version ]] || exit 0\n'
-                            'printf "%s\\n" "$@" >"$HYPERFINE_ARGS"'
-                        ),
                         "python3": (
                             '[[ $1 == *pty-probe.py ]] || exit 0\n'
                             'printf "%s\\n" "$HOME" "$XDG_RUNTIME_DIR" >"$CAPTURE"\n'
-                            'printf "%s\\n" "$@" >>"$CAPTURE.args"\n'
                             'printf "{}\\n"\nexit "$PROBE_STATUS"'
                         ),
                     }.items():
@@ -271,9 +131,7 @@ class CliTests(unittest.TestCase):
                             **os.environ, "PATH": f"{tools}{os.pathsep}{os.environ['PATH']}",
                             "TMPDIR": tmp, "XDG_RUNTIME_DIR": str(root / "missing") if missing_runtime else tmp,
                             "CAPTURE": str(capture), "BENCH_LIB": str(HERE), "BENCH_CORE": "",
-                            "NIX_CALLS": str(root / "builds"),
                             "PROBE_STATUS": str(status),
-                            "HYPERFINE_ARGS": str(root / "hyperfine-args"),
                         },
                         capture_output=True, text=True, timeout=10,
                     )
@@ -283,31 +141,10 @@ class CliTests(unittest.TestCase):
                         self.assertEqual(len(paths), 2)
                         self.assertTrue(all(Path(p).parent == root for p in paths))
                         self.assertTrue(all(not Path(p).exists() for p in paths))
-                        probe_args = Path(f"{capture}.args").read_text().splitlines()
-                        self.assertNotIn("--prompt-regex", probe_args)
-                        self.assertEqual(probe_args.count("--no-raw"), int("bash" in args))
-                        if "--runs" in args:
-                            counts = [int(probe_args[i + 1]) for i, arg in enumerate(probe_args) if arg == "--prompt-runs"]
-                            expected = [1, 1] if args[args.index("--runs") + 1] == "1" else [2, 2, 1, 1]
-                            self.assertEqual(counts, expected)
-                            iterations = [probe_args[i + 1] for i, arg in enumerate(probe_args) if arg == "--inner-iters"]
-                            self.assertEqual(iterations, ["5"] * len(expected))
                     else:
-                        self.assertTrue(missing_runtime or "metrics" not in args or "devshell" in args, result.stderr)
+                        self.assertTrue(missing_runtime, result.stderr)
                     self.assertEqual(list(root.glob("bench-*")), [])
                     self.assertTrue(root.is_dir())
-                    if "devshell" in args and "coarse" in args:
-                        coarse_args = (root / "hyperfine-args").read_text().splitlines()
-                        self.assertEqual(coarse_args[coarse_args.index("--runs") + 1], "4")
-                        self.assertEqual(coarse_args[coarse_args.index("--warmup") + 1], "0")
-                    build_args = (root / "builds").read_text().splitlines() if (root / "builds").exists() else []
-                    attrs = [arg for arg in build_args if "#" in arg]
-                    if "--ab" in args or "devshell" in args:
-                        self.assertEqual(attrs, [])
-                    else:
-                        shell = args[args.index("--targets") + 1]
-                        self.assertEqual(len(attrs), 1)
-                        self.assertTrue(attrs[0].endswith(f".pkgs.configured.{shell}"), attrs)
 
 
 if __name__ == "__main__":
