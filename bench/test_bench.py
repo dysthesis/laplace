@@ -231,6 +231,8 @@ class CliTests(unittest.TestCase):
             (["--targets", "devshell", "--tiers", "metrics"], False, 0),
             (["--targets", "fish", "--tiers", "attrib", "--no-ablation"], False, 0),
             (["--ab", "/unused/A", "/unused/B", "--tiers", "metrics"], False, 7),
+            (["--ab", "/unused/A", "/unused/B", "--runs", "1", "--iters", "5"], False, 0),
+            (["--ab", "/unused/A", "/unused/B", "--runs", "3", "--iters", "5"], False, 0),
             (["--targets", "fish", "--tiers", "metrics"], True, 1),
         )
         for args, missing_runtime, status in cases:
@@ -247,10 +249,10 @@ class CliTests(unittest.TestCase):
                         "jq": "printf '{}\\n'",
                         "git": "exit 0",
                         "python3": (
-                            '[[ $1 != --version ]] || exit 0\n'
+                            '[[ $1 == *pty-probe.py ]] || exit 0\n'
                             'printf "%s\\n" "$HOME" "$XDG_RUNTIME_DIR" >"$CAPTURE"\n'
                             'printf "%s\\n" "$@" >>"$CAPTURE.args"\n'
-                            "exit 7"
+                            'printf "{}\\n"\nexit "$PROBE_STATUS"'
                         ),
                     }.items():
                         tool = tools / name
@@ -265,6 +267,7 @@ class CliTests(unittest.TestCase):
                             "TMPDIR": tmp, "XDG_RUNTIME_DIR": str(root / "missing") if missing_runtime else tmp,
                             "CAPTURE": str(capture), "BENCH_LIB": str(HERE), "BENCH_CORE": "",
                             "NIX_CALLS": str(root / "builds"),
+                            "PROBE_STATUS": str(status),
                         },
                         capture_output=True, text=True, timeout=10,
                     )
@@ -277,6 +280,12 @@ class CliTests(unittest.TestCase):
                         probe_args = Path(f"{capture}.args").read_text().splitlines()
                         self.assertNotIn("--prompt-regex", probe_args)
                         self.assertEqual(probe_args.count("--no-raw"), int("bash" in args))
+                        if "--runs" in args:
+                            counts = [int(probe_args[i + 1]) for i, arg in enumerate(probe_args) if arg == "--prompt-runs"]
+                            expected = [1, 1] if args[args.index("--runs") + 1] == "1" else [2, 2, 1, 1]
+                            self.assertEqual(counts, expected)
+                            iterations = [probe_args[i + 1] for i, arg in enumerate(probe_args) if arg == "--inner-iters"]
+                            self.assertEqual(iterations, ["5"] * len(expected))
                     else:
                         self.assertTrue(missing_runtime or "metrics" not in args or "devshell" in args, result.stderr)
                     self.assertEqual(list(root.glob("bench-*")), [])

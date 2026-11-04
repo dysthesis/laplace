@@ -161,7 +161,8 @@ merge_pty() {
     local out="$1"
     shift
     jq -s '{label:.[0].label, mode:.[0].mode, spawn_mode:.[0].spawn_mode,
-          shell:.[0].shell, winsize:.[0].winsize, params:.[0].params,
+          shell:.[0].shell, argv:.[0].argv, winsize:.[0].winsize,
+          params:(.[0].params + {prompt_runs:(map(.params.prompt_runs)|add)}),
           samples: (reduce .[] as $x ({};
             reduce ($x.samples|keys[]) as $k (.;
               .[$k] = ((.[$k] // []) + $x.samples[$k]))))}' "$@" >"$out"
@@ -332,14 +333,17 @@ run_ab() {
     log "A/B: interleaving two shells, 2 rounds each"
     local -a RUNENV
     mk_runenv isolated
-    local af=() bf=() round
+    local af=() bf=() round round_runs
     for round in 1 2; do
+        round_runs=$((RUNS / 2))
+        [[ $round == 1 ]] && round_runs=$((RUNS - round_runs))
+        ((round_runs > 0)) || continue
         pin env "${RUNENV[@]}" python3 "$PROBE" --shell "$a" --cols "$COLS" --rows "$ROWS" \
-            --prompt-runs $((RUNS / 2)) --inner-iters $((ITERS / 2)) \
+            --prompt-runs "$round_runs" --inner-iters "$ITERS" \
             --skip exit --label A \
             >"$OUTDIR/ab.A.$round.json"
         pin env "${RUNENV[@]}" python3 "$PROBE" --shell "$b" --cols "$COLS" --rows "$ROWS" \
-            --prompt-runs $((RUNS / 2)) --inner-iters $((ITERS / 2)) \
+            --prompt-runs "$round_runs" --inner-iters "$ITERS" \
             --skip exit --label B \
             >"$OUTDIR/ab.B.$round.json"
         af+=("$OUTDIR/ab.A.$round.json")
