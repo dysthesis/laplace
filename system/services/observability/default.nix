@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) all concatStringsSep escapeShellArgs mapAttrs mapAttrs' mapAttrsToList mkAfter mkEnableOption mkIf mkMerge mkOption nameValuePair sort types unique;
+  inherit (lib) all concatStringsSep escapeShellArgs mapAttrs' mapAttrsToList mkAfter mkEnableOption mkIf mkMerge mkOption nameValuePair sort types unique;
   cfg = config.laplace.services.observability;
   writers = cfg.ingress.writers;
   writerNames = builtins.attrNames writers;
@@ -29,29 +29,6 @@
       }
     ];
   };
-  ingressRelabelConfigs = mapAttrs (name: writer:
-    (pkgs.formats.yaml {}).generate "vmagent-ingress-${name}-relabel.yml" [
-      {
-        action = "labeldrop";
-        regex = "^(host|role|site)$";
-      }
-      {
-        action = "replace";
-        target_label = "host";
-        replacement = name;
-      }
-      {
-        action = "replace";
-        target_label = "role";
-        replacement = writer.role;
-      }
-      {
-        action = "replace";
-        target_label = "site";
-        replacement = writer.site;
-      }
-    ])
-  writers;
   ingressTls = ''
     tls {
       dns cloudflare {env.CF_API_TOKEN}
@@ -727,7 +704,29 @@ in {
       };
 
       systemd.services =
-        (mapAttrs' (name: writer:
+        (mapAttrs' (name: writer: let
+          relabel = (pkgs.formats.yaml {}).generate "vmagent-ingress-${name}-relabel.yml" [
+            {
+              action = "labeldrop";
+              regex = "^(host|role|site)$";
+            }
+            {
+              action = "replace";
+              target_label = "host";
+              replacement = name;
+            }
+            {
+              action = "replace";
+              target_label = "role";
+              replacement = writer.role;
+            }
+            {
+              action = "replace";
+              target_label = "site";
+              replacement = writer.site;
+            }
+          ];
+        in
           nameValuePair "vmagent-ingress-${name}" {
             description = "Bounded metrics ingress for ${name}";
             wantedBy = ["multi-user.target"];
@@ -742,7 +741,7 @@ in {
                 "-httpListenAddr=${socket writer.metricsPort}"
                 "-remoteWrite.url=${metricsUrl}/api/v1/write"
                 "-remoteWrite.tmpDataPath=%C/vmagent-ingress-${name}/remote_write_tmp"
-                "-remoteWrite.relabelConfig=${ingressRelabelConfigs.${name}}"
+                "-remoteWrite.relabelConfig=${relabel}"
                 "-remoteWrite.maxDiskUsagePerURL=500MiB"
                 "-remoteWrite.maxHourlySeries=10000"
                 "-remoteWrite.maxDailySeries=20000"
