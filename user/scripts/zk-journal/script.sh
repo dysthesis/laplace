@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 export ZK_NOTEBOOK_DIR="$HOME/Documents/Notes/Contents"
 journal_dir="${ZK_JOURNAL_DIR:-"$ZK_NOTEBOOK_DIR/Journal"}"
-app_id="${FOOT_JOURNAL_APP_ID:-${GHOSTTY_JOURNAL_CLASS:-foot.journal}}"
+app_id="${FOOT_JOURNAL_APP_ID:-foot.journal}"
 
 CAPTURE_FILE="$(mktemp)"
 mv -f "$CAPTURE_FILE" "${CAPTURE_FILE}.md"
