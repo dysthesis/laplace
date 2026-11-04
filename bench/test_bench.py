@@ -229,6 +229,7 @@ class CliTests(unittest.TestCase):
             (["--targets", "fish", "--tiers", "metrics"], False, 0),
             (["--targets", "bash", "--tiers", "metrics"], False, 0),
             (["--targets", "devshell", "--tiers", "metrics"], False, 0),
+            (["--targets", "devshell", "--tiers", "coarse", "--runs", "4", "--warmup", "0"], False, 0),
             (["--targets", "fish", "--tiers", "attrib", "--no-ablation"], False, 0),
             (["--ab", "/unused/A", "/unused/B", "--tiers", "metrics"], False, 7),
             (["--ab", "/unused/A", "/unused/B", "--runs", "1", "--iters", "5"], False, 0),
@@ -248,6 +249,10 @@ class CliTests(unittest.TestCase):
                         ),
                         "jq": "printf '{}\\n'",
                         "git": "exit 0",
+                        "hyperfine": (
+                            '[[ $1 != --version ]] || exit 0\n'
+                            'printf "%s\\n" "$@" >"$HYPERFINE_ARGS"'
+                        ),
                         "python3": (
                             '[[ $1 == *pty-probe.py ]] || exit 0\n'
                             'printf "%s\\n" "$HOME" "$XDG_RUNTIME_DIR" >"$CAPTURE"\n'
@@ -268,6 +273,7 @@ class CliTests(unittest.TestCase):
                             "CAPTURE": str(capture), "BENCH_LIB": str(HERE), "BENCH_CORE": "",
                             "NIX_CALLS": str(root / "builds"),
                             "PROBE_STATUS": str(status),
+                            "HYPERFINE_ARGS": str(root / "hyperfine-args"),
                         },
                         capture_output=True, text=True, timeout=10,
                     )
@@ -290,6 +296,10 @@ class CliTests(unittest.TestCase):
                         self.assertTrue(missing_runtime or "metrics" not in args or "devshell" in args, result.stderr)
                     self.assertEqual(list(root.glob("bench-*")), [])
                     self.assertTrue(root.is_dir())
+                    if "devshell" in args and "coarse" in args:
+                        coarse_args = (root / "hyperfine-args").read_text().splitlines()
+                        self.assertEqual(coarse_args[coarse_args.index("--runs") + 1], "4")
+                        self.assertEqual(coarse_args[coarse_args.index("--warmup") + 1], "0")
                     build_args = (root / "builds").read_text().splitlines() if (root / "builds").exists() else []
                     attrs = [arg for arg in build_args if "#" in arg]
                     if "--ab" in args or "devshell" in args:

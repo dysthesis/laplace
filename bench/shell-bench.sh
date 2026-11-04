@@ -425,7 +425,7 @@ done
 
 if has_target devshell && want_tier coarse; then
     log "T1 coarse: devshell (nix develop ${FLAKE}#default --command true) [warm]"
-    pin hyperfine --warmup "$WARMUP" --runs "$WARMUP" --shell=none \
+    pin hyperfine --warmup "$WARMUP" --runs "$RUNS" --shell=none \
         --export-json "$OUTDIR/devshell.coarse.json" -- \
         "nix develop ${FLAKE}#default --command true" >/dev/null 2>&1 ||
         warn "devshell coarse failed (first eval can be slow / needs network)"
