@@ -155,11 +155,6 @@ def print_forecast(forecast, stale):
     print(f"Icon: {forecast['icon']}")
 
 
-def check_product_id_pattern(product_id):
-    pattern = re.compile(r"^IDN\d{5}$")
-    return bool(pattern.match(product_id))
-
-
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -175,22 +170,16 @@ def main():
     )
     parser.add_argument(
         "output",
-        nargs="?",
         choices=["terminal", "waybar"],
         help="Format for the output, use terminal for testing",
     )
     parser.add_argument(
         "product_id",
-        nargs="?",
         help="The product ID you want a forecast for, checkout the README for help",
     )
 
     args = parser.parse_args()
-    if not args.output:
-        parser.error("an output type is required, options: terminal, waybar")
-    if not args.product_id:
-        parser.error("a Product ID is required to get relevant weather data")
-    if not check_product_id_pattern(args.product_id):
+    if not re.fullmatch(r"IDN[0-9]{5}", args.product_id):
         parser.error("Product ID must match IDNxxxxx where x is a number")
 
     ftp_filename = args.product_id + ".xml"
