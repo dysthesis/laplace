@@ -3,35 +3,11 @@
   lib,
   ...
 }: let
-  inherit
-    (lib)
-    mkIf
-    mkDefault
-    mkMerge
-    forEach
-    ;
-  mapList = lib.map;
-  inherit
-    (lib.strings)
-    concatStringsSep
-    normalizePath
-    ;
+  inherit (lib) mkIf mkDefault;
+  inherit (lib.strings) normalizePath;
   cfg = config.mnemosyne;
   persistPath = path: normalizePath "${cfg.persistDir}${path}";
   machineIdPath = persistPath "/etc/machine-id";
-  mkMounts = dirs:
-    dirs
-    |> mapList (path: {
-      "${path}" = {
-        device = persistPath path;
-        fsType = "none";
-        options = cfg.mountOpts;
-      };
-    })
-    |> mkMerge;
-
-  # systemd-initrd mounts persisted storage under /sysroot.
-  mkSourcePaths = root: dirs: dirs |> (dirs: forEach dirs (path: "mkdir -p ${root}${persistPath path}")) |> concatStringsSep "\n";
 in {
   config = mkIf cfg.enable {
     mnemosyne.dirs = [
@@ -57,7 +33,11 @@ in {
 
     # Create bind-mount sources in the systemd initrd before stage 2.
     boot.initrd.systemd.enable = mkDefault true;
-    fileSystems = mkMounts cfg.dirs;
+    fileSystems = lib.genAttrs cfg.dirs (path: {
+      device = persistPath path;
+      fsType = "none";
+      options = cfg.mountOpts;
+    });
     # RequiresMountsFor resolves the unit name of the persistent submount.
     # Write under /sysroot. Do not order this service before sysroot.mount because that causes a deadlock.
     boot.initrd.systemd.services.make-source-of-persistent-dirs = {
@@ -69,9 +49,8 @@ in {
       };
       serviceConfig.Type = "oneshot";
       script = ''
-        ${mkSourcePaths "/sysroot" cfg.dirs}
-
-        mkdir -p /sysroot${cfg.persistDir}/etc /sysroot/etc
+        mkdir -p ${lib.escapeShellArgs (map (path: "/sysroot${persistPath path}") cfg.dirs)} \
+          /sysroot${cfg.persistDir}/etc /sysroot/etc
         if [ ! -s /sysroot${machineIdPath} ]; then
           uuid="$(cat /proc/sys/kernel/random/uuid)"
           printf '%s\n' "''${uuid//-/}" > /sysroot${machineIdPath}
