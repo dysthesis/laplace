@@ -76,10 +76,6 @@
   generatedModules = {
     "custom/l_end" = mkStaticModule " ";
     "custom/r_end" = mkStaticModule " ";
-    "custom/sl_end" = mkStaticModule " ";
-    "custom/sr_end" = mkStaticModule " ";
-    "custom/rl_end" = mkStaticModule " ";
-    "custom/rr_end" = mkStaticModule " ";
     "custom/padd" = mkStaticModule "  ";
   };
 
@@ -250,40 +246,6 @@
                 transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
             }
 
-            #taskbar button {
-                box-shadow: none;
-                text-shadow: none;
-                padding: 0px;
-                border-radius: ${toString m.rSmall}px;
-                margin-top: ${toString m.margin}px;
-                margin-bottom: ${toString m.margin}px;
-                padding-left: ${toString m.padS}px;
-                padding-right: ${toString m.padS}px;
-                color: @wb-color;
-                animation: gradient_f 20s ease-in infinite;
-                transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
-            }
-
-            #taskbar button.active {
-                background: @wb-act-bg;
-                color: @wb-act-color;
-                margin-left: ${toString m.margin}px;
-                padding-left: ${toString m.padActive}px;
-                padding-right: ${toString m.padActive}px;
-                margin-right: ${toString m.margin}px;
-                animation: gradient_f 20s ease-in infinite;
-                transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
-            }
-
-            #taskbar button:hover {
-                background: @wb-hvr-bg;
-                color: @wb-hvr-color;
-                padding-left: ${toString m.padS}px;
-                padding-right: ${toString m.padS}px;
-                animation: gradient_f 20s ease-in infinite;
-                transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
-            }
-
       ${moduleSelectors} {
                 color: @main-color;
                 background: @main-bg;
@@ -293,8 +255,7 @@
                 padding-right: ${toString m.padM}px;
             }
 
-            #workspaces,
-            #taskbar {
+            #workspaces {
                 padding: 0px;
             }
 
@@ -306,30 +267,6 @@
 
             #custom-l_end {
                 border-radius: ${toString m.rLarge}px 0px 0px ${toString m.rLarge}px;
-                margin-left: ${toString m.margin}px;
-                padding-left: ${toString m.padS}px;
-            }
-
-            #custom-sr_end {
-                border-radius: 0px;
-                margin-right: ${toString m.margin}px;
-                padding-right: ${toString m.padS}px;
-            }
-
-            #custom-sl_end {
-                border-radius: 0px;
-                margin-left: ${toString m.margin}px;
-                padding-left: ${toString m.padS}px;
-            }
-
-            #custom-rr_end {
-                border-radius: 0px ${toString m.rTiny}px ${toString m.rTiny}px 0px;
-                margin-right: ${toString m.margin}px;
-                padding-right: ${toString m.padS}px;
-            }
-
-            #custom-rl_end {
-                border-radius: ${toString m.rTiny}px 0px 0px ${toString m.rTiny}px;
                 margin-left: ${toString m.margin}px;
                 padding-left: ${toString m.padS}px;
             }

@@ -52,7 +52,6 @@
     centre = [
       [
         "custom/weather"
-        "custom/events"
         "clock"
       ]
     ];
@@ -172,21 +171,6 @@
       format-alt = "󰤨 {signalStrength}%";
       interval = 5;
     };
-
-    bluetooth = {
-      format = "";
-      format-disabled = "";
-      format-connected = " {num_connections}";
-      tooltip-format = " {device_alias}";
-      tooltip-format-connected = "{device_enumerate}";
-      tooltip-format-enumerate-connected = " {device_alias}";
-    };
-
-    "custom/events" = {
-      format = "";
-      interval = "once";
-      tooltip = false;
-    };
   };
 
   theme = {
@@ -219,10 +203,6 @@
         base = 4.0;
         min = 1;
       };
-      padActive = {
-        base = 12.0;
-        min = 6;
-      };
       modVMargin = {
         base = 4.0;
         min = 2;
@@ -234,14 +214,6 @@
       rMed = {
         base = 16.0;
         min = 6;
-      };
-      rSmall = {
-        base = 9.0;
-        min = 5;
-      };
-      rTiny = {
-        base = 7.0;
-        min = 4;
       };
     };
 
@@ -268,26 +240,11 @@
       "clock"
       "workspaces"
       "window"
-      "taskbar"
       "network"
-      "bluetooth"
-      "pulseaudio"
-      "mpris"
       "backlight"
-      "custom-updates"
-      "custom-wallchange"
-      "custom-mode"
-      "custom-cliphist"
-      "custom-power"
-      "custom-wbar"
       "custom-l_end"
       "custom-r_end"
-      "custom-sl_end"
-      "custom-sr_end"
-      "custom-rl_end"
-      "custom-rr_end"
       "custom-weather"
-      "custom-events"
       "tray"
     ];
   };
