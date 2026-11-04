@@ -16,10 +16,12 @@
       "aarch64-darwin"
     ];
 
-    forAllSystems = lib.laplace.forAllSystems {
-      inherit systems;
-      overlays = [self.overlays.linux-hardened];
-    };
+    forAllSystems = f:
+      lib.genAttrs systems (system:
+        f (import nixpkgs {
+          inherit system;
+          overlays = [self.overlays.linux-hardened];
+        }));
 
     treefmt =
       forAllSystems

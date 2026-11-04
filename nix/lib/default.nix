@@ -16,15 +16,6 @@ nixpkgs.lib.extend (
       |> map (module: dir + "/${module}");
   in {
     laplace = {
-      forAllSystems = {
-        pkgs ? nixpkgs,
-        overlays ? [],
-        systems ? [],
-      }: f:
-        final.genAttrs systems (
-          system: f (import pkgs {inherit system overlays;})
-        );
-
       telemetry = import ../../system/services/telemetry/contract.nix {lib = final;};
 
       modules = {
