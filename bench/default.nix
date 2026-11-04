@@ -12,7 +12,6 @@ pkgs: let
     gnugrep
     findutils
     git
-    fish # Use an unwrapped shell to measure init costs.
     bash
   ]);
 in

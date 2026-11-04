@@ -107,6 +107,8 @@ class CliTests(unittest.TestCase):
         cases = (
             (["--targets", "fish", "--tiers", "metrics"], False, 0),
             (["--targets", "bash", "--tiers", "metrics"], False, 0),
+            (["--targets", "devshell", "--tiers", "metrics"], False, 0),
+            (["--targets", "fish", "--tiers", "attrib", "--no-ablation"], False, 0),
             (["--ab", "/unused/A", "/unused/B", "--tiers", "metrics"], False, 7),
             (["--targets", "fish", "--tiers", "metrics"], True, 1),
         )
@@ -117,7 +119,10 @@ class CliTests(unittest.TestCase):
                     tools = root / "bin"
                     tools.mkdir()
                     for name, body in {
-                        "nix": "printf '/unused\\n'",
+                        "nix": (
+                            'if [[ $1 == build ]]; then printf "%s\\n" "$@" >>"$NIX_CALLS"; fi\n'
+                            "printf '/unused\\n'"
+                        ),
                         "jq": "printf '{}\\n'",
                         "git": "exit 0",
                         "python3": (
@@ -138,6 +143,7 @@ class CliTests(unittest.TestCase):
                             **os.environ, "PATH": f"{tools}{os.pathsep}{os.environ['PATH']}",
                             "TMPDIR": tmp, "XDG_RUNTIME_DIR": str(root / "missing") if missing_runtime else tmp,
                             "CAPTURE": str(capture), "BENCH_LIB": str(HERE), "BENCH_CORE": "",
+                            "NIX_CALLS": str(root / "builds"),
                         },
                         capture_output=True, text=True, timeout=10,
                     )
@@ -151,9 +157,17 @@ class CliTests(unittest.TestCase):
                         self.assertNotIn("--prompt-regex", probe_args)
                         self.assertEqual(probe_args.count("--no-raw"), int("bash" in args))
                     else:
-                        self.assertTrue(missing_runtime, result.stderr)
+                        self.assertTrue(missing_runtime or "metrics" not in args or "devshell" in args, result.stderr)
                     self.assertEqual(list(root.glob("bench-*")), [])
                     self.assertTrue(root.is_dir())
+                    build_args = (root / "builds").read_text().splitlines() if (root / "builds").exists() else []
+                    attrs = [arg for arg in build_args if "#" in arg]
+                    if "--ab" in args or "devshell" in args:
+                        self.assertEqual(attrs, [])
+                    else:
+                        shell = args[args.index("--targets") + 1]
+                        self.assertEqual(len(attrs), 1)
+                        self.assertTrue(attrs[0].endswith(f".pkgs.configured.{shell}"), attrs)
 
 
 if __name__ == "__main__":

@@ -145,9 +145,12 @@ fi
 want_tier() { [[ $TIERS == all ]] || [[ ",$TIERS," == *",$1,"* ]]; }
 has_target() { [[ ",$TARGETS," == *",$1,"* ]]; }
 
-for t in nix jq python3; do need "$t"; done
-want_tier coarse && need hyperfine
-want_tier syscall && need strace
+for t in jq python3; do need "$t"; done
+if [[ ${#AB[@]} -eq 0 ]]; then
+    need nix
+    want_tier coarse && need hyperfine
+    want_tier syscall && need strace
+fi
 mkdir -p "$OUTDIR"
 RUN_DIRS=()
 trap 'rm -rf -- "${RUN_DIRS[@]}"' EXIT
@@ -359,9 +362,11 @@ log "Resolving Nix artifacts for host '$HOST' from flake '$FLAKE' ..."
 FISH_WRAP=""
 FISH_UNWRAP=""
 BASH_WRAP=""
-if has_target fish || [[ $DO_ABLATION == 1 ]]; then
+if has_target fish; then
     FISH_WRAP="$(resolve_store "$FLAKE" "nixosConfigurations.$HOST.pkgs.configured.fish")"
-    FISH_UNWRAP="$(resolve_store "$FLAKE" "nixosConfigurations.$HOST.pkgs.fish")"
+    if want_tier attrib && [[ $DO_ABLATION == 1 ]]; then
+        FISH_UNWRAP="$(resolve_store "$FLAKE" "nixosConfigurations.$HOST.pkgs.fish")"
+    fi
     log "  fish (wrapped):   $FISH_WRAP"
 fi
 if has_target bash; then
@@ -394,7 +399,7 @@ for mode in "${MODE_LIST[@]}"; do
             want_tier syscall && tier_syscall "$lbl" "$fb" "$login" "${RUNENV[@]}"
             if want_tier attrib; then
                 tier_profile_fish "$lbl" "$fb" "${RUNENV[@]}"
-                [[ -n $FISH_WRAP && -n $FISH_UNWRAP ]] &&
+                [[ $DO_ABLATION == 1 ]] &&
                     tier_ablation_fish "$lbl" "$FISH_WRAP" "$FISH_UNWRAP/bin/fish" "${RUNENV[@]}"
             fi
         fi
