@@ -24,18 +24,18 @@
   renderInput = input: {
     "focus-follows-mouse" = renderFlagOrAssign input.focusFollowsMouse;
     "workspace-auto-back-and-forth" = input.workspaceAutoBackAndForth or false;
-    keyboard = {
+    keyboard.body = {
       numlock = input.keyboard.numlock;
     };
-    mouse = {
+    mouse.body = {
       "natural-scroll" = input.mouse.naturalScroll;
       "accel-speed" = input.mouse.accelSpeed;
       "accel-profile" = input.mouse.accelProfile;
     };
-    trackball = {
+    trackball.body = {
       "natural-scroll" = input.trackball.naturalScroll;
     };
-    touchpad = {
+    touchpad.body = {
       tap = input.touchpad.tap;
       dwt = input.touchpad.dwt or false;
       "natural-scroll" = input.touchpad.naturalScroll;

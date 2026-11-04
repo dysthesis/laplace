@@ -56,15 +56,6 @@
       body = concatMapStringsSep "" (renderNode (level + 1)) node.children;
     in "${header} {\n${body}${indent}}\n";
 
-  specialKeys = [
-    "name"
-    "inline"
-    "args"
-    "assign"
-    "body"
-    "children"
-  ];
-
   bodyToNodes = body: let
     entries = mapAttrsToList valueToNodes body;
   in
@@ -109,9 +100,7 @@
       inline = spec.inline or false;
       args = spec.args or [];
       assignments = spec.assign or {};
-      userBody = spec.body or {};
-      extraBody = removeAttrs spec specialKeys;
-      childrenFromBody = bodyToNodes (userBody // extraBody);
+      childrenFromBody = bodyToNodes (spec.body or {});
       rawChildren = spec.children or [];
       childNodes = childrenFromBody ++ map normaliseNode rawChildren;
     in {

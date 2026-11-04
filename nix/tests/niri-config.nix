@@ -9,22 +9,6 @@
     binds = [{combo = "Mod+A";}];
     outputs = [{name = "eDP-1";}];
   };
-  tree = [
-    ((kdl.block {
-        name = "parent";
-        body = {
-          flag = true;
-          omitted = false;
-          missing = null;
-          nested.body.leaf = "value";
-          repeat = [1 2];
-          value = "body";
-        };
-        children = [(kdl.statement {name = "tail";})];
-      })
-      // {value = "extra";})
-    (kdl.block {name = "empty";})
-  ];
   rendered = integrated:
     import ../../user/wrapped/niri/config {
       inherit lib pkgs;
@@ -47,20 +31,6 @@
       };
     };
 in
-  assert kdl.render tree
-  == ''
-    parent {
-      flag
-      nested {
-        leaf "value"
-      }
-      repeat 1
-      repeat 2
-      value "extra"
-      tail
-    }
-    empty
-  '';
   assert kdl.render [
     (kdl.statement {
       name = "escaped";
@@ -69,6 +39,12 @@ in
     })
   ]
   == "escaped \"quote\\\" slash\\\\ line\\nreturn\\rtab\\t\" active=true\n";
+  assert rejects (kdl.render [
+    (kdl.statement {
+      name = "invalid";
+      args = [{}];
+    })
+  ]);
   assert rejects (kdl.render [
     {
       name = "inline";
