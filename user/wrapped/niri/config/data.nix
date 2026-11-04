@@ -38,8 +38,8 @@
 
   layout = {
     gaps = 8;
-    centerFocusedColumn = "on-overflow";
-    alwaysCenterSingleColumn = true;
+    centreFocusedColumn = "on-overflow";
+    alwaysCentreSingleColumn = true;
     presetColumnWidths.proportions = [
       0.33333
       0.5
@@ -60,14 +60,14 @@
       position = "right";
       gapsBetweenTabs = 2;
       cornerRadius = 4;
-      activeColor = "#ffffff";
-      inactiveColor = "#5c5c5c";
-      urgentColor = "#d70000";
+      activeColour = "#ffffff";
+      inactiveColour = "#5c5c5c";
+      urgentColour = "#d70000";
     };
     focusRing = {
       width = 1.5;
-      activeColor = "#ffffff";
-      inactiveColor = "#0f0f0f";
+      activeColour = "#ffffff";
+      inactiveColour = "#0f0f0f";
     };
   };
 

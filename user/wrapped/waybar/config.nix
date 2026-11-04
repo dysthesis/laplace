@@ -55,7 +55,7 @@
       after = [];
     };
 
-    center = [
+    centre = [
       [
         "custom/weather"
         "custom/events"
@@ -251,7 +251,7 @@
       };
     };
 
-    colors = {
+    colours = {
       "bar-bg" = "rgba(0, 0, 0, 0.1)";
       "main-color" = "#ffffff";
       "main-bg" = "#000000";

@@ -6,62 +6,62 @@
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
-  colors = import ../../../system/display/servers/wayland/desktop/palette.nix;
+  palette = import ../../../system/display/servers/wayland/desktop/palette.nix;
   theme = {
     dark = {
       terminal = {
-        background = colors.background;
-        foreground = colors.foreground;
-        cursor = colors.foreground;
-        cursorText = colors.background;
-        selectionBg = colors.focus;
-        selectionFg = colors.background;
+        background = palette.background;
+        foreground = palette.foreground;
+        cursor = palette.foreground;
+        cursorText = palette.background;
+        selectionBg = palette.focus;
+        selectionFg = palette.background;
 
         normal = {
-          black = colors.inset;
-          red = colors.urgent;
-          green = colors.success;
-          yellow = colors.caution;
-          blue = colors.focus;
-          magenta = colors.warning;
-          cyan = colors.info;
-          white = colors.muted;
+          black = palette.inset;
+          red = palette.urgent;
+          green = palette.success;
+          yellow = palette.caution;
+          blue = palette.focus;
+          magenta = palette.warning;
+          cyan = palette.info;
+          white = palette.muted;
         };
 
         bright = {
-          black = colors.dim;
-          red = colors.urgent;
-          green = colors.success;
-          yellow = colors.warning;
-          blue = colors.focus;
-          magenta = colors.warning;
-          cyan = colors.info;
-          white = colors.foreground;
+          black = palette.dim;
+          red = palette.urgent;
+          green = palette.success;
+          yellow = palette.warning;
+          blue = palette.focus;
+          magenta = palette.warning;
+          cyan = palette.info;
+          white = palette.foreground;
         };
       };
-      mPrimary = colors.focus;
-      mOnPrimary = colors.background;
+      mPrimary = palette.focus;
+      mOnPrimary = palette.background;
 
-      mSecondary = colors.info;
-      mOnSecondary = colors.background;
+      mSecondary = palette.info;
+      mOnSecondary = palette.background;
 
-      mTertiary = colors.success;
-      mOnTertiary = colors.background;
+      mTertiary = palette.success;
+      mOnTertiary = palette.background;
 
-      mError = colors.urgent;
-      mOnError = colors.foreground;
+      mError = palette.urgent;
+      mOnError = palette.foreground;
 
-      mSurface = colors.background;
-      mOnSurface = colors.foreground;
+      mSurface = palette.background;
+      mOnSurface = palette.foreground;
 
-      mSurfaceVariant = colors.surface;
-      mOnSurfaceVariant = colors.muted;
+      mSurfaceVariant = palette.surface;
+      mOnSurfaceVariant = palette.muted;
 
-      mOutline = colors.border;
-      mShadow = colors.inset;
+      mOutline = palette.border;
+      mShadow = palette.inset;
 
-      mHover = colors.popup;
-      mOnHover = colors.foreground;
+      mHover = palette.popup;
+      mOnHover = palette.foreground;
     };
   };
   themeFile = pkgs.writers.writeJSON "Minimal.json" theme;

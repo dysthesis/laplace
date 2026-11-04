@@ -50,8 +50,8 @@
   renderLayout = layout:
     {
       inherit (layout) gaps;
-      "center-focused-column" = layout.centerFocusedColumn;
-      "always-center-single-column" = layout.alwaysCenterSingleColumn;
+      "center-focused-column" = layout.centreFocusedColumn;
+      "always-center-single-column" = layout.alwaysCentreSingleColumn;
       "empty-workspace-above-first" = layout.emptyWorkspaceAboveFirst or false;
       "preset-column-widths" = {
         body.proportion = layout.presetColumnWidths.proportions;
@@ -62,8 +62,8 @@
       "focus-ring" = {
         body = {
           width = layout.focusRing.width;
-          "active-color" = layout.focusRing.activeColor;
-          "inactive-color" = layout.focusRing.inactiveColor;
+          "active-color" = layout.focusRing.activeColour;
+          "inactive-color" = layout.focusRing.inactiveColour;
         };
       };
     }
@@ -86,9 +86,9 @@
           position = layout.tabIndicator.position;
           "gaps-between-tabs" = layout.tabIndicator.gapsBetweenTabs;
           "corner-radius" = layout.tabIndicator.cornerRadius;
-          "active-color" = layout.tabIndicator.activeColor;
-          "inactive-color" = layout.tabIndicator.inactiveColor;
-          "urgent-color" = layout.tabIndicator.urgentColor;
+          "active-color" = layout.tabIndicator.activeColour;
+          "inactive-color" = layout.tabIndicator.inactiveColour;
+          "urgent-color" = layout.tabIndicator.urgentColour;
         };
       };
     };
@@ -276,11 +276,11 @@
         ++ optionals (rule ? openOnWorkspace) [
           (property "open-on-workspace" rule.openOnWorkspace)
         ]
-        ++ optionals (rule ? openMaximized) [
-          (property "open-maximized" rule.openMaximized)
+        ++ optionals (rule ? openMaximised) [
+          (property "open-maximized" rule.openMaximised)
         ]
-        ++ optionals (rule ? openMaximizedToEdges) [
-          (property "open-maximized-to-edges" rule.openMaximizedToEdges)
+        ++ optionals (rule ? openMaximisedToEdges) [
+          (property "open-maximized-to-edges" rule.openMaximisedToEdges)
         ]
         ++ optionals (rule ? openFullscreen) [
           (property "open-fullscreen" rule.openFullscreen)

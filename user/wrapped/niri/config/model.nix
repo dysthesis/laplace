@@ -83,15 +83,15 @@ in {
               gaps = 10;
               focusRing = {
                 width = 2;
-                activeColor = palette.focus;
-                inactiveColor = palette.border;
+                activeColour = palette.focus;
+                inactiveColour = palette.border;
               };
               tabIndicator =
                 data.layout.tabIndicator
                 // {
-                  activeColor = palette.focus;
-                  inactiveColor = palette.border;
-                  urgentColor = palette.urgent;
+                  activeColour = palette.focus;
+                  inactiveColour = palette.border;
+                  urgentColour = palette.urgent;
                 };
             };
           windowRules =
@@ -116,7 +116,7 @@ in {
               (spawnBind "Mod+V" "Clipboard history" "launcher" ["vicinae://launch/clipboard/history"])
               (noctaliaBind "Mod+N" "Notifications" ["panel-toggle" "control-center" "notifications"])
               (noctaliaBind "Mod+Shift+N" "Toggle do not disturb" ["notification-dnd-toggle"])
-              (noctaliaBind "Mod+Ctrl+Space" "Control center" ["panel-toggle" "control-center" "home"])
+              (noctaliaBind "Mod+Ctrl+Space" "Control centre" ["panel-toggle" "control-center" "home"])
               (actionBind "Alt+Tab" "Focus previous window" "focus-window-previous")
               (actionBind "Mod+Tab" "Focus previous workspace" "focus-workspace-previous")
               (actionBind "Mod+Ctrl+Period" "Move workspace to right monitor" "move-workspace-to-monitor-right")

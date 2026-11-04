@@ -418,4 +418,4 @@
   inherit (builtins) attrNames attrValues;
 in
   assert lib.asserts.assertMsg (lib.all (value: value) (attrValues checks))
-  "cluster behavior failures: ${lib.concatStringsSep ", " (attrNames (lib.filterAttrs (_: value: !value) checks))}"; checks
+  "cluster behaviour failures: ${lib.concatStringsSep ", " (attrNames (lib.filterAttrs (_: value: !value) checks))}"; checks

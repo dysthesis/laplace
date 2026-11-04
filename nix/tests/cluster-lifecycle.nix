@@ -151,16 +151,16 @@ in
               client.fail(command)
 
       def packet_checks(enabled):
-          for client, suffix, authorized in [(owner, "11", True), (denied, "12", False)]:
+          for client, suffix, authorised in [(owner, "11", True), (denied, "12", False)]:
               for source, destination in [
                   (f"100.64.1.{suffix}", "100.64.1.10"),
                   (f"fd7a:115c:a1e0::{suffix}", "[fd7a:115c:a1e0::10]"),
               ]:
-                  direct(client, source, destination, enabled and authorized)
+                  direct(client, source, destination, enabled and authorised)
                   sync = (curl + "--max-time 3 --interface " + source
                           + " --resolve sync.example.test:443:" + destination
                           + " https://sync.example.test/")
-                  if authorized:
+                  if authorised:
                       client.succeed(sync)
                   else:
                       status = client.succeed(sync.replace("--fail ", "") + " -o /dev/null -w '%{http_code}'")

@@ -152,13 +152,13 @@
 
   layout = {
     left = mkSection settings.layout.left;
-    center = mkSection settings.layout.center;
+    centre = mkSection settings.layout.centre;
     right = mkSection settings.layout.right;
   };
 
   layoutModuleNames =
     sectionNames settings.layout.left
-    ++ sectionNames settings.layout.center
+    ++ sectionNames settings.layout.centre
     ++ sectionNames settings.layout.right;
 
   missingCustomModules =
@@ -200,7 +200,7 @@
     model.bar
     // {
       modules-left = model.layout.left;
-      modules-center = model.layout.center;
+      modules-center = model.layout.centre;
       modules-right = model.layout.right;
     }
     // model.modules
@@ -208,8 +208,8 @@
 
   jsonFormat = pkgs.formats.json {};
 
-  colorDefinitions =
-    model.theme.colors
+  colours =
+    model.theme.colours
     |> mapAttrsToList (name: value: "    @define-color ${name} ${value};")
     |> concatStringsSep "\n";
 
@@ -233,7 +233,7 @@
                 min-height: ${toString m.size}px;
             }
 
-      ${colorDefinitions}
+      ${colours}
 
             window#waybar {
                 background: @bar-bg;
