@@ -252,7 +252,7 @@ tier_ablation_fish() {
     [[ $DO_ABLATION == 1 ]] || return 0
     log "T3 ablation: $label"
 
-    local dds cfg loadplugin
+    local dds cfg
     dds="$(fish_xdg_data_dirs "$wrapped" | paste -sd: -)" || {
         warn "no XDG_DATA_DIRS"
         return 0
@@ -261,22 +261,19 @@ tier_ablation_fish() {
         warn "user_config.fish not found"
         return 0
     }
-    loadplugin="$(find "${dds//:/ }" -name load_plugin.fish 2>/dev/null | head -1 || true)"
     log "  config: $cfg"
 
-    local -a names=(dbus task_startup zoxide starship_init direnv transience plugins)
+    local -a names=(dbus zoxide starship_init direnv plugins)
     local -a regexes=(
         'dbus-update-activation-environment'
-        'next due\.before'
         'zoxide.*init'
         'starship.*init'
-        'direnv hook fish|direnv-hook\.fish'
-        'enable_transience'
-        'load_plugin |fish-plugin-paths'
+        'direnv\.fish'
+        'fish-plugin-paths'
     )
 
     local base_share base_json
-    base_share="$(gen_ablation_config "$OUTDIR/abl/_baseline" "$cfg" "$loadplugin" '$^')"
+    base_share="$(gen_ablation_config "$OUTDIR/abl/_baseline" "$cfg" '$^')"
     base_json="$OUTDIR/abl/_baseline.json"
     pin env "${runenv[@]}" XDG_DATA_DIRS="$base_share" python3 "$PROBE" \
         --shell "$unwrapped_bin" --cols "$COLS" --rows "$ROWS" \
@@ -291,7 +288,7 @@ tier_ablation_fish() {
     for i in "${!names[@]}"; do
         local nm="${names[$i]}" rx="${regexes[$i]}"
         local share var_json
-        share="$(gen_ablation_config "$OUTDIR/abl/$nm" "$cfg" "$loadplugin" "$rx")"
+        share="$(gen_ablation_config "$OUTDIR/abl/$nm" "$cfg" "$rx")"
         var_json="$OUTDIR/abl/$nm.json"
         pin env "${runenv[@]}" XDG_DATA_DIRS="$share" python3 "$PROBE" \
             --shell "$unwrapped_bin" --cols "$COLS" --rows "$ROWS" \

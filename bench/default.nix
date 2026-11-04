@@ -10,7 +10,6 @@ pkgs: let
     coreutils
     gnused
     gnugrep
-    findutils
     git
     bash
   ]);

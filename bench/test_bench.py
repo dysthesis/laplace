@@ -25,6 +25,33 @@ probe = load_module(HERE / "pty-probe.py")
 stats = load_module(HERE / "stats.py")
 
 
+class AblationTests(unittest.TestCase):
+    def test_generated_hook_can_be_disabled_without_a_plugin_loader(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cfg = root / "user_config.fish"
+            original = (
+                "source /nix/store/example-direnv.fish\n"
+                "source /nix/store/example-starship-init.fish\n"
+            )
+            cfg.write_text(original)
+            share = root / "ablation" / "share"
+            result = subprocess.run(
+                [shutil.which("bash"), "-euc",
+                 'source "$1"; gen_ablation_config "$2" "$3" "$4"',
+                 "ablation-test", str(HERE / "lib.sh"), str(share.parent), str(cfg),
+                 r"direnv\.fish"],
+                capture_output=True, text=True, timeout=5,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout.strip(), str(share))
+            self.assertEqual(
+                (share / "fish/vendor_conf.d/user_config.fish").read_text(),
+                "# ABLATED: " + original,
+            )
+            self.assertEqual(cfg.read_text(), original)
+
+
 class OutputTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

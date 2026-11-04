@@ -72,11 +72,9 @@ capture_provenance() {
 
 # Disable matching init lines. Return the share path.
 gen_ablation_config() {
-    local outdir="$1" cfg="$2" loadplugin="$3" regex="$4"
+    local outdir="$1" cfg="$2" regex="$3"
     local vd="$outdir/share/fish/vendor_conf.d"
     mkdir -p "$vd"
-    # A missing optional config must not trigger set -e.
-    if [[ -f $loadplugin ]]; then cp "$loadplugin" "$vd/load_plugin.fish"; fi
     # Use \x01 as the delimiter because the patterns contain |.
     local d=$'\x01'
     sed -E "s${d}^(.*(${regex}).*)\$${d}# ABLATED: \\1${d}" "$cfg" >"$vd/user_config.fish"
