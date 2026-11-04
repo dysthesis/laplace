@@ -17,12 +17,6 @@ import time
 import tty
 import fcntl
 
-try:
-    __import__("rich")
-    _RICH = True
-except Exception:  # pragma: no cover - rich absent
-    _RICH = False
-
 # Remove terminal control sequences before prompt detection.
 _ANSI = re.compile(
     rb"\x1b\[[0-9;?]*[ -/]*[@-~]"      # CSI
@@ -238,7 +232,7 @@ def _keystroke_lag(p, c, timeout_s):
     return (t_echo - t) * 1000.0
 
 
-def measure_spawn_metrics(args, env, step=None) -> dict:
+def measure_spawn_metrics(args, env) -> dict:
     regex = re.compile(args.prompt_regex.encode()) if args.prompt_regex else None
     quiesce_s = args.quiesce_ms / 1000.0
     timeout_s = args.timeout_ms / 1000.0
@@ -290,13 +284,11 @@ def measure_spawn_metrics(args, env, step=None) -> dict:
             p.write(b"\x15")             # Ctrl-U clears the long input line.
         finally:
             p.close()
-            if step:
-                step()
 
     return out
 
 
-def measure_first_command(args, env, step=None) -> list:
+def measure_first_command(args, env) -> list:
     """Measure command latency from process startup, before the first prompt.
 
     The environment supplies the marker so echoed input cannot match command output.
@@ -325,12 +317,10 @@ def measure_first_command(args, env, step=None) -> list:
                 samples.append((t_event - p.t0) * 1000.0)
         finally:
             p.close()
-            if step:
-                step()
     return samples
 
 
-def measure_exit_time(args, env, step=None) -> list:
+def measure_exit_time(args, env) -> list:
     """Measure elapsed time for `shell -i -c exit`, not interactive readiness."""
     import subprocess
 
@@ -341,67 +331,17 @@ def measure_exit_time(args, env, step=None) -> list:
         subprocess.run(argv, env=env, stdin=subprocess.DEVNULL,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         samples.append((time.monotonic() - t) * 1000.0)
-        if step:
-            step()
     return samples
 
 
 def collect(args, env, skip) -> dict:
-    """Collect metrics. Keep progress output on stderr so stdout contains only JSON."""
     samples = {}
-
-    def run_groups(stepper):
-        if "spawn" not in skip:
-            samples.update(measure_spawn_metrics(args, env, stepper("spawn")))
-        if "first_command" not in skip:
-            samples["first_command_lag_ms"] = \
-                measure_first_command(args, env, stepper("first_command"))
-        if "exit" not in skip:
-            samples["exit_time_ms"] = \
-                measure_exit_time(args, env, stepper("exit"))
-
-    labels = {
-        "spawn": "first_prompt + command/input lag",
-        "first_command": "first_command_lag",
-        "exit": "exit_time (floor)",
-    }
-    if _RICH and sys.stderr.isatty():
-        from rich.console import Console
-        from rich.progress import (
-            BarColumn,
-            MofNCompleteColumn,
-            Progress,
-            SpinnerColumn,
-            TextColumn,
-            TimeElapsedColumn,
-            TimeRemainingColumn,
-        )
-        con = Console(stderr=True)
-        title = args.label or args.shell.rsplit("/", 1)[-1]
-        con.rule(f"[bold cyan]probe[/] {title}  "
-                 f"[dim]{args.mode}/{args.spawn_mode}[/]")
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            MofNCompleteColumn(),
-            TimeElapsedColumn(),
-            TimeRemainingColumn(),
-            console=con,
-            transient=False,
-        ) as prog:
-            tasks = {}
-
-            def stepper(group):
-                if group in skip:
-                    return None
-                tid = prog.add_task(labels[group], total=args.prompt_runs)
-                tasks[group] = tid
-                return lambda: prog.advance(tid)
-
-            run_groups(stepper)
-    else:
-        run_groups(lambda _g: None)
+    if "spawn" not in skip:
+        samples.update(measure_spawn_metrics(args, env))
+    if "first_command" not in skip:
+        samples["first_command_lag_ms"] = measure_first_command(args, env)
+    if "exit" not in skip:
+        samples["exit_time_ms"] = measure_exit_time(args, env)
     return samples
 
 

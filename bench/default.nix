@@ -1,11 +1,10 @@
 # Pin benchmark tools, but use the caller's Nix for builds.
 pkgs: let
   inherit (pkgs) lib;
-  pythonEnv = pkgs.python3.withPackages (ps: [ps.rich]);
   tools = lib.makeBinPath (with pkgs; [
     hyperfine
     strace
-    pythonEnv
+    python3
     jq
     util-linux # taskset
     coreutils
@@ -27,7 +26,7 @@ in
     installPhase = ''
       runHook preInstall
       mkdir -p $out/share/bench $out/bin
-      for f in shell-bench.sh lib.sh pty-probe.py stats.py ui.py README.md; do
+      for f in shell-bench.sh lib.sh pty-probe.py stats.py README.md; do
         [ -e "$src/$f" ] && cp "$src/$f" "$out/share/bench/$f"
       done
       chmod +x $out/share/bench/shell-bench.sh

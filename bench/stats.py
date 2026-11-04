@@ -10,13 +10,6 @@ import sys
 
 random.seed(0xCAFE)  # Keep confidence intervals repeatable for the same samples.
 
-try:
-    from rich.console import Console
-    _con = Console()
-    _RICH = True
-except Exception:  # pragma: no cover - rich absent
-    _RICH = False
-
 METRIC_ORDER = [
     "first_prompt_lag_ms",
     "first_command_lag_ms",
@@ -157,28 +150,6 @@ def cmd_summarize(paths, as_json):
     for path, blob in zip(paths, blobs):
         label = blob.get("label") or path
         sub = f"{blob.get('mode','')}/{blob.get('spawn_mode','')}"
-        if _RICH:
-            from rich import box
-            from rich.table import Table
-
-            t = Table(title=f"{label}  [{sub}]", box=box.SIMPLE_HEAVY,
-                      title_style="bold cyan", header_style="bold")
-            t.add_column("metric")
-            for col in ("n", "median", "95% CI", "MAD", "p90", "p99"):
-                t.add_column(col, justify="right")
-            for m in METRIC_ORDER:
-                s = summarize_metric(blob.get("samples", {}).get(m, []))
-                if not s:
-                    continue
-                style = "dim" if m == "exit_time_ms" else None
-                t.add_row(
-                    m, str(s["n"]), f"{s['median']:.2f}",
-                    f"[{s['ci95_lo']:.0f},{s['ci95_hi']:.0f}]",
-                    f"{s['mad']:.2f}", f"{s['p90']:.2f}", f"{s['p99']:.2f}",
-                    style=style,
-                )
-            _con.print(t)
-            continue
         print(f"\n== {label}  ({sub})")
         print(f"{'metric':22} {'n':>4} {'median':>9} {'95% CI':>20} "
               f"{'MAD':>8} {'p90':>9} {'p99':>9}")
@@ -225,34 +196,6 @@ def cmd_compare(base_path, var_path, as_json):
         return
     base_lbl = base.get("label") or base_path
     var_lbl = var.get("label") or var_path
-    if _RICH:
-        from rich import box
-        from rich.table import Table
-
-        t = Table(
-            title=f"A/B  baseline=[cyan]{base_lbl}[/]  variant=[magenta]{var_lbl}[/]",
-            box=box.SIMPLE_HEAVY, header_style="bold",
-            caption="[dim]sig = median moved AND 95% CI excludes 0 AND "
-                    "Mann-Whitney p<0.05  ·  green=faster red=slower[/]",
-        )
-        t.add_column("metric")
-        for col in ("base", "variant", "delta", "delta%", "delta 95% CI", "p", "sig"):
-            t.add_column(col, justify="right")
-        for r in rows:
-            ci = f"[{r['delta_ci95_lo']:.0f},{r['delta_ci95_hi']:.0f}]"
-            if r["significant"]:
-                colour = "green" if r["delta_ms"] < 0 else "red"
-                mark = "[green]✓[/]" if r["delta_ms"] < 0 else "[red]✗[/]"
-            else:
-                colour, mark = "dim", "·"
-            t.add_row(
-                r["metric"], f"{r['base_median']:.2f}", f"{r['var_median']:.2f}",
-                f"[{colour}]{r['delta_ms']:+.2f}[/]",
-                f"[{colour}]{r['delta_pct']:+.1f}[/]",
-                ci, f"{r['mwu_p']:.4f}", mark,
-            )
-        _con.print(t)
-        return
     print(f"baseline: {base_lbl}")
     print(f"variant : {var_lbl}")
     print(f"\n{'metric':22} {'base':>9} {'variant':>9} {'delta':>9} "

@@ -7,8 +7,6 @@ HERE="${BENCH_LIB:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 source "$HERE/lib.sh"
 PROBE="$HERE/pty-probe.py"
 STATS="$HERE/stats.py"
-UI="$HERE/ui.py"
-ui() { python3 "$UI" "$@" || true; } # Status output must not stop measurements.
 
 FLAKE="."
 HOST="$(hostname 2>/dev/null || echo unknown)"
@@ -131,11 +129,12 @@ done
 : "${OUTDIR:=bench/results/$(date +%Y%m%dT%H%M%S)}"
 mkdir -p "$OUTDIR"
 
-ui rule "laplace shell-bench"
-ui kv "run plan" \
+log "laplace shell-bench" || true
+printf '\n[run plan]\n' >&2 || true
+printf '  %s\n' \
     "flake=$FLAKE" "host=$HOST" "targets=$TARGETS" "modes=$MODES" \
     "spawns=$SPAWNS" "tiers=$TIERS" "runs=$RUNS" "iters=$ITERS" \
-    "core=${BENCH_CORE:-none}" "out=$OUTDIR"
+    "core=${BENCH_CORE:-none}" "out=$OUTDIR" >&2 || true
 
 want_tier() { [[ $TIERS == all ]] || [[ ",$TIERS," == *",$1,"* ]]; }
 has_target() { [[ ",$TARGETS," == *",$1,"* ]]; }
@@ -325,7 +324,7 @@ tier_syscall() {
 
 run_ab() {
     local a="$1" b="$2"
-    ui rule "A/B compare (interleaved)"
+    log "A/B compare (interleaved)" || true
     log "A/B: interleaving two shells, 2 rounds each"
     local -a runenv
     mapfile -t runenv < <(mk_runenv isolated)
@@ -384,7 +383,7 @@ for mode in "${MODE_LIST[@]}"; do
         login=0
         [[ $spawn == login ]] && login=1
         local_tag="${mode}.${spawn}"
-        ui rule "mode=$mode  spawn=$spawn"
+        log "mode=$mode  spawn=$spawn" || true
         declare -a RUNENV
         mapfile -t RUNENV < <(mk_runenv "$mode")
 
@@ -425,7 +424,6 @@ if has_target devshell && want_tier coarse && [[ $DRYRUN == 0 ]]; then
         warn "devshell coarse failed (first eval can be slow / needs network)"
 fi
 
-ui panel "done" "results: $OUTDIR
-summaries: python3 bench/stats.py summarize $OUTDIR/*.metrics.json
-compare:   python3 bench/stats.py compare A.metrics.json B.metrics.json"
+printf '\nresults: %s\nsummaries: python3 bench/stats.py summarize %s/*.metrics.json\ncompare: python3 bench/stats.py compare A.metrics.json B.metrics.json\n' \
+    "$OUTDIR" "$OUTDIR" >&2 || true
 log "Done. Results in $OUTDIR"
