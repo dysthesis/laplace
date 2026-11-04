@@ -1,38 +1,23 @@
 {
   pkgs,
-  gawk,
+  git,
   zk,
   uutils-coreutils-noprefix,
   foot,
   gnused,
   neovim,
   ...
-}: let
-  inherit
-    (pkgs)
-    symlinkJoin
-    runCommandLocal
-    ;
-  deps = [
-    gawk
+}:
+pkgs.writeShellApplication {
+  name = "zk-capture";
+  bashOptions = [];
+  runtimeInputs = [
+    git
     zk
     uutils-coreutils-noprefix
     gnused
     foot
     neovim
   ];
-  name = "zk-capture";
-  script = runCommandLocal "script" {} ''
-    mkdir -pv $out/bin
-    cp ${./script.sh} $out/bin/${name}
-    patchShebangs $out/bin/${name}
-    chmod +x  $out/bin/${name}
-  '';
-in
-  symlinkJoin rec {
-    inherit name;
-    paths = [script] ++ deps;
-    buildInputs = [pkgs.makeWrapper];
-    postBuild = "wrapProgram $out/bin/${name} --prefix PATH : $out/bin";
-    meta.mainProgram = name;
-  }
+  text = builtins.readFile ./script.sh;
+}

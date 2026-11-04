@@ -2,28 +2,22 @@
   pkgs,
   gawk,
   uutils-coreutils-noprefix,
+  bemenu,
+  procps,
+  slock,
+  systemd,
   ...
-}: let
-  inherit
-    (pkgs)
-    symlinkJoin
-    runCommandLocal
-    ;
-  deps = [
+}:
+pkgs.writeShellApplication {
+  name = "bemenu-sys";
+  bashOptions = [];
+  runtimeInputs = [
     gawk
     uutils-coreutils-noprefix
+    bemenu
+    procps
+    slock
+    systemd
   ];
-  name = "bemenu-sys";
-  script = runCommandLocal "script" {} ''
-    mkdir -pv $out/bin
-    cp ${./script.sh} $out/bin/${name}
-    chmod +x  $out/bin/${name}
-  '';
-in
-  symlinkJoin rec {
-    inherit name;
-    paths = [script] ++ deps;
-    buildInputs = [pkgs.makeWrapper];
-    postBuild = "wrapProgram $out/bin/${name} --prefix PATH : $out/bin";
-    meta.mainProgram = name;
-  }
+  text = builtins.readFile ./script.sh;
+}
