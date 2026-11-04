@@ -38,7 +38,7 @@ in {
   }: {...}:
     lib.optionalAttrs (hostName == instance.host) {
       laplace.services.altero = instance.settings // {enable = true;};
-      laplace.services.caddy.virtualHosts.${instance.settings.domain}.extraConfig = ''
+      services.caddy.virtualHosts.${instance.settings.domain}.extraConfig = ''
         tls {
           dns cloudflare {env.CF_API_TOKEN}
           resolvers 1.1.1.1

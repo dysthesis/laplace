@@ -100,25 +100,25 @@ in {
     laplace.services.caddy = {
       enable = true;
       cloudflare.proxies.${cfg.mapDomain} = "localhost:8080";
-      virtualHosts.${cfg.domain}.extraConfig = ''
-        tls {
-          dns cloudflare {env.CF_API_TOKEN}
-          resolvers 1.1.1.1
-        }
-        @notSSE not header Accept *text/event-stream*
-        encode @notSSE
-        route /packwiz/* {
-          root * ${packwizSource}
-          uri strip_prefix /packwiz
-          file_server
-        }
-        route /bootstrap/RetirementHome-bootstrap.zip {
-          root * ${packwizBootstrap}
-          rewrite * /RetirementHome-bootstrap.zip
-          header Content-Disposition "attachment; filename=RetirementHome-bootstrap.zip"
-          file_server
-        }
-      '';
     };
+    services.caddy.virtualHosts.${cfg.domain}.extraConfig = ''
+      tls {
+        dns cloudflare {env.CF_API_TOKEN}
+        resolvers 1.1.1.1
+      }
+      @notSSE not header Accept *text/event-stream*
+      encode @notSSE
+      route /packwiz/* {
+        root * ${packwizSource}
+        uri strip_prefix /packwiz
+        file_server
+      }
+      route /bootstrap/RetirementHome-bootstrap.zip {
+        root * ${packwizBootstrap}
+        rewrite * /RetirementHome-bootstrap.zip
+        header Content-Disposition "attachment; filename=RetirementHome-bootstrap.zip"
+        file_server
+      }
+    '';
   };
 }

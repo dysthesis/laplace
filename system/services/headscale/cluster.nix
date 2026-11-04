@@ -159,14 +159,12 @@ in {
         };
       })
       (lib.optionalAttrs (hostName == settings.frontendHost) {
-        laplace.services.caddy = {
-          enable = true;
-          virtualHosts.${settings.domain}.extraConfig = ''
+        laplace.services.caddy.enable = true;
+        services.caddy.virtualHosts.${settings.domain}.extraConfig = ''
             @notSSE not header Accept *text/event-stream*
             encode @notSSE
             reverse_proxy http://${backend}:${toString settings.port}
           '';
-        };
       })
     ];
 }

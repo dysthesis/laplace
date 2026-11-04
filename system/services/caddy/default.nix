@@ -4,13 +4,9 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkAliasOptionModule mkEnableOption mkIf mkMerge mkOption types mapAttrs;
+  inherit (lib) mkEnableOption mkIf mkMerge mkOption types mapAttrs;
   cfg = config.laplace.services.caddy;
 in {
-  imports = [
-    (mkAliasOptionModule ["laplace" "services" "caddy" "virtualHosts"] ["services" "caddy" "virtualHosts"])
-  ];
-
   options.laplace.services.caddy = {
     enable = mkEnableOption "Caddy reverse proxy";
 

@@ -93,7 +93,7 @@ in {
       systemd.tmpfiles.rules = [
         "d ${config.services.syncthing.dataDir} 0700 syncthing syncthing - -"
       ];
-      laplace.services.caddy.virtualHosts.${instance.settings.domain}.extraConfig = ''
+      services.caddy.virtualHosts.${instance.settings.domain}.extraConfig = ''
         tls {
           dns cloudflare {env.CF_API_TOKEN}
           resolvers 1.1.1.1

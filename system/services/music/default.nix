@@ -370,51 +370,49 @@ in {
       "/var/lib/navidrome"
       "/srv/media"
     ];
-    laplace.services.caddy = {
-      enable = true;
-      virtualHosts.${musicHost} = {
-        # Service URLs can contain API keys. Do not log request URIs.
-        logFormat = null;
-        extraConfig = ''
-          tls {
-            dns cloudflare {env.CF_API_TOKEN}
-            resolvers 1.1.1.1
+    laplace.services.caddy.enable = true;
+    services.caddy.virtualHosts.${musicHost} = {
+      # Service URLs can contain API keys. Do not log request URIs.
+      logFormat = null;
+      extraConfig = ''
+        tls {
+          dns cloudflare {env.CF_API_TOKEN}
+          resolvers 1.1.1.1
+        }
+
+        header {
+          -Server
+          Strict-Transport-Security "max-age=31536000"
+          X-Content-Type-Options "nosniff"
+        }
+
+        @notSSE not header Accept *text/event-stream*
+        encode @notSSE
+
+        route {
+          redir /prowlarr /prowlarr/ 308
+          redir /lidarr /lidarr/ 308
+          redir /slskd /slskd/ 308
+          redir /qbittorrent /qbittorrent/ 308
+
+          handle /prowlarr/* {
+            reverse_proxy 127.0.0.1:9696
           }
-
-          header {
-            -Server
-            Strict-Transport-Security "max-age=31536000"
-            X-Content-Type-Options "nosniff"
+          handle /lidarr/* {
+            reverse_proxy 127.0.0.1:8686
           }
-
-          @notSSE not header Accept *text/event-stream*
-          encode @notSSE
-
-          route {
-            redir /prowlarr /prowlarr/ 308
-            redir /lidarr /lidarr/ 308
-            redir /slskd /slskd/ 308
-            redir /qbittorrent /qbittorrent/ 308
-
-            handle /prowlarr/* {
-              reverse_proxy 127.0.0.1:9696
-            }
-            handle /lidarr/* {
-              reverse_proxy 127.0.0.1:8686
-            }
-            handle /slskd/* {
-              reverse_proxy 127.0.0.1:5030
-            }
-            # qBittorrent has no URL-base setting. Remove only its external prefix.
-            handle_path /qbittorrent/* {
-              reverse_proxy 127.0.0.1:8080
-            }
-            handle {
-              reverse_proxy 127.0.0.1:4533
-            }
+          handle /slskd/* {
+            reverse_proxy 127.0.0.1:5030
           }
-        '';
-      };
+          # qBittorrent has no URL-base setting. Remove only its external prefix.
+          handle_path /qbittorrent/* {
+            reverse_proxy 127.0.0.1:8080
+          }
+          handle {
+            reverse_proxy 127.0.0.1:4533
+          }
+        }
+      '';
     };
   };
 }

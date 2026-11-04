@@ -121,17 +121,15 @@ in {
         '';
       })
       (lib.optionalAttrs (hostName == settings.frontendHost) {
-        laplace.services.caddy = {
-          enable = true;
-          virtualHosts.${settings.domain}.extraConfig = ''
-            @notSSE not header Accept *text/event-stream*
-            encode @notSSE
-            reverse_proxy http://${anubis} {
-              header_up X-Real-Ip {client_ip}
-              header_up X-Forwarded-For {client_ip}
-            }
-          '';
-        };
+        laplace.services.caddy.enable = true;
+        services.caddy.virtualHosts.${settings.domain}.extraConfig = ''
+          @notSSE not header Accept *text/event-stream*
+          encode @notSSE
+          reverse_proxy http://${anubis} {
+            header_up X-Real-Ip {client_ip}
+            header_up X-Forwarded-For {client_ip}
+          }
+        '';
         services.anubis.instances.git = {
           settings = {
             BIND = anubis;
