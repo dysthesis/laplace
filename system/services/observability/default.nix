@@ -581,10 +581,7 @@ in {
               GRAFANA_DATABASE_PATH = config.services.grafana.settings.database.path;
               GRAFANA_SECRET_KEY = config.services.grafana.settings.security.secret_key;
               GRAFANA_DASHBOARD_SOURCES = "${dashboardSources}";
-              GRAFANA_MINECRAFT_ENABLED =
-                if cfg.minecraftHost == null
-                then "0"
-                else "1";
+              GRAFANA_DASHBOARDS = "${dashboards}";
             };
             serviceConfig.TimeoutStartSec = 180;
             after = ["systemd-tmpfiles-setup.service" "victoriametrics.service" "victorialogs.service"];

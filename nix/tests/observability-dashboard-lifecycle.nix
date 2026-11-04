@@ -115,6 +115,9 @@ in
             environment["RUNTIME_DIRECTORY"] = str(runtime)
         subprocess.run([generations[generation]["prepare"]], env=environment, check=True, timeout=timeout)
         assert_private_stopped(state)
+        assert {path.name for path in (state / "dashboards").glob("*.json")} == {
+            path.name for path in Path(environment["GRAFANA_DASHBOARDS"]).glob("*.json")
+        }
         database = state / "grafana.db"
         if database.exists():
             with closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)) as db:

@@ -227,9 +227,6 @@ if pending:
             print(log.read_text(), flush=True)
             raise
 
-# Stage only configured files for normal provisioning with deletion enabled.
-# Do not restore the Minecraft dashboard when Minecraft is disabled.
-stage_dashboards({
-    uid for uid, source in sources.items()
-    if source.name != "minecraft.json" or os.environ["GRAFANA_MINECRAFT_ENABLED"] == "1"
-})
+# Normal provisioning uses the rendered selection, with deletion enabled.
+configured = {source.name for source in Path(os.environ["GRAFANA_DASHBOARDS"]).glob("*.json")}
+stage_dashboards({uid for uid, source in sources.items() if source.name in configured})
