@@ -2,6 +2,7 @@ import contextlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -101,6 +102,53 @@ class CliTests(unittest.TestCase):
                     self.assertFalse(out.exists())
                     if args:
                         self.assertIn("/missing/fish-A vs /missing/fish-B", result.stderr)
+
+    def test_isolated_directories_are_removed_on_success_and_failure(self):
+        cases = (
+            (["--targets", "fish", "--tiers", "metrics"], False, 0),
+            (["--ab", "/unused/A", "/unused/B", "--tiers", "metrics"], False, 7),
+            (["--targets", "fish", "--tiers", "metrics"], True, 1),
+        )
+        for args, missing_runtime, status in cases:
+            with self.subTest(args=args, missing_runtime=missing_runtime):
+                with tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp)
+                    tools = root / "bin"
+                    tools.mkdir()
+                    for name, body in {
+                        "nix": "printf '/unused\\n'",
+                        "jq": "printf '{}\\n'",
+                        "git": "exit 0",
+                        "python3": (
+                            '[[ $1 != --version ]] || exit 0\n'
+                            'printf "%s\\n" "$HOME" "$XDG_RUNTIME_DIR" >"$CAPTURE"\n'
+                            "exit 7"
+                        ),
+                    }.items():
+                        tool = tools / name
+                        tool.write_text(f"#!{shutil.which('bash')}\nset -eu\n{body}\n")
+                        tool.chmod(0o755)
+                    capture = root / "environment"
+                    result = subprocess.run(
+                        [shutil.which("bash"), str(HERE / "shell-bench.sh"),
+                         "--out", str(root / "results"), *args],
+                        cwd=tmp, env={
+                            **os.environ, "PATH": f"{tools}{os.pathsep}{os.environ['PATH']}",
+                            "TMPDIR": tmp, "XDG_RUNTIME_DIR": str(root / "missing") if missing_runtime else tmp,
+                            "CAPTURE": str(capture), "BENCH_LIB": str(HERE), "BENCH_CORE": "",
+                        },
+                        capture_output=True, text=True, timeout=10,
+                    )
+                    self.assertEqual(result.returncode, status, result.stderr)
+                    if capture.exists():
+                        paths = capture.read_text().splitlines()
+                        self.assertEqual(len(paths), 2)
+                        self.assertTrue(all(Path(p).parent == root for p in paths))
+                        self.assertTrue(all(not Path(p).exists() for p in paths))
+                    else:
+                        self.assertTrue(missing_runtime, result.stderr)
+                    self.assertEqual(list(root.glob("bench-*")), [])
+                    self.assertTrue(root.is_dir())
 
 
 if __name__ == "__main__":

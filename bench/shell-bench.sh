@@ -150,6 +150,10 @@ for t in nix jq python3; do need "$t"; done
 want_tier coarse && need hyperfine
 want_tier syscall && need strace
 mkdir -p "$OUTDIR"
+RUN_DIRS=()
+trap 'rm -rf -- "${RUN_DIRS[@]}"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 merge_pty() {
     local out="$1"
@@ -169,15 +173,17 @@ mk_runenv() {
     isolated)
         local h r
         h="$(mktemp -d "${TMPDIR:-/tmp}/bench-home.XXXXXX")"
+        RUN_DIRS+=("$h")
         r="$(mktemp -d "${XDG_RUNTIME_DIR:-/tmp}/bench-run.XXXXXX")"
-        printf '%s\n' \
-            "HOME=$h" "XDG_RUNTIME_DIR=$r" \
-            "XDG_CONFIG_HOME=$h/.config" "XDG_DATA_HOME=$h/.local/share" \
-            "XDG_CACHE_HOME=$h/.cache" "XDG_STATE_HOME=$h/.local/state" \
-            "TERM=xterm-256color" "LC_ALL=C.UTF-8" "BENCH_TMP=$h"
+        RUN_DIRS+=("$r")
+        RUNENV=(
+            "HOME=$h" "XDG_RUNTIME_DIR=$r"
+            "XDG_CONFIG_HOME=$h/.config" "XDG_DATA_HOME=$h/.local/share"
+            "XDG_CACHE_HOME=$h/.cache" "XDG_STATE_HOME=$h/.local/state"
+            "TERM=xterm-256color" "LC_ALL=C.UTF-8")
         ;;
     in-situ)
-        printf '%s\n' "TERM=${TERM:-xterm-256color}" "LC_ALL=${LC_ALL:-C.UTF-8}"
+        RUNENV=("TERM=${TERM:-xterm-256color}" "LC_ALL=${LC_ALL:-C.UTF-8}")
         ;;
     *) die "unknown mode: $mode" ;;
     esac
@@ -329,15 +335,15 @@ run_ab() {
     local a="$1" b="$2"
     log "A/B compare (interleaved)" || true
     log "A/B: interleaving two shells, 2 rounds each"
-    local -a runenv
-    mapfile -t runenv < <(mk_runenv isolated)
+    local -a RUNENV
+    mk_runenv isolated
     local af=() bf=() round
     for round in 1 2; do
-        pin env "${runenv[@]}" python3 "$PROBE" --shell "$a" --cols "$COLS" --rows "$ROWS" \
+        pin env "${RUNENV[@]}" python3 "$PROBE" --shell "$a" --cols "$COLS" --rows "$ROWS" \
             --prompt-runs $((RUNS / 2)) --inner-iters $((ITERS / 2)) \
             --prompt-regex "$FISH_PROMPT_REGEX" --skip exit --label A \
             >"$OUTDIR/ab.A.$round.json"
-        pin env "${runenv[@]}" python3 "$PROBE" --shell "$b" --cols "$COLS" --rows "$ROWS" \
+        pin env "${RUNENV[@]}" python3 "$PROBE" --shell "$b" --cols "$COLS" --rows "$ROWS" \
             --prompt-runs $((RUNS / 2)) --inner-iters $((ITERS / 2)) \
             --prompt-regex "$FISH_PROMPT_REGEX" --skip exit --label B \
             >"$OUTDIR/ab.B.$round.json"
@@ -385,8 +391,7 @@ for mode in "${MODE_LIST[@]}"; do
         [[ $spawn == login ]] && login=1
         local_tag="${mode}.${spawn}"
         log "mode=$mode  spawn=$spawn" || true
-        declare -a RUNENV
-        mapfile -t RUNENV < <(mk_runenv "$mode")
+        mk_runenv "$mode"
 
         if has_target fish; then
             fb="$FISH_WRAP/bin/fish"
