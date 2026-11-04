@@ -1,5 +1,5 @@
 {lib, ...}: let
-  inherit (lib) attrByPath concatStringsSep optionalAttrs optionals unique;
+  inherit (lib) attrByPath concatStringsSep optionalAttrs;
 
   lookup = attrs: name:
     if builtins.hasAttr name attrs
@@ -18,17 +18,11 @@
   resolveCommand = deps: command: args:
     [(lookup deps command)] ++ map (resolveArg deps) args;
 
-  duplicateValues = values:
-    if values == []
-    then []
-    else let
-      first = builtins.head values;
-      rest = builtins.tail values;
-    in
-      optionals (builtins.elem first rest) [first] ++ duplicateValues rest;
-
   assertUnique = what: values: result: let
-    duplicates = unique (duplicateValues values);
+    duplicates = builtins.attrNames (
+      lib.filterAttrs (_: group: builtins.length group > 1)
+      (builtins.groupBy (value: value) values)
+    );
   in
     if duplicates == []
     then result
