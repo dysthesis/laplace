@@ -116,7 +116,6 @@ mapfile -t MENU_ENTRIES < <(
 
 declare -a MENU_LABELS=()
 declare -a MENU_IDS=()
-declare -a SELECTED_IDS=()
 
 for entry in "${MENU_ENTRIES[@]}"; do
     title=${entry%%$'\t'*}
@@ -150,79 +149,69 @@ done
 
 ((selection_index >= 0)) || exit 0
 
-SELECTED_IDS=("${MENU_IDS[$selection_index]}")
+id="${MENU_IDS[$selection_index]}"
 
-if ((${#SELECTED_IDS[@]} == 0)); then
-    exit 0
+mapfile -d $'\0' -t F < <(
+    jq -r --arg id "$id" '
+  .[] | select(.id == $id) |
+
+  ((.author // []) | first | .family // "") as $first_family |
+  ((.issued["date-parts"][0][0]) // "") as $year |
+  ((.author // [])
+    | map([.given, .family] | map(select(. != null)) | join(" "))
+  ) as $authors |
+  [
+    (.id // ""),
+    (if .URL then .URL elif .DOI then "https://doi.org/" + .DOI else "" end),
+    ((.title // "") | gsub("^\\s*\"+|\"+\\s*$"; "")),
+    (.abstract // ""),
+    ($authors | map("  - " + tojson) | join("\n")),
+    ($year | tostring),
+    ($first_family)
+  ] | join("\u0000") + "\u0000"
+' <"$JSON_FILE"
+)
+
+id=${F[0]}
+ref=${F[1]}
+title=${F[2]}
+abstract=${F[3]//$'\r'/}
+authors_yaml=${F[4]}
+year=${F[5]}
+first_family=${F[6]}
+
+[[ -n $authors_yaml ]] || authors_yaml='  - ""'
+
+if pdf_path=$(find_pdf_for_item "$FILES" "$first_family" "$year" "$title"); then
+    open_file "$pdf_path" || printf 'Failed to open: %s\n' "$pdf_path" >&2
+else
+    printf 'No PDF matched for: %s (%s, %s)\n' "$title" "$first_family" "$year" >&2
 fi
 
-SELECTION_IDS=$(printf '%s\n' "${SELECTED_IDS[@]}")
+note_path=""
+if note_info=$(
+    ZK_AUTHORS_YAML="$authors_yaml" \
+        ZK_DESC="$abstract" \
+        ZK_REF="$ref" \
+        zk new Literature --title "$title" --id "$id" --print-path --no-input
+); then
+    note_path=$(printf '%s\n' "$note_info" | sed -n '1p')
+    note_path=${note_path//$'\r'/}
+else
+    printf 'Failed to create literature note for: %s\n' "$id" >&2
+fi
 
-while IFS= read -r id; do
+if [[ -z $note_path || $note_path == '---' ]]; then
+    note_path=$(zk list Literature --format '{{path}}' --match "$id" --match-strategy exact --limit 1 --quiet | head -n 1)
+    note_path=${note_path//$'\r'/}
+fi
 
-    mapfile -d $'\0' -t F < <(
-        jq -r --arg id "$id" '
-      .[] | select(.id == $id) |
-      
-      ((.author // []) | first | .family // "") as $first_family |
-      ((.issued["date-parts"][0][0]) // "") as $year |
-      ((.author // [])
-        | map([.given, .family] | map(select(. != null)) | join(" "))
-      ) as $authors |
-      [
-        (.id // ""),
-        (if .URL then .URL elif .DOI then "https://doi.org/" + .DOI else "" end),
-        ((.title // "") | gsub("^\\s*\"+|\"+\\s*$"; "")),
-        (.abstract // ""),
-        ($authors | map("  - " + tojson) | join("\n")),
-        ($year | tostring),
-        ($first_family)
-      ] | join("\u0000") + "\u0000"
-    ' <"$JSON_FILE"
-    )
-
-    id=${F[0]}
-    ref=${F[1]}
-    title=${F[2]}
-    abstract=${F[3]//$'\r'/}
-    authors_yaml=${F[4]}
-    year=${F[5]}
-    first_family=${F[6]}
-
-    [[ -n $authors_yaml ]] || authors_yaml='  - ""'
-
-    if pdf_path=$(find_pdf_for_item "$FILES" "$first_family" "$year" "$title"); then
-        open_file "$pdf_path" || printf 'Failed to open: %s\n' "$pdf_path" >&2
+if [[ -n $note_path ]]; then
+    if command -v foot >/dev/null 2>&1; then
+        nohup foot -e zk edit "$note_path" >/dev/null 2>&1 &
     else
-        printf 'No PDF matched for: %s (%s, %s)\n' "$title" "$first_family" "$year" >&2
+        zk edit "$note_path"
     fi
-
-    note_path=""
-    if note_info=$(
-        ZK_AUTHORS_YAML="$authors_yaml" \
-            ZK_DESC="$abstract" \
-            ZK_REF="$ref" \
-            zk new Literature --title "$title" --id "$id" --print-path --no-input
-    ); then
-        note_path=$(printf '%s\n' "$note_info" | sed -n '1p')
-        note_path=${note_path//$'\r'/}
-    else
-        printf 'Failed to create literature note for: %s\n' "$id" >&2
-    fi
-
-    if [[ -z $note_path || $note_path == '---' ]]; then
-        note_path=$(zk list Literature --format '{{path}}' --match "$id" --match-strategy exact --limit 1 --quiet | head -n 1)
-        note_path=${note_path//$'\r'/}
-    fi
-
-    if [[ -n $note_path ]]; then
-        if command -v foot >/dev/null 2>&1; then
-            nohup foot -e zk edit "$note_path" >/dev/null 2>&1 &
-        else
-            zk edit "$note_path"
-        fi
-    else
-        printf 'Unable to locate literature note for: %s\n' "$id" >&2
-    fi
-
-done <<<"$SELECTION_IDS"
+else
+    printf 'Unable to locate literature note for: %s\n' "$id" >&2
+fi
