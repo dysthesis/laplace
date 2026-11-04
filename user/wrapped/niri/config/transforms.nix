@@ -6,17 +6,13 @@
     then builtins.getAttr name attrs
     else throw "Unknown Niri dependency alias: ${name}";
 
-  isReference = value: builtins.isAttrs value && value ? ref;
-
-  resolveArg = deps: arg:
-    if isReference arg
-    then lookup deps arg.ref
-    else if builtins.isAttrs arg
+  resolveArg = arg:
+    if builtins.isAttrs arg
     then throw "Unsupported Niri command argument: ${builtins.toJSON arg}"
     else arg;
 
   resolveCommand = deps: command: args:
-    [(lookup deps command)] ++ map (resolveArg deps) args;
+    [(lookup deps command)] ++ map resolveArg args;
 
   assertUnique = what: values: result: let
     duplicates = builtins.attrNames (
