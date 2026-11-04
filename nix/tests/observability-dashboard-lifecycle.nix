@@ -280,7 +280,7 @@ in
         api("/api/dashboards/uid/" + game_uid, expected=404)
 
     def assert_retained(originals, manual, annotation_id):
-        assert api("/api/org")["name"] == "Renamed Laplace organization"
+        assert api("/api/org")["name"] == "Renamed Laplace organisation"
         for uid, original in originals.items():
             current = dashboard(uid)
             assert current["meta"]["provisioned"], current
@@ -338,7 +338,7 @@ in
                     "overwrite": False,
                 })
                 manual = dashboard(manual_uid)
-                api("/api/org", {"name": "Renamed Laplace organization"}, method="PUT")
+                api("/api/org", {"name": "Renamed Laplace organisation"}, method="PUT")
                 assert_retained(originals, manual, annotation_id)
             assert (state / "grafana.db").is_file()
             legacy = state / "legacy.db"
