@@ -359,6 +359,5 @@
     ++ map renderWindowRule (model.windowRules or [])
     ++ map renderOutput model.outputs;
 in {
-  inherit toKdlTree;
   render = model: KDL.render (toKdlTree model);
 }
