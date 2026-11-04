@@ -51,7 +51,6 @@ def bootstrap_median_ci(xs, iters=10000, alpha=0.05):
     for _ in range(iters):
         sample = [xs[random.randrange(n)] for _ in range(n)]
         meds.append(st.median(sample))
-    meds.sort()
     lo = percentile(meds, 100 * alpha / 2)
     hi = percentile(meds, 100 * (1 - alpha / 2))
     return (lo, hi)
@@ -173,13 +172,11 @@ def cmd_compare(base_path, var_path, as_json):
         ma, mb = st.median(a), st.median(b)
         delta = mb - ma
         pct = (delta / ma * 100.0) if ma else float("nan")
-        n = min(2000, 10000)
         diffs = []
-        for _ in range(n):
+        for _ in range(2000):
             sa = [a[random.randrange(len(a))] for _ in range(len(a))]
             sb = [b[random.randrange(len(b))] for _ in range(len(b))]
             diffs.append(st.median(sb) - st.median(sa))
-        diffs.sort()
         d_lo, d_hi = percentile(diffs, 2.5), percentile(diffs, 97.5)
         u, p = mann_whitney_u(a, b)
         rows.append({
