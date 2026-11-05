@@ -81,6 +81,16 @@
         ln -s ${themeFile} "$out/noctalia/palettes/Minimal.json"
       '');
 in
-  mkWrapper pkgs noctalia {
-    set.NOCTALIA_CONFIG_HOME = "${cfg}";
+  mkWrapper pkgs (
+    if barEnabled
+    then noctalia
+    # Saved settings load after config.toml; external bar ownership must win.
+    else
+      noctalia.overrideAttrs (old: {
+        patches = (old.patches or []) ++ [./disable-bars.patch];
+      })
+  ) {
+    set =
+      {NOCTALIA_CONFIG_HOME = "${cfg}";}
+      // lib.optionalAttrs (!barEnabled) {NOCTALIA_DISABLE_BARS = "1";};
   }

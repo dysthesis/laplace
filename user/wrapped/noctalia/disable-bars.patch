@@ -1,0 +1,45 @@
+--- a/src/config/config_service.cpp
++++ b/src/config/config_service.cpp
+@@ -26,6 +26,7 @@
+ #include "system/hardware_info.h"
+ #include "util/file_utils.h"
+ #include "util/string_utils.h"
++#include "util/sys_utils.h"
+ #include "wayland/wayland_connection.h"
+ 
+ #include <algorithm>
+@@ -60,4 +61,17 @@
+   constexpr Logger kLog("config");
+ 
++  void disableBars(Config& config) {
++    static const bool disabled = SysUtils::isEnvFlagOn("NOCTALIA_DISABLE_BARS");
++    if (!disabled) {
++      return;
++    }
++    for (auto& bar : config.bars) {
++      bar.enabled = false;
++      for (auto& monitor : bar.monitorOverrides) {
++        monitor.enabled = false;
++      }
++    }
++  }
++
+   template <typename T>
+   void readConfigSection(
+@@ -869,6 +883,7 @@
+   config.controlCenter.shortcuts = defaultControlCenterShortcuts();
+   config.shell.session.actions = defaultSessionPanelActions();
+   config.plugins.sources = defaultPluginSources();
++  disableBars(config);
+   return config;
+ }
+ 
+@@ -1901,6 +1916,8 @@
+     config.bars.push_back(BarConfig{});
+   }
+ 
++  disableBars(config);
++
+   if (logSummary) {
+     std::string barOrder;
+     for (const auto& bar : config.bars) {

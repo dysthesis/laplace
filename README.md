@@ -84,9 +84,10 @@ default to null, but a selected WM may require them:
 | Existing XMonad                              | `server = xorg; wm = xmonad;` with shell, bar and launcher null |
 
 Waybar is a bar, not a replacement for Noctalia's notification, wallpaper and idle
-services. `shell = noctalia; bar = waybar;` disables Noctalia's actual bar while
-retaining the rest of its shell and appearance policy. Standalone Niri keeps its
-existing Dunst and swaybg services. There is no independent notification selector.
+services. `shell = noctalia; bar = waybar;` disables Noctalia's bars after saved
+settings are applied, including per-monitor overrides. Other saved settings
+remain effective and are not rewritten by the bar policy. Standalone Niri keeps
+its existing Dunst and swaybg services. There is no independent notification selector.
 
 Only the Foot terminal adapter is currently implemented; Ghostty is not a
 selectable component yet. Integrated Niri requires Vicinae's application and

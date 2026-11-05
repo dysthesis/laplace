@@ -74,19 +74,24 @@ in {
         ${lib.concatStrings (lib.mapAttrsToList validateHost nixosConfigurations)}
         ${lib.concatStrings (lib.mapAttrsToList validateHost {inherit standalone externalBar;})}
         export HOME="$TMPDIR/home"
+        export XDG_STATE_HOME="$TMPDIR/state"
         mkdir -p "$HOME"
         ${lib.getExe pkgs.python3} - \
           ${lib.escapeShellArg nixosConfigurations.phobos.config.systemd.user.services.noctalia.serviceConfig.ExecStart} \
           ${lib.escapeShellArg externalBar.config.systemd.user.services.noctalia.serviceConfig.ExecStart} <<'PY'
         import shlex
+        import os
+        from pathlib import Path
         import subprocess
         import sys
         import tomllib
 
-        original, replacement = [
-            tomllib.loads(subprocess.check_output(shlex.split(command) + ["config", "export"], text=True))
-            for command in sys.argv[1:]
-        ]
+        def export(command):
+            return tomllib.loads(subprocess.check_output(
+                shlex.split(command) + ["config", "export", "full"], text=True,
+            ))
+
+        original, replacement = [export(command) for command in sys.argv[1:]]
         assert original["bar"]["main"]["enabled"]
         assert not replacement["bar"]["main"]["enabled"]
         assert replacement["notification"]["enable_daemon"]
@@ -94,6 +99,27 @@ in {
         assert {k: v for k, v in original.items() if k != "bar"} == {
             k: v for k, v in replacement.items() if k != "bar"
         }
+        settings = Path(os.environ["XDG_STATE_HOME"]) / "noctalia/settings.toml"
+        settings.parent.mkdir(parents=True)
+        saved = """[bar.main]
+        enabled = true
+        [bar.main.monitor."*"]
+        enabled = true
+        [bar.extra]
+        enabled = true
+        [shell]
+        font_family = "Saved desktop font"
+        """
+        settings.write_text(saved)
+        persisted = export(sys.argv[2])
+        for name in persisted["bar"]["order"]:
+            bar = persisted["bar"][name]
+            assert not bar["enabled"], name
+            assert all(not monitor["enabled"] for monitor in bar.get("monitor", {}).values()), name
+        assert persisted["shell"]["font_family"] == "Saved desktop font"
+        assert persisted["notification"]["enable_daemon"]
+        assert persisted["wallpaper"]["enabled"]
+        assert settings.read_text() == saved
         PY
         touch $out
       '';
