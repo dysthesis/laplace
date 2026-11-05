@@ -1,9 +1,10 @@
 {
   pkgs,
+  lib,
   bemenu,
   fd,
   gnused,
-  foot,
+  terminal,
   jq,
   pandoc,
   uutils-coreutils-noprefix,
@@ -17,11 +18,14 @@ pkgs.writeShellApplication {
     bemenu
     fd
     gnused
-    foot
     jq
     pandoc
     uutils-coreutils-noprefix
     zk
   ];
-  text = builtins.readFile ./script.sh;
+  text =
+    builtins.replaceStrings
+    ["@terminalExecute@"]
+    [(lib.escapeShellArgs terminal.execute)]
+    (builtins.readFile ./script.sh);
 }

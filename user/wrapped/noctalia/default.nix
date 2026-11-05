@@ -3,6 +3,9 @@
   lib,
   noctalia,
   config,
+  launcherOpen,
+  logout,
+  barEnabled,
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
@@ -67,10 +70,7 @@
   themeFile = pkgs.writers.writeJSON "Minimal.json" theme;
   cfg =
     import ./config.nix {
-      vicinaeExe = lib.getExe pkgs.configured.vicinae;
-      inherit config;
-      # Prevent a dependency cycle through the configured Niri shell bindings.
-      niriExe = lib.getExe pkgs.niri;
+      inherit lib config launcherOpen logout barEnabled;
     }
     |> pkgs.writers.writeTOML "config.toml"
     |> (file:

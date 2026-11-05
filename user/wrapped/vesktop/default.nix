@@ -3,6 +3,7 @@
   lib,
   pkgs,
   inputs,
+  desktopSelection,
   ...
 }: let
   mkNixPak = inputs.nixpak.lib.nixpak {
@@ -53,8 +54,8 @@ in
         network = true;
         shareIpc = true;
         sockets = {
-          wayland = lib.mkDefault (builtins.elem "wayland" config.laplace.display.servers);
-          x11 = lib.mkDefault (builtins.elem "xorg" config.laplace.display.servers);
+          wayland = lib.mkDefault (desktopSelection.wm != null && desktopSelection.wm.protocol == "wayland");
+          x11 = lib.mkDefault (desktopSelection.wm != null && desktopSelection.wm.protocol == "x11");
           pulse = lib.mkDefault true;
         };
         bind = {

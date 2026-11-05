@@ -1,5 +1,4 @@
 {lib, ...}: let
-  data = import ./data.nix;
   transforms = import ./transforms.nix {inherit lib;};
   spawnBind = combo: title: command: args: {
     inherit combo title;
@@ -32,10 +31,11 @@
     };
 in {
   mkModel = context: let
-    desktop = context.desktop or {enable = false;};
-    palette = desktop.palette;
+    inherit (context) integrated palette;
+    terminalAppIdPattern = "^${lib.escapeRegex context.terminalAppId}$";
+    data = import ./data.nix {inherit terminalAppIdPattern;};
     desktopBinds = {
-      "Mod+R" = spawnBind "Mod+R" null "launcher" ["toggle"];
+      "Mod+R" = spawnBind "Mod+R" null "launcher" [];
       "Mod+Shift+E" = noctaliaBind "Mod+Shift+E" "Session menu" ["panel-toggle" "session"];
       "Mod+Shift+Tab" = actionBind "Mod+Ctrl+Comma" "Move workspace to left monitor" "move-workspace-to-monitor-left";
       "XF86AudioRaiseVolume" = hardwareBind "XF86AudioRaiseVolume" true ["volume-up" "5"];
@@ -59,7 +59,7 @@ in {
       "Mod+Ctrl+WheelScrollRight" = null;
     };
     settings =
-      if !desktop.enable
+      if !integrated
       then data
       else
         data
@@ -97,7 +97,7 @@ in {
           windowRules =
             lib.filter (
               rule:
-                !(lib.any (match: (match.appId or null) == "^foot$") (rule.matches or [])
+                !(lib.any (match: (match.appId or null) == terminalAppIdPattern) (rule.matches or [])
                   && (rule.backgroundEffect.blur or false))
             )
             data.windowRules;
@@ -112,8 +112,8 @@ in {
             )
             data.binds
             ++ [
-              (spawnBind "Mod+Space" "Launch an application" "launcher" ["toggle"])
-              (spawnBind "Mod+V" "Clipboard history" "launcher" ["vicinae://launch/clipboard/history"])
+              (spawnBind "Mod+Space" "Launch an application" "launcher" [])
+              (spawnBind "Mod+V" "Clipboard history" "clipboard" [])
               (noctaliaBind "Mod+N" "Notifications" ["panel-toggle" "control-center" "notifications"])
               (noctaliaBind "Mod+Shift+N" "Toggle do not disturb" ["notification-dnd-toggle"])
               (noctaliaBind "Mod+Ctrl+Space" "Control centre" ["panel-toggle" "control-center" "home"])

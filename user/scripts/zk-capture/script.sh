@@ -10,7 +10,7 @@ export ZK_CAPTURE_SENTINEL="$SENTINEL_FILE"
 
 printf '%% title:\n\n' >"$CAPTURE_FILE"
 
-if ! foot --app-id=foot.capture -e nvim \
+if ! command @terminalExecuteWithAppId@ foot.capture nvim \
     -c 'let g:zk_capture_written = 0' \
     -c "augroup ZkCaptureGuard | autocmd! | autocmd BufWritePost <buffer> let g:zk_capture_written = 1 | call writefile(['written'], expand('\$ZK_CAPTURE_SENTINEL')) | autocmd VimLeavePre * if !get(g:, 'zk_capture_written', 0) | cquit | endif | augroup END" \
     -c "call matchadd('Comment', '^%.*$')" \

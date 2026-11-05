@@ -2,15 +2,19 @@
   pkgs,
   lib,
   config,
+  terminal,
+  launcher,
+  integrated,
+  shellCommand,
   niri ? pkgs.niri,
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
   configPath = import ./config {
-    inherit pkgs lib config;
+    inherit pkgs lib config terminal launcher integrated shellCommand;
   };
 in
-  mkWrapper pkgs niri {
+  (mkWrapper pkgs niri {
     set.NIRI_CONFIG = configPath;
     # `wrapProgram $out/bin/niri` cannot configure the session binary, session files or service files.
     postBuild = ''
@@ -39,4 +43,6 @@ in
           --replace-fail 'ExecStart=${niri}/bin/niri --session' "ExecStart=$out/bin/niri --session"
       fi
     '';
-  }
+  }).overrideAttrs (old: {
+    passthru = (old.passthru or {}) // {inherit (niri) providedSessions;};
+  })

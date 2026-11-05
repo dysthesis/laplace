@@ -6,13 +6,18 @@
     then builtins.getAttr name attrs
     else throw "Unknown Niri dependency alias: ${name}";
 
-  resolveArg = arg:
-    if builtins.isAttrs arg
-    then throw "Unsupported Niri command argument: ${builtins.toJSON arg}"
-    else arg;
-
-  resolveCommand = deps: command: args:
-    [(lookup deps command)] ++ map resolveArg args;
+  resolveCommand = deps: command: args: let
+    argv = lookup deps command;
+  in
+    if
+      builtins.isList argv
+      && argv != []
+      && lib.all builtins.isString argv
+      && lib.hasPrefix "/" (builtins.head argv)
+      && builtins.isList args
+      && lib.all builtins.isString args
+    then argv ++ args
+    else throw "Niri dependency ${command} requires a non-empty argument vector with an absolute executable and string arguments";
 
   assertUnique = what: values: result: let
     duplicates = builtins.attrNames (

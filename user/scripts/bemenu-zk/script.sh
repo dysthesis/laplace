@@ -40,4 +40,4 @@ if [ -n "${path:-}" ]; then
     printf '%s\t%s\n' "$path" "$label" >>"$CACHE"
 fi
 
-exec foot -e zk edit "$path"
+exec @terminalExecute@ zk edit "$path"

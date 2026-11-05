@@ -2,6 +2,7 @@
   pkgs,
   lib,
   config,
+  integrated,
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
@@ -52,6 +53,7 @@
       config
       pkgs
       lib
+      integrated
       ;
   };
 in

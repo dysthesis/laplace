@@ -3,6 +3,7 @@
   lib,
   config,
   pkgs,
+  desktopSelection,
   ...
 }: let
   inherit (lib) mkIf;
@@ -12,6 +13,10 @@
   isDesktop = elem "desktop" config.laplace.profiles;
   hostSystem = pkgs.stdenv.hostPlatform.system;
   keys = import ../keys.nix;
+  terminal = import desktopSelection.terminal {
+    inherit pkgs lib;
+    foot = pkgs.configured.foot;
+  };
 in {
   config = mkIf cfg {
     users.users.demiurge = {
@@ -89,14 +94,14 @@ in {
             pwvucontrol
             configured.ytsub
           ]
-          ++ lib.optionals (builtins.elem "wayland" config.laplace.display.servers) [
+          ++ lib.optionals (config.laplace.wm != null && config.laplace.wm.protocol == "wayland") [
             wl-clipboard
             grim
             slurp
             swappy
             configured.bibata-hyprcursor
             configured.bemenu
-            configured.foot
+            terminal.package
           ];
         applications = with pkgs; [
           unstable.signal-desktop

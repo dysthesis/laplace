@@ -4,33 +4,9 @@
   pkgs,
   ...
 }: let
-  inherit
-    (lib)
-    mkIf
-    optionalString
-    ;
-  inherit (builtins) elem;
-  cfg = config.laplace.display.servers;
+  inherit (lib) optionalString;
 in {
-  imports = [
-    (lib.laplace.modules.mkSelector {
-      dir = ./sessions;
-      option = ["laplace" "display" "xorg" "session"];
-      description = "Which X11 session to run";
-      multiple = false;
-      default = "xmonad";
-    })
-  ];
-
-  # VT1 login uses the selected Xorg command.
-  options.laplace.display.xorg.sessionCommand = lib.mkOption {
-    type = lib.types.nullOr lib.types.str;
-    default = null;
-    internal = true;
-    description = "Command login shells exec to start the X11 session.";
-  };
-
-  config = mkIf (elem "xorg" cfg) {
+  config = {
     environment.systemPackages = with pkgs; [
       xclip
     ];

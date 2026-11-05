@@ -45,6 +45,104 @@ vhost isolation, and Colmena activation is not a fleet transaction. See the
 [cluster operator guide](docs/cluster.md) for dependencies, validation, rollout,
 secret preparation, decommissioning and relocation.
 
+### Desktop composition
+
+`hosts/desktops.nix` selects ordinary values before the NixOS module imports are
+assembled. NixOS and Colmena receive the same `desktopSelection` special argument;
+package construction still uses the host's existing package set. Presets live in
+`system/display/presets.nix`. Deimos and Phobos use `presets.integrated`.
+
+For example, to retain Noctalia and Vicinae but replace the primary bar on Phobos:
+
+```nix
+let
+  presets = import ../system/display/presets.nix;
+in {
+  deimos = presets.integrated;
+  phobos = presets.integrated // {bar = ../user/wrapped/waybar;};
+}
+```
+
+This disables Noctalia's actual bar and starts configured Waybar through Niri's
+existing session target. Noctalia retains notifications, wallpaper, idle policy
+and shell controls; appearance and authentication policy remain integrated.
+There is no independent notification selector.
+
+Supported managed compositions:
+
+- `presets.integrated`: Niri, Noctalia, Vicinae and Foot.
+- `presets.standalone`: Niri, Foot, Fuzzel, Waybar, Dunst and swaybg.
+- Integrated Niri with the explicit Waybar replacement above.
+- `presets.legacy (import ../system/display/servers/wayland/compositors/sway)`
+  preserves the existing custom Sway path. The same constructor accepts the
+  existing Hyprland, River and dwl providers, or
+  `../system/display/servers/xorg/sessions/xmonad`. These keep their own startup
+  mechanisms; they do not acquire native Sway integration or new component mixes.
+
+Only the existing Foot operation adapter is supported. Terminal operations reach
+Niri bindings, matching, swallowing, Fuzzel and the note helpers. Legacy compositor
+bindings retain their fixed defaults; unsupported terminal, launcher, shell and
+bar combinations fail assertions rather than being accepted and ignored.
+Integrated Niri requires Vicinae's application and clipboard-history operations;
+Fuzzel is not a replacement for that complete contract. Independent configured
+Foot uses and WezTerm `imgcat` remain available.
+
+`config.laplace.wm` is a typed, read-only **result**, not a selection option. It is
+either null or `{ protocol; login; logout; }`, with `logout = null` where no
+external control operation is consumed. Operations are non-empty argument
+vectors with an absolute executable, not shell command strings. Bash uses the
+complete login vector under the existing desktop-profile, empty-`DISPLAY`, VT1
+guard. It adds no compositor flags. Niri supplies configured `niri-session` for
+the login context; native Niri integration owns environment import, waiting and
+shutdown. Noctalia receives raw Niri logout IPC separately to avoid a configured
+Niri/Noctalia dependency cycle.
+
+`presets.none`, an absent host entry, or a preset with `wm = null` imports no
+managed provider and starts no managed session-bound components. Shared desktop
+profile services and GTK portals remain; Chaos's upstream GNOME installer is an
+external desktop, not a headless host. Null selection does not remove home data,
+independent packages or previous generations. The old display/session selectors
+and global configured Niri/Noctalia exports have been removed.
+
+Build before activation:
+
+```sh
+nix build --no-link --no-write-lock-file \
+  .#checks.x86_64-linux.desktop-stack \
+  .#checks.x86_64-linux.niri-config \
+  .#checks.x86_64-linux.mk-wrapper
+nix build --no-link --no-write-lock-file \
+  .#nixosConfigurations.deimos.config.system.build.toplevel \
+  .#nixosConfigurations.phobos.config.system.build.toplevel
+```
+
+From a running Niri terminal, the optional real-terminal regression uses disposable
+notes, genuine Foot/Neovim/zk and a local bare Git remote; it does not activate a
+generation or contact the user's note repository:
+
+```sh
+nix build --impure --out-link /tmp/laplace-terminal-check --expr '
+  let f = builtins.getFlake (toString ./.);
+  in import ./nix/tests/terminal-helpers.nix {
+    pkgs = f.nixosConfigurations.phobos.pkgs;
+  }'
+python3 nix/tests/terminal-helpers.py /tmp/laplace-terminal-check
+```
+
+Checks cover actual selected configuration validation, provider removal,
+standalone/external-bar service ownership and operation boundaries. Evaluation
+and parser success do not establish VT1 login, logout/re-login cleanup, lock and
+authentication prompts, portal behaviour or Noctalia panel usability without its
+bar. Verify these on an authorised desktop rollout with saved work, a recovery
+console and the previous bootable generation retained. A generation switch is
+not an atomic live desktop replacement; use logout/login or reboot and roll back
+if those checks fail.
+
+The existing Xorg/gungnir build limitation remains. Capture and journal helpers
+still treat every non-zero terminal/editor result as cancellation; capture also
+retains its existing note-creation error policy. Dependency extraction does not
+repair or conceal those inherited limitations.
+
 ### Wrappers as configurations
 
 Instead of symlinking configuration files to their appropriate directories, _e.g._ `~`, we instead

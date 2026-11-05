@@ -7,6 +7,7 @@
 }: let
   inherit (builtins) mapAttrs;
   hosts = cluster.manifest.hosts;
+  desktopSelections = import ./desktops.nix;
   defaultImports = [
     ../system
     ../modules
@@ -32,6 +33,7 @@
       specialArgs = {
         inherit self inputs lib;
         cluster = cluster.manifest;
+        desktopSelection = (import ../system/display/presets.nix).none // (desktopSelections.${hostname} or {});
       };
       modules = [
         inputs.chaotic.nixosModules.nyx-cache

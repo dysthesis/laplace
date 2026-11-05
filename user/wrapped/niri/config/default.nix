@@ -2,32 +2,31 @@
   pkgs,
   lib,
   config,
+  terminal,
+  launcher,
+  integrated,
+  shellCommand,
   ...
 }: let
   model = import ./model.nix {inherit lib;};
   renderer = import ./render.nix {inherit lib;};
-  desktopEnabled = config.laplace.display.wayland.desktop.enable;
 
   context = {
     monitors = lib.attrByPath ["laplace" "hardware" "monitors"] [] config;
-    desktop = {
-      enable = desktopEnabled;
-      palette = import ../../../../system/display/servers/wayland/desktop/palette.nix;
-    };
+    inherit integrated;
+    palette = import ../../../../system/display/servers/wayland/desktop/palette.nix;
+    terminalAppId = terminal.appId;
     deps =
       {
-        terminal = lib.getExe pkgs.configured.foot;
-        launcher = lib.getExe (
-          if desktopEnabled
-          then pkgs.configured.vicinae
-          else pkgs.configured.fuzzel
-        );
-        brightnessctl = lib.getExe pkgs.brightnessctl;
-        wpctl = lib.getExe' pkgs.wireplumber "wpctl";
+        terminal = terminal.launch;
+        launcher = launcher.open;
+        brightnessctl = [(lib.getExe pkgs.brightnessctl)];
+        wpctl = [(lib.getExe' pkgs.wireplumber "wpctl")];
         xwaylandSatellite = lib.getExe pkgs.xwayland-satellite;
       }
-      // lib.optionalAttrs desktopEnabled {
-        noctalia = lib.getExe pkgs.configured.noctalia;
+      // lib.optionalAttrs integrated {
+        noctalia = shellCommand;
+        clipboard = launcher.clipboard or null;
       };
   };
 

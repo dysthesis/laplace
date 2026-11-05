@@ -3,12 +3,16 @@
   lib,
   pkgs,
   config,
+  desktopSelection,
   ...
 }: let
   inherit (pkgs.unstable) callPackage;
   inherit (lib) makeOverridable;
-  inherit (lib.laplace.pkgs) mkWrapper;
   system = pkgs.stdenv.hostPlatform.system;
+  terminal = import desktopSelection.terminal {
+    inherit pkgs lib;
+    foot = pkgs.configured.foot;
+  };
   overlay = _final: _prev: let
     guiPackage = package: package.config.env;
   in {
@@ -65,7 +69,10 @@
           inputs
           ;
       };
-      swaylock = callPackage ./swaylock {inherit lib pkgs config;};
+      swaylock = callPackage ./swaylock {
+        inherit lib pkgs;
+        integrated = desktopSelection.wm != null && desktopSelection.shell != null;
+      };
       hyprland = callPackage ./hyprland {
         inherit
           pkgs
@@ -74,15 +81,6 @@
           inputs
           ;
       };
-      niri = callPackage ./niri {
-        inherit
-          pkgs
-          lib
-          config
-          inputs
-          ;
-      };
-      noctalia = callPackage ./noctalia {inherit pkgs lib config;};
       vicinae = callPackage ./vicinae {
         inherit pkgs lib;
         inherit (pkgs) vicinae;
@@ -103,41 +101,7 @@
         inherit (pkgs) fish;
         inherit pkgs inputs lib direnv;
       };
-      fuzzel = let
-        fontSize = config.laplace.display.fuzzel.fontSize;
-        configFile =
-          {
-            main = {
-              terminal = lib.getExe foot;
-              font = "IosevkaCadmus Nerd Font:size=${toString fontSize}";
-              prompt = " ";
-              layer = "overlay";
-              lines = 12;
-              width = 80;
-              "horizontal-pad" = 10;
-              "vertical-pad" = 8;
-              "inner-pad" = 8;
-            };
-
-            colors = {
-              background = "000000ee";
-              text = "ffffffff";
-              match = "7788aaff";
-              selection = "080808ff";
-              "selection-text" = "ffffffff";
-              "selection-match" = "ffcc66ff";
-              border = "ffffffff";
-            };
-
-            border = {
-              width = 1;
-              radius = 8;
-            };
-          }
-          |> lib.generators.toINI {}
-          |> pkgs.writeText "fuzzel.ini";
-      in
-        mkWrapper pkgs pkgs.fuzzel {addFlags = ["--config=${configFile}"];};
+      fuzzel = callPackage ./fuzzel {inherit lib pkgs config terminal;};
       bemenu = callPackage ./bemenu {inherit pkgs config lib;};
       yambar = makeOverridable callPackage ./yambar {
         inherit pkgs lib;
@@ -159,6 +123,7 @@
       mpv = callPackage ./mpv {inherit lib pkgs;};
       foot = callPackage ./foot {
         inherit lib pkgs config;
+        integrated = desktopSelection.wm != null && desktopSelection.shell != null;
       };
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
@@ -171,6 +136,7 @@
             pkgs
             config
             inputs
+            desktopSelection
             ;
         }
       );
@@ -181,6 +147,7 @@
             pkgs
             inputs
             config
+            desktopSelection
             ;
         }
       );

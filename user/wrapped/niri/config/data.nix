@@ -1,4 +1,4 @@
-{
+{terminalAppIdPattern}: {
   environment = {
     XDG_CURRENT_DESKTOP = "niri";
     XDG_SESSION_TYPE = "wayland";
@@ -85,7 +85,7 @@
   windowRules = [
     {
       matches = [
-        {appId = "^foot$";}
+        {appId = terminalAppIdPattern;}
       ];
       backgroundEffect.blur = true;
     }

@@ -1,9 +1,10 @@
 {
   pkgs,
+  lib,
   gawk,
   zk,
   uutils-coreutils-noprefix,
-  foot,
+  terminal,
   neovim,
   ...
 }:
@@ -14,8 +15,11 @@ pkgs.writeShellApplication {
     gawk
     zk
     uutils-coreutils-noprefix
-    foot
     neovim
   ];
-  text = builtins.readFile ./script.sh;
+  text =
+    builtins.replaceStrings
+    ["@terminalExecuteWithAppId@"]
+    [(lib.escapeShellArgs terminal.executeWithAppId)]
+    (builtins.readFile ./script.sh);
 }

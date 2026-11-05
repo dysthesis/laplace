@@ -99,13 +99,6 @@
       zram.enable = true;
 
       users = ["demiurge"];
-      display = {
-        servers = ["wayland"];
-        wayland = {
-          compositor = "niri";
-          desktop.enable = true;
-        };
-      };
 
       virtualisation.enable = true;
       nh = {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Move tiled child windows into their Foot terminal's Niri column."""
+"""Move tiled child windows into their terminal's Niri column."""
 
 import json
 import os
@@ -7,6 +7,7 @@ import socket
 import sys
 
 SOCKET = os.environ["NIRI_SOCKET"]
+TERMINAL_APP_ID = sys.argv[1]
 
 
 def connect():
@@ -49,7 +50,7 @@ def ancestor_terminal(pid, all_windows, child_id):
         seen.add(pid)
         matches = owners.get(pid, [])
         if matches:
-            return matches[0]["id"] if len(matches) == 1 and matches[0]["app_id"] == "foot" else None
+            return matches[0]["id"] if len(matches) == 1 and matches[0]["app_id"] == TERMINAL_APP_ID else None
         try:
             # The comm field can contain spaces or parentheses.
             with open(f"/proc/{pid}/stat") as proc:

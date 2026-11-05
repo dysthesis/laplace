@@ -1,6 +1,8 @@
 {
-  vicinaeExe,
-  niriExe,
+  lib,
+  launcherOpen,
+  logout,
+  barEnabled,
   config,
 }: let
   wallpaper = "${../../assets/wallpaper.png}";
@@ -43,7 +45,7 @@ in {
       {
         action = "logout";
         shortcut = "2";
-        command = "${niriExe} msg action quit";
+        command = lib.escapeShellArgs logout;
       }
       {
         action = "suspend";
@@ -139,7 +141,7 @@ in {
   };
 
   bar.main = {
-    enabled = true;
+    enabled = barEnabled;
     position = "top";
     auto_hide = false;
     reserve_space = true;
@@ -179,7 +181,7 @@ in {
       glyph = "search";
       label = "Apps";
       tooltip = "Applications and commands";
-      actions.left = "exec ${vicinaeExe} toggle";
+      actions.left = "exec ${lib.escapeShellArgs launcherOpen}";
     };
     workspaces = {
       style = "regular";

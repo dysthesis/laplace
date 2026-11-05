@@ -1,17 +1,21 @@
 {
-  inputs,
-  config,
-  lib,
-  pkgs,
-  ...
-}: let
-  inherit (builtins) elem;
-  cfg = config.laplace.display;
-  enabled = elem "wayland" cfg.servers && cfg.wayland.compositor == "dwl";
-  system = pkgs.stdenv.hostPlatform.system;
-in {
-  config = lib.mkIf enabled {
-    laplace.display.wayland.sessionCommand = "${lib.getExe' inputs.status.packages.${system}.default "status"} | ${lib.getExe' pkgs.configured.dwl "dwl"}";
+  protocol = "wayland";
+  module = {
+    inputs,
+    lib,
+    pkgs,
+    ...
+  }: let
+    system = pkgs.stdenv.hostPlatform.system;
+    login = pkgs.writeShellScript "dwl-session" ''
+      ${lib.escapeShellArgs [(lib.getExe' inputs.status.packages.${system}.default "status")]} | ${lib.escapeShellArgs [(lib.getExe' pkgs.configured.dwl "dwl")]}
+    '';
+  in {
+    imports = [../../../legacy.nix];
+    laplace.wm = {
+      protocol = "wayland";
+      login = ["${login}"];
+    };
     laplace.display.checkCommands = [
       ''
         test -x ${lib.getExe' pkgs.configured.dwl "dwl"}

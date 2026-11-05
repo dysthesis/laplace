@@ -1,11 +1,10 @@
 {
   lib,
   pkgs,
-  config,
+  integrated,
   swaylock-effects,
   ...
 }: let
-  desktopEnabled = config.laplace.display.wayland.desktop.enable;
   palette = import ../../../system/display/servers/wayland/desktop/palette.nix;
   colour = name: lib.removePrefix "#" palette.${name};
   wallpaper = "${../../assets/wallpaper.png}";
@@ -139,11 +138,11 @@
     (colour "surface")
   ];
   package =
-    if desktopEnabled
+    if integrated
     then pkgs.swaylock
     else swaylock-effects;
   tokens =
-    if desktopEnabled
+    if integrated
     then desktopTokens
     else legacyTokens;
 in

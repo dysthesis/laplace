@@ -197,7 +197,7 @@
           function = "spawn";
           argument = let
             bemenu-zk = pkgs.scripts.bemenu-zk.override {
-              inherit (pkgs.configured) zk foot bemenu;
+              inherit (pkgs.configured) zk bemenu;
             };
           in
             mkShCmd (lib.getExe bemenu-zk);
@@ -220,7 +220,7 @@
           function = "spawn";
           argument = let
             bemenu-bib = pkgs.scripts.bemenu-bib.override {
-              inherit (pkgs.configured) bemenu zk foot;
+              inherit (pkgs.configured) bemenu zk;
             };
           in
             mkShCmd (lib.getExe bemenu-bib);
@@ -231,7 +231,7 @@
           function = "spawn";
           argument = let
             zk-capture = pkgs.scripts.zk-capture.override {
-              inherit (pkgs.configured) foot zk;
+              inherit (pkgs.configured) zk;
               neovim = inputs.poincare.packages.${system}.default;
             };
           in
@@ -246,7 +246,7 @@
           function = "spawn";
           argument = let
             zk-journal = pkgs.scripts.zk-journal.override {
-              inherit (pkgs.configured) foot zk;
+              inherit (pkgs.configured) zk;
               neovim = inputs.poincare.packages.${system}.default;
             };
           in

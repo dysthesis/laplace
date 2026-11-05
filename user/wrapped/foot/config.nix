@@ -2,9 +2,9 @@
   config,
   pkgs,
   lib,
+  integrated,
   ...
 }: let
-  desktop = lib.attrByPath ["laplace" "display" "wayland" "desktop" "enable"] false config;
   palette = import ../../../system/display/servers/wayland/desktop/palette.nix;
   hex = lib.removePrefix "#";
   fontSize = config.laplace.display.foot.fontSize;
@@ -31,7 +31,7 @@ in
     };
     tweak.ligatures = "yes";
     colors-dark =
-      if desktop
+      if integrated
       then {
         background = hex palette.background;
         foreground = hex palette.foreground;

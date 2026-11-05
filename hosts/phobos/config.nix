@@ -70,13 +70,8 @@
       zram.enable = true;
 
       display = {
-        servers = ["wayland"];
         foot.fontSize = 5;
         fuzzel.fontSize = 13;
-        wayland = {
-          compositor = "niri";
-          desktop.enable = true;
-        };
       };
 
       users = ["demiurge"];

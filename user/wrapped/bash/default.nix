@@ -9,17 +9,10 @@
   inherit (lib) optionalString;
 
   configuration = let
-    # Do not interpolate null session commands before the selector assertions.
-    waylandSession = config.laplace.display.wayland.sessionCommand;
-    xorgSession = config.laplace.display.xorg.sessionCommand;
-    startWayland = ''
-      exec ${waylandSession}
-    '';
-    startXorg = "exec ${xorgSession}";
-    startDisplay = ''
+    session = config.laplace.wm;
+    startDisplay = optionalString (session != null) ''
       if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-       ${optionalString (elem "wayland" config.laplace.display.servers && waylandSession != null) startWayland}
-       ${optionalString (elem "xorg" config.laplace.display.servers && xorgSession != null) startXorg}
+        exec ${lib.escapeShellArgs session.login}
       fi
     '';
     startFish = ''

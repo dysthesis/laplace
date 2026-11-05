@@ -1,9 +1,10 @@
 {
   pkgs,
+  lib,
   gawk,
   zk,
   uutils-coreutils-noprefix,
-  foot,
+  terminal,
   bemenu,
   ...
 }:
@@ -14,8 +15,11 @@ pkgs.writeShellApplication {
     gawk
     zk
     uutils-coreutils-noprefix
-    foot
     bemenu
   ];
-  text = builtins.readFile ./script.sh;
+  text =
+    builtins.replaceStrings
+    ["@terminalExecute@"]
+    [(lib.escapeShellArgs terminal.execute)]
+    (builtins.readFile ./script.sh);
 }

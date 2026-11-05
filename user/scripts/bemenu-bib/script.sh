@@ -207,11 +207,7 @@ if [[ -z $note_path || $note_path == '---' ]]; then
 fi
 
 if [[ -n $note_path ]]; then
-    if command -v foot >/dev/null 2>&1; then
-        nohup foot -e zk edit "$note_path" >/dev/null 2>&1 &
-    else
-        zk edit "$note_path"
-    fi
+    nohup @terminalExecute@ zk edit "$note_path" >/dev/null 2>&1 &
 else
     printf 'Unable to locate literature note for: %s\n' "$id" >&2
 fi

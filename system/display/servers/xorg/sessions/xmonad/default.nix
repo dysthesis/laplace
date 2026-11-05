@@ -1,17 +1,20 @@
 {
-  config,
-  lib,
-  pkgs,
-  inputs,
-  ...
-}: let
-  inherit (builtins) elem;
-  cfg = config.laplace.display;
-  enabled = elem "xorg" cfg.servers && cfg.xorg.session == "xmonad";
-  hostSystem = pkgs.stdenv.hostPlatform.system;
-in {
-  config = lib.mkIf enabled {
-    laplace.display.xorg.sessionCommand = "${pkgs.configured.xinit}/bin/startx";
+  protocol = "x11";
+  module = {
+    config,
+    lib,
+    pkgs,
+    inputs,
+    ...
+  }: let
+    inherit (builtins) elem;
+    hostSystem = pkgs.stdenv.hostPlatform.system;
+  in {
+    imports = [../../../legacy.nix];
+    laplace.wm = {
+      protocol = "x11";
+      login = ["${pkgs.configured.xinit}/bin/startx"];
+    };
 
     users.users = lib.mkIf (elem "demiurge" config.laplace.users) {
       demiurge.packages = let
