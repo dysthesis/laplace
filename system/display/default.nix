@@ -3,9 +3,16 @@
   lib,
   ...
 }: let
-  operation =
-    lib.types.addCheck (lib.types.nonEmptyListOf lib.types.str)
-    (argv: lib.hasPrefix "/" (builtins.head argv));
+  operation = lib.types.mkOptionType {
+    name = "desktopOperation";
+    description = "non-empty argument vector with an absolute executable";
+    check = argv:
+      builtins.isList argv
+      && argv != []
+      && lib.all builtins.isString argv
+      && lib.hasPrefix "/" (builtins.head argv);
+    merge = lib.mergeEqualOption;
+  };
   configuration = lib.types.functionTo lib.types.attrs;
   factory = names: result:
     lib.types.submodule {

@@ -34,6 +34,12 @@
   withoutDesktopProfile = (select integratedSelection).extendModules {
     modules = [{laplace.profiles = lib.mkForce [];}];
   };
+  repeatedWm = nixosConfigurations.phobos.extendModules {
+    modules = [{laplace.desktop.wm = components.niri;}];
+  };
+  conflictingWm = nixosConfigurations.phobos.extendModules {
+    modules = [{laplace.desktop.wm.logout = args: components.niri.logout args ++ ["--skip-confirmation"];}];
+  };
   rejected = host: !(builtins.tryEval (builtins.deepSeq host.config.laplace.desktop true)).success;
   managedUnits = host:
     lib.filter
@@ -58,6 +64,16 @@ in {
     assert rejected (select (integratedSelection // {launcher = null;}));
     assert rejected (select (integratedSelection // {launcher = components.fuzzel;}));
     assert rejected (select (swaySelection // {bar = components.waybar;}));
+    assert repeatedWm.config.laplace.wm.logout == nixosConfigurations.phobos.config.laplace.wm.logout;
+    assert !(builtins.tryEval (builtins.deepSeq conflictingWm.config.laplace.wm true)).success;
+    assert lib.all (
+      argv: let
+        host = nixosConfigurations.phobos.extendModules {
+          modules = [{laplace.desktop.wm.logout = lib.mkForce (_: argv);}];
+        };
+      in
+        !(builtins.tryEval (builtins.deepSeq host.config.laplace.wm true)).success
+    ) [[] ["relative"] ["/niri" null] ["/niri" 1] ["/niri" ["nested"]]];
     assert empty.config.laplace.desktop == null;
     assert empty.config.laplace.wm == null && managedUnits empty == [] && noNiri empty;
     assert empty.config.laplace.display.checkCommands == [];

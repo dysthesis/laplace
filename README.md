@@ -106,7 +106,9 @@ configuration. This avoids a `config`-dependent import graph or a second evaluat
 `config.laplace.wm` is a typed, read-only **result**, not a selection option. It is
 either null or `{ protocol; login; logout; }`, with `logout = null` where no
 external control operation is consumed. Operations are non-empty argument
-vectors with an absolute executable, not shell command strings. Bash uses the
+vectors with an absolute executable, not shell command strings. Equal operation
+declarations coalesce; conflicting vectors are rejected rather than concatenated.
+Bash uses the
 complete login vector under the existing desktop-profile, empty-`DISPLAY`, VT1
 guard. It adds no compositor flags. Niri supplies configured `niri-session` for
 the login context; native Niri integration owns environment import, waiting and
