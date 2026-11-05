@@ -115,8 +115,14 @@ Bash uses the
 complete login vector under the existing desktop-profile, empty-`DISPLAY`, VT1
 guard. It adds no compositor flags. Niri supplies configured `niri-session` for
 the login context; native Niri integration owns environment import, waiting and
-shutdown. Noctalia receives raw Niri logout IPC separately to avoid a configured
-Niri/Noctalia dependency cycle.
+shutdown. Session components wait for Niri's native readiness notification before
+using its imported display and IPC environment. Noctalia receives raw Niri logout
+IPC separately to avoid a configured Niri/Noctalia dependency cycle.
+
+Configured login and interactive shells are registered in `/etc/shells`, retaining
+Polkit's shell validation. Vicinae keeps launched applications alive across a
+launcher restart; its private extension runtime exits when the server's IPC pipe
+closes, so that runtime cannot leak into the next session.
 
 `laplace.desktop = null` (the default) contributes no managed session or
 session-bound services. Use `lib.mkForce null` to disable a selection defined by
@@ -138,6 +144,20 @@ nix build --no-link --no-write-lock-file \
   .#nixosConfigurations.phobos.config.system.build.toplevel
 ```
 
+The graphical VM also needs KVM and an EGL render node. With an `opengl` builder
+that exposes `/dev/dri`, build `.#checks.x86_64-linux.desktop-session`.
+Without such a sandbox, run the same driver as an unprivileged user with render
+node access; it controls only its disposable guest:
+
+```sh
+nix build --no-write-lock-file --out-link /tmp/laplace-desktop-session \
+  .#checks.x86_64-linux.desktop-session.driver
+proof=$(mktemp -d /tmp/laplace-desktop-session.XXXXXX)
+mkdir -m 700 "$proof/runtime"
+XDG_RUNTIME_DIR="$proof/runtime" \
+  /tmp/laplace-desktop-session/bin/nixos-test-driver -o "$proof"
+```
+
 From a running Niri terminal, the optional real-terminal regression uses disposable
 notes, genuine Foot/Neovim/zk and a local bare Git remote; it does not activate a
 generation or contact the user's note repository:
@@ -151,14 +171,23 @@ nix build --impure --out-link /tmp/laplace-terminal-check --expr '
 python3 nix/tests/terminal-helpers.py /tmp/laplace-terminal-check
 ```
 
-Checks cover actual selected configuration validation, provider removal,
-standalone/external-bar service ownership and operation boundaries. Evaluation
-and parser success do not establish VT1 login, logout/re-login cleanup, lock and
-authentication prompts, portal behaviour or Noctalia panel usability without its
-bar. Verify these on an authorised desktop rollout with saved work, a recovery
-console and the previous bootable generation retained. A generation switch is
-not an atomic live desktop replacement; use logout/login or reboot and roll back
-if those checks fail.
+Checks cover selected configuration validation, provider removal, service
+ownership and operation boundaries. `fuzzel-terminal` launches a real terminal
+application under a headless compositor, including literal quoting characters.
+`desktop-session` boots a disposable graphical VM using the production display
+modules, Phobos's component selection plus Waybar, and a test account/password.
+It exercises the VT2 guard, VT1 login, environment import, logout/re-login,
+notification ownership, Waybar title/workspace interactions, barless Noctalia
+panels, launcher-restart application survival, graphical authentication,
+lock/unlock and the GTK file-chooser portal.
+Screenshots are retained in the check or driver output; the workstation is not
+activated and production calendar credentials are unavailable to the VM.
+
+VM acceptance does not establish physical GPU/monitor/input behaviour, hardware
+authentication, suspend/resume or screencasting. An authorised desktop rollout
+still needs saved work, a recovery console and the previous bootable generation.
+A generation switch is not an atomic live desktop replacement; use logout/login
+or reboot and roll back if the hardware-specific checks fail.
 
 The existing Xorg/gungnir build limitation remains. Capture and journal helpers
 still treat every non-zero terminal/editor result as cancellation; capture also

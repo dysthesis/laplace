@@ -16,6 +16,7 @@ in
   // (import ./observability-checks.nix {inherit pkgs lib inputs self serviceFixtures;})
   // {
     artifact-cleanup = import ./artifact-cleanup.nix {inherit pkgs;};
+    desktop-session = import ./desktop-session.nix {inherit pkgs lib inputs nixosConfigurations;};
     forgejo-runner-address = import ./forgejo-runner-address.nix {inherit pkgs;};
     music-domain = import ./music-domain.nix {inherit pkgs;};
     telemetry-ca-rotation-plan = import ./telemetry-ca-rotation-plan.nix {inherit lib pkgs;};

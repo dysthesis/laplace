@@ -24,6 +24,11 @@
     };
 in {
   config = mkIf cfg {
+    environment.shells = lib.optionals isDesktop [
+      config.users.users.demiurge.shell
+      (lib.getExe pkgs.configured.fish)
+    ];
+
     users.users.demiurge = {
       description = "Demiurge";
       ariadne = isDesktop;

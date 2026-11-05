@@ -10,7 +10,7 @@
   palette = import ./palette.nix;
   sessionService = description: argv: {
     inherit description;
-    after = ["graphical-session-pre.target" "dbus.socket"];
+    after = ["niri.service" "dbus.socket"];
     requires = ["dbus.socket"];
     partOf = ["graphical-session.target"];
     wantedBy = ["graphical-session.target"];

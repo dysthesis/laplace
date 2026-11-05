@@ -27,7 +27,8 @@
     };
     sessionService = description: argv: {
       inherit description;
-      after = ["graphical-session-pre.target"];
+      # Native readiness follows import of the display and IPC environment.
+      after = ["niri.service"];
       partOf = ["graphical-session.target"];
       wantedBy = ["graphical-session.target"];
       serviceConfig = {

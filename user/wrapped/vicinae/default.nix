@@ -175,9 +175,17 @@
       fi
     fi
   '';
+  node = pkgs.writeShellScript "vicinae-node" ''
+    exec ${lib.getExe pkgs.nodejs} --require ${pkgs.writeText "vicinae-node-owner.cjs" ''
+      if (require("node:worker_threads").isMainThread)
+        process.stdin.once("end", () => process.exit(0));
+    ''} "$@"
+  '';
 in
   (lib.laplace.pkgs.mkWrapper pkgs vicinae {
     binPath = [pkgs.pulseaudio];
+    # The extension runtime belongs to its IPC pipe, not to launched applications.
+    set.VICINAE_NODE_BIN = "${node}";
     run = [bootstrap];
     postBuild = ''
       for entry in vicinae vicinae-url-handler; do
