@@ -7,10 +7,14 @@
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
   fontSize = config.laplace.display.fuzzel.fontSize;
+  # Fuzzel parses desktop-entry syntax, not shell-escaped argument vectors.
+  terminalCommand = pkgs.writeShellScript "fuzzel-terminal" ''
+    exec ${lib.escapeShellArgs terminal.launch} "$@"
+  '';
   configFile =
     {
       main = {
-        terminal = lib.escapeShellArgs terminal.launch;
+        terminal = "${terminalCommand}";
         font = "IosevkaCadmus Nerd Font:size=${toString fontSize}";
         prompt = " ";
         layer = "overlay";

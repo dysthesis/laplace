@@ -63,6 +63,8 @@
     && !(lib.any (package: (package.pname or package.name or "") == "niri-wrapped") host.config.systemd.packages);
   variants = {inherit standalone externalBar empty sway;};
 in {
+  fuzzel-terminal = import ./fuzzel-terminal.nix {inherit pkgs lib;};
+
   desktop-stack = let
     validateHost = name: host:
       lib.optionalString (host.config.laplace.display.checkCommands != []) ''

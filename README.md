@@ -98,6 +98,7 @@ component roles/combinations and mismatched server/WM protocols are rejected.
 Legacy compositor bindings retain their own defaults and startup mechanisms;
 they do not acquire native Sway integration or new cross-component support.
 Independent configured Foot uses and WezTerm `imgcat` remain available.
+Terminal launch arguments remain literal when Fuzzel starts terminal applications.
 
 Component selection follows ordinary NixOS option priorities. To replace a
 complete selection from another module, wrap the complete component record in
@@ -130,6 +131,7 @@ Build before activation:
 nix build --no-link --no-write-lock-file \
   .#checks.x86_64-linux.desktop-stack \
   .#checks.x86_64-linux.niri-config \
+  .#checks.x86_64-linux.fuzzel-terminal \
   .#checks.x86_64-linux.mk-wrapper
 nix build --no-link --no-write-lock-file \
   .#nixosConfigurations.deimos.config.system.build.toplevel \
