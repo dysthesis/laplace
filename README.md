@@ -72,8 +72,10 @@ a provider directly also works, for example
 `wm = import ../../system/display/servers/wayland/compositors/niri;` from a host
 directory.
 
-The `server`, `wm` and `term` fields are required. `shell`, `bar` and `launcher`
-default to null, but a selected WM may require them:
+The `server`, `wm` and `term` fields are required, including for legacy desktops
+without a terminal-consuming user. Validation checks terminal metadata without
+invoking its package builder. `shell`, `bar` and `launcher` default to null, but a
+selected WM may require them:
 
 | Configuration                                | Component choices beyond `server = wayland; term = foot;`       |
 | -------------------------------------------- | --------------------------------------------------------------- |

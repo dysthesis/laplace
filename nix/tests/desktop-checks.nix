@@ -40,6 +40,17 @@
   conflictingWm = nixosConfigurations.phobos.extendModules {
     modules = [{laplace.desktop.wm.logout = args: components.niri.logout args ++ ["--skip-confirmation"];}];
   };
+  legacyWithoutUser = selection:
+    (select selection).extendModules {
+      modules = [
+        {
+          laplace.users = lib.mkForce [];
+          users.users.root.openssh.authorizedKeys.keys =
+            nixosConfigurations.phobos.config.users.users.demiurge.openssh.authorizedKeys.keys;
+        }
+      ];
+    };
+  withoutTerminal = legacyWithoutUser (builtins.removeAttrs swaySelection ["term"]);
   rejected = host: !(builtins.tryEval (builtins.deepSeq host.config.laplace.desktop true)).success;
   managedUnits = host:
     lib.filter
@@ -64,6 +75,8 @@ in {
     assert rejected (select (integratedSelection // {launcher = null;}));
     assert rejected (select (integratedSelection // {launcher = components.fuzzel;}));
     assert rejected (select (swaySelection // {bar = components.waybar;}));
+    assert builtins.isString (legacyWithoutUser swaySelection).config.system.build.toplevel.drvPath;
+    assert !(builtins.tryEval withoutTerminal.config.system.build.toplevel.drvPath).success;
     assert repeatedWm.config.laplace.wm.logout == nixosConfigurations.phobos.config.laplace.wm.logout;
     assert !(builtins.tryEval (builtins.deepSeq conflictingWm.config.laplace.wm true)).success;
     assert lib.all (

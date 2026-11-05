@@ -92,7 +92,9 @@ in {
               else desktop.launcher.name == "fuzzel" && desktop.bar != null
             )
           else desktop.shell == null && desktop.bar == null && desktop.launcher == null
-        ) "Niri requires Noctalia/Vicinae or Waybar/Fuzzel; legacy WMs retain their own shell, bar and launcher."; desktop;
+        ) "Niri requires Noctalia/Vicinae or Waybar/Fuzzel; legacy WMs retain their own shell, bar and launcher.";
+        # Legacy providers may not consume the required terminal.
+          builtins.deepSeq desktop.term desktop;
   };
 
   options.laplace.wm = lib.mkOption {
