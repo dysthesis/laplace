@@ -1,6 +1,7 @@
 {
+  name = "xmonad";
   protocol = "x11";
-  module = {
+  configure = {
     config,
     lib,
     pkgs,
@@ -10,7 +11,6 @@
     inherit (builtins) elem;
     hostSystem = pkgs.stdenv.hostPlatform.system;
   in {
-    imports = [../../../legacy.nix];
     laplace.wm = {
       protocol = "x11";
       login = ["${pkgs.configured.xinit}/bin/startx"];

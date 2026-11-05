@@ -1,12 +1,13 @@
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}: let
-  inherit (lib) optionalString;
-in {
-  config = {
+  protocol = "x11";
+  configure = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
+    inherit (lib) optionalString;
+  in {
     environment.systemPackages = with pkgs; [
       xclip
     ];

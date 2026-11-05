@@ -1,11 +1,11 @@
 {
+  name = "sway";
   protocol = "wayland";
-  module = {
+  configure = {
     lib,
     pkgs,
     ...
   }: {
-    imports = [../../../legacy.nix];
     # The custom configuration owns swaybar, swayidle, wlsunset and Dunst.
     laplace.wm = {
       protocol = "wayland";

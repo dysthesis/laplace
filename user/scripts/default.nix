@@ -1,14 +1,20 @@
 {
   lib,
   pkgs,
-  desktopSelection,
+  config,
   ...
 }: let
   inherit (pkgs) callPackage;
-  terminal = import desktopSelection.terminal {
-    inherit pkgs lib;
-    foot = pkgs.configured.foot;
-  };
+  desktop = config.laplace.desktop;
+  terminal =
+    (
+      if desktop == null
+      then lib.components.foot
+      else desktop.term
+    ).build {
+      inherit pkgs lib;
+      foot = pkgs.configured.foot;
+    };
   overlay = _final: _prev: {
     scripts = {
       bemenu-zk = callPackage ./bemenu-zk {

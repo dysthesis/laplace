@@ -2,10 +2,11 @@
   pkgs,
   config,
   lib,
-  desktopSelection,
   ...
 }: let
   cfg = config.laplace.network.wifi;
+  desktop = config.laplace.desktop;
+  integrated = desktop != null && desktop.shell != null;
   inherit
     (lib)
     mkEnableOption
@@ -37,7 +38,7 @@ in {
     # The integrated shell has network status and controls.
     programs.nm-applet.enable =
       config.networking.networkmanager.enable
-      && !(desktopSelection.wm != null && desktopSelection.shell != null);
+      && !integrated;
     # The wait service delays boot.
     systemd.services.NetworkManager-wait-online.enable = false;
   };

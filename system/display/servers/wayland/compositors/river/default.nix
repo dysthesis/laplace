@@ -1,11 +1,11 @@
 {
+  name = "river";
   protocol = "wayland";
-  module = {
+  configure = {
     lib,
     pkgs,
     ...
   }: {
-    imports = [../../../legacy.nix];
     # The init wrapper owns swayidle, swaylock, swaybg, Dunst and Yambar.
     laplace.wm = {
       protocol = "wayland";

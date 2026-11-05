@@ -1,6 +1,7 @@
 {
+  name = "dwl";
   protocol = "wayland";
-  module = {
+  configure = {
     inputs,
     lib,
     pkgs,
@@ -11,7 +12,6 @@
       ${lib.escapeShellArgs [(lib.getExe' inputs.status.packages.${system}.default "status")]} | ${lib.escapeShellArgs [(lib.getExe' pkgs.configured.dwl "dwl")]}
     '';
   in {
-    imports = [../../../legacy.nix];
     laplace.wm = {
       protocol = "wayland";
       login = ["${login}"];

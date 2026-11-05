@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   config = {
     boot.kernelPackages = pkgs.linuxPackages_cachyos;
     boot.binfmt.emulatedSystems = ["aarch64-linux"];
@@ -36,6 +40,13 @@
     };
     laplace = {
       profiles = ["desktop"];
+      desktop = with lib.components; {
+        server = wayland;
+        wm = niri;
+        shell = noctalia;
+        term = foot;
+        launcher = vicinae;
+      };
       hardware = {
         cpu = ["amd"];
         gpu = ["amd"];

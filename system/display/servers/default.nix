@@ -1,20 +1,61 @@
 {
+  config,
   lib,
-  desktopSelection,
+  pkgs,
+  utils,
+  inputs,
   ...
 }: let
-  inherit (desktopSelection) wm;
+  desktop = config.laplace.desktop;
+  terminal =
+    if desktop == null
+    then null
+    else
+      desktop.term.build {
+        inherit pkgs lib;
+        foot = pkgs.configured.foot;
+      };
+  launcher =
+    if desktop == null || desktop.launcher == null
+    then null
+    else desktop.launcher.build {inherit pkgs lib;};
+  logout =
+    if desktop == null || desktop.wm.logout == null
+    then null
+    else desktop.wm.logout {inherit pkgs lib;};
+  barPackage =
+    if desktop == null || desktop.bar == null
+    then null
+    else desktop.bar.build {inherit pkgs lib config;};
+  shellPackage =
+    if desktop == null || desktop.shell == null
+    then null
+    else
+      desktop.shell.build {
+        inherit pkgs lib config logout;
+        launcherOpen = launcher.open;
+        barEnabled = barPackage == null;
+      };
+  args = {inherit config lib pkgs utils inputs terminal launcher logout barPackage shellPackage;};
+  wm =
+    if desktop == null
+    then {}
+    else desktop.wm.configure args;
+  contributions =
+    if desktop == null
+    then []
+    else
+      [
+        (desktop.server.configure args)
+        wm
+      ]
+      ++ lib.optional (desktop.shell != null) (desktop.shell.configure {
+        inherit config lib pkgs utils launcher;
+        shell = shellPackage;
+      });
+  # Fixed option namespaces avoid using config to discover the module import graph.
+  field = name: lib.mkMerge (map (part: part.${name} or {}) contributions);
 in {
-  imports = lib.optionals (wm != null) [
-    wm.module
-    (
-      if wm.protocol == "wayland"
-      then ./wayland
-      else ./xorg
-    )
-  ];
-
-  # Selected sessions contribute their own validation commands.
   options.laplace.display.checkCommands = lib.mkOption {
     type = lib.types.listOf lib.types.lines;
     default = [];
@@ -22,19 +63,23 @@ in {
     description = "Validation snippets run by the flake's desktop-stack check.";
   };
 
-  config =
-    if wm == null
-    then {laplace.wm = null;}
-    else {
-      location = {
-        latitude = 33.9;
-        longitude = 151.2;
-      };
-      assertions = [
-        {
-          assertion = desktopSelection.terminal == ../../../user/wrapped/foot/operations.nix;
-          message = "Managed desktops currently support only the Foot terminal operation adapter.";
-        }
-      ];
+  config = {
+    laplace = {
+      wm =
+        if desktop == null
+        then null
+        else wm.laplace.wm;
+      gtk = lib.mkMerge (map (part: part.laplace.gtk or {}) contributions);
+      display.checkCommands = lib.concatMap (part: part.laplace.display.checkCommands or []) contributions;
     };
+    environment = field "environment";
+    programs = field "programs";
+    services = field "services";
+    systemd = field "systemd";
+    users = field "users";
+    location = lib.mkIf (desktop != null) {
+      latitude = 33.9;
+      longitude = 151.2;
+    };
+  };
 }

@@ -3,16 +3,22 @@
   lib,
   pkgs,
   config,
-  desktopSelection,
   ...
 }: let
   inherit (pkgs.unstable) callPackage;
   inherit (lib) makeOverridable;
   system = pkgs.stdenv.hostPlatform.system;
-  terminal = import desktopSelection.terminal {
-    inherit pkgs lib;
-    foot = pkgs.configured.foot;
-  };
+  desktop = config.laplace.desktop;
+  integrated = desktop != null && desktop.shell != null;
+  terminal =
+    (
+      if desktop == null
+      then lib.components.foot
+      else desktop.term
+    ).build {
+      inherit pkgs lib;
+      foot = pkgs.configured.foot;
+    };
   overlay = _final: _prev: let
     guiPackage = package: package.config.env;
   in {
@@ -70,8 +76,7 @@
           ;
       };
       swaylock = callPackage ./swaylock {
-        inherit lib pkgs;
-        integrated = desktopSelection.wm != null && desktopSelection.shell != null;
+        inherit lib pkgs integrated;
       };
       hyprland = callPackage ./hyprland {
         inherit
@@ -122,8 +127,7 @@
       };
       mpv = callPackage ./mpv {inherit lib pkgs;};
       foot = callPackage ./foot {
-        inherit lib pkgs config;
-        integrated = desktopSelection.wm != null && desktopSelection.shell != null;
+        inherit lib pkgs config integrated;
       };
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};
@@ -136,7 +140,6 @@
             pkgs
             config
             inputs
-            desktopSelection
             ;
         }
       );
@@ -147,7 +150,6 @@
             pkgs
             inputs
             config
-            desktopSelection
             ;
         }
       );

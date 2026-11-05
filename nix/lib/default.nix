@@ -15,6 +15,7 @@ nixpkgs.lib.extend (
       |> getModuleDirs
       |> map (module: dir + "/${module}");
   in {
+    components = import ../../system/display/components.nix;
     laplace = {
       telemetry = import ../../system/services/telemetry/contract.nix {lib = final;};
 

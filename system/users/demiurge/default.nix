@@ -3,7 +3,6 @@
   lib,
   config,
   pkgs,
-  desktopSelection,
   ...
 }: let
   inherit (lib) mkIf;
@@ -11,12 +10,18 @@
   cfg = elem "demiurge" config.laplace.users;
   ifExists = groups: filter (group: hasAttr group config.users.groups) groups;
   isDesktop = elem "desktop" config.laplace.profiles;
+  desktop = config.laplace.desktop;
   hostSystem = pkgs.stdenv.hostPlatform.system;
   keys = import ../keys.nix;
-  terminal = import desktopSelection.terminal {
-    inherit pkgs lib;
-    foot = pkgs.configured.foot;
-  };
+  terminal =
+    (
+      if desktop == null
+      then lib.components.foot
+      else desktop.term
+    ).build {
+      inherit pkgs lib;
+      foot = pkgs.configured.foot;
+    };
 in {
   config = mkIf cfg {
     users.users.demiurge = {

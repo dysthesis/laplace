@@ -47,45 +47,60 @@ secret preparation, decommissioning and relocation.
 
 ### Desktop composition
 
-`hosts/desktops.nix` selects ordinary values before the NixOS module imports are
-assembled. NixOS and Colmena receive the same `desktopSelection` special argument;
-package construction still uses the host's existing package set. Presets live in
-`system/display/presets.nix`. Deimos and Phobos use `presets.integrated`.
-
-For example, to retain Noctalia and Vicinae but replace the primary bar on Phobos:
+Configure `laplace.desktop` directly in the host's `config.nix`. It is a normal
+NixOS option; a non-null value requires `"desktop"` in `laplace.profiles`.
+Deimos and Phobos declare their existing components explicitly:
 
 ```nix
-let
-  presets = import ../system/display/presets.nix;
-in {
-  deimos = presets.integrated;
-  phobos = presets.integrated // {bar = ../user/wrapped/waybar;};
+{lib, ...}: {
+  laplace.profiles = ["desktop"];
+  laplace.desktop = with lib.components; {
+    server = wayland;
+    wm = niri;
+    shell = noctalia;
+    term = foot;
+    launcher = vicinae;
+  };
 }
 ```
 
-This disables Noctalia's actual bar and starts configured Waybar through Niri's
-existing session target. Noctalia retains notifications, wallpaper, idle policy
-and shell controls; appearance and authentication policy remain integrated.
-There is no independent notification selector.
+`lib.components` contains ordinary component records, not installed packages.
+They construct packages using the host's existing `pkgs`; NixOS and Colmena still
+share host modules and overlays. There are no presets or separate host-selection
+file. The component definitions are in `system/display/components.nix`; importing
+a provider directly also works, for example
+`wm = import ../../system/display/servers/wayland/compositors/niri;` from a host
+directory.
 
-Supported managed compositions:
+The `server`, `wm` and `term` fields are required. `shell`, `bar` and `launcher`
+default to null, but a selected WM may require them:
 
-- `presets.integrated`: Niri, Noctalia, Vicinae and Foot.
-- `presets.standalone`: Niri, Foot, Fuzzel, Waybar, Dunst and swaybg.
-- Integrated Niri with the explicit Waybar replacement above.
-- `presets.legacy (import ../system/display/servers/wayland/compositors/sway)`
-  preserves the existing custom Sway path. The same constructor accepts the
-  existing Hyprland, River and dwl providers, or
-  `../system/display/servers/xorg/sessions/xmonad`. These keep their own startup
-  mechanisms; they do not acquire native Sway integration or new component mixes.
+| Configuration                                | Component choices beyond `server = wayland; term = foot;`       |
+| -------------------------------------------- | --------------------------------------------------------------- |
+| Niri with Noctalia                           | `wm = niri; shell = noctalia; launcher = vicinae;`              |
+| Niri with Noctalia and external Waybar       | Add `bar = waybar;` to the row above                            |
+| Standalone Niri                              | `wm = niri; bar = waybar; launcher = fuzzel;`                   |
+| Existing custom Hyprland, Sway, River or dwl | Select that `wm`; leave shell, bar and launcher null            |
+| Existing XMonad                              | `server = xorg; wm = xmonad;` with shell, bar and launcher null |
 
-Only the existing Foot operation adapter is supported. Terminal operations reach
-Niri bindings, matching, swallowing, Fuzzel and the note helpers. Legacy compositor
-bindings retain their fixed defaults; unsupported terminal, launcher, shell and
-bar combinations fail assertions rather than being accepted and ignored.
-Integrated Niri requires Vicinae's application and clipboard-history operations;
-Fuzzel is not a replacement for that complete contract. Independent configured
-Foot uses and WezTerm `imgcat` remain available.
+Waybar is a bar, not a replacement for Noctalia's notification, wallpaper and idle
+services. `shell = noctalia; bar = waybar;` disables Noctalia's actual bar while
+retaining the rest of its shell and appearance policy. Standalone Niri keeps its
+existing Dunst and swaybg services. There is no independent notification selector.
+
+Only the Foot terminal adapter is currently implemented; Ghostty is not a
+selectable component yet. Integrated Niri requires Vicinae's application and
+clipboard-history operations, while standalone Niri uses Fuzzel. Unsupported
+component roles/combinations and mismatched server/WM protocols are rejected.
+Legacy compositor bindings retain their own defaults and startup mechanisms;
+they do not acquire native Sway integration or new cross-component support.
+Independent configured Foot uses and WezTerm `imgcat` remain available.
+
+Component selection follows ordinary NixOS option priorities. To replace a
+complete selection from another module, wrap the complete component record in
+`lib.mkForce`.
+The schema imports stay static; only selected component functions contribute
+configuration. This avoids a `config`-dependent import graph or a second evaluator.
 
 `config.laplace.wm` is a typed, read-only **result**, not a selection option. It is
 either null or `{ protocol; login; logout; }`, with `logout = null` where no
@@ -97,12 +112,12 @@ the login context; native Niri integration owns environment import, waiting and
 shutdown. Noctalia receives raw Niri logout IPC separately to avoid a configured
 Niri/Noctalia dependency cycle.
 
-`presets.none`, an absent host entry, or a preset with `wm = null` imports no
-managed provider and starts no managed session-bound components. Shared desktop
-profile services and GTK portals remain; Chaos's upstream GNOME installer is an
-external desktop, not a headless host. Null selection does not remove home data,
-independent packages or previous generations. The old display/session selectors
-and global configured Niri/Noctalia exports have been removed.
+`laplace.desktop = null` (the default) contributes no managed session or
+session-bound services. Use `lib.mkForce null` to disable a selection defined by
+another module. Shared desktop-profile services and GTK portals remain; Chaos's
+upstream GNOME installer is an external desktop, not a headless host. Null
+selection does not remove home data, independent packages or previous generations.
+`laplace.wm` remains read-only and cannot be used to override provider selection.
 
 Build before activation:
 

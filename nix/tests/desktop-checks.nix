@@ -3,15 +3,38 @@
   lib,
   nixosConfigurations,
 }: let
-  presets = import ../../system/display/presets.nix;
-  select = desktopSelection:
+  components = lib.components;
+  standaloneSelection = {
+    server = components.wayland;
+    wm = components.niri;
+    term = components.foot;
+    bar = components.waybar;
+    launcher = components.fuzzel;
+  };
+  integratedSelection = {
+    server = components.wayland;
+    wm = components.niri;
+    term = components.foot;
+    shell = components.noctalia;
+    launcher = components.vicinae;
+  };
+  swaySelection = {
+    server = components.wayland;
+    wm = components.sway;
+    term = components.foot;
+  };
+  select = selected:
     nixosConfigurations.phobos.extendModules {
-      specialArgs = {inherit desktopSelection;};
+      modules = [{laplace.desktop = lib.mkForce selected;}];
     };
-  standalone = select presets.standalone;
-  externalBar = select (presets.integrated // {bar = ../../user/wrapped/waybar;});
-  empty = select (presets.integrated // {wm = null;});
-  sway = select (presets.legacy (import ../../system/display/servers/wayland/compositors/sway));
+  standalone = select standaloneSelection;
+  externalBar = select (integratedSelection // {bar = components.waybar;});
+  empty = select null;
+  sway = select swaySelection;
+  withoutDesktopProfile = (select integratedSelection).extendModules {
+    modules = [{laplace.profiles = lib.mkForce [];}];
+  };
+  rejected = host: !(builtins.tryEval (builtins.deepSeq host.config.laplace.desktop true)).success;
   managedUnits = host:
     lib.filter
     (name: builtins.elem name ["niri-swallow" "noctalia" "vicinae" "polkit-gnome" "swaybg" "waybar" "dunst"])
@@ -30,6 +53,12 @@ in {
         ${lib.concatStrings host.config.laplace.display.checkCommands}
       '';
   in
+    assert rejected withoutDesktopProfile;
+    assert rejected (select (swaySelection // {server = components.xorg;}));
+    assert rejected (select (integratedSelection // {launcher = null;}));
+    assert rejected (select (integratedSelection // {launcher = components.fuzzel;}));
+    assert rejected (select (swaySelection // {bar = components.waybar;}));
+    assert empty.config.laplace.desktop == null;
     assert empty.config.laplace.wm == null && managedUnits empty == [] && noNiri empty;
     assert empty.config.laplace.display.checkCommands == [];
     assert empty.config.xdg.portal.config.common == nixosConfigurations.phobos.config.xdg.portal.config.common;

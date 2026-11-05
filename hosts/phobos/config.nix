@@ -23,6 +23,13 @@
         denySubnetRoutes = true;
       };
       profiles = ["desktop"];
+      desktop = with lib.components; {
+        server = wayland;
+        wm = niri;
+        shell = noctalia;
+        term = foot;
+        launcher = vicinae;
+      };
       hardware = {
         cpu = ["amd"];
         gpu = ["amd"];

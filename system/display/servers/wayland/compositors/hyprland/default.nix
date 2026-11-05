@@ -1,11 +1,11 @@
 {
+  name = "hyprland";
   protocol = "wayland";
-  module = {
+  configure = {
     lib,
     pkgs,
     ...
   }: {
-    imports = [../../../legacy.nix];
     # The custom configuration owns Waybar and Dunst startup.
     laplace.wm = {
       protocol = "wayland";

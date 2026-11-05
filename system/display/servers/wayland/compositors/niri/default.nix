@@ -1,38 +1,28 @@
 {
+  name = "niri";
   protocol = "wayland";
-  module = {
+  logout = {
+    pkgs,
+    lib,
+  }: [(lib.getExe pkgs.niri) "msg" "action" "quit"];
+  configure = {
     pkgs,
     config,
     lib,
     utils,
-    desktopSelection,
+    terminal,
+    launcher,
+    logout,
+    barPackage,
+    shellPackage,
     ...
   }: let
-    integrated = desktopSelection.shell != null;
-    terminal = import desktopSelection.terminal {
-      inherit pkgs lib;
-      foot = pkgs.configured.foot;
-    };
-    launcher = import desktopSelection.launcher {inherit pkgs lib;};
-    logout = [(lib.getExe pkgs.niri) "msg" "action" "quit"];
-    bar =
-      if desktopSelection.bar == null
-      then null
-      else pkgs.unstable.callPackage desktopSelection.bar {inherit pkgs lib config;};
-    shell =
-      if !integrated
-      then null
-      else
-        pkgs.unstable.callPackage ../../../../../../user/wrapped/noctalia {
-          inherit pkgs lib config logout;
-          launcherOpen = launcher.open;
-          barEnabled = bar == null;
-        };
+    integrated = shellPackage != null;
     niri = pkgs.unstable.callPackage ../../../../../../user/wrapped/niri {
       inherit pkgs lib config terminal launcher integrated;
       shellCommand =
         if integrated
-        then [(lib.getExe shell)]
+        then [(lib.getExe shellPackage)]
         else null;
     };
     sessionService = description: argv: {
@@ -47,32 +37,6 @@
       };
     };
   in {
-    imports = lib.optional integrated ({...}:
-      import desktopSelection.shell {
-        inherit config lib pkgs utils shell launcher;
-      });
-
-    assertions = [
-      {
-        assertion = desktopSelection.shell == null || desktopSelection.shell == ../../desktop;
-        message = "Niri supports the existing standalone or Noctalia shell bundle.";
-      }
-      {
-        assertion = desktopSelection.bar == ../../../../../../user/wrapped/waybar || (integrated && desktopSelection.bar == null);
-        message = "Niri requires Noctalia's bar or the configured Niri Waybar adapter.";
-      }
-      {
-        assertion =
-          desktopSelection.launcher
-          == (
-            if integrated
-            then ../../../../launchers/vicinae.nix
-            else ../../../../launchers/fuzzel.nix
-          );
-        message = "Integrated Niri requires Vicinae application launch and clipboard history; standalone Niri uses Fuzzel.";
-      }
-    ];
-
     laplace.wm = {
       protocol = "wayland";
       login = [(lib.getExe' niri "niri-session")];
@@ -82,7 +46,7 @@
       ''
         ${lib.getExe niri} validate
         test -x ${lib.escapeShellArg (builtins.head terminal.launch)}
-        ${lib.optionalString (bar != null) "test -x ${lib.getExe bar}"}
+        ${lib.optionalString (barPackage != null) "test -x ${lib.getExe barPackage}"}
         ${lib.optionalString (!integrated) ''
           test -x ${lib.getExe launcher.package}
           test -x ${lib.getExe pkgs.configured.dunst}
@@ -103,8 +67,8 @@
           terminal.appId
         ];
       }
-      // lib.optionalAttrs (bar != null) {
-        waybar = sessionService "Waybar status bar" [(lib.getExe bar)];
+      // lib.optionalAttrs (barPackage != null) {
+        waybar = sessionService "Waybar status bar" [(lib.getExe barPackage)];
       }
       // lib.optionalAttrs (!integrated) {
         swaybg = sessionService "Wayland background" [(lib.getExe pkgs.swaybg) "-i" "${../../../../../../user/assets/wallpaper.png}" "-m" "fill"];
