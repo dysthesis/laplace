@@ -65,6 +65,54 @@
 in {
   fuzzel-terminal = import ./fuzzel-terminal.nix {inherit pkgs lib;};
 
+  desktop-malloc = pkgs.runCommandCC "desktop-malloc" {} ''
+    cat > aligned.cc <<'CPP'
+    #include <cassert>
+    #include <cstdint>
+    #include <cstring>
+    #include <initializer_list>
+    #include <malloc.h>
+    #include <new>
+
+    int main() {
+      for (auto size : {24u, 9000u}) {
+        const auto alignment = std::align_val_t(size == 24 ? 64 : 8192);
+        void *p = ::operator new(size, alignment, std::nothrow);
+        assert(p && reinterpret_cast<uintptr_t>(p) % size_t(alignment) == 0);
+        assert(malloc_usable_size(p) >= size);
+        std::memset(p, 0x5a, size);
+        ::operator delete(p, size, alignment);
+      }
+    }
+    CPP
+    $CXX -std=c++17 -O0 aligned.cc -o aligned
+    cat > canary.c <<'C'
+    #include <malloc.h>
+    #include <stdlib.h>
+
+    int main(void) {
+      volatile unsigned char *p = malloc(16);
+      if (!p) return 1;
+      p[malloc_usable_size((void *)p)] ^= 1;
+      free((void *)p);
+    }
+    C
+    $CC -O0 canary.c -o canary
+    export LD_PRELOAD="$(cat ${nixosConfigurations.deimos.config.environment.etc."ld-nix.so.preload".source})"
+    ./aligned
+    ELECTRON_RUN_AS_NODE=1 ${lib.getExe nixosConfigurations.deimos.pkgs.unstable.electron} \
+      -e 'require("node:assert").strictEqual(Buffer.alloc(64, 42)[63], 42)'
+    ${lib.getExe pkgs.python3} - <<'PY'
+    import resource
+    import signal
+    import subprocess
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+    result = subprocess.run(["./canary"], capture_output=True)
+    assert result.returncode == -signal.SIGABRT, result
+    PY
+    touch "$out"
+  '';
+
   desktop-stack = let
     validateHost = name: host:
       lib.optionalString (host.config.laplace.display.checkCommands != []) ''

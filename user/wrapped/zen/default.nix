@@ -5,18 +5,12 @@
   config,
   ...
 }: let
-  inherit (builtins) elem;
   inherit (pkgs.stdenv.hostPlatform) system;
   desktop = config.laplace.desktop;
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit (pkgs) lib;
     inherit pkgs;
   };
-  # With --enable-replace-malloc, Zen can crash in radeonsi/libgallium/libLLVM on AMD with system-wide hardened_malloc.
-  # Use Zink/RADV for GL in this configuration.
-  useZinkForHardenedMalloc =
-    elem "malloc" config.laplace.harden
-    && elem "amd" config.laplace.hardware.gpu;
 in
   mkNixPak {
     config = {sloth, ...}: {
@@ -101,22 +95,18 @@ in
               "float"
             ];
           };
-        in
-          {
-            GTK_USE_PORTAL = "1";
-            XDG_DATA_DIRS = lib.makeSearchPath "share" [
-              pkgs.shared-mime-info
-              cursorPackage
-              gtkPackage
-            ];
-            XCURSOR_PATH = lib.concatStringsSep ":" [
-              "${cursorPackage}/share/icons"
-              "${cursorPackage}/share/pixmaps"
-            ];
-          }
-          // lib.optionalAttrs useZinkForHardenedMalloc {
-            MESA_LOADER_DRIVER_OVERRIDE = "zink";
-          };
+        in {
+          GTK_USE_PORTAL = "1";
+          XDG_DATA_DIRS = lib.makeSearchPath "share" [
+            pkgs.shared-mime-info
+            cursorPackage
+            gtkPackage
+          ];
+          XCURSOR_PATH = lib.concatStringsSep ":" [
+            "${cursorPackage}/share/icons"
+            "${cursorPackage}/share/pixmaps"
+          ];
+        };
       };
     };
   }

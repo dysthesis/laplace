@@ -20,7 +20,18 @@
       foot = pkgs.configured.foot;
     };
   overlay = _final: _prev: let
-    guiPackage = package: package.config.env;
+    guiPackage = package:
+      (package.extendModules {
+        modules = [
+          {
+            # NixPak's private /etc otherwise silently drops the system allocator.
+            bubblewrap.bind.ro = lib.optional (config.environment.memoryAllocator.provider != "libc") [
+              "${config.environment.etc."ld-nix.so.preload".source}"
+              "/etc/ld-nix.so.preload"
+            ];
+          }
+        ];
+      }).config.env;
   in {
     configured = rec {
       ytsub = callPackage ./ytsub {inherit pkgs lib;};
@@ -127,7 +138,7 @@
       };
       mpv = callPackage ./mpv {inherit lib pkgs;};
       foot = callPackage ./foot {
-        inherit lib pkgs config integrated;
+        inherit lib pkgs config;
       };
       ani-cli = callPackage ./ani-cli {inherit pkgs;};
       taskwarrior = callPackage ./taskwarrior {inherit lib pkgs;};

@@ -59,6 +59,7 @@
   );
 in {
   config = mkIf (elem "desktop" cfg) {
+    laplace.harden = lib.mkDefault ["malloc"];
     # Permit Zotero LAN synchronisation and discovery.
     networking.firewall = {
       allowedTCPPorts = [23319];
@@ -90,6 +91,7 @@ in {
         };
       };
     };
+
     fonts.packages = with pkgs; [
       atkinson-hyperlegible-next
       noto-fonts
