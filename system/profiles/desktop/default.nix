@@ -91,7 +91,6 @@ in {
       };
     };
     fonts.packages = with pkgs; [
-      fast-fonts
       atkinson-hyperlegible-next
       noto-fonts
       noto-fonts-color-emoji
@@ -107,24 +106,27 @@ in {
       inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-nerd-font
       inputs.iosevka-cadmus.packages.${pkgs.stdenv.hostPlatform.system}.iosevka-cadmus-emacs-nerd-font
     ];
-    fonts.fontconfig.localConf = ''
-      <?xml version="1.0"?>
-      <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-      <fontconfig>
-        <selectfont>
-          <rejectfont>
-            <pattern>
-              <patelt name="family">
-                <string>IosevkaCadmus Nerd Font</string>
-              </patelt>
-              <patelt name="fontwrapper">
-                <string>WOFF2</string>
-              </patelt>
-            </pattern>
-          </rejectfont>
-        </selectfont>
-      </fontconfig>
-    '';
+
+    fonts.fontconfig.localConf =
+      # xml
+      ''
+        <?xml version="1.0"?>
+        <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+        <fontconfig>
+          <selectfont>
+            <rejectfont>
+              <pattern>
+                <patelt name="family">
+                  <string>IosevkaCadmus Nerd Font</string>
+                </patelt>
+                <patelt name="fontwrapper">
+                  <string>WOFF2</string>
+                </patelt>
+              </pattern>
+            </rejectfont>
+          </selectfont>
+        </fontconfig>
+      '';
     services = {
       pcscd.enable = true;
       # GNOME compiles these overrides into its schema directory.

@@ -42,10 +42,8 @@
       profiles = ["desktop"];
       desktop = with lib.components; {
         server = wayland;
-        wm = niri;
-        shell = noctalia;
+        wm = dwl;
         term = foot;
-        launcher = vicinae;
       };
       hardware = {
         cpu = ["amd"];

@@ -9,7 +9,8 @@ stdenvNoCC.mkDerivation rec {
   version = src.rev;
 
   src = fetchFromGitHub {
-    owner = "Born2Root";
+    # This mirror preserves the original commit and hash after upstream disappeared.
+    owner = "grokdevbuilder";
     repo = "Fast-Font";
     rev = "f1ec8f9426c5907ac0e1f0d30464c5ac07c1f844";
     hash = "sha256-sbm3zOdvdrVA4j/oU1InQ04hroQw5XHlN9p233FU0TA=";
@@ -24,7 +25,7 @@ stdenvNoCC.mkDerivation rec {
   '';
 
   meta = with lib; {
-    homepage = "https://github.com/Born2Root/Fast-Font";
+    homepage = "https://github.com/grokdevbuilder/Fast-Font";
     description = "A font to help you read faster.";
     license = licenses.mit;
     maintainers = [];

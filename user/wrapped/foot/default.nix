@@ -2,7 +2,6 @@
   pkgs,
   lib,
   config,
-  integrated,
   ...
 }: let
   inherit (lib.laplace.pkgs) mkWrapper;
@@ -48,13 +47,6 @@
     passthru = (old.passthru or {}) // {inherit rev;};
   });
 
-  configFile = import ./config.nix {
-    inherit
-      config
-      pkgs
-      lib
-      integrated
-      ;
-  };
+  configFile = import ./config.nix {inherit config pkgs lib;};
 in
   mkWrapper pkgs footPatched {addFlags = ["--config=${configFile}"];}

@@ -80,9 +80,8 @@ in {
           configured.bibiman
           configured.bmm
           configured.helix
-          configured.opencode
+
           inputs.oh-my-pi.packages.${hostSystem}.default
-          unstable.pi-coding-agent
         ];
 
         dev = with pkgs; [
