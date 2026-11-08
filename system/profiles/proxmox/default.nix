@@ -70,10 +70,12 @@ in {
     ];
 
     # mkDefault lets guests replace the administrator list without duplicate users.
-    laplace.users = mkDefault ["archon"];
-
-    # SeaBIOS uses GRUB on the disko EF02 partition. It does not use EFI variables.
-    laplace.bootloader = mkDefault "grub";
+    laplace = {
+      users = mkDefault ["archon"];
+      harden = mkDefault ["malloc" "kernel"];
+      # SeaBIOS uses GRUB on the disko EF02 partition. It does not use EFI variables.
+      bootloader = mkDefault "grub";
+    };
 
     boot = {
       loader.efi.canTouchEfiVariables = mkForce false;

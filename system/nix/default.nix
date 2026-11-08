@@ -10,14 +10,11 @@ in {
     # Nixd manages evaluator defaults, its substituter and cache key rotation in /etc/nix/nix.conf.
     nix.settings = {
       extra-sandbox-paths = lib.optionals config.programs.ccache.enable [config.programs.ccache.cacheDir];
-      experimental-features =
-        [
-          "nix-command"
-          "flakes"
-          "pipe-operators"
-        ]
-        # parallel-eval enables builtins.parallel. Nixd manages eval-cores.
-        ++ optionals config.determinate.enable ["parallel-eval"];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+        "pipe-operators"
+      ];
       substituters = [
         "https://nix-community.cachix.org"
       ];

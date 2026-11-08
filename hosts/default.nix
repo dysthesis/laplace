@@ -34,9 +34,6 @@
         cluster = cluster.manifest;
       };
       modules = [
-        inputs.chaotic.nixosModules.nyx-cache
-        inputs.chaotic.nixosModules.nyx-overlay
-        inputs.chaotic.nixosModules.nyx-registry
         {networking.hostName = hostname;}
         {nixpkgs.hostPlatform = lib.mkDefault host.system;}
         ({modulesPath, ...}: {
@@ -49,7 +46,6 @@
           nixpkgs.overlays = overlays;
           imports = [./${hostname} (cluster.hostModule hostname)] ++ defaultImports;
         }
-        inputs.determinate.nixosModules.default
       ];
     })
     hosts;

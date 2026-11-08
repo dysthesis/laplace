@@ -59,7 +59,7 @@
   );
 in {
   config = mkIf (elem "desktop" cfg) {
-    laplace.harden = lib.mkDefault ["malloc"];
+    laplace.harden = lib.mkDefault ["malloc" "kernel"];
     # Permit Zotero LAN synchronisation and discovery.
     networking.firewall = {
       allowedTCPPorts = [23319];

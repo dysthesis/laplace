@@ -1,20 +1,20 @@
 # The kernel and hardened patch must have the same release number.
 final: prev: let
-  version = "7.2.5";
+  version = "7.3.1";
   suffix = "hardened1";
   modDirVersion = "${prev.lib.versions.pad 3 version}-${suffix}";
 
   base = prev.linux_latest;
   src = prev.fetchurl {
     url = "mirror://kernel/linux/kernel/v7.x/linux-${version}.tar.xz";
-    hash = "sha256-Vd3w34Ml2drZb8/3vZOXfSLj9QrwZSdXKvWbd8djK3g=";
+    hash = "sha256-+llarZNzT4KcljwqkO98NnMiT9f9rntJQG45fN4t4jE=";
   };
 
   hardenedPatch = {
     name = "linux-hardened-v${version}-${suffix}";
     patch = prev.fetchurl {
       url = "https://github.com/anthraxx/linux-hardened/releases/download/v${version}-${suffix}/linux-hardened-v${version}-${suffix}.patch";
-      hash = "sha256-yB4ip+GEzLrX5V7qG1dKrmka9M20QVrnnMas7q0Ug14=";
+      hash = "sha256-x5yDZN/T5qQmjx38bpsiDJR3bWqs4KbWHc4TXcv66tg=";
     };
   };
 

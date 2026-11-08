@@ -89,8 +89,6 @@
     # Use a channel revision for Hydra substitutes.
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
-
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -114,7 +112,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # gungnir does not build with Determinate Nix. Xorg is disabled on all hosts.
     gungnir = {
       url = "github:dysthesis/gungnir";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -182,6 +179,5 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     colmena.url = "github:nix-community/colmena";
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
   };
 }

@@ -77,9 +77,9 @@ in {
         "kernel.kptr_restrict" = mkOverride 500 2;
 
         # Disable BPF JIT compilation to prevent JIT spray attacks.
-        "net.core.bpf_jit_enable" = mkForce false;
+        # "net.core.bpf_jit_enable" = mkForce false;
 
-        "kernel.ftrace_enabled" = mkForce false;
+        # "kernel.ftrace_enabled" = mkForce false;
 
         # Reject packets that do not pass strict reverse path filtering. Log them as martians.
         "net.ipv4.conf.all.log_martians" = mkForce true;
