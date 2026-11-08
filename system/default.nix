@@ -25,6 +25,7 @@ in {
       };
 
     boot.zfs.forceImportRoot = false;
+    systemd.oomd.enable = lib.mkDefault false;
 
     services = {
       openssh = {

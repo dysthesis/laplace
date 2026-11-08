@@ -38,6 +38,10 @@ Kernel allocation profiling is disabled early with
 `/proc/allocinfo` requires booting without that parameter; PSI and kernel
 memory-safety checks remain enabled.
 
+systemd-oomd defaults off because no monitored cgroups are configured. Enable
+`systemd.oomd.enable` alongside any future `ManagedOOM*` policy; Proxmox guests
+retain earlyoom, and kernel OOM handling is unchanged.
+
 ### Service-first fleet
 
 `cluster/inventory.nix` is the application authority: a declared
