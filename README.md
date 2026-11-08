@@ -33,6 +33,11 @@ Firmware updates are enabled by default only in the desktop profile. Physical
 headless hosts can opt in with `services.fwupd.enable = true`; guests otherwise
 avoid fwupd's daemons and RAM-backed metadata caches.
 
+Kernel allocation profiling is disabled early with
+`sysctl.vm.mem_profiling=never`, avoiding unused tracking metadata. Debugging with
+`/proc/allocinfo` requires booting without that parameter; PSI and kernel
+memory-safety checks remain enabled.
+
 ### Service-first fleet
 
 `cluster/inventory.nix` is the application authority: a declared

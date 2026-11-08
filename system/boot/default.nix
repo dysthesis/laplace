@@ -18,6 +18,7 @@ in {
 
   config.boot = {
     initrd.verbose = mkDefault false;
+    kernelParams = ["sysctl.vm.mem_profiling=never"];
     tmp = {
       useTmpfs = true;
       cleanOnBoot = mkDefault (!config.boot.tmp.useTmpfs);
