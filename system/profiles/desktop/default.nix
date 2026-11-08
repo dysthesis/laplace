@@ -130,6 +130,7 @@ in {
         </fontconfig>
       '';
     services = {
+      fwupd.enable = lib.mkDefault true;
       pcscd.enable = true;
       # GNOME compiles these overrides into its schema directory.
       # Other sessions use the override package below.

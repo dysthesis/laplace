@@ -27,6 +27,12 @@ in `/etc/determinate/config.json` so only one collector is scheduled.
 
 ## Design
 
+### Base memory policy
+
+Firmware updates are enabled by default only in the desktop profile. Physical
+headless hosts can opt in with `services.fwupd.enable = true`; guests otherwise
+avoid fwupd's daemons and RAM-backed metadata caches.
+
 ### Service-first fleet
 
 `cluster/inventory.nix` is the application authority: a declared
