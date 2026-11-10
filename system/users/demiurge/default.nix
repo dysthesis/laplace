@@ -78,7 +78,6 @@ in {
           unstable.tealdeer
           unstable.gh
           configured.bibiman
-          configured.bmm
           configured.helix
 
           inputs.oh-my-pi.packages.${hostSystem}.default

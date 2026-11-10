@@ -32,7 +32,7 @@
     hash = "sha256-H8cPd0046xaZk6w5Huo1fvR8iHV+9y7llDh5t+jivGk=";
   };
 
-  mpv = pkgs.mpv.override {
+  mpv = pkgs.unstable.mpv.override {
     scripts = builtins.attrValues {
       inherit
         (pkgs.mpvScripts)

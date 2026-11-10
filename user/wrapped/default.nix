@@ -34,7 +34,10 @@
       }).config.env;
   in {
     configured = rec {
-      ytsub = callPackage ./ytsub {inherit pkgs lib;};
+      ytsub = callPackage ./ytsub {
+        inherit pkgs lib;
+        inherit (pkgs.unstable) ytsub;
+      };
       headroom = callPackage ./headroom {inherit pkgs;};
       subtui = callPackage ./subtui {inherit pkgs lib;};
       opencode = callPackage ./opencode {inherit pkgs lib;};
