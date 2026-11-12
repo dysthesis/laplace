@@ -42,6 +42,12 @@ systemd-oomd defaults off because no monitored cgroups are configured. Enable
 `systemd.oomd.enable` alongside any future `ManagedOOM*` policy; Proxmox guests
 retain earlyoom, and kernel OOM handling is unchanged.
 
+Ephemeral roots remain tmpfs. Both journal paths default to a 32 MiB storage
+budget: `SystemMaxUse` governs `/var/log/journal` even on tmpfs, while
+`RuntimeMaxUse` governs `/run/log/journal`. Telemetry keeps its persistent journal
+and 64 MiB/16 MiB limits. These budgets shorten local history, are not process
+memory limits, and can be exceeded by active journal files.
+
 ### Service-first fleet
 
 `cluster/inventory.nix` is the application authority: a declared

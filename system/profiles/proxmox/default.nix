@@ -107,10 +107,6 @@ in {
     services = {
       qemuGuest.enable = true;
 
-      # The volatile journal consumes RAM. Limit its size independently of guest memory.
-      # Use SystemMaxUse if /var/log/journal becomes persistent.
-      journald.extraConfig = "RuntimeMaxUse=32M";
-
       # Stop memory-intensive processes before ballooned guests stall under memory pressure.
       earlyoom.enable = mkDefault true;
 

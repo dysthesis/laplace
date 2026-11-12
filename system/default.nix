@@ -28,6 +28,11 @@ in {
     systemd.oomd.enable = lib.mkDefault false;
 
     services = {
+      # SystemMaxUse also governs /var/log/journal when it lives on tmpfs.
+      journald.extraConfig = ''
+        SystemMaxUse=32M
+        RuntimeMaxUse=32M
+      '';
       openssh = {
         enable = lib.mkDefault true;
         settings = {
