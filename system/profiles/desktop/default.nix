@@ -83,6 +83,7 @@ in {
           description = "Headroom proxy";
           after = ["network.target"];
           wantedBy = ["default.target"];
+          environment.HEADROOM_KOMPRESS_WARMUP = "0";
 
           serviceConfig = {
             ExecStart = "${lib.getExe' pkgs.configured.headroom "headroom"} proxy --port 8787";

@@ -48,6 +48,11 @@ budget: `SystemMaxUse` governs `/var/log/journal` even on tmpfs, while
 and 64 MiB/16 MiB limits. These budgets shorten local history, are not process
 memory limits, and can be exceeded by active journal files.
 
+The desktop Headroom proxy still starts at login on port 8787, but
+`HEADROOM_KOMPRESS_WARMUP=0` defers its Kompress model until first use. Initial
+requests may pass through uncompressed while the model loads in the background.
+The model stays loaded afterward; other startup preloads remain unchanged.
+
 ### Service-first fleet
 
 `cluster/inventory.nix` is the application authority: a declared
