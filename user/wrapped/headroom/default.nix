@@ -1,13 +1,16 @@
 {
   fetchFromGitHub,
   lib,
+  oniguruma,
+  pkg-config,
   python3Packages,
   rustPlatform,
+  sqlite,
   ...
 }:
 python3Packages.buildPythonApplication (finalAttrs: {
   pname = "headroom-ai";
-  version = "0.41.0";
+  version = "0.44.0";
   pyproject = true;
 
   src = fetchFromGitHub {
@@ -55,6 +58,9 @@ python3Packages.buildPythonApplication (finalAttrs: {
     cargoSetupHook
     maturinBuildHook
   ];
+
+  nativeBuildInputs = [pkg-config];
+  buildInputs = [oniguruma sqlite];
 
   dependencies = with python3Packages; [
     ast-grep-cli
@@ -116,6 +122,7 @@ python3Packages.buildPythonApplication (finalAttrs: {
 
   pythonImportsCheck = [
     "headroom"
+    "headroom._core"
     "fastapi"
     "httpx"
     "magika"

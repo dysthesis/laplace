@@ -73,9 +73,9 @@
   aliases = with pkgs; let
     inherit (lib) getExe;
     baseAliases = {
-      ls = "${getExe eza} --icons";
-      ll = "${getExe eza} --icons -l";
-      la = "${getExe eza} --icons -la";
+      ls = "${getExe eza} --icons always";
+      ll = "${getExe eza} --icons always -l";
+      la = "${getExe eza} --icons always -la";
     };
     treeAliases = mapAttrs' (name: value: nameValuePair (name + "t") (value + " --tree")) baseAliases;
     ezaAliases = baseAliases // treeAliases;

@@ -52,6 +52,8 @@ The desktop Headroom proxy still starts at login on port 8787, but
 `HEADROOM_KOMPRESS_WARMUP=0` defers its Kompress model until first use. Initial
 requests may pass through uncompressed while the model loads in the background.
 The model stays loaded afterward; other startup preloads remain unchanged.
+Its Rust extension links against system Oniguruma and SQLite; the package declares
+both libraries plus `pkg-config` and checks that `headroom._core` imports at build time.
 
 ### Service-first fleet
 
