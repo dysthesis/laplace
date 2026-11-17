@@ -160,7 +160,24 @@ in {
         kobo = node "100.64.0.38" "fd7a:115c:a1e0::26" ["reader"];
       };
       guests = {
-        minecraft.users = ["tom" "olivia" "ash" "anika" "mary" "esther" "dini" "terrence" "zunaid" "lara" "kelly" "chris" "laura" "gayatri" "joel" "abiram"];
+        minecraft.users = [
+          "tom"
+          "olivia"
+          "ash"
+          "anika"
+          "mary"
+          "esther"
+          "dini"
+          "terrence"
+          "zunaid"
+          "lara"
+          "kelly"
+          "chris"
+          "laura"
+          "gayatri"
+          "joel"
+          "abiram"
+        ];
         miniflux.users = ["mary"];
         vikunja.users = ["sheva"];
         photos.users = ["sheva"];

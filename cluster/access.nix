@@ -21,6 +21,7 @@ in {
     nodeFlows =
       [
         (flow (role "owner-device") (role "owner-device") ["*"])
+        (flow (role "owner-device") {node = "loki";} ["tcp/22"])
         (flow (role "sync") (role "sync") ["tcp/22000" "udp/22000"])
         ((flow (role "workstation") (role "exit") ["*"]) // {forwarding = true;})
         (flow (role "workstation") (role "pve") ["*"])
