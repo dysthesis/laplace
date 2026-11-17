@@ -1,10 +1,17 @@
 {
-  lib,
   config,
   cluster,
+  lib,
   pkgs,
+  inputs,
   ...
 }: {
+  imports = lib.optionals
+    (cluster.activeServices ? minecraft && cluster.activeServices.minecraft.host == "loki")
+    [
+      inputs.retirement.nixosModules.default
+      ../../system/services/minecraft/maintenance.nix
+    ];
   sops.secrets = {
     telemetry_client_certificate = {
       sopsFile = ../../system/secrets/loki.yaml;

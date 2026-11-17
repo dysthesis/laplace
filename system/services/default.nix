@@ -9,7 +9,6 @@
     ./headscale
     ./immich
     ./karakeep
-    ./minecraft
     ./miniflux
     ./music
     ./nocodb

@@ -126,6 +126,15 @@ in {
         };
       };
     };
+    minecraft = {
+      host = "loki";
+      settings = {
+        domain = "mc.dysthesis.com";
+        autoStart = true;
+        restart = "on-failure";
+        motd = "Oops! All skill issues!";
+      };
+    };
 
     headscale = {
       host = "bifrost";

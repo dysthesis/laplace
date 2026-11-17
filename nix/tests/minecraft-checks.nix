@@ -16,17 +16,14 @@
     '';
 
   minecraft-runtime = let
-    runtime = pkgs.temurin-bin-17;
-    minecraft = serviceFixtures.minecraft.laplace.services.minecraft.retirement-home;
+    runtime = pkgs.jdk25_headless;
     server = serviceFixtures.minecraft.services.minecraft-servers.servers.retirement-home;
-    # Keep Xmx for G1 heap sizing. Lower Xms to decrease AlwaysPreTouch memory use in CI.
-    smokeJvmOpts = builtins.replaceStrings ["-Xms${toString minecraft.memoryGb}G"] ["-Xms128M"] server.jvmOpts;
   in
-    assert lib.versionAtLeast runtime.version "17.0.19";
-    assert lib.versionOlder runtime.version "18";
+    assert server.enable;
+    assert lib.versionAtLeast runtime.version "25";
       pkgs.runCommand "minecraft-runtime-check" {} ''
-        ${runtime}/bin/java ${smokeJvmOpts} -version >java-version 2>&1
-        grep -Fq 'Temurin-17.' java-version
+        ${runtime}/bin/java -Xms128M -Xmx256M -version >java-version 2>&1
+        grep -Eq 'version "25[."]' java-version
         touch $out
       '';
 

@@ -11,13 +11,8 @@ pkgs.testers.runNixOSTest {
     ...
   }: {
     imports = [
-      ({
-        config,
-        lib,
-        pkgs,
-        ...
-      }:
-        import ../../system/services/minecraft {inherit config lib pkgs inputs;})
+      inputs.retirement.nixosModules.default
+      ../../system/services/minecraft/maintenance.nix
     ];
     options.mnemosyne.dirs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -31,33 +26,37 @@ pkgs.testers.runNixOSTest {
         memorySize = 2048;
         cores = 2;
       };
-      laplace.services.minecraft.retirement-home = {
-        enable = true;
-        autoStart = true;
-        openFirewall = true;
-        memoryGb = 1;
-        motd = "Original";
-        viewDistance = 2;
-        simulationDistance = 2;
-      };
-      # Vanilla Minecraft starts without the modpack or Discord credentials.
-      services.minecraft-servers.servers.retirement-home = {
-        package = lib.mkForce (pkgs.vanillaServers.vanilla-1_20_1.override {
-          jre_headless = pkgs.temurin-bin-17;
-        });
-        symlinks = lib.mkForce {};
-        files = lib.mkForce {};
-        serverProperties.online-mode = lib.mkForce false;
+      services.minecraft-servers = {
+        dataDir = "/srv/minecraft";
+        managementSystem = {
+          tmux.enable = false;
+          systemd-socket.enable = true;
+        };
+        servers.retirement-home = {
+          autoStart = lib.mkForce true;
+          jvmOpts = lib.mkForce "-Xms128M -Xmx1024M";
+          # The staging test exercises systemd semantics, not modpack content.
+          package = lib.mkForce (pkgs.vanillaServers.vanilla-1_21_1.override {
+            jre_headless = pkgs.jdk25_headless;
+          });
+          files = lib.mkForce {};
+          serverProperties = {
+            motd = lib.mkOverride 80 "Original";
+            view-distance = 2;
+            simulation-distance = 2;
+            online-mode = lib.mkForce false;
+          };
+        };
       };
       systemd.timers = {
         mc-world-snapshot.enable = false;
         mc-nightly-restart.enable = false;
       };
       specialisation = {
-        staged.configuration.laplace.services.minecraft.retirement-home.motd = lib.mkForce "Staged";
-        moved.configuration.laplace.services.minecraft.retirement-home = {
+        staged.configuration.services.minecraft-servers.servers.retirement-home.serverProperties.motd = lib.mkForce "Staged";
+        moved.configuration.services.minecraft-servers.servers.retirement-home.serverProperties = {
           motd = lib.mkForce "Moved";
-          port = lib.mkForce 25566;
+          server-port = lib.mkForce 25566;
         };
       };
     };

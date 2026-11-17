@@ -375,8 +375,6 @@
         host = "desktop";
         settings = {
           domain = "mc.example.test";
-          mapDomain = "map.example.test";
-          sopsFile = "/fixture/game.yaml";
         };
       };
     };
@@ -385,19 +383,21 @@
         host = "alpha";
         settings = {
           domain = "mc.example.test";
-          mapDomain = "map.example.test";
-          sopsFile = "/fixture/game.yaml";
         };
       };
     };
     sameRecipeListenerConflict = rejected {
-      services.minecraft = {
-        host = "game";
-        settings = {
-          domain = "mc.example.test";
-          mapDomain = "map.example.test";
-          sopsFile = "/fixture/game.yaml";
-          port = 443;
+      services = {
+        minecraft = {
+          host = "game";
+          settings = {
+            domain = "mc.example.test";
+            port = 443;
+          };
+        };
+        silverbullet = {
+          host = "game";
+          settings.domain = "notes.example.test";
         };
       };
     };

@@ -2,26 +2,14 @@
   inherit (lib) mkOption types;
   options = import ./options.nix {inherit lib;};
 in {
+  # Keep only machine-level settings. Retirement owns the loader, mods and Java.
   settings =
-    builtins.removeAttrs options ["openFirewall" "discord"]
+    builtins.removeAttrs options ["openFirewall" "discord" "mapDomain" "memoryGb" "extraJvmOpts"]
     // {
       domain = mkOption {type = types.str;};
-      mapDomain = mkOption {type = types.str;};
-      sopsFile = mkOption {type = types.path;};
-      discord = builtins.removeAttrs options.discord ["environmentFile"];
     };
-  endpointNames = ["game" "voice" "http" "https" "map" "map-app" "exporter"];
-  endpoints = {instance, ...}: let
-    frontend = domain: port: {
-      host = instance.host;
-      protocol = "tcp";
-      inherit port domain;
-      listenAddress = "0.0.0.0";
-      scope = "tailnet";
-      publishDNS = port == 443;
-      shared = "caddy";
-    };
-  in {
+  endpointNames = ["game" "voice"];
+  endpoints = {instance, ...}: {
     game = {
       host = instance.host;
       protocol = "tcp";
@@ -29,6 +17,8 @@ in {
       listenAddress = "0.0.0.0";
       scope = "tailnet";
       domain = instance.settings.domain;
+      # The old HTTPS frontend used to publish this DNS name.
+      publishDNS = true;
     };
     voice = {
       host = instance.host;
@@ -36,23 +26,6 @@ in {
       port = 24454;
       listenAddress = "0.0.0.0";
       scope = "tailnet";
-    };
-    https = frontend instance.settings.domain 443;
-    http = frontend instance.settings.domain 80;
-    map = frontend instance.settings.mapDomain 443;
-    map-app = {
-      host = instance.host;
-      protocol = "tcp";
-      port = 8080;
-      listenAddress = "127.0.0.1";
-      scope = "loopback";
-    };
-    exporter = {
-      host = instance.host;
-      protocol = "tcp";
-      port = 25585;
-      listenAddress = "0.0.0.0";
-      scope = "lan";
     };
   };
   resources = instance: [
@@ -76,45 +49,47 @@ in {
       message = "minecraft requires an isolated game Tailnet server with persistent Btrfs world/snapshot storage";
     }
   ];
-  activation = [["laplace" "services" "minecraft" "retirement-home" "enable"] ["services" "minecraft-servers" "enable"]];
+  activation = [
+    ["services" "minecraft-servers" "enable"]
+    ["services" "minecraft-servers" "servers" "retirement-home" "enable"]
+  ];
 
   project = {
     instance,
-    cluster,
     hostName,
-  }: {
-    config,
-    lib,
     ...
-  }: {
-    imports = [./frontend.nix];
+  }: {lib, ...}: {
     config = lib.optionalAttrs (hostName == instance.host) {
-      sops.secrets = lib.optionalAttrs instance.settings.discord.enable {
-        discord_bot_env.sopsFile = instance.settings.sopsFile;
-      };
-      laplace.services.minecraft.retirement-home =
-        builtins.removeAttrs instance.settings ["sopsFile"]
-        // {
-          enable = true;
-          openFirewall = false;
-          discord =
-            instance.settings.discord
-            // lib.optionalAttrs instance.settings.discord.enable {
-              environmentFile = config.sops.secrets.discord_bot_env.path;
-            };
+      # Retirement supplies the NeoForge package, Java runtime and modpack.
+      # Laplace supplies deployment policy and persistent storage.
+      services.minecraft-servers = {
+        dataDir = instance.settings.dataDir;
+        openFirewall = lib.mkForce false;
+        managementSystem = {
+          tmux.enable = false;
+          systemd-socket.enable = true;
         };
-      # spark's async-profiler samples kernel frames rather than Java-only stacks.
+        servers.retirement-home = {
+          autoStart = lib.mkForce instance.settings.autoStart;
+          openFirewall = lib.mkForce false;
+          enableReload = true;
+          restart = lib.mkForce instance.settings.restart;
+          serverProperties = {
+            server-port = lib.mkForce instance.settings.port;
+            max-players = lib.mkForce instance.settings.maxPlayers;
+            motd = lib.mkForce instance.settings.motd;
+            view-distance = instance.settings.viewDistance;
+            simulation-distance = instance.settings.simulationDistance;
+            online-mode = true;
+            white-list = true;
+            enforce-whitelist = true;
+            enable-rcon = false;
+          };
+        };
+      };
+      mnemosyne.dirs = [instance.settings.dataDir];
+      # Spark's async-profiler needs access to native kernel call frames.
       boot.kernel.sysctl."kernel.perf_event_paranoid" = 1;
-      services.vmagent.prometheusConfig.scrape_configs = lib.mkIf config.laplace.services.telemetry.enable (lib.mkAfter [
-        {
-          job_name = "minecraft";
-          scrape_interval = "15s";
-          scrape_timeout = "5s";
-          sample_limit = 5000;
-          label_limit = 40;
-          static_configs = [{targets = ["127.0.0.1:${toString cluster.endpoints.minecraft.exporter.port}"];}];
-        }
-      ]);
     };
   };
 }
