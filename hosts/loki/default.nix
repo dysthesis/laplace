@@ -58,7 +58,6 @@
 
   laplace = {
     profiles = ["proxmox"];
-    harden = lib.mkForce ["malloc"];
     proxmox = {
       cores = 4; # Chunk generation and garbage collection use threads separate from the main tick thread.
       memory = 12288; # MiB: 8 GiB heap, 4 GiB overhead
