@@ -17,7 +17,7 @@ python3Packages.buildPythonApplication (finalAttrs: {
     owner = "headroomlabs-ai";
     repo = "headroom";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-ITVrw5ruGnNI9t7pq+0Z6gsnqDDAB/5v7I3oOQM5AtE=";
+    hash = "sha256-t3hBnXKRzzMOFPFTyFu6+uV0QVGKJH4ZjIXQVG/4I5U=";
   };
 
   cargoDeps = rustPlatform.fetchCargoVendor {

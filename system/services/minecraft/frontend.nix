@@ -64,7 +64,7 @@
       ConfigVersion=1.3
       ExportAuthor=dysthesis
       ExportName=Retirement Home
-      ExportSummary=Custom modpack built on Fabulously Optimized, built for a private server.
+      ExportSummary=Custom server modpack
       ExportVersion=1.0.0
       InstanceType=OneSix
       ManagedPack=false

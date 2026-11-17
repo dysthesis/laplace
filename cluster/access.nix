@@ -35,7 +35,7 @@ in {
       ++ grants {knownNodes = true;} "adguardhome" ["dns" "dns-tcp"]
       ++ lib.concatMap (source: https (role source) ["beszel-hub"]) ["infra" "exit" "workstation"]
       ++ https (role "workstation") (["observability" "immich" "adguardhome" "uptime-kuma" "ntfy"] ++ applications)
-      ++ grants (role "workstation") "minecraft" ["game" "voice"]
+      ++ grants (role "workstation") "minecraft" ["game" "voice" "https"]
       ++ https (service "observability") ["ntfy" "uptime-kuma"]
       ++ https (service "uptime-kuma") (["observability" "beszel-hub" "immich" "adguardhome"] ++ applications)
       ++ grants (service "uptime-kuma") "minecraft" ["game"]
@@ -43,7 +43,7 @@ in {
       ++ grants (role "reader") "miniflux" ["direct"]
       ++ https (role "phone") ["observability" "uptime-kuma" "ntfy"]
       ++ grants (role "sync") "syncthing-server" ["transfer" "transfer-quic"]
-      ++ grants (guest "minecraft") "minecraft" ["game" "voice"]
+      ++ grants (guest "minecraft") "minecraft" ["game" "voice" "https"]
       ++ grants (guest "minecraft") "adguardhome" ["dns"]
       ++ grants (guest "miniflux") "miniflux" ["http" "https"]
       ++ https (guest "vikunja") ["vikunja"]
