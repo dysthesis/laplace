@@ -107,7 +107,9 @@
       };
     };
   };
-
+  systemd.tmpfiles.rules = [
+    "d /srv/minecraft 0755 root root - -"
+  ];
   environment.systemPackages = with pkgs; [
     vim
     git

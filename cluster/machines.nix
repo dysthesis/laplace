@@ -163,6 +163,7 @@ in {
         minecraft.users = [
           "tom"
           "olivia"
+          "franklin"
           "cameron"
           "ash"
           "anika"

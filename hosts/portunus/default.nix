@@ -39,6 +39,7 @@ in {
   };
 
   laplace = {
+    harden = lib.mkForce ["malloc"];
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;

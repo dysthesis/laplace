@@ -2,6 +2,7 @@
   config,
   cluster,
   pkgs,
+  lib,
   ...
 }: {
   sops.secrets = {
@@ -16,6 +17,7 @@
     };
   };
   laplace = {
+    harden = lib.mkForce ["malloc"];
     profiles = ["proxmox"];
     proxmox = {
       cores = 1;
