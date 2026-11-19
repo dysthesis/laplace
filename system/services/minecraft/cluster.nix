@@ -60,7 +60,13 @@ in {
     instance,
     hostName,
     ...
-  }: {lib, inputs, pkgs, ...}: let
+  }: {
+    config,
+    lib,
+    inputs,
+    pkgs,
+    ...
+  }: let
     bootstrap = import ./bootstrap.nix {
       inherit lib pkgs inputs;
       domain = instance.settings.domain;
@@ -68,6 +74,14 @@ in {
     };
   in {
     config = lib.optionalAttrs (hostName == instance.host) {
+      # This is a deliberately invalid ID until the actual channel is supplied.
+      # No secret value enters Nix evaluation; retirement reads tokenFile at startup.
+      retirement.discord = {
+        enable = true;
+        tokenFile = config.sops.secrets.minecraft_discord_token.path;
+        channelId = "1518865691254460477";
+      };
+
       # Retirement supplies the NeoForge package, Java runtime and modpack.
       # Laplace supplies deployment policy and persistent storage.
       services.minecraft-servers = {

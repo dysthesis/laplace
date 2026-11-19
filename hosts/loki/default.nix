@@ -14,6 +14,8 @@
       ../../system/services/minecraft/maintenance.nix
     ];
   sops.secrets = {
+    # Supply a plain token file, not an environment file or a Nix string.
+    minecraft_discord_token.sopsFile = ../../system/secrets/loki.yaml;
     telemetry_client_certificate = {
       sopsFile = ../../system/secrets/loki.yaml;
       restartUnits = ["vmagent.service" "systemd-journal-upload.service"];
