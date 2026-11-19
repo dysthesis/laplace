@@ -33,6 +33,7 @@ in {
           "podman"
           "libvirt"
           "render"
+          "minecraft"
         ];
     };
   };
