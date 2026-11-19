@@ -1147,11 +1147,11 @@
         "treefmt-nix": "treefmt-nix_7"
       },
       "locked": {
-        "lastModified": 1795055707,
-        "narHash": "sha256-UwXcud5KVFp5KfMEBlDXimPItIyXNd5Z6KImJ86AghY=",
+        "lastModified": 1795055780,
+        "narHash": "sha256-6kDCjZI/CLamZ5Q/WVkiMDYcCmtxuVQZUGlfDJ5kmy0=",
         "owner": "dysthesis",
         "repo": "retirement",
-        "rev": "0c3bcf768300e0ca3325285707eda9fa43e3abea",
+        "rev": "b3d07880421c9a2f2667780fb536ec77358c61a1",
         "type": "github"
       },
       "original": {
