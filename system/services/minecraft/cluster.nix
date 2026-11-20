@@ -74,12 +74,10 @@ in {
     };
   in {
     config = lib.optionalAttrs (hostName == instance.host) {
-      # This is a deliberately invalid ID until the actual channel is supplied.
-      # No secret value enters Nix evaluation; retirement reads tokenFile at startup.
+      # Retirement reads both values from a systemd credential at startup.
       retirement.discord = {
         enable = true;
-        tokenFile = config.sops.secrets.minecraft_discord_token.path;
-        channelId = "1518865691254460477";
+        environmentFile = config.sops.secrets.discord_bot_env.path;
       };
 
       # Retirement supplies the NeoForge package, Java runtime and modpack.
