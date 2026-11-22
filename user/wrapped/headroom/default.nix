@@ -22,7 +22,7 @@ python3Packages.buildPythonApplication (finalAttrs: {
 
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit (finalAttrs) pname version src;
-    hash = "sha256-RF1b24TIV3EASGfXKUHSrGgQGBUmJLYxzDEjb4fvKPo=";
+    hash = "sha256-hhfYzkv7N/7L1Gv9I9RcnLRsrTjcRkBroo5ei5VbuHU=";
   };
 
   postPatch = ''

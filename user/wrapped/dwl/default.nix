@@ -346,6 +346,7 @@ in
         "DISPLAY"
         "WAYLAND_DISPLAY"
         "XDG_SESSION_TYPE"
+        "XDG_CURRENT_DESKTOP"
         "DBUS_SESSION_BUS_ADDRESS"
         "QT_QPA_PLATFORMTHEME"
         "PATH"

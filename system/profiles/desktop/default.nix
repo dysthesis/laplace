@@ -190,6 +190,7 @@ in {
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
         HCC_AMDGPU_TARGET = "gfx1030";
         GTK_USE_PORTAL = "1";
+        XDG_CURRENT_DESKTOP = "dwl";
         # GNOME and Flashback set this variable when enabled.
         # The schema subdirectory differs from the override package name.
         NIX_GSETTINGS_OVERRIDES_DIR =
@@ -219,6 +220,11 @@ in {
         enable = true;
         config.common.default = "gtk";
         extraPortals = [pkgs.xdg-desktop-portal-gtk];
+        config.dwl = {
+          default = ["gtk"];
+          "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+          "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
+        };
       };
     };
     hardware.i2c.enable = true;

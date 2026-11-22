@@ -97,7 +97,7 @@ in {
           restart = lib.mkForce instance.settings.restart;
           # A 12 GiB VM needs native memory, OS cache and chunk-generation headroom.
           # Java 25 and the NeoForge package still come from Retirement.
-          jvmOpts = lib.mkForce "-Xms4G -Xmx8G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200";
+          jvmOpts = lib.mkForce "-Xms10G -Xmx12G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200";
           serverProperties = {
             server-port = lib.mkForce instance.settings.port;
             max-players = lib.mkForce instance.settings.maxPlayers;

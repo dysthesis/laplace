@@ -1,5 +1,3 @@
-# A Prism Launcher import ZIP for the pinned Retirement pack.
-# Keep the Packwiz tree and the loader versions in the same flake revision.
 {
   inputs,
   lib,
@@ -9,6 +7,19 @@
 }: let
   pack = builtins.fromTOML (builtins.readFile "${inputs.retirement.outPath}/packwiz/pack.toml");
   address = domain + lib.optionalString (port != 25565) ":${toString port}";
+
+  # For the 32 GiB client machines represented in the supplied profiles.
+  # Prism controls -Xms/-Xmx through these settings; do not duplicate them in JvmArgs.
+  clientMinMemMiB = 4096;
+  clientMaxMemMiB = 12288;
+
+  # On Java 25, -XX:+UseZGC selects generational ZGC automatically.
+  # Detailed GC and safepoint logs let us test whether stutters coincide with GC.
+  clientJvmArgs = lib.concatStringsSep " " [
+    "-XX:+UseZGC"
+    "-Xlog:gc*,safepoint:file=gc.log:time,uptime,level,tags:filecount=5,filesize=20m"
+  ];
+
   components = pkgs.writeText "retirement-home-mmc-pack.json" (builtins.toJSON {
     formatVersion = 1;
     components = [
@@ -46,12 +57,12 @@ in
     ExportVersion=${pack.version}
     InstanceType=OneSix
     ManagedPack=false
-    MaxMemAlloc=6144
-    MinMemAlloc=1024
+    MaxMemAlloc=${toString clientMaxMemMiB}
+    MinMemAlloc=${toString clientMinMemMiB}
     OverrideCommands=true
     OverrideJavaArgs=true
     OverrideMemory=true
-    JvmArgs=-XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200
+    JvmArgs=${clientJvmArgs}
     PreLaunchCommand=\"$INST_JAVA\" -jar packwiz-installer-bootstrap.jar -g -s client https://${domain}/modpack/pack.toml
     name=Retirement Home
 
@@ -83,7 +94,24 @@ in
 
     Import RetirementHome-bootstrap.zip using Prism Launcher -> Add Instance -> Import.
     Configure Java 25 under Edit Instance -> Settings -> Java before launch.
-    The instance uses a 6 GiB maximum Java heap. Increase it only if needed.
+
+    JVM preset for the profiled 32 GiB-RAM clients:
+      Collector: Generational ZGC (Java 25, -XX:+UseZGC)
+      Initial/minimum Java heap: 4096 MiB
+      Maximum Java heap: 12288 MiB
+      JVM GC and safepoint log: gc.log in the Java process's working directory
+      Logs rotate: up to 5 x 20 MiB files
+
+    These are client heap limits, NOT a measure of total Minecraft process RAM.
+    On machines with about 16 GiB physical RAM, reduce the Prism maximum heap
+    to 8192 MiB or less, and monitor for paging. An 8 GiB heap may still be too
+    small for some high-memory scenes; the profiles do not establish a universal
+    requirement. Do not change -Xms/-Xmx by adding them to the JVM arguments.
+
+    This bootstrap applies these defaults only when importing a new instance.
+    Existing instances must be changed under Edit Instance -> Settings -> Java.
+    Replacing the ZIP does not update the JVM configuration of old imports.
+
     Join ${address} over the private Tailnet.
     The pre-launch updater downloads the client pack from:
     https://${domain}/modpack/pack.toml

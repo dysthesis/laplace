@@ -39,6 +39,7 @@
     };
     laplace = {
       profiles = ["desktop"];
+      harden = lib.mkForce ["malloc"];
       desktop = with lib.components; {
         server = wayland;
         wm = dwl;
