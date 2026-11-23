@@ -62,7 +62,7 @@ in
     OverrideCommands=true
     OverrideJavaArgs=true
     OverrideMemory=true
-    JvmArgs=${clientJvmArgs}
+    JvmArgs="${clientJvmArgs}"
     PreLaunchCommand=\"$INST_JAVA\" -jar packwiz-installer-bootstrap.jar -g -s client https://${domain}/modpack/pack.toml
     name=Retirement Home
 

@@ -71,7 +71,7 @@
     site = serviceFixtures.minecraft.services.caddy.virtualHosts."mc.example.test".extraConfig;
   in
     assert lib.hasInfix "handle /bootstrap/RetirementHome-bootstrap.zip" site;
-      pkgs.runCommand "minecraft-bootstrap-check" {nativeBuildInputs = [pkgs.python3];} ''
+      pkgs.runCommand "minecraft-bootstrap-check" {nativeBuildInputs = [(pkgs.python3.withPackages (ps: [ps.pyqt6]))];} ''
         python3 - ${bootstrap}/RetirementHome-bootstrap.zip ${inputs.retirement.outPath}/packwiz/pack.toml <<'PYTHON'
         import io
         import json
@@ -80,6 +80,7 @@
         import tomllib
         import zipfile
         from pathlib import Path
+        from PyQt6.QtCore import QSettings
 
         pack = tomllib.loads(Path(sys.argv[2]).read_text())
         with zipfile.ZipFile(sys.argv[1]) as archive:
@@ -93,8 +94,11 @@
             cfg = archive.read("instance.cfg").decode()
             assert "-s client https://mc.example.test/modpack/pack.toml" in cfg
             assert "OverrideJavaArgs=true" in cfg and "OverrideMemory=true" in cfg
-            assert "MaxMemAlloc=6144" in cfg and "MinMemAlloc=1024" in cfg
-            assert "JvmArgs=-XX:+UseG1GC" in cfg
+            settings = QSettings(archive.extract("instance.cfg"), QSettings.Format.IniFormat)
+            assert settings.value("MaxMemAlloc") == "12288" and settings.value("MinMemAlloc") == "4096"
+            assert settings.value("JvmArgs") == (
+                "-XX:+UseZGC -Xlog:gc*,safepoint:file=gc.log:time,uptime,level,tags:filecount=5,filesize=20m"
+            )
             # Verify the embedded JAR is a nonempty ZIP archive.
             with zipfile.ZipFile(io.BytesIO(archive.read("minecraft/packwiz-installer-bootstrap.jar"))) as jar:
                 assert jar.namelist()
