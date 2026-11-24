@@ -14,7 +14,7 @@
   clientJvmArgs = lib.concatStringsSep " " [
     "-XX:+UseZGC"
     "-XX:+ZGenerational"
-    "-Xlog:gc*,safepoint:file=gc.log:time,uptime,level,tags:filecount=5,filesize=20m"
+    "-Xlog:gc*,safepoint:file=gc.log:time,uptime,level,tags:filecount=10,filesize=50m"
   ];
 
   components = pkgs.writeText "retirement-home-mmc-pack.json" (builtins.toJSON {
