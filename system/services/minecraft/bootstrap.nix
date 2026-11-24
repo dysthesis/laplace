@@ -15,7 +15,7 @@
     "-XX:+UseZGC"
     "-XX:+ZGenerational"
     "-XX:ReservedCodeCacheSize=512m"
-    "-Xlog:gc*,safepoint:file=gc.log:time,uptime,level,tags:filecount=10,filesize=50m"
+    "-Xlog:gc*,safepoint,codecache:file=gc.log:time,uptime,level,tags:filecount=10,filesize=50m"
   ];
 
   components = pkgs.writeText "retirement-home-mmc-pack.json" (builtins.toJSON {
