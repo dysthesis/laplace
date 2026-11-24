@@ -8,15 +8,12 @@
   pack = builtins.fromTOML (builtins.readFile "${inputs.retirement.outPath}/packwiz/pack.toml");
   address = domain + lib.optionalString (port != 25565) ":${toString port}";
 
-  # For the 32 GiB client machines represented in the supplied profiles.
-  # Prism controls -Xms/-Xmx through these settings; do not duplicate them in JvmArgs.
   clientMinMemMiB = 4096;
   clientMaxMemMiB = 12288;
 
-  # On Java 25, -XX:+UseZGC selects generational ZGC automatically.
-  # Detailed GC and safepoint logs let us test whether stutters coincide with GC.
   clientJvmArgs = lib.concatStringsSep " " [
     "-XX:+UseZGC"
+    "-XX:+ZGenerational"
     "-Xlog:gc*,safepoint:file=gc.log:time,uptime,level,tags:filecount=5,filesize=20m"
   ];
 
@@ -34,7 +31,6 @@
     ];
   });
   installer = pkgs.fetchurl {
-    # Pin the asset URL as well as its content hash.
     url = "https://github.com/packwiz/packwiz-installer-bootstrap/releases/download/v0.0.3/packwiz-installer-bootstrap.jar";
     hash = "sha256-qPuyTcYEJ46X9GiOgtPZGjGLmO/AjV2/y8vKtkQ9EWw=";
   };
