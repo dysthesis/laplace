@@ -122,7 +122,7 @@ in {
             url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_22.txt";
           }
           {
-            enabled = true;
+            enabled = false;
             id = 1781695610;
             name = "HaGeZi's The World's Most Abused TLDs";
             url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_56.txt";
