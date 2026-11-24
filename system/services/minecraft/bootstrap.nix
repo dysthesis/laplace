@@ -14,6 +14,7 @@
   clientJvmArgs = lib.concatStringsSep " " [
     "-XX:+UseZGC"
     "-XX:+ZGenerational"
+    "-XX:ReservedCodeCacheSize=512m"
     "-Xlog:gc*,safepoint:file=gc.log:time,uptime,level,tags:filecount=10,filesize=50m"
   ];
 
