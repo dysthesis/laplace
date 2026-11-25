@@ -1,5 +1,0 @@
-# Set wire sections per metre (block). Fewer sections can reduce render time.
-#Range: > 1
-wireSectionsPerMeter = 10
-#Range: 0.0 ~ 1.7976931348623157E308
-wireThickness = 0.03

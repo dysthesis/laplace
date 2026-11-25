@@ -1,5 +1,0 @@
-{
-  // False preserves vanilla seed parity but disables custom wood shipwrecks and structure optimisations.
-  "breaks_seed_parity": true,
-  "log_debug_messages": false
-}

@@ -1,6 +1,0 @@
-# Register integration tracks for absent mods.
-#[@cui:RequiresReload:both]
-registerMissingTracks = false
-# Keep datafixers enabled for worlds with pre-Create 0.5.1 monobogeys, or the monobogeys will be destroyed.
-#[@cui:RequiresReload:both]
-disableDatafixer = false

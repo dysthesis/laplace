@@ -1,2 +1,0 @@
-#Allowed Values: NONE, OVERLAY, ARROWS, BOTH
-cooldown_render_type = "ARROWS"

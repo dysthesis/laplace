@@ -7,8 +7,6 @@ _: {
     ".tokensave/**"
     "AGENTS.md"
     "system/secrets/*"
-    # Some shader files have a .json extension but do not contain JSON.
-    "system/services/minecraft/packwiz/**"
   ];
   programs = {
     alejandra.enable = true;

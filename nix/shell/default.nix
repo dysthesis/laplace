@@ -36,7 +36,5 @@ pkgs.mkShell {
 
     fish-lsp
     fish
-
-    packwiz
   ];
 }

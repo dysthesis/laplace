@@ -1,6 +1,0 @@
-[client]
-	# Add a gold hunger bar overlay for the Nourishment effect.
-	nourishmentHungerOverlay = true
-	# Add a silver health bar overlay for the Comfort effect.
-	comfortHealthOverlay = true
-	foodEffectTooltip = true

@@ -1,2 +1,0 @@
-# Use no to stop mod translation downloads.
-download=yes

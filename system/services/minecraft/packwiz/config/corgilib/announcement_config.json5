@@ -1,5 +1,0 @@
-{
-	// CHAT posts within five minutes after the player spends five minutes in the game.
-	// WIDGET shows the announcement on all screens. Both modes stop after dismissal.
-	"announcement_delivery": "CHAT"
-}

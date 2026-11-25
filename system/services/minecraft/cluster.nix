@@ -1,14 +1,8 @@
 {lib}: let
-  inherit (lib) mkOption types;
-  options = import ./options.nix {inherit lib;};
   common = import ../service-common.nix {inherit lib;};
 in {
   # Keep only machine-level settings. Retirement owns the loader, mods and Java.
-  settings =
-    builtins.removeAttrs options ["openFirewall" "discord" "mapDomain" "memoryGb" "extraJvmOpts"]
-    // {
-      domain = mkOption {type = types.str;};
-    };
+  settings = import ./settings.nix {inherit lib;};
   endpointNames = ["game" "voice" "https" "http"];
   endpoints = {instance, ...}:
     common.webEndpoints instance

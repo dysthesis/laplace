@@ -1,9 +1,0 @@
-{
-	"showReforgingTab": true,
-	"xIconPosition": 0,
-	"yIconPosition": 0,
-	"tieredTooltip": true,
-	// Replace item name text with a plate.
-	"showPlatesOnName": true,
-	"centerName": true
-}
