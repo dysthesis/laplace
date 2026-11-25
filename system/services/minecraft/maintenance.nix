@@ -1,5 +1,5 @@
-# Operational safeguards for the retirement flake's retirement-home instance.
-# Do not redeclare its package, mods, Java runtime or server properties here.
+# World snapshots and nightly restarts for the retirement flake's retirement-home instance.
+# Retirement owns the package, mods, Java runtime and service runtime policy.
 {
   config,
   lib,
@@ -7,42 +7,12 @@
   ...
 }: let
   cfg = config.services.minecraft-servers.servers.retirement-home;
-  dataDir = config.services.minecraft-servers.dataDir;
-  serverPort = cfg.serverProperties.server-port or 25565;
   minecraftMaintenanceLock = "/run/lock/minecraft-maintenance.lock";
 in {
   config = lib.mkIf cfg.enable {
-    # Content waits for restart. Do not silently change the live listener.
-    # Stop the JVM before a listener change.
-    system.preSwitchChecks.minecraftEndpoint = ''
-      case "$2" in
-        switch|test|dry-activate|check)
-          state=$(${config.systemd.package}/bin/systemctl show minecraft-server-retirement-home.service --property=ActiveState --value)
-          if [ "$state" != inactive ] && [ "$state" != failed ] &&
-             ! ${pkgs.gnugrep}/bin/grep -Fxq ${lib.escapeShellArg "server-port=${toString serverPort}"} ${lib.escapeShellArg "${dataDir}/retirement-home/server.properties"}; then
-            echo "Minecraft port change requires maintenance: stop minecraft-server-retirement-home.service, switch, then start it if autoStart is disabled." >&2
-            exit 1
-          fi
-          ;;
-      esac
-    '';
-
-    # A reload can delete managed files while the JVM runs.
     systemd = {
       tmpfiles.rules = ["d /nix/.mc-snapshots 0700 root root -"];
       services = {
-        "minecraft-server-retirement-home" = {
-          reloadIfChanged = lib.mkForce false;
-
-          # Limit the native async-profiler dependency to this service.
-          environment.LD_LIBRARY_PATH =
-            lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib];
-
-          # glibc uses AF_NETLINK before DNS resolution.
-          serviceConfig.RestrictAddressFamilies =
-            lib.mkForce ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
-        };
-
         # One host lock serialises snapshots and restarts for the single server instance.
 
         mc-world-snapshot = {
@@ -223,6 +193,5 @@ in {
         };
       };
     };
-
   };
 }

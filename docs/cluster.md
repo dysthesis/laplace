@@ -197,9 +197,10 @@ the new listener, and converge policy/DNS/client-facing hosts as applicable.
 This is a required maintenance window, not an atomic fleet transition; do not
 bypass pre-switch checks with `NIXOS_NO_CHECK=1`.
 
-`minecraft-config-staging` exercises content staging, rejection before activation,
-and stop/switch/start with a real vanilla 1.20.1 JVM in a disposable VM. It does
-not exercise the production modpack, Discord credentials or live Tailnet clients.
+The retirement module owns this behaviour. Its `staging` check exercises content
+staging, rejection before activation, and stop/switch/start with a real vanilla
+1.21.1 JVM in a disposable VM. It does not exercise the production modpack,
+Discord credentials or live Tailnet clients.
 
 ## Disable and decommission
 

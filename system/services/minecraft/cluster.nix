@@ -59,14 +59,9 @@ in {
     inputs,
     pkgs,
     ...
-  }: let
-    bootstrap = import ./bootstrap.nix {
-      inherit lib pkgs inputs;
-      domain = instance.settings.domain;
-      port = instance.settings.port;
-    };
-  in {
+  }: {
     config = lib.optionalAttrs (hostName == instance.host) {
+      retirement.bootstrap.domain = instance.settings.domain;
       # Retirement reads both values from a systemd credential at startup.
       retirement.discord = {
         enable = true;
@@ -86,7 +81,6 @@ in {
           enable = true;
           autoStart = lib.mkForce instance.settings.autoStart;
           openFirewall = lib.mkForce false;
-          enableReload = true;
           restart = lib.mkForce instance.settings.restart;
           # A 12 GiB VM needs native memory, OS cache and chunk-generation headroom.
           # Java 25 and the NeoForge package still come from Retirement.
@@ -119,7 +113,7 @@ in {
           file_server
         }
         handle /bootstrap/RetirementHome-bootstrap.zip {
-          root * ${bootstrap}
+          root * ${config.retirement.bootstrap.package}
           rewrite * /RetirementHome-bootstrap.zip
           header Content-Disposition "attachment; filename=RetirementHome-bootstrap.zip"
           file_server
@@ -134,8 +128,6 @@ in {
         }
       '';
       mnemosyne.dirs = [instance.settings.dataDir];
-      # Spark's async-profiler needs access to native kernel call frames.
-      boot.kernel.sysctl."kernel.perf_event_paranoid" = 1;
     };
   };
 }
