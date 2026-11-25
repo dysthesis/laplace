@@ -30,14 +30,15 @@
   # Serve the raw Packwiz tree. The assembled modpack-client output has JARs
   # and packwiz.json, but does not contain the indexed .pw.toml manifests.
   minecraft-packwiz-hosting = let
-    source = "${inputs.retirement.outPath}/packwiz";
-    site = serviceFixtures.minecraft.services.caddy.virtualHosts."mc.example.test".extraConfig;
+    source = inputs.retirement.packages.${pkgs.stdenv.hostPlatform.system}.packwiz-source;
+    # lib.hasInfix rejects patterns that carry store-path context.
+    site = builtins.unsafeDiscardStringContext serviceFixtures.minecraft.services.caddy.virtualHosts."mc.example.test".extraConfig;
     endpoints = serviceFixtures.cluster.manifest.endpoints.minecraft;
   in
     assert endpoints.https.port == 443 && endpoints.https.scope == "tailnet";
     assert endpoints.https.publishDNS && !endpoints.game.publishDNS;
     assert lib.hasInfix "handle_path /modpack/*" site;
-    assert lib.hasInfix "root * ${source}" site;
+    assert lib.hasInfix "root * ${builtins.unsafeDiscardStringContext "${source}"}" site;
     assert lib.hasInfix "handle /bootstrap/RetirementHome-bootstrap.zip" site;
       pkgs.runCommand "minecraft-packwiz-hosting-check" {nativeBuildInputs = [pkgs.python3];} ''
         python3 - ${lib.escapeShellArg source} <<'PYTHON'
