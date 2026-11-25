@@ -4,7 +4,6 @@
   ...
 }: let
   inherit (lib.laplace.modules) importInDirectory;
-  inherit (lib) optionals;
 in {
   config = {
     # Nixd manages evaluator defaults, its substituter and cache key rotation in /etc/nix/nix.conf.
