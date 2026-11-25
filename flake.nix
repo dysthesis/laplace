@@ -181,9 +181,6 @@
     colmena.url = "github:nix-community/colmena";
     retirement = {
       url = "github:dysthesis/retirement";
-
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nix-minecraft.follows = "nix-minecraft";
     };
   };
 }

@@ -14,16 +14,15 @@ in {
     common.webEndpoints instance
     // {
       game = {
-        host = instance.host;
+        inherit (instance) host;
         protocol = "tcp";
         port = instance.settings.port;
         listenAddress = "0.0.0.0";
         scope = "tailnet";
         domain = instance.settings.domain;
-        # The HTTPS endpoint now publishes this shared DNS name.
       };
       voice = {
-        host = instance.host;
+        inherit (instance) host;
         protocol = "udp";
         port = 24454;
         listenAddress = "0.0.0.0";
@@ -97,7 +96,7 @@ in {
           restart = lib.mkForce instance.settings.restart;
           # A 12 GiB VM needs native memory, OS cache and chunk-generation headroom.
           # Java 25 and the NeoForge package still come from Retirement.
-          jvmOpts = lib.mkForce "-Xms10G -Xmx12G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200";
+          jvmOpts = lib.mkForce "-Xms8G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200";
           serverProperties = {
             server-port = lib.mkForce instance.settings.port;
             max-players = lib.mkForce instance.settings.maxPlayers;
@@ -121,7 +120,7 @@ in {
         @modpackRoot path /modpack /modpack/
         redir @modpackRoot /modpack/pack.toml 308
         handle_path /modpack/* {
-          root * ${inputs.retirement.outPath}/packwiz
+          root * ${inputs.retirement.packages.${pkgs.stdenv.hostPlatform.system}.packwiz-source}
           header Cache-Control "no-cache"
           file_server
         }
@@ -131,6 +130,11 @@ in {
           header Content-Disposition "attachment; filename=RetirementHome-bootstrap.zip"
           file_server
         }
+        redir /map /map/ 308
+        handle_path /map/* {
+          reverse_proxy 127.0.0.1:8100
+        }
+
         handle {
           respond 404
         }
